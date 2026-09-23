@@ -1141,6 +1141,8 @@ Proving-ground laps are 6-9 % faster than the P4-07 baseline, because the old pl
 
 Gates (`run_gates.ps1`, affected): all pass except known items. The laps stderr is the Spa bank-twist warning (F-P6-01). The terrain timing check read 671 µs under parallel load and passes alone at 168 µs (queued as F-terrain-perf).
 
+## 2026-09-23  DONE F-terrain-perf  (Claude Opus 5.5) — branch `rb/F-terrain-perf`
+`tests/v2/terrain.gd`'s car-step timing check (300 µs) now goes through `GatesEnv.perf()` / `perf_note()` like the other timing gates, so the parallel runner (RACINGSIM_PERF_GATES=0) reports it without failing on machine load (it read 671 µs in parallel, 166 µs alone). Terrain 7/7 with and without the flag.
 ## 2026-09-23  DONE P2-comp tyre compliance and unsprung mass  (Claude Opus 5.5) — branch `rb/P2-comp` (from main)
 Owner decisions (2026-09-23): **D-kerb: no**, so Simcade and Simulation kerbs stay the same. **D-compliance: yes**, which is this task.
 
