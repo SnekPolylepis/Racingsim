@@ -18,6 +18,7 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const TrackSurface = preload("res://scripts/surface/track_surface.gd")
 const TestSurface = preload("res://scripts/surface/test_surface.gd")
+const PGGenerator = preload("res://trackgen/proving_ground.gd")
 
 const STRAIGHT_Z = -500.0
 var test_host: Node3D
@@ -291,13 +292,32 @@ func check_incompatible_fallback() -> void:
 
 ## Check 5: Proving ground regenerated size and triangle report
 func check_proving_ground_size() -> void:
-	var scn_path = "res://tracks3d/proving_ground/proving_ground.scn"
-	var packed = ResourceLoader.load(scn_path)
-	var scene = packed.instantiate()
+	var asset = PGGenerator.build_asset()
+	var packed = PackedScene.new()
+	var pack_error = packed.pack(asset)
+	if pack_error != OK:
+		failures.append("check_proving_ground_size: failed to pack asset (%d)" % pack_error)
+		asset.free()
+		return
+
+	var out_dir = "user://native-tests/v2/road_density"
+	DirAccess.make_dir_recursive_absolute(out_dir)
+	var comp_path = out_dir + "/pg.scn"
+	var save_error = ResourceSaver.save(packed, comp_path, ResourceSaver.FLAG_COMPRESS)
+	if save_error != OK:
+		failures.append("check_proving_ground_size: failed to save compressed scene (%d)" % save_error)
+		asset.free()
+		return
+
+	var uncomp_path = out_dir + "/pg_uncompressed.scn"
+	ResourceSaver.save(packed, uncomp_path)
+
+	var comp_bytes = FileAccess.get_file_as_bytes(comp_path).size()
+	var uncomp_bytes = FileAccess.get_file_as_bytes(uncomp_path).size()
 
 	var total_tris = 0
 	var road_tris = 0
-	for child in scene.get_node("Surfaces").get_children():
+	for child in asset.get_node("Surfaces").get_children():
 		if child is StaticBody3D:
 			for col in child.get_children():
 				if col is CollisionShape3D and col.shape is ConcavePolygonShape3D:
@@ -305,12 +325,6 @@ func check_proving_ground_size() -> void:
 					total_tris += cnt
 					if "_s0" in child.name:
 						road_tris += cnt
-
-	var uncompressed_path = "user://native-tests/v2/road_density/pg_uncompressed.scn"
-	DirAccess.make_dir_recursive_absolute("user://native-tests/v2/road_density")
-	ResourceSaver.save(packed, uncompressed_path)
-	var uncomp_bytes = FileAccess.get_file_as_bytes(uncompressed_path).size()
-	var comp_bytes = FileAccess.get_file_as_bytes(scn_path).size()
 
 	results["proving_ground"] = {
 		"before":
@@ -361,4 +375,4 @@ func check_proving_ground_size() -> void:
 			% [comp_bytes, road_tris]
 		)
 	)
-	scene.free()
+	asset.free()

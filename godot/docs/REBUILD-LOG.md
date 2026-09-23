@@ -904,3 +904,10 @@ Since the compressed `.scn` size is 3.87 MB (well below the 5 MB threshold and g
   (All key metrics unchanged: bevel 60/120, ribbed 60/120, sausage 60/120, crest takeoff 145.8 km/h, bowl |Fy| 3.5% of mg, compression 2.69 x mg with 0 body contacts, ditch challenge -1.16 m ride with 0 light and 0 off-tarmac wheel ticks, simulation & simcade 296 BotLine laps 143.80 s with 0 off-wheel ticks).
 - `gdformat --check -l 110`: 4 files unchanged.
 - `git diff --check`: 0 errors.
+
+## 2026-09-23  DONE F-P3-02c proving ground size check in memory  (Gemini 3.8 Flash) — branch `rb/F-P3-02c`
+Updated `tests/v2/road_density.gd` check 5 to build the proving ground in memory (`trackgen/proving_ground.gd` -> `PGGenerator.build_asset()`), pack it into a `PackedScene`, and save it with `FLAG_COMPRESS` under `user://native-tests/v2/road_density/pg.scn`.
+- Measures the generated binary compressed size directly (3,872,088 bytes = 3.69 MB) instead of relying on a git-ignored file.
+- Total collision triangles: 120,544; road collision triangles: 44,480.
+- All 6 checks in `tests/v2/road_density.gd` pass with empty stderr.
+- All 23 affected gates pass via `run_gates.ps1` (60 s wall clock).
