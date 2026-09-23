@@ -25,6 +25,7 @@
     {"name": "footprint", "script": "tests/v2/footprint.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "barrier", "script": "tests/v2/barrier.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "props", "script": "tests/v2/props.gd", "groups": ["vehicle", "track"], "perf": true},
+    {"name": "race", "script": "tests/v2/race.gd", "groups": ["vehicle", "track"], "deps": ["scripts/race.gd", "scripts/storage.gd"]},
     {"name": "track_asset", "script": "tests/v2/track_asset.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "road_tool", "script": "tests/v2/road_tool.gd", "groups": ["vehicle", "track"]},
     {"name": "road_tool_v2", "script": "tests/v2/road_tool_v2.gd", "groups": ["vehicle", "track"]},

@@ -1251,3 +1251,28 @@ The rest of P4-03. New: `scripts/props/prop_body.gd` (PropBody), `scripts/props/
 - No crushing or damage.
 - The game loop doesn't call PropSet yet (P4-core).
 - The nose rake is a stand-in for a real nose shape until the hull gets one.
+
+## 2026-09-23  DONE P4-02 lap timing on TrackAssets  (Claude Opus 5.5) — branch `rb/P4-02-race` (from main)
+Owner decision: **P6-03 Monza: no.**
+
+`scripts/race.gd` gains `update_asset(car, asset, dt)` beside the legacy `update()`, which is untouched: legacy suites are identical and the feature suite is 212/0. It keeps race.gd's public fields (lap_time, valid, last, best, sectors/flags, delta, ghost, completed, last_reason), so the P4-05 HUD reads them unchanged.
+- **Gates:** `TrackAsset.gates()` (start, then sector and checkpoint gates in lap order) and `TrackAsset.crossed()`. A gate counts when the CG crosses its vertical plane forwards within ±15 m sideways and ±3 m vertically, so another deck never counts. Every gate must be met in order. A cut that passes outside a gate, or crosses the gate after the expected one, invalidates the lap ("missed checkpoint N"). A missed sector gate still ends its sector.
+- Sectors end at the two sector gates and the line. Best, session and flags work as before.
+- Off-track (`car.all_off`) and contact (`car.collided`, set by WallContact) rules are unchanged.
+- **Ghost samples follow §5.4:** `[t, x, y, z, qx, qy, qz, qw, lap_distance]` at ~30 Hz. `ghost_xform()` gives the ghost's Transform3D (position lerp, rotation slerp). `ghost_time_at()` reads lap distance from the last field, so legacy and asset ghosts both work.
+- **Ghost file schema 2** (DATA-CONTRACTS): `"track"` is the asset's `record_key()`. `storage.validate_ghost` requires 9 numbers per sample when `schema` is 2. Old ghosts never load on TrackAssets (D4).
+- **v2 game path** (`game.gd`): `setup_v2` makes a RaceModel with the settings' rules, `physics_v2` calls `update_asset` every tick, and a reset (grid placement) calls `race.reset()` so the teleport crosses no gate. Timing is in memory only. **Saving and loading records on this path is P4-06:** it returns before storage, settings and the record writer are set up, and the front end has to choose the track and car. `record_path()` must then key on `track.record_key()`, not `track.data`.
+
+`tests/v2/race.gd` (10/10, in gates.json). Most checks use a scripted car moving exactly along the proving ground's lap line:
+- a lap at 30 m/s times 83.7375 s against 83.7342 s (distance / speed), with sectors within 0.0042 s (one tick)
+- the first valid lap becomes the best and the ghost
+- the ghost is 2512 samples of 9 numbers at 30.0 Hz; an identical second lap has 0.000 s delta and the ghost pose sits on the car
+- a lap 10 % slower ends with a +9.29 s delta (expected +9.29)
+- passing checkpoint 1, 20 m off the line: invalid ("missed checkpoint 1")
+- 15 m with all wheels off: invalid ("off track")
+- reversing across the line starts no lap
+- a reset mid-lap ends the attempt
+- a schema-2 document validates and 6-number samples are rejected
+- the f296gt3 bot lap on CarBody: race.gd 60.425 s, valid, sectors 13.85 / 23.28 / 23.30 s, identical to the laps gate's own timing
+
+Gates: `run_gates.ps1 -All` passes except the known Spa bank warning in the laps stderr (F-P6-01). `--features` 212/0 with empty stderr, and `--v2-smoke` passes.

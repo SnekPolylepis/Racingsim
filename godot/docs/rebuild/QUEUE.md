@@ -33,7 +33,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P2-08 | Debug scene to drive CarBody on the analytic test surfaces | Gemini | | done | rb/P2-08-test-surfaces 3b0143c |
 | P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | done | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
 | scenery-kit | Trackside scenery kit (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding) and proving ground placement | Gemini | | done | rb/scenery-kit; 34/34 gates pass (147 s), 11/11 scenery checks |
-| P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | | claimed: Sol (P4-01 merged in M-TRAIN; P4-02, P4-06 remain) | rb/P4-01-game-port; one task: these share the game loop (§9 rule 11) |
+| P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | | claimed: Sol (P4-01 merged; P4-02 done by Claude on rb/P4-02-race; P4-06 remains) | rb/P4-01-game-port; one task: these share the game loop (§9 rule 11) |
+| P4-02 | race.gd on TrackAssets: 3D gates, checkpoints in order, sectors, schema-2 ghosts (5.4 pose); live timing in the v2 game path | Claude | | review: Sol | rb/P4-02-race; read "DONE P4-02"; saving records on the v2 path is P4-06 (the path has no storage yet) |
 | P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | done (review R-P4-07) | merged in M-TRAIN |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Gemini | P2-08, P4-core | open | P2-08's pose adapter is the start |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
@@ -49,6 +50,6 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | review: Sol | rb/P2-comp-b (on rb/P2-comp); read "DONE P2-comp-b" |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-02 | Nordschleife in sections | Gemini, Claude review | P6-01 | open | |
-| P6-03 | Monza (if still wanted) | owner | | needs owner | |
+| P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | review: Sol | claude/racing-sim-props-cones-v69o5c (on rb/P2-comp-b); read "DONE props". For P4-core: PropSet in the game loop |
 | P7 | Delete the legacy model and tracks, rewrite docs, Windows + macOS export | Sol, Gemini | P5-04, P6-01 | open | split when it's reached |
