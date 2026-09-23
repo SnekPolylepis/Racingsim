@@ -460,6 +460,8 @@ func angular_momentum_world():
 
 func snapshot():
 	var phases = []
+	var comps = []
 	for w in wheels:
 		phases.append(w.phase)
-	return {"xform": Transform3D(basis(), pos), "steer": steer_angle, "phase": phases}
+		comps.append(w.comp)
+	return {"xform": Transform3D(basis(), pos), "steer": steer_angle, "phase": phases, "comp": comps}
