@@ -203,3 +203,11 @@ Checked `rb/P1-remove-editor` at `406db6b` in a clean detached worktree. **Verdi
 2. **Test coverage, low.** The 49 removed feature checks (125 → 85 `check()` call sites) are all editor-specific, apart from two thresholds correctly lowered (3 bundled circuits; 7 handbook chapters after 3 editor chapters were removed), with one exception: "atomic replace existing file" (overwrite an existing JSON and read back the new content) was storage coverage, not editor coverage. "Record replacement leaves no incomplete temporary file" still exercises the `.tmp` → rename path, but nothing checks that overwriting yields the new content. Restore it as a one-line check on a setup or ghost file.
 3. **Docs, low.** `docs/TESTING.md` still says the feature suite covers "dirty guards"; the only dirty-guard checks were the editor's and were removed. Update the sentence.
 4. The feature count 260 → 211 is explained by 1 and 2. The 4 legacy headless results quoted in the DONE entry match the baseline.
+
+## 2026-09-22  DONE P5-01  (Claude Opus 5.5) — branch `rb/P5-01-data-sources`
+Licences and access checked on the publishers' own pages; details and links in `docs/rebuild/data-sources-P5-01.md`. Nothing downloaded or committed.
+- **Nordschleife:** LVermGeo RLP DGM1 (1 m, < ±0.3 m height deviation, EPSG:25832, 1 km GeoTIFF tiles), plus DOM1, ground/object laser point clouds and DOP20 orthophotos. All open data under dl-de/by-2.0: free, commercial use allowed, attribution `©GeoBasis-DE / LVermGeoRP<year>, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`. Check the acquisition year of the Nürburg tiles (national currency spans 2000–2022).
+- **Spa:** SPW Wallonia MNT 1 m 2021–22 (LiDAR) and Orthophotos 2023 Été (25 cm), both CC BY 4.0. Caveat: the survey overlaps the 2021–22 circuit works; verify changed corners against the 2023 imagery.
+- **Monza (optional):** Lombardy/MiTE DTM LiDAR 1 m listed as CC BY 4.0, but tiles are requested by certified email (PEC) and coverage of the park is unconfirmed.
+- Both terrain models **exclude bridges**; Nordschleife bridge crossings need the point cloud, DOM1 or hand modelling. ±0.3 m absolute accuracy means the road surface must be fitted and smoothed, not sampled raw.
+- Plan D10 and P5-01 updated.

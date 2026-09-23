@@ -41,7 +41,7 @@ A racing sim where the car is a real body in 3D space driving on real 3D surface
 - **D7. First track.** **A short proving-ground circuit (invented, ~2–3 km, with a bowl, crest, compression, off-camber and a ditch) → Spa → Nordschleife.** Monza is optional later.
 - **D8. Handling models.** **Keep both Simulation and Simcade.** Simcade gets retuned after P2 because its targets were tuned on the old solver.
 - **D9. Coordinates.** **Switch the simulation to Godot-native world space** (see §5.1). Rendering stops doing the `(x,y,h)→(x,h,y)` remap.
-- **D10. Elevation data.** **Use 1 m open LiDAR DEMs where they exist.** Believed available for Rhineland-Palatinate (Nordschleife) and Wallonia (Spa); **licence and access must be verified (task P5-01) before any data is committed.**
+- **D10. Elevation data.** **Use 1 m open LiDAR DEMs where they exist.** Verified in P5-01: Rhineland-Palatinate DGM1 + laser point clouds + DOP20 orthophotos (dl-de/by-2.0), and Wallonia MNT 1 m 2021–22 + 2023 orthophotos (CC BY 4.0). Both are free downloads usable commercially with attribution. Both terrain models exclude bridges.
 
 ## 4. Target architecture
 
@@ -203,7 +203,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 ### P5: Proving ground, the first polished track
 
-- **P5-01 [CONTENT]** Verify the DEM/orthophoto sources and licences for Spa and the Nordschleife (D10). Record them in `THIRD-PARTY.md`. No data is committed before this.
+- **P5-01 [CONTENT]** Verify the DEM/orthophoto sources and licences for Spa and the Nordschleife (D10). Record them in `THIRD-PARTY.md`. No data is committed before this. **Licences verified 2026-09-22** (`docs/rebuild/data-sources-P5-01.md`): Nordschleife dl-de/by-2.0, Spa CC BY 4.0; both allow commercial derived works with attribution. THIRD-PARTY.md gets the attributions when derived data first ships (P6).
 - **P5-02 [CONTENT]** Design the proving ground on paper: corner list, elevation profile, the features to test (bowl, crest to take off at ~150 km/h, compression, off-camber, concrete ditch, kerbs of each type).
 - **P5-03 [CONTENT]** Build it with the P3 tools; scenery; night lighting.
 - **P5-04** Owner playtest and iterate. Record the lap baselines.
