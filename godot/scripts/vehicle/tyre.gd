@@ -20,11 +20,13 @@ static func peak_slip_angle(car):
 	return 1.9 / maxf(car.setup.tireBlat * LAT_B, 1)
 
 
-static func simcade_curve(car, value, begin, end):
+## `floor` is the sliding grip far past the peak; by default the Simcade table's `sliding_grip`.
+static func simcade_curve(car, value, begin, end, floor = NAN):
 	var slip = absf(value)
 	var force = sin(minf(slip / begin, 1.0) * PI * .5)
 	if slip > end:
-		force = lerpf(1.0, car.simcade.sliding_grip, 1 - exp(-(slip - end) / end))
+		var sliding = car.simcade.sliding_grip if is_nan(floor) else floor
+		force = lerpf(1.0, sliding, 1 - exp(-(slip - end) / end))
 	return signf(value) * force
 
 
@@ -93,7 +95,10 @@ static func contact_forces(car, w, i, sf, vwx, vwy, dt, stf, strr, hold = Vector
 				car,
 				kappa,
 				peak_slip_ratio(car) * simcade.ratio_start_scale,
-				peak_slip_ratio(car) * simcade.ratio_end_scale
+				peak_slip_ratio(car) * simcade.ratio_end_scale,
+				# A locked or spinning wheel may slide on less grip than a sideways one (CarBody's table
+				# sets it, P2-07); without `sliding_grip_long` both use `sliding_grip`, as before.
+				simcade.get("sliding_grip_long", simcade.sliding_grip)
 			)
 		)
 		fy = (

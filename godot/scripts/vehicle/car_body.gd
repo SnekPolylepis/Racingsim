@@ -77,6 +77,12 @@ var contact_hits = []
 
 func configure(preset):
 	super(preset)
+	# Simcade retuned for the 6-DOF chassis (P2-07): data/simcade.json's "carbody" section goes over the
+	# shared defaults, and the car's own preset overrides still go over both. The planar CarModel never
+	# reads that section, so its behaviour and baselines are unchanged.
+	simcade = SIMCADE_DEFAULTS.duplicate(true)
+	simcade.merge(SIMCADE_DEFAULTS.get("carbody", {}), true)
+	simcade.merge(p.get("simcade", {}), true)
 	rig()
 
 
@@ -156,6 +162,12 @@ func launch(v: float):
 
 func basis():
 	return Basis(rot)
+
+
+## ASM from the body frame (P2-07): slip from the body-frame forward and lateral velocity, with the
+## body yaw rate `r`, so it reads a bank, slope or crest the way the driver feels it.
+func stability_request():
+	VehicleAids.stability_request(self, vbx, vby)
 
 
 func sync_legacy():
@@ -240,6 +252,12 @@ func step(dt, surface, automatic = true):
 		# ray direction's own rotation). The footprint takes the normal from the ground (5.2), so a kerb
 		# edge's climb shows in the compression, not the rate (no tyre compliance to absorb the rate).
 		rate[i] = -n.dot(top_vel) / maxf(n.dot(up), .05)
+		# Rough ground (grass, gravel, runoff) shakes the damper as car.gd does, scaled down in Simcade.
+		# Kerbs are real geometry here, as they are there, so they add none.
+		var rough = TrackModel.SURF[hit.surface]
+		if rough.bump > 0 and rough.id != 1:
+			var bump = (rnd() - .5) * rough.bump * minf(1, speed / 10)
+			rate[i] += bump * (simcade.rough_bump_scale if simcade_enabled else 1.0)
 	contact_hits = hits
 	var loads = [0.0, 0.0, 0.0, 0.0]
 	for i in 4:
