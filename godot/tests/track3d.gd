@@ -31,9 +31,7 @@ func circle_doc(r, count, bank = 0.0, width = 12.0):
 	var points = []
 	for i in count:
 		var th = TAU * i / count
-		points.append(
-			{"x": r * cos(th), "y": r * sin(th), "z": 0.0, "w": width, "bank": bank}
-		)
+		points.append({"x": r * cos(th), "y": r * sin(th), "z": 0.0, "w": width, "bank": bank})
 	return {"schema": 1, "name": "Circle", "points": points, "startS": 0.0}
 
 
@@ -45,13 +43,7 @@ func overpass_doc(a, h, count):
 	for i in count:
 		var th = TAU * i / count
 		points.append(
-			{
-				"x": a * cos(th),
-				"y": a * sin(th) * cos(th),
-				"z": h * sin(th),
-				"w": 12.0,
-				"bank": 0.0
-			}
+			{"x": a * cos(th), "y": a * sin(th) * cos(th), "z": h * sin(th), "w": 12.0, "bank": 0.0}
 		)
 	return {"schema": 1, "name": "Overpass", "points": points, "startS": 0.0}
 
@@ -89,11 +81,7 @@ func _initialize():
 	# directly pins the convention, rather than reasoning about which way a given circle is wound.
 	var lateral_ok = true
 	for sm in t.samples:
-		lateral_ok = (
-			lateral_ok
-			and near(sm.right.x, -sm.tan.y, 1e-4)
-			and near(sm.right.y, sm.tan.x, 1e-4)
-		)
+		lateral_ok = (lateral_ok and near(sm.right.x, -sm.tan.y, 1e-4) and near(sm.right.y, sm.tan.x, 1e-4))
 	check(lateral_ok, "right vector matches track.gd's (-ty, tx) normal convention")
 
 	# ---- banking is a rotation, not a cross-slope ----
@@ -164,8 +152,7 @@ func _initialize():
 		"the two decks report arc stations half a lap apart"
 	)
 	check(
-		near(pr_up.vert, .5, .15) and near(pr_down.vert, .5, .15),
-		"height above surface is measured directly"
+		near(pr_up.vert, .5, .15) and near(pr_down.vert, .5, .15), "height above surface is measured directly"
 	)
 
 	# Continuity: walk a point along the lower deck through the crossing, carrying the hint the way
@@ -267,10 +254,7 @@ func _initialize():
 	ribbon.load_data(spa_doc)
 	# Compare the curves in space, not at equal arc distance: the two models parameterise the lap
 	# differently, so equal s is not the same place on the circuit.
-	check(
-		ribbon.samples.size() == legacy.samples.size(),
-		"sample counts match (%d)" % ribbon.samples.size()
-	)
+	check(ribbon.samples.size() == legacy.samples.size(), "sample counts match (%d)" % ribbon.samples.size())
 	var worst_pos = 0.0
 	for sm in legacy.samples:
 		var q = Vector3(sm.x, sm.y, sm.z)
@@ -286,8 +270,10 @@ func _initialize():
 	var gain = ribbon.length - legacy.length
 	check(
 		gain > 0 and gain / legacy.length < .005,
-		"3-space lap is %.2f m longer than the plan-view lap (%.3f%%), as elevation requires"
-		% [gain, 100.0 * gain / legacy.length]
+		(
+			"3-space lap is %.2f m longer than the plan-view lap (%.3f%%), as elevation requires"
+			% [gain, 100.0 * gain / legacy.length]
+		)
 	)
 	var surf_match = 0
 	var surf_total = 0

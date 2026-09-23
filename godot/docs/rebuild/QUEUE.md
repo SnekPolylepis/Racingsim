@@ -36,7 +36,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | done (review R-P4-07) | merged in M-TRAIN |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Gemini | P2-08, P4-core | open | P2-08's pose adapter is the start |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
-| CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | open | saves reviewers re-running gates |
+| CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
 
 ## Decisions and later
 

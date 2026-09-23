@@ -117,9 +117,7 @@ func build_heights():
 					var lat = dx * sm.nx + dy * sm.ny
 					dist[k] = d
 					base[k] = (
-						TrackModel
-						. surface_point(sm, clampf(lat, -(sm.w / 2 + VERGE), sm.w / 2 + VERGE))
-						. z
+						TrackModel.surface_point(sm, clampf(lat, -(sm.w / 2 + VERGE), sm.w / 2 + VERGE)).z
 					)
 					corridor[k] = 1 if d < sm.w / 2 + VERGE + .5 else 0
 	# Dilate the track height outward so terrain far from the circuit still sits at local track level.
@@ -923,9 +921,7 @@ func build_landmark_spectator_bank(parent, s_centre, side_sign, offset, length, 
 	var crowd_mat = painted_material("crowd", "ffffff")
 	var wood_mat = flat_material("4a3a2a", 0.0, 0.85)
 
-	var tent_colors = [
-		Color("f2f4f7"), Color("2252a8"), Color("b83228"), Color("286b3e"), Color("dca824")
-	]
+	var tent_colors = [Color("f2f4f7"), Color("2252a8"), Color("b83228"), Color("286b3e"), Color("dca824")]
 
 	var bank_root = Node3D.new()
 	parent.add_child(bank_root)

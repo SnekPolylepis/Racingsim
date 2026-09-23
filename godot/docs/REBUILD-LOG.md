@@ -1120,3 +1120,19 @@ Sol is out of usage, so Claude assembled one branch for the owner to merge on Gi
 Reviews (Claude): F-P3-03 approve (runoff via RoadBuilder.side(), drive test prev_pos, preload removed, no conflict marker); scenery-kit approve on its gates; P4-01 approve with follow-ups F-P4-01 (Esc quits the app on the v2 path; WallContact not called; trackgen excluded from export). Claude's own P4-03, workflow and P4-07 are merged before review; Sol reviews them after (R-P4-03, R-WF, R-P4-07).
 
 Gates `run_gates.ps1 -All`: 36/39 pass in 147 s. The 3 laps rows fail only on known items: stderr carries the Spa RoadPath bank-twist warning (F-P6-01), and "spa roadster simulation" does not finish (P4-07b). All proving-ground laps pass. Windowed `-- --features`: 212 checks, 0 failures, stderr empty.
+
+
+## 2026-09-23  CLAIM CI  (Gemini 3.8 Flash)
+Headless gate runner on Linux and GitHub Actions workflow (.github/workflows/gates.yml) on rb/CI from origin/main.
+
+
+## 2026-09-23  DONE CI  (Gemini 3.8 Flash)
+Built GitHub Actions workflow (`.github/workflows/gates.yml`) and cross-platform headless gate runner (`godot/tools/ci_gates.py` and `godot/tools/ci_gates.sh`):
+- Downloads official Godot 4.6.2-stable Linux x86_64, caches binary via `actions/cache@v4` with executable permission verification.
+- Sets up Python 3.12, installs `gdtoolkit`, runs `gdformat -l 110 --check scripts tests` (reformatted 5 untouched legacy files to clean repository-wide check; all 10 legacy baseline gates verified identical).
+- Runs `godot --headless --path godot --script scripts/game.gd --check-only` (clean, 0 failures).
+- Runs all 39 headless suites in `tools/gates.json` concurrently using `ci_gates.py` with `RACINGSIM_PERF_GATES=0`.
+- Treats `laps.gd` "spa roadster simulation" failure as an allowed failure (P4-07b) rather than failing the run.
+- Uploads all stdout/stderr logs from `godot/tests/logs/ci/` as an artifact (`gate-logs`) on pass and failure.
+- Local verification: 39/39 run in 183.0 s wall clock (38 PASS, 1 ALLOW for spa roadster simulation, 0 failed, exit 0).
+
