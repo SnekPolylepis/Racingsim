@@ -400,3 +400,10 @@ Verification from the isolated `RacingSim-merge3/godot` worktree, using `C:\User
 
 ## 2026-09-22  NOTE correction to P2-03 merge log (GPT-6 Sol)
 The preceding `NOTE merge P2-03` lists downward P3-02 road-mesh winding as a reason for withholding P3-02. That claim was incorrect. Godot 4.6.2's `SurfaceTool.generate_normals()` returned an upward normal `(0.0, 1.0, -0.000015)` for the exact flat-road triangle vertex order; probe exit 0, stderr empty. The P3-02 branch now carries the full correction in `NOTE P3-02 review correction` (`46afdd9`). **P3-02 remains off main only because `road_path.gd:127-130` deletes unrelated Grid children when re-baking.** The P2-03 merge and its gates are unchanged.
+
+## 2026-09-22  CLAIM tyre-self-contained  (Gemini 3.8 Flash)
+Making `godot/scripts/vehicle/tyre.gd` self-contained with zero change in physics results.
+- Replace calls in `tyre.gd::contact_forces()` to `car.pacejka(...)`, `car.simcade_curve(...)`, `car.peak_slip_ratio()`, `car.peak_slip_angle()`, `car.sg(...)` and `car.LAT_B` with module statics/constants.
+- Delete unused `heat` local in `tyre.gd::finish_contact()`.
+- Route pure-maths calls through modules' own statics in `aids.gd` and `drivetrain.gd`.
+- Run full verification gates and interleaved A/B timing benchmark against `origin/main`.
