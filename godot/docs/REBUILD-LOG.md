@@ -544,3 +544,33 @@ Results (12/12, stderr empty):
 
 Not done: walls (P3-04), terrain (P3-03), tyre footprint for kerb contact (P2-06); BotLine authoring is still manual (a Path3D named BotLine).
 
+
+
+## 2026-09-22  DONE P3-04 walls and scenery  (Claude Opus 5.5) — branch `rb/P3-04-walls` (on `rb/P3-02b-road-tool-v2`)
+New: `scripts/track/wall_builder.gd`, `scripts/track/wall_path.gd` (class `WallPath`), `scripts/track/road_scatter.gd` (class `RoadScatter`), `tests/v2/walls.gd` (8 checks), output `docs/rebuild/walls-P3-04.txt`. Changed: `road_builder.gd` (refactor: `point_at`, `station_at`, new `beyond_edge`; road suites unchanged), `track_asset.gd` (`validate()` now checks Walls/).
+
+- **WallPath:** armco (0.75 × 0.15 m), tyre wall (1.0 × 0.9), concrete (1.0 × 0.4), or custom height/thickness. **Road-following:** `follow_road`, `side`, `offset` beyond the verge's outer edge, `from_m`..`to_m` (wraps on a closed road; a whole-loop wall closes on itself). It follows the road's plan, bank and elevation, with its inner face on the road side. **Freehand:** its own curve, with the track on `track_side`. Walls stand vertical with a 0.3 m footing below their base, so there's no gap on slopes. Bakes to `Walls/<name>`: StaticBody3D on **layer 2 only**, a concave collision shape named "Collision", a visual mesh, and metadata `wall_kind`, `wall_line` (inner-face base points), `wall_outward`, `wall_height`, `wall_thickness` for P4-03.
+- **RoadScatter:** `per_100m` instances per side in a band `offset_min`..`offset_max` beyond the verge, random yaw and scale, deterministic from `random_seed`, one MultiMeshInstance3D in `Scenery/<name>` (default mesh: a low-poly conifer). No collision. Ground height beyond the verge continues the verge's fall until P3-03 terrain.
+- **TrackAsset.validate():** every `Walls/` body must be on layer 2 only and carry a known `wall_kind` (armco / tyre / concrete).
+- Nodes outside a TrackAsset bake into their own `Walls/` or `Scenery/` child, as RoadPath does.
+- Exports use `@export_enum` ints rather than enum-typed exports: a new class_name script's own enum type failed to resolve before the editor had registered the class.
+
+Results (8/8, stderr empty):
+- Freehand concrete wall: suspension rays (layer 1) pass through it; a layer-2 ray meets its face at z 50.0000 facing the track; hit at 0.95 m, clear at 1.05 m (height 1.0); end cap at x 0.0000.
+- Road-following walls: base line within **0.07 mm** of width + kerb + runoff + verge + offset on a flat analytic road (both sides, following the 3° verge) and within **0.15 mm** on a 10° banked road (raised 1.973 m on the high side).
+- Whole-loop concrete wall round the P3-02 proving loop: closes (3568 triangles for 446 points, 8 per point, no caps); validates; validation rejects a wall on layer 1 and a `wall_kind` of "hay"; the 296 laps in 52.13 s and never comes within 9.05 m of the wall line.
+- Scatter: 48 trees (24 per side per 200 m at 12/100 m), all 4–30 m beyond the verge and on the ground (height error 0.00000 m), one MultiMesh; the same seed gives the same layout, a new seed a new one.
+- Also: parse clean; track_asset 23/23; road_tool 15/15; road_tool_v2 11/11; spike 23/23; editor load registers RoadPath, RoadSection, WallPath, RoadScatter.
+
+Found and fixed while testing: an unnamed CollisionShape3D gets an auto name (`@CollisionShape3D@n`), so it is now named "Collision". The first test run **hung**: a script error inside `_physics_process` aborts before `quit()`, and Godot calls it again every frame (5 MB of stderr in 90 s). `walls.gd` now fails instead of looping if a previous run aborted. **Other v2 suites have the same exposure; worth the same guard.**
+
+**Correction to "DONE P3-02b":** road_tool_v2 has **11** gating checks, not 12 (the twelfth line is the non-gating crest PROBE). The P3-02b commit message says 12/12; the suite passes 11/11.
+
+Not done: car-vs-wall collision response (P4-03, where the §6 Barrier row's "300 km/h head-on, no pass-through" gets tested); fences as a dedicated kind (scatter any mesh meanwhile); terrain (P3-03).
+
+## 2026-09-22  NOTE P3-02b + P3-04 rebased onto Sol's fixed P3-02  (Claude Opus 5.5)
+Sol's P3-02 review fix (`b712e9d`: RoadPath re-bake replaces only its own Grid markers, tagged `_road_path_source`; road UVs in metres across (U) and along (V) the road, unwrapped at the closing seam) touched the same files that v2 rewrote. Both of my commits were replayed on `origin/rb/P3-02-road-tool` (`17245d6`), and the branches now point at the replayed commits (never pushed before, so nothing shared was rewritten):
+- `rb/P3-02b-road-tool-v2` = P3-02 fixed + v2. `road_path.gd` auto-merged (grid tagging kept alongside configurable grid spacing and ditch-aware slot height). `road_builder.gd` is the v2 builder with Sol's UV scheme ported in, including the RIBBED kerb sub-strips (U/V interpolated along each sub-row); `mesh(faces, uvs)` has Sol's signature.
+- `rb/P3-04-walls` = the above + P3-04 (applied cleanly).
+Gates on the rebased stack, stderr empty for all: `road_tool.gd` **16/16** (Sol's version, including foreign-slot preservation and UV unwrap at 891.7 m), `road_tool_v2.gd` 11/11, `walls.gd` 8/8, `track_asset.gd` 23/23, `chassis_spike.gd` 23/23, `surfaces.gd` 34/34, `--check-only` and `--editor --quit` clean, gdformat clean. Merge order for main: P3-02 (Sol's branch), then P3-02b, then P3-04.
+

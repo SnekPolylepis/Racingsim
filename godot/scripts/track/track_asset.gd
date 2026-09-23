@@ -20,6 +20,7 @@ const TrackSurface = preload("res://scripts/surface/track_surface.gd")
 const MAX_EXTENT = 5000.0
 const SURFACE_LAYER = 1
 const WALL_LAYER = 2
+const WALL_KINDS = ["armco", "tyre", "concrete"]
 ## Default checkpoint spacing, as the old track model used.
 const CHECKPOINT_SPACING = 90.0
 ## Gates reach this far beyond the lap line to either side, and this far above and below it.
@@ -269,4 +270,15 @@ func validate():
 		if xf.origin.abs().x > MAX_EXTENT or xf.origin.abs().z > MAX_EXTENT:
 			errors.append("a grid slot leaves the ±%.0f m precision box (5.1)" % MAX_EXTENT)
 			break
+	# Walls (optional): layer 2 only, so suspension rays (layer 1) can never drive on a wall, and a
+	# known kind for collision response (P4-03).
+	var walls = get_node_or_null("Walls")
+	if walls != null:
+		for w in walls.get_children():
+			if not (w is StaticBody3D):
+				continue
+			if w.get_collision_layer_value(SURFACE_LAYER) or not w.get_collision_layer_value(WALL_LAYER):
+				errors.append("Walls/%s: must be on collision layer %d only" % [w.name, WALL_LAYER])
+			if not (w.get_meta("wall_kind", "") in WALL_KINDS):
+				errors.append("Walls/%s: metadata 'wall_kind' must be one of %s" % [w.name, WALL_KINDS])
 	return errors
