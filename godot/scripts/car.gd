@@ -20,6 +20,9 @@ const BUMP_STOP_RATE = 6.0
 ## mattering. The damping term is separately rate-limited, which is what protects the solver.
 const MAX_ROAD_DEVIATION = .70
 const TrackModel = preload("res://scripts/track3d.gd")
+const VehicleTyre = preload("res://scripts/vehicle/tyre.gd")
+const VehicleAids = preload("res://scripts/vehicle/aids.gd")
+const VehicleDrivetrain = preload("res://scripts/vehicle/drivetrain.gd")
 var p = {}
 var setup = {}
 var wheels = []
@@ -208,89 +211,48 @@ const LAT_B = 1.4
 
 ## Slip ratio / slip angle (rad) at which the native tyre curves peak for the current setup.
 func peak_slip_ratio():
-	return 1.75 / maxf(setup.tireBlong, 1)
+	return VehicleTyre.peak_slip_ratio(self)
 
 
 func peak_slip_angle():
-	return 1.9 / maxf(setup.tireBlat * LAT_B, 1)
+	return VehicleTyre.peak_slip_angle(self)
 
 
 func tcs_level():
-	if setup.has("tcsLevel"):
-		return clampf(setup.tcsLevel, 0, 10)
-	return simcade.default_tcs if simcade_enabled else (setup.tcIntensity * 10 if setup.tcOn > .5 else 0.0)
+	return VehicleAids.tcs_level(self)
 
 
 func asm_level():
-	return clampf(setup.get("asmLevel", simcade.default_asm if simcade_enabled else 0.0), 0, 10)
+	return VehicleAids.asm_level(self)
 
 
 func set_tcs(level):
-	setup.tcsLevel = clampf(level, 0, 10)
-	# Keep the browser's original fields meaningful in exported setups.
-	setup.tcOn = 1.0 if level > 0 else 0.0
-	setup.tcIntensity = level / 10.0
+	VehicleAids.set_tcs(self, level)
 
 
 func simcade_curve(value, begin, end):
-	var slip = absf(value)
-	var force = sin(minf(slip / begin, 1.0) * PI * .5)
-	if slip > end:
-		force = lerpf(1.0, simcade.sliding_grip, 1 - exp(-(slip - end) / end))
-	return signf(value) * force
+	return VehicleTyre.simcade_curve(self, value, begin, end)
 
 
 func tyre_temperature_grip(w):
-	var u = ((.65 * w.temp + .35 * w.core) - setup.tempOpt) / setup.tempWindow
-	if u > 0:
-		u *= .75
-	var grip = 1 - .2 * (1 - exp(-u * u))
-	return lerpf(1, grip, simcade.temperature_effect) if simcade_enabled else grip
+	return VehicleTyre.tyre_temperature_grip(self, w)
 
 
 ## ASM requests real wheel brake torques; it never clamps heading, lateral velocity or yaw rate.
 func stability_request():
-	asm_brakes = [0.0, 0.0, 0.0, 0.0]
-	asm_cut = 0.0
-	asm_active = false
-	var level = asm_level()
-	if level <= 0 or speed < 5:
-		return
-	var forward = vx * cos(h) + vy * sin(h)
-	var beta = atan2(-vx * sin(h) + vy * cos(h), maxf(absf(forward), 1))
-	var intended = forward * tan(steer_angle) / (p.a + p.b)
-	var limit = setup.tireMu * G / maxf(speed, 1)
-	intended = clampf(intended, -limit, limit)
-	var slip_error = signf(beta) * maxf(0, absf(beta) - deg_to_rad(simcade.asm_slip_deg))
-	var error = r - intended - slip_error * simcade.asm_slip_gain
-	var excess = maxf(0, absf(error) - simcade.asm_yaw_threshold)
-	if excess <= 0 and absf(slip_error) < .001:
-		return
-	var gain = level / 5.0
-	var moment = -signf(error) * excess * p.izz * simcade.asm_yaw_gain * gain
-	var oversteer = absf(r) > absf(intended) or absf(slip_error) > .001
-	var wheel = (0 if moment < 0 else 1) if oversteer else (2 if moment < 0 else 3)
-	asm_brakes[wheel] = minf(
-		absf(moment) * p.wheelR / (p.track * .5), setup.brakeTorque * simcade.asm_brake_fraction * gain
-	)
-	asm_cut = clampf(
-		(absf(slip_error) * simcade.asm_slip_cut_gain + excess) * gain, 0, simcade.asm_torque_cut
-	)
-	asm_active = asm_cut > .01 or asm_brakes[wheel] > 1
+	VehicleAids.stability_request(self)
+
+
+func steering(body_x, body_y):
+	VehicleAids.steering(self, body_x, body_y)
 
 
 func pacejka(v, b, c, d, e):
-	var bx = b * v
-	return d * sin(c * atan(bx - e * (bx - atan(bx))))
+	return VehicleTyre.pacejka(v, b, c, d, e)
 
 
 func request_shift(direction):
-	if shift_timer > 0:
-		return
-	var ng = clampi(gear + direction, -1, p.get("gears", 6))
-	if ng != gear:
-		pending_gear = ng
-		shift_timer = setup.shiftTime
+	VehicleDrivetrain.request_shift(self, direction)
 
 
 ## Advance exactly one fixed physics tick using normalized input and track surface queries.
@@ -301,27 +263,9 @@ func step(dt, track, automatic = true):
 	var ch = cos(h)
 	var sh = sin(h)
 	speed = sqrt(vx * vx + vy * vy)
-	steer_angle = (
-		input.steer * deg_to_rad(s.maxSteer) / ((1 + speed / steer_falloff) if steer_falloff > 0 else 1.0)
-	)
-	if steer_slip_limit > 0 and speed > 3:
-		# Cap steering at what the tyres can use at this speed: the kinematic angle for a limit corner
-		# (wheelbase * max lateral accel / v^2) plus the front peak slip angle. Countersteer against the
-		# car's rotation may always follow the front axle's slide angle, so slides can still be caught.
-		var body_x = vx * ch + vy * sh
-		var body_y = -vx * sh + vy * ch
-		var beta_f = atan2(body_y + r * p.a, maxf(absf(body_x), 1))
-		var down = .5 * RHO * (s.clAF + s.clAR) * speed * speed / (m * G)
-		var cap = (p.a + p.b) * G * s.tireMu * (1 + down) / maxf(speed * speed, 1) + steer_slip_limit
-		if absf(r) > .05 and signf(steer_angle) != signf(r):
-			cap = maxf(cap, absf(beta_f) + steer_slip_limit)
-		steer_angle = clampf(steer_angle, -cap, cap)
-	if simcade_enabled and simcade_steering and speed > 3:
-		var down = .5 * RHO * (s.clAF + s.clAR) * speed * speed / (m * G)
-		var slip_cap = deg_to_rad(simcade.peak_start_deg) * simcade.steering_peak_fraction
-		var cap = (p.a + p.b) * G * s.tireMu * (1 + down) / maxf(speed * speed, 1) + slip_cap
-		if steer_angle * r >= 0:
-			steer_angle = clampf(steer_angle, -cap, cap)
+	var body_x = vx * ch + vy * sh
+	var body_y = -vx * sh + vy * ch
+	steering(body_x, body_y)
 	stability_request()
 	var el = track.elev_at(x, y, wheels[0].sIdx)
 	var cos_s = 1 / sqrt(1 + el.gx * el.gx + el.gy * el.gy)
@@ -459,111 +403,26 @@ func step(dt, track, automatic = true):
 			all_off = false
 		# Road height under this wheel relative to the tangent plane at the CG: crest/dip curvature,
 		# bank twist, cross-section profile and curbs.
-		var nd = clampf(
-			w.roadZ - (el.z + el.gx * ox + el.gy * oy), -MAX_ROAD_DEVIATION, MAX_ROAD_DEVIATION
-		)
+		var nd = clampf(w.roadZ - (el.z + el.gx * ox + el.gy * oy), -MAX_ROAD_DEVIATION, MAX_ROAD_DEVIATION)
 		if simcade_enabled and sf.id == 1:
 			nd *= simcade.curb_scale
 		# Low-pass the input rate (~12 Hz) as a stand-in for tire sidewall compliance, which the model has no spring for.
 		w.devRate += (clampf((nd - w.dev) / dt, -3, 3) - w.devRate) * minf(1, dt * 75)
 		w.dev = nd
-		var radius = p.wheelR
-		var vabs = absf(vwx)
-		var sv = w.omega * radius - vwx
-		var kappa = sv / maxf(vabs, 1)
-		w.alphaRelax += (atan2(vwy, maxf(vabs, .6)) - w.alphaRelax) * minf(1, dt * maxf(speed, 1.5) / .28)
-		w.slipRatio = kappa
-		w.slipAngle = w.alphaRelax
-		var temp_u = (.65 * w.temp + .35 * w.core - s.tempOpt) / s.tempWindow
-		if temp_u > 0:
-			temp_u *= .75  # native: grip fades more gently above the window than below it
-		var temp_g = 1 - .2 * (1 - exp(-temp_u * temp_u))
-		var wear_scale = 1.0
-		var load_scale = 1.0
-		if simcade_enabled:
-			temp_g = lerpf(1, temp_g, simcade.temperature_effect)
-			wear_scale = simcade.wear_effect
-			load_scale = simcade.load_sensitivity_scale
-		var mu = (
-			s.tireMu
-			* sf.grip
-			* temp_g
-			* (1 - .15 * w.wear * wear_scale)
-			# Native load sensitivity is relative to each axle's own static load: tyres are sized for their
-			# axle, so a rear-heavy car's rears are not penalised just for carrying the engine.
-			* clampf(1 - (s.loadSens * load_scale * (w.load / (stf if i < 2 else strr) - 1)), .5, 1.3)
-		)
-		var peak = mu * w.load
-		var fx
-		var fy
-		# Native curves peak where real tyres do (slip ratio ~0.12-0.15, slip angle ~7-8 deg for the
-		# presets) and fall away beyond to ~70-80 % of peak when locked, spinning or fully sideways.
-		fx = pacejka(kappa, s.tireBlong, 1.5, peak, 0.0)
-		fy = -pacejka(w.alphaRelax, s.tireBlat * LAT_B, 1.5, peak, .2)
-		if simcade_enabled:
-			fx = (
-				peak
-				* simcade_curve(
-					kappa,
-					peak_slip_ratio() * simcade.ratio_start_scale,
-					peak_slip_ratio() * simcade.ratio_end_scale
-				)
-			)
-			fy = (
-				-peak
-				* simcade_curve(
-					w.alphaRelax, deg_to_rad(simcade.peak_start_deg), deg_to_rad(simcade.peak_end_deg)
-				)
-			)
-		if peak > 0:
-			w.ellipse = sqrt(pow(fx / peak, 2) + pow(fy / peak, 2))
-			if w.ellipse > 1:
-				fx /= w.ellipse
-				fy /= w.ellipse
-		else:
-			w.ellipse = 0
-			fx = 0
-			fy = 0
-		var need = sv / (dt * (radius * radius / p.wheelI + 4 / m))
-		var locked = sv * m / 4 / dt
-		if absf(w.omega) < .5 and w.brakeT >= absf(locked) * radius:
-			need = locked
-		if sg(fx) == sg(need) and absf(fx) > absf(need):
-			fx = need
-		var fy_need = -vwy * m / 4 / dt
-		if sg(fy) == sg(fy_need) and absf(fy) > absf(fy_need):
-			fy = fy_need
-		w.fx = fx
-		w.fy = fy
-		if i < 2:
-			# Pneumatic trail collapses toward the slip-angle peak, so aligning torque drops as the front lets go.
-			var apeak = peak_slip_angle()
-			w.mz = -fy * (.045 * maxf(0, 1 - absf(w.alphaRelax) / apeak) + .012)
-		var fxr = -sg(vwx) * sf.rr * w.load * minf(1, vabs / .5) if vabs > .05 else 0.0
-		fxr -= sf.drag * w.load * vwx
-		var fyr = -sf.drag * w.load * vwy * .5
-		if simcade_enabled and sf.id == 3:
-			fxr *= simcade.gravel_drag_scale
-			fyr = -sf.drag * w.load * vwy * simcade.gravel_drag_scale
+		var tyre = VehicleTyre.contact_forces(self, w, i, sf, vwx, vwy, dt, stf, strr)
+		var fx = tyre[0]
+		var fy = tyre[1]
+		var fxr = tyre[2]
+		var fyr = tyre[3]
+		var sv = tyre[4]
+		var radius = tyre[5]
 		var fxw = (fx + fxr) * cw - (fy + fyr) * sw
 		var fyw = (fx + fxr) * sw + (fy + fyr) * cw
 		sumx += fxw
 		sumy += fyw
 		summ += ox * fyw - oy * fxw
 		torques[i] = -fx * radius
-		var power = absf(fx * sv) + absf(fy * vwy)
-		var heat = power * .0006 * s.pressureHeat + .02 * speed * w.load / nominal
-		# Two nodes: a fast surface (slip heat in, air cooling out) coupled to a slow carcass core.
-		var ts = w.temp - 25
-		var xfer = .12 * (w.temp - w.core)
-		# Slip heat reaches the surface at 0.75x the old single-node rate plus extra carcass-flex heat
-		# from rolling, so tyres live in their window instead of spiking on every slide.
-		var surface_heat = power * .0005 * s.pressureHeat + .055 * speed * w.load / nominal
-		w.temp += (surface_heat - (.021 + .0018 * speed) * ts - .0006 * ts * absf(ts) - xfer) * dt
-		w.core += (xfer * .25 - .002 * (w.core - 25)) * dt
-		if wear_enabled:
-			w.wear = minf(1, w.wear + power * 3e-7 * dt)
-		w.skidding = w.ellipse > .92 and sf.id <= 1 and speed > 2
+		VehicleTyre.finish_contact(self, w, fx, fy, sv, vwy, nominal, dt, sf)
 	steer_torque = wheels[0].mz + wheels[1].mz
 	drivetrain(dt, torques, automatic)
 	var drag = .5 * RHO * s.cdA * speed
@@ -631,172 +490,9 @@ static func blend(a, b, t):
 
 ## Distribute axle torque and limit locking torque to the one-step equalization need.
 func axle_split(left, right, torque, torques, drive, dt):
-	var s = setup
-	var cap = 0.0
-	if int(s.diffType) == 2:
-		cap = 1e9
-	elif int(s.diffType) == 1:
-		cap = s.diffPreload + absf(torque) * (s.diffPower if torque >= 0 else s.diffCoast)
-	var need = (
-		-((wheels[left].omega - wheels[right].omega) * p.wheelI / dt + torques[left] - torques[right]) / 2
-	)
-	var lock = clampf(need, -cap, cap)
-	drive[left] = torque / 2 + lock
-	drive[right] = torque / 2 - lock
+	VehicleDrivetrain.axle_split(self, left, right, torque, torques, drive, dt)
 
 
 ## Advance gearing/clutch/engine/brakes and wheel torques in the established solver order.
 func drivetrain(dt, torques, automatic):
-	var s = setup
-	var idle = p.idle * PI / 30
-	var red = p.redline * PI / 30
-	shift_cooldown = maxf(0, shift_cooldown - dt)
-	if shift_timer > 0:
-		shift_timer -= dt
-		if shift_timer <= 0:
-			# Native: auto-blip on downshifts (automatic, or manual with auto clutch) so the engine is
-			# already spinning at wheel speed when the clutch bites instead of locking the driven wheels.
-			blip_pending = (pending_gear < gear and pending_gear >= 1 and (automatic or auto_clutch))
-			gear = pending_gear
-	var driven = [2, 3] if int(s.layout) == 0 else ([0, 1] if int(s.layout) == 1 else [0, 1, 2, 3])
-	var ratio = (
-		0.0
-		if gear == 0
-		else (-p.reverse * s.finalDrive if gear < 0 else s["gear" + str(gear)] * s.finalDrive)
-	)
-	if automatic and shift_timer <= 0:
-		# Native automatic: decide from ground speed only (not engine speed, which drops during a shift
-		# and used to cascade the box down to 1st under braking), never downshift into over-revving.
-		var ground_rpm = absf(speed / p.wheelR * ratio) * 30 / PI
-		if gear >= 1 and shift_cooldown <= 0:
-			if ground_rpm > p.redline * .96 and gear < p.get("gears", 6) and input.throttle > .1:
-				request_shift(1)
-				shift_cooldown = .4
-			elif gear > 1:
-				var lower_rpm = ground_rpm * s["gear" + str(gear - 1)] / s["gear" + str(gear)]
-				var lugging = ground_rpm < p.redline * (.62 if input.throttle > .6 else .45)
-				if lugging and lower_rpm < p.redline * .86:
-					request_shift(-1)
-					shift_cooldown = .4
-	if automatic and shift_timer <= 0:
-		if speed < .3 and input.brake > .5 and input.throttle < .05:
-			brake_hold += dt
-			if brake_hold > .8:
-				gear = 1 if gear < 0 else -1
-				brake_hold = -2
-		elif input.brake < .3:
-			brake_hold = 0
-		if gear == 0:
-			gear = 1
-	var carrier = 0.0
-	var text = 0.0
-	for i in driven:
-		carrier += wheels[i].omega
-		text += torques[i]
-	carrier /= driven.size()
-	if blip_pending:
-		blip_pending = false
-		engine_w = clampf(maxf(engine_w, absf(carrier * ratio)), idle, red * .99)
-	var engagement = 0.0
-	if shift_timer <= 0 and ratio != 0:
-		var base = clampf((absf(carrier * ratio) - idle * .55) / (idle * .7), 0, 1)
-		engagement = base if input.throttle < .02 else maxf(base, input.throttle * .55 + .1)
-		engagement = minf(engagement, 1 - input.clutch)
-		if not automatic and not auto_clutch:
-			engagement = 1 - input.clutch
-	clutch_eng = engagement
-	var throttle = input.throttle
-	tc_active = false
-	var tc_on = s.tcOn
-	var tc_intensity = s.tcIntensity
-	if simcade_enabled or setup.has("tcsLevel"):
-		tc_on = 1.0 if tcs_level() > 0 else 0.0
-		tc_intensity = tcs_level() / 10.0
-	if tc_on > .5 and speed > 1.5:
-		var max_k = 0.0
-		for i in driven:
-			max_k = maxf(max_k, wheels[i].slipRatio)
-		# Integral control toward just past the tyre's peak slip: trims harder the further over the
-		# target the driven wheels are, and hands throttle back gently once they are below it.
-		var limit = peak_slip_ratio() * (1.0 + .6 * (1 - tc_intensity))
-		# Combined slip: the more the driven tyres are already working sideways, the less wheelspin
-		# they can take before the friction ellipse steals lateral grip (power oversteer).
-		var lat_use = 0.0
-		for i in driven:
-			lat_use = maxf(lat_use, absf(wheels[i].slipAngle) / peak_slip_angle())
-		if lat_use > .3:
-			limit *= (
-				sqrt(maxf(.04, 1 - minf(lat_use, 1) * minf(lat_use, 1))) * (.5 + .5 * (1 - tc_intensity))
-			)
-		if max_k > limit:
-			tc_gain -= minf(max_k - limit, .5) * (18 + 30 * tc_intensity) * dt
-		else:
-			tc_gain += 2.5 * dt
-		tc_gain = clampf(tc_gain, .08, 1)
-		throttle *= tc_gain
-		tc_active = tc_gain < .97
-	else:
-		tc_gain = 1.0
-	throttle *= 1.0 - asm_cut
-	rev_limit = engine_w > red
-	if rev_limit:
-		throttle = 0
-	var idle_throttle = clampf((idle - engine_w) / (idle * .25), 0, .5)
-	throttle = maxf(throttle, idle_throttle)
-	if shift_timer > 0 and automatic:
-		throttle = minf(throttle, idle_throttle)
-	throttle_eff = throttle
-	var f = clampf(engine_w / red, 0, 1)
-	var curve = p.torqueCurve
-	var k = 1
-	while k < curve.size() - 1 and curve[k][0] < f:
-		k += 1
-	var shape = lerpf(curve[k - 1][1], curve[k][1], (f - curve[k - 1][0]) / (curve[k][0] - curve[k - 1][0]))
-	var te = (
-		p.engineTorque * shape * throttle - p.engineBrake * maxf(0, engine_w - idle * .8) * (1 - throttle)
-	)
-	var tc = 0.0
-	var tin = 0.0
-	if ratio != 0 and engagement > 0:
-		var isum = p.wheelI * driven.size()
-		var aa = dt / p.engineI
-		var bb = ratio * ratio * dt / isum
-		var need = (engine_w - carrier * ratio + te * aa - text * ratio * dt / isum) / (aa + bb)
-		tc = clampf(need, -p.clutchTorque * engagement, p.clutchTorque * engagement)
-		tin = tc * ratio
-	engine_w = maxf(idle * .35, engine_w + (te - tc) * dt / p.engineI)
-	rpm = engine_w * 30 / PI
-	var drive = [0.0, 0.0, 0.0, 0.0]
-	if int(s.layout) == 0:
-		axle_split(2, 3, tin, torques, drive, dt)
-	elif int(s.layout) == 1:
-		axle_split(0, 1, tin, torques, drive, dt)
-	else:
-		var wf = (wheels[0].omega + wheels[1].omega) / 2
-		var wr = (wheels[2].omega + wheels[3].omega) / 2
-		var cap = 20 + absf(tin) * s.awdLock
-		var need = -((wf - wr) * 2 * p.wheelI / dt + torques[0] + torques[1] - torques[2] - torques[3]) / 2
-		var lock = clampf(need, -cap, cap)
-		axle_split(0, 1, tin * (1 - s.awdRear) + lock, torques, drive, dt)
-		axle_split(2, 3, tin * s.awdRear - lock, torques, drive, dt)
-	abs_active = false
-	for i in 4:
-		var w = wheels[i]
-		w.omega += (drive[i] + torques[i]) * dt / p.wheelI
-		var cap = s.brakeTorque * input.brake * (s.brakeBias if i < 2 else 1 - s.brakeBias) / 2
-		if i >= 2:
-			cap += s.handbrakeTorque * input.handbrake / 2
-		if s.absOn > .5 and (input.brake > .05 or asm_brakes[i] > 1) and speed > 2 and input.handbrake < .5:
-			var abs_limit = peak_slip_ratio() * (1.0 + .6 * (1 - s.absIntensity))
-			if w.slipRatio < -abs_limit:
-				w.abs = maxf(.15, w.abs - 25 * dt)
-				abs_active = true
-			else:
-				w.abs = minf(1, w.abs + 8 * dt)
-			cap *= w.abs
-		else:
-			w.abs = 1
-		cap += asm_brakes[i] * w.abs
-		w.brakeT = cap
-		var dw = cap * dt / p.wheelI
-		w.omega = 0.0 if absf(w.omega) <= dw else w.omega - sg(w.omega) * dw
+	VehicleDrivetrain.step(self, dt, torques, automatic)

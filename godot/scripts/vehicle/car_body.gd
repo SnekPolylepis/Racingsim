@@ -109,33 +109,12 @@ func sync_legacy():
 	elev = pos.y - setup.cgHeight
 
 
-func steering():
-	var s = setup
-	var m = p.mass
-	steer_angle = (
-		input.steer * deg_to_rad(s.maxSteer) / ((1 + speed / steer_falloff) if steer_falloff > 0 else 1.0)
-	)
-	if steer_slip_limit > 0 and speed > 3:
-		var beta_f = atan2(vby + r * p.a, maxf(absf(vbx), 1))
-		var down = .5 * RHO * (s.clAF + s.clAR) * speed * speed / (m * G)
-		var cap = (p.a + p.b) * G * s.tireMu * (1 + down) / maxf(speed * speed, 1) + steer_slip_limit
-		if absf(r) > .05 and signf(steer_angle) != signf(r):
-			cap = maxf(cap, absf(beta_f) + steer_slip_limit)
-		steer_angle = clampf(steer_angle, -cap, cap)
-	if simcade_enabled and simcade_steering and speed > 3:
-		var down = .5 * RHO * (s.clAF + s.clAR) * speed * speed / (m * G)
-		var slip_cap = deg_to_rad(simcade.peak_start_deg) * simcade.steering_peak_fraction
-		var cap = (p.a + p.b) * G * s.tireMu * (1 + down) / maxf(speed * speed, 1) + slip_cap
-		if steer_angle * r >= 0:
-			steer_angle = clampf(steer_angle, -cap, cap)
-
-
 ## Advance one fixed tick. `surface` implements contact(origin, direction, max_dist, hint).
 func step(dt, surface, automatic = true):
 	var s = setup
 	var m = p.mass
 	sync_legacy()
-	steering()
+	steering(vbx, vby)
 	stability_request()
 	var b = basis()
 	var up = b.y
@@ -215,91 +194,18 @@ func step(dt, surface, automatic = true):
 		var cvel = vel + w_world.cross(point - pos)
 		var vwx = cvel.dot(fwd)
 		var vwy = cvel.dot(side)
-		var radius = p.wheelR
-		var vabs = absf(vwx)
-		var sv = w.omega * radius - vwx
-		var kappa = sv / maxf(vabs, 1)
-		w.alphaRelax += (atan2(vwy, maxf(vabs, .6)) - w.alphaRelax) * minf(1, dt * maxf(speed, 1.5) / .28)
-		w.slipRatio = kappa
-		w.slipAngle = w.alphaRelax
-		var temp_u = (.65 * w.temp + .35 * w.core - s.tempOpt) / s.tempWindow
-		if temp_u > 0:
-			temp_u *= .75
-		var temp_g = 1 - .2 * (1 - exp(-temp_u * temp_u))
-		var wear_scale = 1.0
-		var load_scale = 1.0
-		if simcade_enabled:
-			temp_g = lerpf(1, temp_g, simcade.temperature_effect)
-			wear_scale = simcade.wear_effect
-			load_scale = simcade.load_sensitivity_scale
-		var mu = (
-			s.tireMu
-			* sf.grip
-			* temp_g
-			* (1 - .15 * w.wear * wear_scale)
-			* clampf(1 - (s.loadSens * load_scale * (w.load / (stf if i < 2 else strr) - 1)), .5, 1.3)
-		)
-		var peak = mu * w.load
-		var fx = pacejka(kappa, s.tireBlong, 1.5, peak, 0.0)
-		var fy = -pacejka(w.alphaRelax, s.tireBlat * LAT_B, 1.5, peak, .2)
-		if simcade_enabled:
-			fx = (
-				peak
-				* simcade_curve(
-					kappa,
-					peak_slip_ratio() * simcade.ratio_start_scale,
-					peak_slip_ratio() * simcade.ratio_end_scale
-				)
-			)
-			fy = (
-				-peak
-				* simcade_curve(
-					w.alphaRelax, deg_to_rad(simcade.peak_start_deg), deg_to_rad(simcade.peak_end_deg)
-				)
-			)
-		if peak > 0:
-			w.ellipse = sqrt(pow(fx / peak, 2) + pow(fy / peak, 2))
-			if w.ellipse > 1:
-				fx /= w.ellipse
-				fy /= w.ellipse
-		else:
-			w.ellipse = 0
-			fx = 0
-			fy = 0
-		# Semi-implicit need clamps, unchanged: never apply more force than cancels the slip in one tick.
-		var need = sv / (dt * (radius * radius / p.wheelI + 4 / m))
-		var locked = sv * m / 4 / dt
-		if absf(w.omega) < .5 and w.brakeT >= absf(locked) * radius:
-			need = locked
-		if sg(fx) == sg(need) and absf(fx) > absf(need):
-			fx = need
-		var fy_need = -vwy * m / 4 / dt
-		if sg(fy) == sg(fy_need) and absf(fy) > absf(fy_need):
-			fy = fy_need
-		w.fx = fx
-		w.fy = fy
-		if i < 2:
-			var apeak = peak_slip_angle()
-			w.mz = -fy * (.045 * maxf(0, 1 - absf(w.alphaRelax) / apeak) + .012)
-		var fxr = -sg(vwx) * sf.rr * w.load * minf(1, vabs / .5) if vabs > .05 else 0.0
-		fxr -= sf.drag * w.load * vwx
-		var fyr = -sf.drag * w.load * vwy * .5
-		if simcade_enabled and sf.id == 3:
-			fxr *= simcade.gravel_drag_scale
-			fyr = -sf.drag * w.load * vwy * simcade.gravel_drag_scale
+		var tyre = VehicleTyre.contact_forces(self, w, i, sf, vwx, vwy, dt, stf, strr)
+		var fx = tyre[0]
+		var fy = tyre[1]
+		var fxr = tyre[2]
+		var fyr = tyre[3]
+		var sv = tyre[4]
+		var radius = tyre[5]
 		var f = fwd * (fx + fxr) + side * (fy + fyr) + n * w.load
 		force += f
 		torque += (point - pos).cross(f)
 		torques[i] = -fx * radius
-		var power = absf(fx * sv) + absf(fy * vwy)
-		var ts = w.temp - 25
-		var xfer = .12 * (w.temp - w.core)
-		var surface_heat = power * .0005 * s.pressureHeat + .055 * speed * w.load / nominal
-		w.temp += (surface_heat - (.021 + .0018 * speed) * ts - .0006 * ts * absf(ts) - xfer) * dt
-		w.core += (xfer * .25 - .002 * (w.core - 25)) * dt
-		if wear_enabled:
-			w.wear = minf(1, w.wear + power * 3e-7 * dt)
-		w.skidding = w.ellipse > .92 and sf.id <= 1 and speed > 2
+		VehicleTyre.finish_contact(self, w, fx, fy, sv, vwy, nominal, dt, sf)
 	airborne = contacts == 0
 	steer_torque = wheels[0].mz + wheels[1].mz
 	drivetrain(dt, torques, automatic)
