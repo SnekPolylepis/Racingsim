@@ -321,10 +321,16 @@ func ditch_rollover():
 		if not finite(c):
 			ok = false
 			break
+	# The weave is chaotic: the deepest body point comes from whichever airborne landing it produces.
+	# Bound: a 1260 kg car landing at ~3.8 m/s on one sill point alone would compress the 200 kN/m body
+	# spring by sqrt(m v^2 / k) ~ 0.30 m; 0.25 m still demands the load be shared, and is far from a
+	# fall-through (body height 1.25 m). Was 0.15, set just above one observed 0.141: across 15 nearby
+	# variants (76-84 km/h, steering gain 0.14-0.16) the single ray gave 0.11-0.18 m and the P2-06
+	# original tyre footprint 0.20-0.24 m, revised footprint 0.131-0.196 m (REBUILD-LOG, NOTE P2-06 rework).
 	check(
-		ok and sunk == 0 and deepest_body < .15 and peak < 30,
+		ok and sunk == 0 and deepest_body < .25 and peak < 30,
 		(
-			"P2-02's runaway ditch weave: max tilt %.0f°, CG below surface on %d ticks, deepest body point %.3f m normal / %.3f m vertical, peak tyre load %.1f x static (was 319x)"
+			"P2-02's runaway ditch weave: max tilt %.0f°, CG below surface on %d ticks, deepest body point %.3f m normal / %.3f m vertical (limit 0.25), peak tyre load %.1f x static (was 319x)"
 			% [tilt, sunk, deepest_body, deepest_vertical, peak]
 		)
 	)

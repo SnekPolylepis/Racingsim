@@ -26,6 +26,7 @@ const BODY_HEIGHT = 1.25
 const BODY_STIFFNESS = 200000.0
 const BODY_DAMPING = 12000.0
 const BODY_FRICTION = .6
+const TyreFootprint = preload("res://scripts/vehicle/tyre_footprint.gd")
 
 ## World position and velocity of the CG in 64-bit scalars (5.1 precision contract). Godot's Vector3
 ## is 32-bit: at 5 km from the origin it cannot represent sub-0.5 mm steps, so a slow car froze.
@@ -63,6 +64,15 @@ var accel = Vector3.ZERO
 ## Chassis box contact points in the body frame (sills, then roof), and how many touched this tick.
 var body_points = []
 var body_contacts = 0
+## Tyre footprint contact (P2-06): off gives the single centre ray per wheel, for comparison.
+var footprint = true
+## Tread width for the footprint, metres (preset "treadWidth", else TyreFootprint.DEFAULT_TREAD).
+var tread = TyreFootprint.DEFAULT_TREAD
+## Surface queries made by the footprints last tick (centre rays included).
+var footprint_rays = 0
+## Last tick's contact per wheel (the Surface contract dictionary, {} when off the ground), for
+## telemetry, skid marks and tests.
+var contact_hits = []
 
 
 func configure(preset):
@@ -75,6 +85,7 @@ func configure(preset):
 ## compression before unloading, exactly the old model's droop allowance.
 func rig():
 	inertia = Vector3(p.iroll, p.izz, p.ipitch)
+	tread = float(p.get("treadWidth", TyreFootprint.DEFAULT_TREAD))
 	mount.clear()
 	free_length.clear()
 	static_comp.clear()
@@ -185,12 +196,13 @@ func step(dt, surface, automatic = true):
 	var rate = [0.0, 0.0, 0.0, 0.0]
 	var here = pos
 	var v = vel
-	# Suspension: one ray per wheel along the chassis -Y, starting RAY_LIFT above the mount.
+	footprint_rays = 0
+	# Suspension: a centre ray per wheel along the chassis -Y, starting RAY_LIFT above the mount, then
+	# the tyre footprint around it (P2-06).
 	for i in 4:
 		var top = here + b * mount[i]
-		var hit = surface.contact(
-			top + up * RAY_LIFT, -up, RAY_LIFT + free_length[i] + p.wheelR, wheels[i].sIdx
-		)
+		var reach = RAY_LIFT + free_length[i] + p.wheelR
+		var hit = surface.contact(top + up * RAY_LIFT, -up, reach, wheels[i].sIdx)
 		var ray_offset = RAY_LIFT
 		# If the first hit is above the mount, check for a lower deck inside wheel reach. A raised
 		# road still needs the lifted ray, but a close overhead deck must not replace the road below.
@@ -199,6 +211,23 @@ func step(dt, surface, automatic = true):
 			if not lower.is_empty() and lower.distance > 1e-4:
 				hit = lower
 				ray_offset = 0.0
+				reach = free_length[i] + p.wheelR
+		if footprint:
+			var sa = steer_angle if i < 2 else 0.0
+			hit = TyreFootprint.contact(
+				surface,
+				top + up * ray_offset,
+				-up,
+				b * Vector3(cos(sa), 0, sin(sa)),
+				b * Vector3(-sin(sa), 0, cos(sa)),
+				reach,
+				wheels[i].sIdx,
+				p.wheelR,
+				tread,
+				hit
+			)
+			if not hit.is_empty():
+				footprint_rays += hit.rays
 		hits.append(hit)
 		if hit.is_empty():
 			continue
@@ -207,9 +236,11 @@ func step(dt, surface, automatic = true):
 		# Beyond free_length + wheel radius of compression the ground is above the mount; the bump
 		# stop then answers the real penetration, continuously.
 		comp[i] = free_length[i] - (hit.distance - ray_offset - p.wheelR)
-		# Compression rate from the mount's velocity into the local tangent plane (first order: ignores
-		# the ray direction's own rotation and surface steps, which P2-06's footprint filter handles).
+		# Compression rate from the mount's velocity into the contact normal (first order: ignores the
+		# ray direction's own rotation). The footprint takes the normal from the ground (5.2), so a kerb
+		# edge's climb shows in the compression, not the rate (no tyre compliance to absorb the rate).
 		rate[i] = -n.dot(top_vel) / maxf(n.dot(up), .05)
+	contact_hits = hits
 	var loads = [0.0, 0.0, 0.0, 0.0]
 	for i in 4:
 		if hits[i].is_empty():
@@ -235,6 +266,10 @@ func step(dt, surface, automatic = true):
 	contacts = 0
 	all_off = true
 	var torques = [0.0, 0.0, 0.0, 0.0]
+	var total_load = 0.0
+	for i in 4:
+		if not hits[i].is_empty():
+			total_load += maxf(0.0, loads[i])
 	for i in 4:
 		var w = wheels[i]
 		var hit = hits[i]
@@ -269,7 +304,11 @@ func step(dt, surface, automatic = true):
 		var cvel = v + w_world.cross(point - here)
 		var vwx = cvel.dot(fwd)
 		var vwy = cvel.dot(side)
-		var tyre = VehicleTyre.contact_forces(self, w, i, sf, vwx, vwy, dt, stf, strr)
+		# Gravity on this wheel's share of the car, along the contact's axes: the tyre must cancel it too
+		# to hold still (P2-04 static friction). Shared by wheel load, not in quarters: across a steep
+		# slope the uphill wheels carry little and cannot hold a quarter. Exactly zero on level ground.
+		var hold = Vector2(fwd.y, side.y) * (-m * G * w.load / maxf(total_load, 1e-6))
+		var tyre = VehicleTyre.contact_forces(self, w, i, sf, vwx, vwy, dt, stf, strr, hold, true)
 		var fx = tyre[0]
 		var fy = tyre[1]
 		var fxr = tyre[2]

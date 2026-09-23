@@ -3,6 +3,9 @@ extends RefCounted
 ## Inputs are the already-resolved contact velocity, load, and surface; callers apply forces in
 ## their own coordinate frames between contact_forces() and finish_contact().
 const LAT_B = 1.4
+## Contact-patch speed below which a sticky tyre holds with static friction (full below it, gone by
+## twice it), m/s.
+const STICK_SPEED = .3
 
 
 static func sg(v):
@@ -38,7 +41,12 @@ static func pacejka(v, b, c, d, e):
 	return d * sin(c * atan(bx - e * (bx - atan(bx))))
 
 
-static func contact_forces(car, w, i, sf, vwx, vwy, dt, stf, strr):
+## `hold` and `sticky` are for the 6-DOF CarBody (P2-04); the planar CarModel passes neither and is
+## unchanged. `hold` is the external force on this wheel's share of the car along the contact's
+## forward (x) and side (y) axes (gravity on a slope), which the one-tick need clamps must also cancel
+## to bring the contact to rest. `sticky` adds static friction: a nearly still contact patch takes the
+## force that holds it, up to the friction limit (longitudinally only while the brake holds the wheel).
+static func contact_forces(car, w, i, sf, vwx, vwy, dt, stf, strr, hold = Vector2.ZERO, sticky = false):
 	var s = car.setup
 	var p = car.p
 	var m = p.mass
@@ -104,15 +112,47 @@ static func contact_forces(car, w, i, sf, vwx, vwy, dt, stf, strr):
 		fx = 0
 		fy = 0
 	# Preserve the semi-implicit one-tick need clamps for standstill and drivetrain stability.
-	var need = sv / (dt * (radius * radius / p.wheelI + 4 / m))
-	var locked = sv * m / 4 / dt
-	if absf(w.omega) < .5 and w.brakeT >= absf(locked) * radius:
+	var need
+	var locked
+	var fy_need
+	if sticky:
+		# The force that leaves no slip after this tick with `hold` also acting on the car: for a free
+		# wheel it spins the wheel up as the car accelerates; a locked wheel keeps omega.
+		need = (sv - 4 * hold.x * dt / m) / (dt * (radius * radius / p.wheelI + 4 / m))
+		locked = sv * m / 4 / dt - hold.x
+		fy_need = -vwy * m / 4 / dt - hold.y
+	else:
+		need = sv / (dt * (radius * radius / p.wheelI + 4 / m))
+		locked = sv * m / 4 / dt
+		fy_need = -vwy * m / 4 / dt
+	var braked = absf(w.omega) < .5 and w.brakeT >= absf(locked) * radius
+	if sticky:
+		# The wheel stays locked when the brake out-torques what the tyre can put on it: the stopping
+		# force, but never more than the friction limit. Testing only the stopping force (the old test)
+		# calls a firmly braked wheel free at walking pace, whose clamp then allows just the force that
+		# spins it up, and a braked car settled at 0.16 m/s down an 8 deg grade.
+		braked = absf(w.omega) < .5 and w.brakeT >= minf(absf(locked), peak) * radius
+	if braked:
 		need = locked
 	if sg(fx) == sg(need) and absf(fx) > absf(need):
 		fx = need
-	var fy_need = -vwy * m / 4 / dt
 	if sg(fy) == sg(fy_need) and absf(fy) > absf(fy_need):
 		fy = fy_need
+	if sticky and peak > 0:
+		# Static friction: below STICK_SPEED the contact patch takes the force that holds it (within the
+		# friction limit), fading to the slip curves by twice that. Without it the slip curves give too
+		# little force at millimetre-per-second slip, and a braked car crept down an 8 deg ramp at 6-8 mm/s
+		# and across a 37 deg side slope at 26-35 mm/s (P2-02).
+		var stick = 1 - smoothstep(STICK_SPEED, 2 * STICK_SPEED, Vector2(vwx, vwy).length())
+		if stick > 0:
+			var hx = need if braked else fx
+			var hy = fy_need
+			var use = sqrt(hx * hx + hy * hy) / peak
+			if use > 1:
+				hx /= use
+				hy /= use
+			fx = lerpf(fx, hx, stick)
+			fy = lerpf(fy, hy, stick)
 	w.fx = fx
 	w.fy = fy
 	if i < 2:

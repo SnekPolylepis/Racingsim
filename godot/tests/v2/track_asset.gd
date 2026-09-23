@@ -380,7 +380,12 @@ func lap():
 			% [gates.size(), lap_time, nominal, min_contacts, off_tarmac]
 		)
 	)
+	# P3-00 estimated ~150 µs for 4 rays per tick; since P2-06 the tyre footprint casts at least 20, and
+	# the gate is section 6's 0.3 ms per car tick.
 	check(
-		results.car_step_us < 150,
-		"car step with 4 physics-server rays: %.1f µs per tick (P3-00 budget ~150 µs)" % results.car_step_us
+		results.car_step_us < 300,
+		(
+			"car step with the tyre footprint on physics-server rays: %.1f µs per tick (section 6 budget 300 µs)"
+			% results.car_step_us
+		)
 	)
