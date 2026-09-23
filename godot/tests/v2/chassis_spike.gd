@@ -236,10 +236,9 @@ func bowl(key):
 		c.input = inp(clampf(e * .6 + .2, 0, 1), clampf(-e * .3, 0, 1), st)
 		c.step(DT, surf, true)
 		if i > 240 * 15:
-			var fy = 0.0
+			# Per-wheel magnitudes: opposing front/rear forces must not cancel into a pass.
 			for w in c.wheels:
-				fy += w.fy
-			lat_sum += absf(fy)
+				lat_sum += absf(w.fy)
 			lat_err = maxf(lat_err, absf(Vector2(c.pos.x, c.pos.z).length() - radius))
 			n += 1
 	var lat_share = lat_sum / n / (c.p.mass * 9.81)
@@ -250,7 +249,7 @@ func bowl(key):
 	check(
 		finite(c) and lat_share < .05 and lat_err < 1.5 and absf(world_roll - bank) < 1.5,
 		(
-			"%s on a %.0f° bank at design speed %.1f km/h: tyre lateral %.1f%% of mg, path error %.2f m, body %.1f° from vertical (%.2f° from road normal)"
+			"%s on a %.0f° bank at design speed %.1f km/h: sum of |tyre lateral| %.1f%% of mg, path error %.2f m, body %.1f° from vertical (%.2f° from road normal)"
 			% [key, bank, v * 3.6, lat_share * 100, lat_err, world_roll, rel]
 		)
 	)
@@ -300,17 +299,78 @@ func landing(key):
 	)
 
 
+## Every piece of mutable solver state, serialized exactly (var_to_str keeps full float precision).
+func state_hash(c):
+	var state = [
+		c.pos,
+		c.vel,
+		c.rot,
+		c.ang,
+		c.accel,
+		c.contacts,
+		c.airborne,
+		c.wheels,
+		c.gear,
+		c.pending_gear,
+		c.shift_timer,
+		c.shift_cooldown,
+		c.blip_pending,
+		c.brake_hold,
+		c.engine_w,
+		c.rpm,
+		c.clutch_eng,
+		c.throttle_eff,
+		c.rev_limit,
+		c.steer_angle,
+		c.steer_torque,
+		c.tc_gain,
+		c.tc_active,
+		c.abs_active,
+		c.asm_active,
+		c.asm_cut,
+		c.asm_brakes,
+		c.noise_seed,
+		c.all_off
+	]
+	return var_to_str(state).sha256_text()
+
+
+## Plan section 6: the same 60 s input twice must give an identical full-state hash. The run goes
+## over the crest, brakes hard (ABS), powers out of a slide (TC) with ASM on, and shifts both ways.
 func determinism():
-	var runs = []
+	var hashes = []
 	for k in 2:
 		var surf = TestSurface.crest(0.0, 200.0, 20.0, 40.0)
 		var c = make("f296gt3")
+		c.setup.asmLevel = 5
 		c.place_on(surf, -300.0, 0.0, 0.0)
-		for i in 240 * 20:
-			c.input = inp(1 if i < 240 * 12 else 0, 0 if i < 240 * 12 else .8, sin(i * .01) * .3)
+		for i in 240 * 60:
+			var phase = i % (240 * 15)
+			var th = 1.0 if phase < 240 * 9 else 0.0
+			var br = 1.0 if phase >= 240 * 9 and phase < 240 * 12 else 0.0
+			c.input = inp(th, br, sin(i * .013) * .6)
 			c.step(DT, surf, true)
-		runs.append(var_to_str([c.pos, c.vel, c.rot, c.ang, c.engine_w, c.wheels[2].omega]))
-	check(runs[0] == runs[1], "two identical 20 s runs end in bit-identical state")
+		hashes.append(state_hash(c))
+	check(
+		hashes[0] == hashes[1],
+		"two identical 60 s runs end in the same full-state hash (%s)" % hashes[0].left(12)
+	)
+
+
+## Review finding: a tilted ray can pass over a hump with both ends above the surface.
+## A horizontal ray at y = -1 mm across the R = 200 m apex from x = -1 to +1 must hit at the first
+## crossing, x = -sqrt(2 R 0.001) = -0.632 m.
+func ray_over_hump():
+	var surf = TestSurface.crest(0.0, 200.0, 20.0, 40.0)
+	var hit = surf.contact(Vector3(-1, -.001, 0), Vector3(1, 0, 0), 2.0)
+	var want = 1.0 - sqrt(2 * 200.0 * .001)
+	check(
+		not hit.is_empty() and absf(hit.distance - want) < 1e-4,
+		(
+			"ray across a hump with both ends above it hits the first crossing (%s, want %.4f m)"
+			% ["no hit" if hit.is_empty() else "%.4f m" % hit.distance, want]
+		)
+	)
 
 
 ## Cost per tick. Flat uses a closed-form ray hit, so it is close to the chassis cost alone; the crest
@@ -372,6 +432,7 @@ func _initialize():
 	for key in presets:
 		landing(key)
 	determinism()
+	ray_over_hump()
 	cost()
 	print("SPIKE RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
 	quit(0 if failures.is_empty() else 1)

@@ -6,6 +6,8 @@ extends RefCounted
 enum Shape { FLAT, CREST, BOWL, VOID }
 
 const CREST_STEP = .05
+## Ray-march samples before bisection in contact().
+const MARCH_STEPS = 16
 
 var shape = Shape.FLAT
 ## Surface index into the SURF table (0 tarmac).
@@ -139,16 +141,27 @@ func contact(origin: Vector3, direction: Vector3, max_dist: float, hint: int = -
 		return {}
 	var t = 0.0
 	if origin.y - height(origin.x, origin.z) > 0:
-		var end = origin + direction * max_dist
-		if end.y - height(end.x, end.z) > 0:
-			return {}
 		if shape == Shape.FLAT:
+			if direction.y >= 0 or origin.y > -direction.y * max_dist:
+				return {}
 			t = origin.y / -direction.y
 		else:
-			# Bisection on the signed height above the surface along the ray; 40 halvings is sub-micron.
+			# A tilted ray can pass over a hump with both ends above it, so march for the FIRST sample
+			# below the surface rather than trusting the endpoints, then bisect inside that segment.
+			# A crossing narrower than one march step (max_dist / MARCH_STEPS) can still be missed.
 			var lo = 0.0
-			var hi = max_dist
-			for i in 40:
+			var hi = -1.0
+			for i in range(1, MARCH_STEPS + 1):
+				var d = max_dist * i / MARCH_STEPS
+				var q = origin + direction * d
+				if q.y - height(q.x, q.z) <= 0:
+					hi = d
+					break
+				lo = d
+			if hi < 0:
+				return {}
+			# 32 halvings of one march step is sub-micron.
+			for i in 32:
 				var mid = (lo + hi) * .5
 				var q = origin + direction * mid
 				if q.y - height(q.x, q.z) > 0:
