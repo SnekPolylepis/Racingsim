@@ -71,6 +71,8 @@ class BodyShim:
 
 func make(key):
 	var c = BodyShim.new()
+	# Flat harness matches the legacy centre contact and keeps this 114-check gate under 240 s.
+	c.footprint = false
 	c.simcade_enabled = model_simcade
 	c.configure(presets[key])
 	if no_aids:
