@@ -538,6 +538,7 @@ func open_library():
 	app.refresh_tracks()
 	wrapped(content, "Storage: " + ProjectSettings.globalize_path(app.storage.root))
 	var actions = row(content)
+	button(actions, "Choose folder…", func(): app.choose_folder())
 	button(actions, "Local saves", app.use_local_storage)
 	button(actions, "Rescan", open_library)
 	var files = app.track_files.duplicate()

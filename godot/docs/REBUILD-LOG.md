@@ -82,3 +82,17 @@ Removed the in-game circuit editor, outline importer, and editor workflows/bindi
   - Exported `./build/RacingSim.exe -- --features`: 211 checks, 0 failures (exit 0)
 - Ready for owner review and merge to main.
 
+## 2026-09-22  DONE P1-review-fix  (Gemini 3.8 Flash)
+Addressed P1 review findings on `rb/P1-remove-editor`:
+1. Restored folder selection in `scripts/game.gd` (`choose_folder()`) and `scripts/interface.gd` (`open_library()` "Choose folder…" button) to connect portable racing data folders for setups, ghosts, and records. Kept "Local saves" (`use_local_storage()`). Preserved the removal of user track loading/modifying.
+2. Cleaned `godot/README.md`, `godot/docs/TESTING.md`, and `godot/docs/MACOS.md`: removed editor instructions, keybindings, section, and commands for deleted `tests/import.gd`. Preserved dated historical test evidence.
+3. Formatted modified scripts with `tools/python-packages/bin/gdformat.exe -l 110`.
+4. Verification:
+   - Headless check-only: `.\tools\Godot.exe --headless --path . --script scripts/game.gd --check-only` (exit 0, empty stderr).
+   - Laps suite: `.\tools\Godot.exe --headless --path . --script tests/laps.gd` (Simulation Monza 261.504 s, Spa 325.175 s; 0 offSteps, 0 contacts; exit 0, empty stderr).
+   - Handling suite: `.\tools\Godot.exe --headless --path . --script tests/handling.gd` (23 checks, 0 failures; exit 0, empty stderr).
+   - Dynamics suite: `.\tools\Godot.exe --headless --path . --script tests/dynamics.gd` (36 checks, 0 failures; exit 0, empty stderr).
+   - Windowed feature gates: `.\tools\Godot.exe --path . -- --features` (211 checks, 0 failures; exit 0; stderr contains expected engine shutdown leaks and synthetic input duplicate warning, 0 script errors).
+   - Re-exported executable: `.\build\RacingSim.exe -- --features` (211 checks, 0 failures; exit 0; stderr contains expected engine shutdown leaks, 0 script errors).
+
+

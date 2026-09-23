@@ -18,7 +18,6 @@ Double-click **build/RacingSim.exe**, or **Play Racing Sim.cmd** in the project 
 | Garage | G | — |
 | Vehicle debug / telemetry | B / Y | — |
 | Fullscreen | F11 | — |
-| Track editor / test drive | F2 | — |
 
 Driving inputs can be remapped in Settings. In automatic mode, hold the brake while stopped to switch forward/reverse, then accelerate. Manual mode offers optional automatic clutch assistance.
 
@@ -27,26 +26,19 @@ Driving inputs can be remapped in Settings. In automatic mode, hold the brake wh
 - Monza, Spa and the Nürburgring Nordschleife; roadster (a 1990 Mazda MX-5, NA 1.6: 2.265 m wheelbase, 955 kg, 136 Nm, 7200 rpm redline, five-speed, 185/60R14, no ABS or traction control), GT and Ferrari 296 GT3 parameter presets. Spa is built from OpenStreetMap data (© OpenStreetMap contributors, ODbL) with real DEM elevation; see `trackgen/`.
 - Original fixed 240 Hz four-wheel vehicle dynamics: Pacejka tires, load transfer, suspension, clutch, differential, gearing, ABS/TC, temperature, optional wear, slope gravity and crest/dip loading. Native additions: per-wheel road height (raised, ridged curbs; crest and bank geometry act through the suspension), surface + core tire temperatures and self-aligning torque output.
 - Dedicated procedural 296 GT3 and lofted roadster/GT bodies with arches, lights, aero parts, liveries and detailed wheels; render interpolation between physics ticks for smooth motion at any refresh rate.
-- Console presentation at 640×448 SD / 720p / Native, 4:3 or anamorphic 16:9, clean 480p component, optional 480i fields and CRT/composite. Authentic low-resolution menus/HUD are default; Sharp UI is optional and the circuit editor stays native. Offline CLUT/RGB555 texture builds, reflective paint, crossed-card woods, lamp halos and GPU history blur work on both renderers.
+- Console presentation at 640×448 SD / 720p / Native, 4:3 or anamorphic 16:9, clean 480p component, optional 480i fields and CRT/composite. Authentic low-resolution menus/HUD are default; Sharp UI is optional. Offline CLUT/RGB555 texture builds, reflective paint, crossed-card woods, lamp halos and GPU history blur work on both renderers.
 - Original boot/title/idle driving demo, race mode, car/setup/paint/rim and circuit selection, real preparation stages, grid countdown, pause, lap time sheet and last-lap replay. Keyboard, controller and mouse navigation; synthesized menu sounds.
 - Simcade (default) or the preserved Simulation handling model, separate records, TCS/ASM 0–10 and ABS, with compatible legacy setups.
 - Native 3D elevation and banking, road surfaces, mixed pine/broadleaf woods, shrubs and distant hills, corner labels, grid markings, painted sky lighting, contact-patch blob shadows plus directional shadows at Medium and High, wheel rotation/steering, suspension movement, night-gated headlights on every car, brake lights and skid marks.
 - Lap checkpoints, configurable off-track/contact invalidation, best-lap ghosts, live delta, minimap, tire status, debug forces and a ten-second telemetry graph.
 - All 42 original setup fields supported, with numbered aid controls in the garage, grouped in seven tabs; named setups, preset switching, defaults, import/export and deletion.
 - Five cameras, quality/adaptive quality, units, keyboard/gamepad remapping, deadzone, steering response and speed-sensitive steering (separate keyboard/controller strengths).
-- Synthesized RPM/throttle engine audio, tire squeal, surface noise, gear changes and impacts. Master, engine and effects levels plus mute; sound fades out when paused or in menus/editor.
-- Complete native circuit tools: blank new circuits, select/move, insert/delete points, width/elevation/banking, per-segment curbs, grass/gravel/erase brushes, walls, tire barriers, cones, start and grid placement, undo/redo, snapping and validation.
-- Circuit library with save/save-as, rename/delete, JSON import/export and copy/paste. Unsaved-change protection on load/new/exit. Native folder selection supports the existing tracks/setups/ghosts layout.
-
-## Editor
-
-Press F2. Place three initial points in an empty circuit, then use Insert or double-click an edge to add more. Drag control points and objects; drag barrier endpoints to resize. Select a point to edit its coordinates, width, height or bank in Properties. A start/finish line is required before saving or driving.
-
-1–9 and 0 select tools. Wheel/pinch zooms around the cursor; middle drag, Space+drag or Pan moves the view. Trackpad scrolling can pan instead. Shift enables snapping. F frames the circuit. Cmd/Ctrl+Z / Cmd/Ctrl+Shift+Z undo/redo. Delete removes the selection. Brackets change width, comma/period change height (Shift for 2 m steps), semicolon/apostrophe change bank. Cmd/Ctrl+S saves. T test-drives; Esc returns to the editor.
+- Synthesized RPM/throttle engine audio, tire squeal, surface noise, gear changes and impacts. Master, engine and effects levels plus mute; sound fades out when paused or in menus.
+- Circuit library with bundled circuit selection and ghost import/export. Native folder selection supports existing portable setups, ghosts and records.
 
 ## Files
 
-Default saves: `%APPDATA%/Godot/app_userdata/Racing Sim/` on Windows; `~/Library/Application Support/Godot/app_userdata/Racing Sim/` on macOS. Use **Circuits → Choose folder** to connect an existing racing data folder. Built-in circuits are protected; edited versions save as user files. Track, setup and ghost JSON in the original browser format is still read.
+Default saves: `%APPDATA%/Godot/app_userdata/Racing Sim/` on Windows; `~/Library/Application Support/Godot/app_userdata/Racing Sim/` on macOS. Use **Circuits → Choose folder** to connect an existing racing data folder for portable setups, ghosts and records. Setup and ghost JSON in the original browser format is still read.
 
 Native best laps are separated by geometry, car, setup, handling model and race rules in `records/`. A compatible per-track ghost is also maintained in `ghosts/` as a portable exchange format. Legacy ghosts in that format are read automatically in Simulation for their matching car; imported ghosts are explicitly assigned to the current configuration. Settings are stored locally regardless of the selected data folder.
 
@@ -67,13 +59,12 @@ Windows checks from this directory:
 ```powershell
 & .\tools\Godot.exe --headless --path . --script tests/laps.gd
 & .\tools\Godot.exe --headless --path . --script tests/handling.gd
-& .\tools\Godot.exe --headless --path . --script tests/import.gd
 & .\tools\Godot.exe --path . -- --features
 & .\build\RacingSim.exe -- --features
 ```
 
 - Full-lap regression drives Monza and Spa with zero off-track steps and valid recorded ghosts.
-- Native integration checks cover driving, all cars/tracks, audio capture/mute/pause, remapping, garage/settings, editor gestures, undo/redo, paint/barriers, dirty guards, JSON round trips, record storage and smaller-window layout. Screenshots and `feature-results.json` go to `tests/` for source runs and `user://native-tests/` for exported runs. Test saves/settings are isolated in `native-tests`.
+- Native integration checks cover driving, all cars/tracks, audio capture/mute/pause, remapping, garage/settings, dirty guards, JSON round trips, record storage and smaller-window layout. Screenshots and `feature-results.json` go to `tests/` for source runs and `user://native-tests/` for exported runs. Test saves/settings are isolated in `native-tests`.
 
 The game uses Godot's Forward+ renderer with an automatic OpenGL fallback. The follow-up tests both Forward+ and OpenGL on the local RTX 4080; see the dated report for the measured full-lap matrix. Physical controller hardware has not been tested. macOS uses Metal by default; validation and build instructions are in [MACOS.md](docs/MACOS.md).
 
@@ -85,14 +76,14 @@ Godot Engine is MIT licensed. The Windows and macOS packages include the engine 
 
 - [Player handbook](docs/PLAYER-GUIDE.md), also available chapter by chapter in Help.
 - [LLM / maintainer guide](docs/LLM-GUIDE.md): source map, change recipes and invariants.
-- [Architecture](docs/ARCHITECTURE.md): ownership, frame order, coordinates and editor transactions.
+- [Architecture](docs/ARCHITECTURE.md): ownership, frame order and coordinates.
 - [Data contracts](docs/DATA-CONTRACTS.md): schemas, storage paths and compatibility.
 - [macOS build and validation](docs/MACOS.md): Mac setup, packaging, results and limits.
 - [Testing and release](docs/TESTING.md): exact commands, thresholds, evidence and troubleshooting.
 
 ## PS2-era graphics
 
-The default session pairs Spa-Francorchamps with the Ferrari 296 GT3. Afternoon is the default lighting preset; Afterhours offers an indigo sky with amber circuit lighting, original amber event signage and stylized glossy asphalt. Both use the shared console world/HUD/menu output chain. The editor remains sharp. The 296 now has dedicated reference-built bodywork with sculpted fenders, recessed lights, hood duct, flying buttresses, silver racing wheels, tricolour sills and swan-neck wing. The presentation follows researched PS2-era constraints with original content; it does not emulate the GS chip or an electrical NTSC signal. Wet-looking surfaces retain the existing driving grip. See [art direction](docs/ART-DIRECTION.md) and the [296 model authoring guide](docs/CAR-MODEL.md).
+The default session pairs Spa-Francorchamps with the Ferrari 296 GT3. Afternoon is the default lighting preset; Afterhours offers an indigo sky with amber circuit lighting, original amber event signage and stylized glossy asphalt. Both use the shared console world/HUD/menu output chain. The 296 now has dedicated reference-built bodywork with sculpted fenders, recessed lights, hood duct, flying buttresses, silver racing wheels, tricolour sills and swan-neck wing. The presentation follows researched PS2-era constraints with original content; it does not emulate the GS chip or an electrical NTSC signal. Wet-looking surfaces retain the existing driving grip. See [art direction](docs/ART-DIRECTION.md) and the [296 model authoring guide](docs/CAR-MODEL.md).
 
 See [handling models](docs/PHYSICS.md) and the [dated delivery report](docs/PS2-SIMCADE-REPORT.md) for measured results and screenshot paths.
 

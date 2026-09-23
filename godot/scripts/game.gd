@@ -392,6 +392,27 @@ func choose_file(kind, write):
 	dialog.popup_centered_ratio(.75)
 
 
+func choose_folder():
+	ui.dialogs += 1
+	var dialog = FileDialog.new()
+	dialog.access = FileDialog.ACCESS_FILESYSTEM
+	dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
+	dialog.title = "Choose racing data folder"
+	add_child(dialog)
+	dialog.dir_selected.connect(
+		func(path):
+			ui.dialogs -= 1
+			dialog.queue_free()
+			connect_storage(path)
+	)
+	dialog.canceled.connect(
+		func():
+			ui.dialogs -= 1
+			dialog.queue_free()
+	)
+	dialog.popup_centered_ratio(.75)
+
+
 func connect_storage(folder):
 	var old = storage.root
 	if not storage.initialize(folder):
@@ -407,7 +428,7 @@ func connect_storage(folder):
 
 
 func use_local_storage():
-	guard_dirty(func(): connect_storage("user://"))
+	connect_storage("user://")
 
 
 func delete_file(file):
