@@ -1,21 +1,56 @@
 extends "res://scripts/car.gd"
-## P2-00 spike: 6-DOF rigid-body chassis on ray suspension (REBUILD-PLAN.md P2).
+## 6-DOF rigid-body chassis on ray suspension (REBUILD-PLAN.md P2; spike P2-00, rig P2-03).
 ## World is Godot-native (+Y up, metres). Body frame: +X forward, +Y up, +Z right. Wheels FL, FR, RL, RR.
 ## Angular velocity is body-frame, right-hand rule: +y yaws left, +x rolls the right side down,
 ## +z pitches the nose up. Driver steer > 0 still steers right.
 ##
-## Reuses configure(), drivetrain(), axle_split(), stability_request(), pacejka() and the aids from
-## car.gd unchanged; only step() is replaced. The tyre block below is the same formula as car.gd's,
-## evaluated in each contact patch's own frame. P2-01 moves that shared code into scripts/vehicle/.
+## Tyre, drivetrain and aids are the shared scripts/vehicle modules (P2-01), evaluated here in each
+## contact patch's own frame; only step() is this chassis's own. World position and velocity are
+## 64-bit scalars (5.1). Suspension rays start above the mount; anti-roll bars keep acting through a
+## lifted wheel; the body box makes contact with the ground when the car bottoms, lands or rolls.
 ## The legacy plan-view fields (x, y, h, vx, vy, r, speed, vbx, vby, ax, ay) are mirrored from the
 ## 3D state every tick so the inherited aids and the drivetrain read what they always read.
 
 ## Wheel centre to suspension top at static ride height, metres. Arbitrary: only moves the mount point.
 const STATIC_LENGTH = .15
+## Suspension rays start this far above the mount, so ground that rises past the mount (a steep wall,
+## a kerb under a bottomed corner) still returns a hit, and the bump stop sees the real penetration
+## instead of a ray that starts inside the surface.
+const RAY_LIFT = .5
+## Chassis box used for body-to-ground contact, relative to the axles and the static ground plane.
+const BODY_OVERHANG = .8
+const BODY_SIDE = .12
+const BODY_CLEARANCE = .1
+const BODY_HEIGHT = 1.25
+## Chassis contact: penalty spring and damper per contact point, and sliding friction on the ground.
+const BODY_STIFFNESS = 200000.0
+const BODY_DAMPING = 12000.0
+const BODY_FRICTION = .6
 
-var pos = Vector3.ZERO
+## World position and velocity of the CG in 64-bit scalars (5.1 precision contract). Godot's Vector3
+## is 32-bit: at 5 km from the origin it cannot represent sub-0.5 mm steps, so a slow car froze.
+## `pos` and `vel` remain as Vector3 views for relative, local and presentation use.
+var pos_x = 0.0
+var pos_y = 0.0
+var pos_z = 0.0
+var vel_x = 0.0
+var vel_y = 0.0
+var vel_z = 0.0
+var pos: Vector3:
+	get:
+		return Vector3(pos_x, pos_y, pos_z)
+	set(value):
+		pos_x = value.x
+		pos_y = value.y
+		pos_z = value.z
+var vel: Vector3:
+	get:
+		return Vector3(vel_x, vel_y, vel_z)
+	set(value):
+		vel_x = value.x
+		vel_y = value.y
+		vel_z = value.z
 var rot = Quaternion.IDENTITY
-var vel = Vector3.ZERO
 var ang = Vector3.ZERO
 ## Principal inertias about body x (roll), y (yaw), z (pitch).
 var inertia = Vector3.ONE
@@ -25,6 +60,9 @@ var free_length = []
 var static_comp = []
 var contacts = 0
 var accel = Vector3.ZERO
+## Chassis box contact points in the body frame (sills, then roof), and how many touched this tick.
+var body_points = []
+var body_contacts = 0
 
 
 func configure(preset):
@@ -48,6 +86,20 @@ func rig():
 		static_comp.append(comp)
 		free_length.append(STATIC_LENGTH + comp)
 		mount.append(Vector3(wheels[i].bx, -setup.cgHeight + p.wheelR + STATIC_LENGTH, wheels[i].by))
+	# Chassis box: sills at ground clearance and roof at body height (both above the static ground
+	# plane), front and rear overhang beyond the axles, a little wider than the track.
+	var front_x = p.a + BODY_OVERHANG
+	var rear_x = -p.b - BODY_OVERHANG
+	var side = p.track * .5 + BODY_SIDE
+	var sill = -setup.cgHeight + BODY_CLEARANCE
+	var roof = -setup.cgHeight + BODY_HEIGHT
+	body_points.clear()
+	for bx in [front_x, 0.0, rear_x]:
+		for bz in [-side, side]:
+			body_points.append(Vector3(bx, sill, bz))
+	for bx in [p.a * .4, -p.b * .6]:
+		for bz in [-side * .8, side * .8]:
+			body_points.append(Vector3(bx, roof, bz))
 
 
 ## Place the car at rest on the ground below `at`, heading in the legacy sense
@@ -55,7 +107,9 @@ func rig():
 func place(at: Vector3, heading: float, ground_y: float):
 	reset_pose({"x": at.x, "y": at.z, "h": heading})
 	rig()
-	pos = Vector3(at.x, ground_y + setup.cgHeight, at.z)
+	pos_x = at.x
+	pos_y = ground_y + setup.cgHeight
+	pos_z = at.z
 	rot = Quaternion(Vector3.UP, -heading)
 	vel = Vector3.ZERO
 	ang = Vector3.ZERO
@@ -69,7 +123,9 @@ func place_on(surface, px: float, pz: float, heading: float):
 	var want = Vector3(cos(heading), 0, sin(heading))
 	var fwd = (want - n * want.dot(n)).normalized()
 	rot = Basis(fwd, n, fwd.cross(n)).get_rotation_quaternion()
-	pos = Vector3(px, surface.height(px, pz), pz) + n * setup.cgHeight
+	pos_x = px + n.x * setup.cgHeight
+	pos_y = surface.height(px, pz) + n.y * setup.cgHeight
+	pos_z = pz + n.z * setup.cgHeight
 	sync_legacy()
 
 
@@ -95,18 +151,18 @@ func sync_legacy():
 	var b = basis()
 	var fwd = b.x
 	var right = b.z
-	x = pos.x
-	y = pos.z
+	x = pos_x
+	y = pos_z
 	h = atan2(fwd.z, fwd.x)
-	vx = vel.x
-	vy = vel.z
+	vx = vel_x
+	vy = vel_z
 	r = -ang.y
-	speed = vel.length()
-	vbx = vel.dot(fwd)
-	vby = vel.dot(right)
+	speed = sqrt(vel_x * vel_x + vel_y * vel_y + vel_z * vel_z)
+	vbx = vel_x * fwd.x + vel_y * fwd.y + vel_z * fwd.z
+	vby = vel_x * right.x + vel_y * right.y + vel_z * right.z
 	ax = accel.dot(fwd)
 	ay = accel.dot(right)
-	elev = pos.y - setup.cgHeight
+	elev = pos_y - setup.cgHeight
 
 
 ## Advance one fixed tick. `surface` implements contact(origin, direction, max_dist, hint).
@@ -127,16 +183,22 @@ func step(dt, surface, automatic = true):
 	var hits = []
 	var comp = [0.0, 0.0, 0.0, 0.0]
 	var rate = [0.0, 0.0, 0.0, 0.0]
-	# Suspension: one ray per wheel from its mount along the chassis -Y.
+	var here = pos
+	var v = vel
+	# Suspension: one ray per wheel along the chassis -Y, starting RAY_LIFT above the mount.
 	for i in 4:
-		var top = pos + b * mount[i]
-		var hit = surface.contact(top, -up, free_length[i] + p.wheelR, wheels[i].sIdx)
+		var top = here + b * mount[i]
+		var hit = surface.contact(
+			top + up * RAY_LIFT, -up, RAY_LIFT + free_length[i] + p.wheelR, wheels[i].sIdx
+		)
 		hits.append(hit)
 		if hit.is_empty():
 			continue
 		var n = hit.normal
-		var top_vel = vel + w_world.cross(top - pos)
-		comp[i] = free_length[i] - (hit.distance - p.wheelR)
+		var top_vel = v + w_world.cross(top - here)
+		# Beyond free_length + wheel radius of compression the ground is above the mount; the bump
+		# stop then answers the real penetration, continuously.
+		comp[i] = free_length[i] - (hit.distance - RAY_LIFT - p.wheelR)
 		# Compression rate from the mount's velocity into the local tangent plane (first order: ignores
 		# the ray direction's own rotation and surface steps, which P2-06's footprint filter handles).
 		rate[i] = -n.dot(top_vel) / maxf(n.dot(up), .05)
@@ -151,12 +213,17 @@ func step(dt, surface, automatic = true):
 		var over = comp[i] - static_comp[i] - SUSP_TRAVEL
 		if over > 0:
 			loads[i] += k * BUMP_STOP_RATE * over
-	var af = s.arbF * (comp[0] - comp[1]) if not (hits[0].is_empty() or hits[1].is_empty()) else 0.0
-	var ar = s.arbR * (comp[2] - comp[3]) if not (hits[2].is_empty() or hits[3].is_empty()) else 0.0
-	loads[0] += af
-	loads[1] -= af
-	loads[2] += ar
-	loads[3] -= ar
+	for axle in [[0, 1, s.arbF, s.springF], [2, 3, s.arbR, s.springR]]:
+		var add = arb_pair(
+			axle[2],
+			axle[3],
+			comp[axle[0]],
+			comp[axle[1]],
+			not hits[axle[0]].is_empty(),
+			not hits[axle[1]].is_empty()
+		)
+		loads[axle[0]] += add[0]
+		loads[axle[1]] += add[1]
 	contacts = 0
 	all_off = true
 	var torques = [0.0, 0.0, 0.0, 0.0]
@@ -191,7 +258,7 @@ func step(dt, surface, automatic = true):
 		var heading = b * Vector3(cos(sa), 0, sin(sa))
 		var fwd = (heading - n * heading.dot(n)).normalized()
 		var side = fwd.cross(n)
-		var cvel = vel + w_world.cross(point - pos)
+		var cvel = v + w_world.cross(point - here)
 		var vwx = cvel.dot(fwd)
 		var vwy = cvel.dot(side)
 		var tyre = VehicleTyre.contact_forces(self, w, i, sf, vwx, vwy, dt, stf, strr)
@@ -203,7 +270,7 @@ func step(dt, surface, automatic = true):
 		var radius = tyre[5]
 		var f = fwd * (fx + fxr) + side * (fy + fyr) + n * w.load
 		force += f
-		torque += (point - pos).cross(f)
+		torque += (point - here).cross(f)
 		torques[i] = -fx * radius
 		VehicleTyre.finish_contact(self, w, fx, fy, sv, vwy, nominal, dt, sf)
 	airborne = contacts == 0
@@ -215,16 +282,22 @@ func step(dt, surface, automatic = true):
 	var down_r = -up * q * s.clAR
 	force += down_f + down_r
 	torque += (b * Vector3(p.a, 0, 0)).cross(down_f) + (b * Vector3(-p.b, 0, 0)).cross(down_r)
-	force -= vel * (.5 * RHO * s.cdA * speed)
+	force -= v * (.5 * RHO * s.cdA * speed)
+	var chassis = body_contact(surface, b, up, v, w_world, here, dt)
+	force += chassis[0]
+	torque += chassis[1]
 	var body_torque = b.transposed() * torque
 	if simcade_enabled:
 		var beta = atan2(vby, maxf(absf(vbx), 1))
 		var excess = maxf(0, absf(beta) - peak_slip_angle())
 		# Dissipative yaw moment beyond the rear slip peak, as car.gd. No direct state clamp.
 		body_torque.y -= p.izz * ang.y * simcade.yaw_damping * clampf(excess / peak_slip_angle(), 0, 1)
-	# Semi-implicit Euler: velocities first, then positions from the new velocities.
+	# Semi-implicit Euler: velocities first, then positions from the new velocities. Linear state
+	# integrates in 64-bit scalars.
 	accel = force / m + Vector3(0, G, 0)
-	vel += force / m * dt
+	vel_x += force.x / m * dt
+	vel_y += force.y / m * dt
+	vel_z += force.z / m * dt
 	ang += body_torque / inertia * dt
 	ang = gyro(ang, dt)
 	if contacts > 0 and speed < .4 and input.throttle < .02:
@@ -239,13 +312,74 @@ func step(dt, surface, automatic = true):
 			var normal_v = n_avg * vel.dot(n_avg)
 			vel = normal_v + (vel - normal_v) * .96
 			ang.y *= .96
-	pos += vel * dt
+	pos_x += vel_x * dt
+	pos_y += vel_y * dt
+	pos_z += vel_z * dt
 	var spin = ang.length() * dt
 	if spin > 1e-12:
 		rot = (rot * Quaternion(ang / ang.length(), spin)).normalized()
 	for w in wheels:
 		w.phase = fposmod(w.phase + w.omega * dt, TAU)
 	sync_legacy()
+
+
+## Chassis-to-ground contact at the body box points, so a rolled, bottomed or landing car rests on its
+## sills or roof instead of passing through the surface. Each point is probed with a ray from the CG
+## (inside the body) out to the point; a hit short of the point means the point is below the surface.
+## Force per point: penalty spring on the penetration along the surface normal, damping only while
+## closing, and sliding friction clamped like the tyre need clamps to what stops the slide this tick.
+## Probed only when contact is plausible (a wheel off the ground, tilted past ~25°, a corner near its
+## bump stop, or falling fast), so ordinary driving costs nothing; roof points only when inverted
+## past ~60°. Returns [force, torque] in world axes about the CG.
+func body_contact(surface, b, up, v, w_world, here, dt):
+	body_contacts = 0
+	var total_f = Vector3.ZERO
+	var total_t = Vector3.ZERO
+	var bottomed = false
+	for w in wheels:
+		bottomed = bottomed or w.comp > SUSP_TRAVEL * .6
+	if contacts == 4 and up.y > .9 and not bottomed and vel_y > -3.0:
+		return [total_f, total_t]
+	var count = body_points.size() if up.y < .5 else 6
+	for k in count:
+		var arm = b * body_points[k]
+		var reach = arm.length()
+		var hit = surface.contact(here, arm / reach, reach, -1)
+		if hit.is_empty():
+			continue
+		var n = hit.normal
+		var depth = (hit.point - (here + arm)).dot(n)
+		if depth <= 0:
+			continue
+		var pv = v + w_world.cross(arm)
+		var vn = pv.dot(n)
+		var fn = maxf(0.0, BODY_STIFFNESS * depth - BODY_DAMPING * minf(vn, 0.0))
+		var vt = pv - n * vn
+		var slide = vt.length()
+		var f = n * fn
+		if slide > 1e-6:
+			f -= vt / slide * minf(BODY_FRICTION * fn, slide * p.mass * .25 / dt)
+		total_f += f
+		total_t += arm.cross(f)
+		body_contacts += 1
+	return [total_f, total_t]
+
+
+## Anti-roll bar load added to the left and right wheels of one axle (spring rate k both sides).
+## Both on the ground: +arb (cl - cr) and its opposite, as before.
+## One wheel off the ground: that wheel is massless, so it rises until its own spring balances the bar,
+## c_air = arb c_ground / (k + arb). The bar then adds arb (c_ground - c_air) = c_ground arb k / (k + arb)
+## to the grounded wheel (the bar in series with the lifted wheel's spring), and nothing to the body
+## at the lifted corner, whose spring force and bar force cancel. Neither on the ground: nothing.
+static func arb_pair(arb, k, cl, cr, left_down, right_down):
+	if left_down and right_down:
+		var f = arb * (cl - cr)
+		return [f, -f]
+	if left_down:
+		return [cl * arb * k / (k + arb), 0.0]
+	if right_down:
+		return [0.0, cr * arb * k / (k + arb)]
+	return [0.0, 0.0]
 
 
 ## Torque-free Euler equations I w' = -w x (I w) advanced one tick with RK4. Explicit Euler on this

@@ -335,16 +335,16 @@ func precision():
 		c.setup.cdA = 0.0
 		c.place(Vector3(x0, 1000, 0), 0.0, 1000.0)
 		c.vel = Vector3(.01, 0, 0)
-		var start = c.pos.x
+		var start = c.pos_x
 		for i in 240:
 			c.input = inp(0, 0, 0)
 			c.step(DT, s, true)
-		moved.append(c.pos.x - start)
+		moved.append(c.pos_x - start)
 	probe(
 		"position_precision",
 		{"moved_at_0m": moved[0], "moved_at_5km": moved[1]},
 		(
-			"1 cm/s for 1 s moves the car %.6f m at x = 0 and %.6f m at x = 5 km (expect 0.010000; Vector3 is float32)"
+			"1 cm/s for 1 s moves the car %.6f m at x = 0 and %.6f m at x = 5 km (expect 0.010000; read from the 64-bit state since P2-03)"
 			% [moved[0], moved[1]]
 		)
 	)

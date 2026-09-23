@@ -349,3 +349,39 @@ Verification ran from this merge worktree's `godot/` using `C:\Users\Zain's PC\D
 | `build/RacingSim.exe -- --features` (windowed export) | **212 checks, 0 failures**; same valid flow laps and zero off-steps/contacts | **60.20 s** | 0 B |
 
 The 212 checks are P1's 211 plus the restored storage-overwrite check. The git-ignored `tools/windows_release_x86_64.exe` export template was absent in the merge worktree, so it was copied from the original repo's `godot/tools/` before export. The owner chose to leave Gemini's `godot/build/RacingSim.exe` untouched; the verified exe remains at `C:\Users\Zain's PC\Desktop\RacingSim-merge2\godot\build\RacingSim.exe`. The merge worktree is retained so that binary remains available.
+
+## 2026-09-22  DONE P2-03  (Claude Opus 5.5) — branch `rb/P2-03-suspension-rig` (from main `9774d1f`)
+Changed: `scripts/vehicle/car_body.gd` (chassis), `scripts/surface/test_surface.gd` (BLOCK shape), `tests/v2/surfaces.gd` (precision probe reads the 64-bit state). New: `tests/v2/suspension.gd` (11 checks), output `docs/rebuild/suspension-P2-03.txt`. `car.gd` and the shared vehicle modules are untouched.
+
+What changed in CarBody:
+1. **64-bit world state (§5.1).** `pos_x/y/z` and `vel_x/y/z` are 64-bit scalars and integrate in 64-bit; `pos`/`vel` remain as Vector3 properties for relative and presentation use (setters write the scalars). A car drifting 1 cm/s for 1 s now moves 0.010000000 m at x = 0 and at x = 5 km; before, it did not move at 5 km.
+2. **Suspension rays start 0.5 m above the mount.** Ground rising past the mount now yields a continuous, monotonic bump-stop force from the real penetration (pressed 0 to 0.69 m into flat ground in 1 cm steps, past the mount at 0.50 m: monotonic, largest step 30.1 kN against a bump-stop scale of 28 kN).
+3. **Anti-roll bars act through a lifted wheel.** A lifted (massless) wheel rises until its own spring balances the bar, so the grounded wheel sees the bar in series with that spring (extra rate arb·k/(k+arb)) and the body gets nothing at the lifted corner. Previously the bar switched off. `CarBody.arb_pair()` is static and unit-tested against the closed form and the lifted wheel's force balance.
+4. **Chassis-to-ground contact.** 10 body-box points (6 sill, 4 roof), each a penalty spring (200 kN/m) plus a closing-only damper (12 kN·s/m) plus sliding friction µ 0.6, clamped like the tyre need clamps. Probed only when a wheel is off the ground, the car is tilted past ~25°, a corner is near its bump stop, or it is falling faster than 3 m/s. Roof points only past ~60° of tilt. Ordinary driving never probes (0 point-ticks through hard acceleration and braking on flat for all 3 cars).
+
+Suspension suite, 11/11, stderr empty:
+- **Warp / cross-weight vs rigid-body statics** (FL wheel jacked 3 cm; axle twist rate K = spring + 2·ARB; expected axle load split δ·Kf·Kr/(Kf+Kr)): mean axle ΔL within −1.9 % (roadster, ARBs on), −0.7 % (roadster, off), −0.1 % (296, on), +0.1 % (296, off). **Load centroid 0.0 mm from directly under the CG in all four cases** (exact equilibrium). The roadster's front/rear asymmetry (489 / 575 N) is its body roll moving the CG sideways, which the small-angle formula leaves out; the centroid check covers it.
+- Roof drop from 0.8 m: rests on the roof, CG 0.905 m up (roof plane 0.920 m), 1.6 cm resting penetration, 7.2 cm peak during impact. Side drop: tips back onto its wheels (a physical outcome), no penetration at rest.
+- P2-02's runaway ditch weave: max tilt 43° (it no longer rolls over), CG below the surface on 0 ticks, peak tyre load 20× static (was 319× and a fall-through).
+
+Other suites on this branch: parse clean; spike 23/23 (flat equivalence unchanged, crest ratio 1.007; roadster 1 m drop now settles in 0.95 s with peak 5.6× static, down from 1.31 s / 8.6×, because the sills now touch when it bottoms; GT 1.15× crest airtime 2.44 s, down from 2.83 s); surfaces 34/34; track_asset 23/23; legacy dynamics and handling byte-identical to the baseline. `docs/rebuild/spike-P2-00.txt` and `surfaces-P2-02.txt` regenerated (new determinism hash; the precision probe now reads the 64-bit state).
+
+Cost: spike on flat 75.6 µs/tick (P2-01 main median 68.8 µs; about +7 µs from the property views, bar logic and contact gating). Crest 240 µs (the TestSurface bisection rays dominate; body probes fire while airborne).
+
+Not done / carried forward:
+- Unsprung mass, roll centres and anti-dive/squat geometry; load still applied along the contact normal rather than the strut axis.
+- Heightfield test surfaces report an upward normal even on a sharp step's vertical face, so body contact there pushes up, not back. Real meshes (TrackSurface) give face normals; walls and barriers are P4-03.
+- Body box is 10 points: coarse, with no edges between them. Enough for resting and landing, not for detailed scraping.
+- Braked cars still creep on slopes (P2-04); single-ray kerb response (P2-06); aids yaw-rate frame (P2-07).
+
+## 2026-09-22  NOTE P2-03 review (GPT-6 Sol)
+Independent review of original commit `a4ea593` in a detached worktree. **Verdict: merge.** The body frame and force signs, lifted-wheel ARB series rate, and warp formula `delta * Kf * Kr / (Kf + Kr)` with `K = spring + 2 * ARB` are consistent with the stated massless-wheel model. No blocking correctness finding.
+
+Findings, ranked by severity:
+1. **Medium, follow-up — `scripts/vehicle/car_body.gd:190-203`:** lifting each ray origin 0.5 m can select an upper road deck that is above the wheel mount but below the lifted ray origin. The flat and single-heightfield tests do not cover a close overpass. A deck within this clearance needs a targeted two-deck regression before shipping an authored overpass; the current 8 m deck-separation fixture is unaffected.
+2. **Low — `scripts/vehicle/car_body.gd:312-313`:** the standstill hold computes and assigns through the 32-bit `vel` Vector3 property, rounding the three 64-bit scalar velocities each held tick. Position still accumulates through `pos_x/y/z` in 64-bit; the precision test does not exercise this branch. Use scalar components here when full 64-bit velocity accumulation is required.
+3. **Low — `scripts/vehicle/car_body.gd:345-363`:** body-contact torque uses the body point arm rather than the ray's hit-point arm. At penetration, this makes the torque lever longer than the contact point by up to the penetration depth. The tested roof drop is stable, but an angled deep strike can receive excess torque.
+4. **Low, test gap — `tests/v2/suspension.gd:259-272`:** the ditch assertion checks whether the CG goes below the surface and limits tyre load, but does not check sill/roof penetration at their world positions. Flat roof/side drops do check body points separately.
+5. **API caution — `scripts/vehicle/car_body.gd:39-52`:** `pos` and `vel` are 32-bit Vector3 views. Current code writes the scalar position components directly and has no component assignment through these views; future callers should not assume `c.pos.x = value` preserves double precision.
+
+Independent gates via `Start-Process -Wait -PassThru -NoNewWindow`, redirected stdout/stderr: `--headless --path . --import`, `tests/v2/suspension.gd` 11/0, `chassis_spike.gd` 23/0, `surfaces.gd` 34/0, `track_asset.gd` 23/0, `scripts/game.gd --check-only`, and legacy `tests/dynamics.gd` 36/0 and `tests/handling.gd` 23/0, both stdout-identical to their baselines after CR/LF normalization. All exit 0; every stderr file is empty.
