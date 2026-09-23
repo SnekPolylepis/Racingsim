@@ -974,3 +974,7 @@ New: `scripts/track/terrain.gd` (`class_name TerrainPatch`, `@tool`, `Node3D`), 
 - `tests/v2/track_asset.gd` (23/23)
 - `scripts/game.gd --check-only` (clean exit 0)
 - `tools/Godot.exe --headless --editor --quit` (`TerrainPatch` registered in global class cache)
+
+## 2026-09-23  CLAIM P6-01  (GPT-6 Astra)
+Owner-directed Spa v0 and generic TrackAsset drive scene, on rb/P6-01-spa in the requested isolated worktree. Merged road density, test surfaces, and terrain dependencies. The owner's explicit three minimal checks and branch-only push override the queue's broader gate and main-merge workflow for this task. Data acquisition, authored generator, and drive scene proceed in parallel; existing user saves remain untouched.
+
