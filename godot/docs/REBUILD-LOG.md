@@ -1140,3 +1140,6 @@ Proving-ground laps are 6-9 % faster than the P4-07 baseline, because the old pl
 `trackgen/spa.gd` `add_bot_line`: Catmull-Rom handles (P6-01 review item 1). The line is now a smooth curve, not a polyline. Laps are 1-2 s faster and still clean. **The committed `tracks3d/spa/spa.scn` still has the old line.** Anything that loads the generator (laps, the dev drive scene's bake-on-load cache) gets the new one. F-P6-01 regenerates the scene.
 
 Gates (`run_gates.ps1`, affected): all pass except known items. The laps stderr is the Spa bank-twist warning (F-P6-01). The terrain timing check read 671 µs under parallel load and passes alone at 168 µs (queued as F-terrain-perf).
+
+## 2026-09-23  DONE F-terrain-perf  (Claude Opus 5.5) — branch `rb/F-terrain-perf`
+`tests/v2/terrain.gd`'s car-step timing check (300 µs) now goes through `GatesEnv.perf()` / `perf_note()` like the other timing gates, so the parallel runner (RACINGSIM_PERF_GATES=0) reports it without failing on machine load (it read 671 µs in parallel, 166 µs alone). Terrain 7/7 with and without the flag.
