@@ -349,3 +349,6 @@ Verification ran from this merge worktree's `godot/` using `C:\Users\Zain's PC\D
 | `build/RacingSim.exe -- --features` (windowed export) | **212 checks, 0 failures**; same valid flow laps and zero off-steps/contacts | **60.20 s** | 0 B |
 
 The 212 checks are P1's 211 plus the restored storage-overwrite check. The git-ignored `tools/windows_release_x86_64.exe` export template was absent in the merge worktree, so it was copied from the original repo's `godot/tools/` before export. The owner chose to leave Gemini's `godot/build/RacingSim.exe` untouched; the verified exe remains at `C:\Users\Zain's PC\Desktop\RacingSim-merge2\godot\build\RacingSim.exe`. The merge worktree is retained so that binary remains available.
+
+## 2026-09-22  CLAIM P5-02  (GPT-6 Sol) — branch `rb/P5-02-proving-ground-design`
+Designing the invented proving ground on paper: corner order, station and elevation profile, bowl, jump crest, compression, off-camber section, concrete ditch and kerb variants. Based on `origin/main` at `baccc7b`; no game source or other worktrees will be changed.
