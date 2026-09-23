@@ -1,8 +1,11 @@
 extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
-## Resource models use simulation XY coordinates; scene nodes use Godot XZ ground coordinates.
+## P4-01 drives the TrackAsset/CarBody path in native Godot coordinates. Legacy feature harnesses
+## remain on the planar path until their dependent P4 ports are complete.
 const TrackModel = preload("res://scripts/track3d.gd")
+const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const ProvingGround = preload("res://trackgen/proving_ground.gd")
 const CarModel = preload("res://scripts/car.gd")
 const RaceModel = preload("res://scripts/race.gd")
 const Collisions = preload("res://scripts/collisions.gd")
@@ -106,6 +109,11 @@ var skid_last = [null, null, null, null]
 var skid_times = []
 ## Car state before the latest physics tick; _process blends toward the current state (render interpolation).
 var prev_pose = {}
+var v2_mode = false
+var v2_smoke = false
+var v2_visual_smoke = false
+var v2_surface
+var v2_tick = 0
 
 
 func _ready():
@@ -120,6 +128,12 @@ func _ready():
 		or "--performance" in OS.get_cmdline_user_args()
 		or "--audio-review" in OS.get_cmdline_user_args()
 	)
+	v2_visual_smoke = "--v2-visual-smoke" in OS.get_cmdline_user_args()
+	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()
+	v2_mode = v2_smoke or not test_mode
+	if v2_mode:
+		setup_v2()
+		return
 	if test_mode:
 		settings_path = "user://native-tests/settings.json"
 		DirAccess.make_dir_recursive_absolute("user://native-tests")
@@ -710,8 +724,162 @@ func set_quality(value):
 	environment.sdfgi_enabled = false
 
 
+## P4-01 entry: the authored scene can be omitted from git while it exceeds the content
+## budget. Build it from its source generator when the compressed scene is absent.
+func setup_v2():
+	presets = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
+	controls.configure(settings)
+	var scene_path = "res://tracks3d/proving_ground/proving_ground.scn"
+	track = (
+		load(scene_path).instantiate() if ResourceLoader.exists(scene_path) else ProvingGround.build_asset()
+	)
+	add_child(track)
+	var errors = track.validate()
+	if not errors.is_empty():
+		push_error("TrackAsset invalid: %s" % [errors])
+		get_tree().quit(1)
+		return
+	v2_surface = track.surface()
+	car = CarBody.new()
+	car.simcade_enabled = settings.handling_model == 0
+	car.configure(presets[preset_key])
+	place_v2_on_grid()
+	if v2_smoke:
+		car.launch(15.0)
+		controls.poll_hardware = false
+		if not v2_visual_smoke:
+			return
+	setup_environment()
+	model = visuals.make_car(car.p)
+	add_child(model.root)
+	prev_pose = snapshot_v2()
+
+
+func place_v2_on_grid():
+	var slots = track.grid_slots()
+	if slots.is_empty():
+		push_error("TrackAsset has no grid slot")
+		get_tree().quit(1)
+		return
+	var slot: Transform3D = slots[0]
+	var forward = -slot.basis.z
+	var up = slot.basis.y
+	car.place(slot.origin, atan2(forward.z, forward.x), slot.origin.y)
+	car.rot = Basis(forward, up, forward.cross(up)).orthonormalized().get_rotation_quaternion()
+	car.pos = slot.origin + up * car.setup.cgHeight
+	car.sync_legacy()
+	prev_pose = snapshot_v2()
+
+
+## The Section 5.4 presentation snapshot. CarBody owns the pose; the game adds per-wheel
+## presentation fields until the P4-04 visuals port consumes them directly.
+func snapshot_v2() -> Dictionary:
+	var pose = car.snapshot()
+	var wheel_state = []
+	for i in 4:
+		var hit = car.contact_hits[i] if i < car.contact_hits.size() else {}
+		wheel_state.append(
+			{
+				"steer": pose.steer if i < 2 else 0.0,
+				"phase": pose.phase[i],
+				"comp": car.wheels[i].comp,
+				"contact_point": hit.get("point", Vector3.ZERO)
+			}
+		)
+	return {"xform": pose.xform, "wheels": wheel_state, "steer": pose.steer}
+
+
+func blend_v2(a: Dictionary, b: Dictionary, fraction: float) -> Dictionary:
+	var ax: Transform3D = a.xform
+	var bx: Transform3D = b.xform
+	var wheels = []
+	for i in 4:
+		wheels.append(
+			{
+				"steer": lerpf(a.wheels[i].steer, b.wheels[i].steer, fraction),
+				"phase": lerp_angle(a.wheels[i].phase, b.wheels[i].phase, fraction),
+				"comp": lerpf(a.wheels[i].comp, b.wheels[i].comp, fraction),
+				"contact_point": a.wheels[i].contact_point.lerp(b.wheels[i].contact_point, fraction)
+			}
+		)
+	return {
+		"xform":
+		Transform3D(
+			Basis(ax.basis.get_rotation_quaternion().slerp(bx.basis.get_rotation_quaternion(), fraction)),
+			ax.origin.lerp(bx.origin, fraction)
+		),
+		"wheels": wheels,
+		"steer": lerpf(a.steer, b.steer, fraction)
+	}
+
+
+func physics_v2(dt):
+	v2_tick += 1
+	if v2_tick < 3:
+		return
+	car.input = controls.update(dt, car.speed)
+	for action in controls.events:
+		match action:
+			"reset":
+				place_v2_on_grid()
+			"shiftUp":
+				car.request_shift(1)
+			"shiftDown":
+				car.request_shift(-1)
+	controls.events.clear()
+	prev_pose = snapshot_v2()
+	car.step(dt, v2_surface, settings.automatic)
+	if v2_smoke and v2_tick >= 123:
+		var pose = snapshot_v2()
+		var blended = blend_v2(prev_pose, pose, 0.5)
+		var valid = (
+			car.pos.is_finite()
+			and car.speed > 10.0
+			and car.contacts == 4
+			and pose.wheels.size() == 4
+			and blended.wheels.size() == 4
+			and blended.xform.origin.is_finite()
+			and blended.xform.basis.is_finite()
+			and (
+				blended.xform.origin.distance_to(prev_pose.xform.origin)
+				<= pose.xform.origin.distance_to(prev_pose.xform.origin) + 1e-5
+			)
+		)
+		print(
+			"P4-01 V2 SMOKE ",
+			"PASS" if valid else "FAIL",
+			" speed=",
+			car.speed,
+			" contacts=",
+			car.contacts,
+			" x=",
+			car.pos
+		)
+		get_tree().quit(0 if valid else 1)
+
+
+func render_v2(dt):
+	if model.is_empty():
+		return
+	var pose = blend_v2(prev_pose, snapshot_v2(), Engine.get_physics_interpolation_fraction())
+	var xf: Transform3D = pose.xform
+	model.root.transform = Transform3D(xf.basis, xf.origin - xf.basis.y * car.setup.cgHeight)
+	for i in 4:
+		model.pivots[i].rotation.y = -pose.wheels[i].steer
+		model.pivots[i].position.y = model.wheel_r + pose.wheels[i].comp
+		model.spins[i].rotation.z = -pose.wheels[i].phase
+	var forward = xf.basis.x
+	var target = model.root.position + forward * 7.0 + Vector3.UP * .75
+	var desired = model.root.position - forward * 8.0 + Vector3.UP * 3.2
+	camera.position = camera.position.lerp(desired, 1.0 - exp(-dt * 7.0))
+	camera.look_at(target, Vector3.UP)
+
+
 ## Fixed 240 Hz simulation only. Preserve controls -> car -> collisions -> race ordering.
 func _physics_process(dt):
+	if v2_mode:
+		physics_v2(dt)
+		return
 	if blocked() or track.samples.is_empty():
 		prev_pose = {}
 		return
@@ -760,6 +928,9 @@ func _physics_process(dt):
 
 ## Render/audio/UI updates continue while custom simulation is blocked.
 func _process(dt):
+	if v2_mode:
+		render_v2(dt)
+		return
 	if model.is_empty():
 		return
 	if record_writer and not record_writer.errors.is_empty():
@@ -898,6 +1069,9 @@ func start_drive():
 
 
 func _input(event):
+	if v2_mode:
+		controls.handle(event, true)
+		return
 	# Automated laps own their input stream. Desktop events must not pause a
 	# timing sample or change its driving controls; ordinary play is unaffected.
 	if test_mode and benchmark_driver != null and not event.has_meta("showcase_input"):
@@ -918,6 +1092,10 @@ func _input(event):
 
 
 func _unhandled_input(event):
+	if v2_mode:
+		if event is InputEventKey and event.pressed and event.physical_keycode == KEY_ESCAPE:
+			get_tree().quit()
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.physical_keycode == KEY_ESCAPE:
 			if ui.is_open():

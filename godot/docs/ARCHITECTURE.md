@@ -1,5 +1,11 @@
 # Native architecture and invariants
 
+## Rebuild transition (P4-01)
+
+Normal game launch now builds or loads the authored 3D Proving Ground TrackAsset, places a CarBody on its first grid slot, and steps it against TrackSurface at 240 Hz. The generated scene is currently above the 5 MB repository budget, so game.gd builds it from trackgen/proving_ground.gd when the scene is absent. The default view renders in native Godot X/Y/Z coordinates. Its car pose uses the section 5.4 snapshot (Transform3D and four wheel records); render position is interpolated with lerp and basis rotation with quaternion slerp. `--v2-smoke` runs the new headless path for a short deterministic drive; `--v2-visual-smoke` also exercises the temporary car and chase-camera presentation in a window.
+
+The earlier sections below describe the planar feature-harness path retained for `--features` and other existing visual test modes. Race timing, wall response, presentation, camera/instruments/audio, and UI are scheduled for P4-02 through P4-06; they are not connected to normal 3D driving yet. The visual car and chase camera in P4-01 are transitional.
+
 ## Ownership and lifecycle
 
 `game.gd` owns TrackModel, CarModel, RaceModel, Controls, Storage and Visuals helpers (RefCounted). Interface is a CanvasLayer owning Instruments, FrontEnd and modals. CircuitEditor is reparented to a native CanvasLayer; Audio is a separate Node. Scenery, sunlight, player/ghost cars and skid MultiMesh share the root World3D. RetroRenderer composites its world and Authentic UI viewports before scaling. Sharp UI optionally overlays that output; the editor always bypasses it. Root 3D rendering is disabled.
