@@ -312,6 +312,7 @@ Resolved regression and review findings on `rb/P1-remove-editor`:
 
 ## 2026-09-22  NOTE P5-01 review fixes  (GPT-6 Sol)
 Recorded the verified Spa and Nordschleife sources, licence terms and future attribution requirements in `THIRD-PARTY.md`, as P5-01 originally required. Updated the plan and source notes to reflect that the ledger is now populated. Marked optional Monza's licence and commercial use as unverified until a primary licence record and circuit coverage are confirmed; the linked catalogue page was unavailable during review. Documentation only; no data downloaded or committed. `git diff --check` passed. Feature suite not run at the owner's request.
+
 ## 2026-09-22  DONE feature-suite speed-up  (Claude Opus 5.5) — branch `rb/fast-features` (from main `9774d1f`)
 Owner request: the windowed `-- --features` run was slow, mostly the two input-driven 296 laps of Spa. Measured on this PC, source run.
 - **Before:** ~157 s total; the flow section took 73 s, of which the two laps were ~51 s each (3,042 rendered frames per lap).
@@ -325,3 +326,26 @@ Owner request: the windowed `-- --features` run was slow, mostly the two input-d
 - **Identity:** with defaults, the driver reproduces the old laps exactly: `tests/showcase_laps.gd` stdout is byte-identical to `docs/rebuild/baseline/showcase-laps.txt` (and now runs in 103 s, was 126 s). At the intermediate step (frames only), the flow laps were bit-identical to before (302.070833333141 s / 303.666666666473 s).
 - **Not changed:** the feature flow still drives Spa in the 296 through the real input bus on both controller and keyboard, then pause/results/menus; only its lap is faster. The flow's lap times in feature output are now ~189/191 s, not 302/304 s. `docs/TESTING.md` is untouched here because P1 edits it; its "complete valid laps" description remains true.
 - When P4 moves the game onto CarBody, re-check `FLOW_DRIVER` still gives clean laps (it was tuned on the legacy car).
+
+## 2026-09-22  NOTE merge P1 + fast-features + P5-01 (GPT-6 Sol)
+
+Pushed `rb/fast-features` and `rb/P5-01-data-sources` with `git push origin rb/fast-features rb/P5-01-data-sources`; ran `git fetch origin`. Created isolated `../RacingSim-merge2` from `origin/main` (`9774d1f`) with `git worktree add ../RacingSim-merge2 -b merge/p1-fast origin/main`. Merged in order with `git merge --no-ff origin/rb/P1-remove-editor` (`c07f7c4`), `git merge --no-ff origin/rb/fast-features` (`6762702`), and `git merge --no-ff origin/rb/P5-01-data-sources` (`ac62edc`). Each merge conflicted only in `docs/REBUILD-LOG.md`; all entries from both sides were retained once in commit-time order. `scripts/showcase_benchmark.gd` auto-merged. `git diff origin/main HEAD --check` passed. `rb/P2-03-suspension-rig` was not merged. After the checks below, `git push origin merge/p1-fast:main` fast-forwarded GitHub main from `9774d1f` to `ac62edc`, without force.
+
+Verification ran from this merge worktree's `godot/` using `C:\Users\Zain's PC\Desktop\RacingSim\godot\tools\Godot.exe` through `Start-Process -Wait -PassThru -NoNewWindow`, with stdout and stderr redirected under `tests/logs/merge-p1-fast/`. Legacy comparisons normalize CR/LF only. Every run exited 0 and every stderr file was **0 bytes**.
+
+| Command (from `godot/`) | Result | Wall time | Stderr |
+|---|---|---:|---:|
+| `--headless --path . --import` | Imported | 7.22 s | 0 B |
+| `--headless --path . --script scripts/game.gd --check-only` | Parse clean | 0.47 s | 0 B |
+| `--headless --path . --script tests/dynamics.gd` | Stdout identical to `baseline/dynamics-simulation.txt` | 26.55 s | 0 B |
+| `--headless --path . --script tests/handling.gd` | Stdout identical to `baseline/handling.txt` | 1.84 s | 0 B |
+| `--headless --path . --script tests/laps.gd` | Stdout identical to `baseline/laps-simulation.txt` | 50.06 s | 0 B |
+| `--headless --path . --script tests/showcase_laps.gd` | Stdout identical to `baseline/showcase-laps.txt` | 103.10 s | 0 B |
+| `--headless --path . --script tests/v2/chassis_spike.gd` | 23 checks, 0 failures | 18.69 s | 0 B |
+| `--headless --path . --script tests/v2/surfaces.gd` | 34 checks, 0 failures | 3.33 s | 0 B |
+| `--headless --path . --script tests/v2/track_asset.gd` | 23 checks, 0 failures | 2.68 s | 0 B |
+| `--path . -- --features` (windowed source) | **212 checks, 0 failures**; both flow laps valid at 189.425 / 191.033 s, each with 0 off-steps and 0 contacts | **70.15 s** | 0 B |
+| `--headless --path . --export-release "Windows Desktop" build/RacingSim.exe` | Exported 110,308,968-byte exe | 4.37 s | 0 B |
+| `build/RacingSim.exe -- --features` (windowed export) | **212 checks, 0 failures**; same valid flow laps and zero off-steps/contacts | **60.20 s** | 0 B |
+
+The 212 checks are P1's 211 plus the restored storage-overwrite check. The git-ignored `tools/windows_release_x86_64.exe` export template was absent in the merge worktree, so it was copied from the original repo's `godot/tools/` before export. The owner chose to leave Gemini's `godot/build/RacingSim.exe` untouched; the verified exe remains at `C:\Users\Zain's PC\Desktop\RacingSim-merge2\godot\build\RacingSim.exe`. The merge worktree is retained so that binary remains available.
