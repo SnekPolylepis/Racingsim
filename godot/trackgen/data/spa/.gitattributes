@@ -1,6 +1,6 @@
 # Preserve downloaded response and licence bytes so sources.json SHA-256 values survive checkout.
-*.json -text
-*.txt -text
+*.json -text whitespace=cr-at-eol
+*.txt -text -whitespace
 *.raw -text
 *.py text eol=lf
 *.md text eol=lf

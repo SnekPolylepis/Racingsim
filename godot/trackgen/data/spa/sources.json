@@ -4,8 +4,8 @@
   "lidar_catalogue": "https://geoportail.wallonie.be/catalogue/a004e570-99d6-4fe5-b83d-49b774409278.html",
   "files": {
     ".gitattributes": {
-      "bytes": 169,
-      "sha256": "f2da684e17bf8b9bc468a9d5412c96d930ef6fbd6f91d143313a869c6a96e9b2"
+      "bytes": 202,
+      "sha256": "0e4c2051ed47bf068bdc129ee5a3a3004d76c11e0d0d0fec9e5e26f413edb7a4"
     },
     "build_data.py": {
       "bytes": 9369,
