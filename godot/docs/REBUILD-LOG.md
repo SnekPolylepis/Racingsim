@@ -109,3 +109,6 @@ Cost on the crest rose to 193 µs/tick from the extra march samples (test surfac
 
 ## 2026-09-22  DECISION D6  (owner)
 Approved D6(A): our own 6-DOF integrator with ray suspension, Godot used only for geometry queries. P2-00 branch cleared to merge into main. Next: P2-01 (GPT-6 Sol) and P2-02/P2-03 (Claude Opus 5.5).
+
+## 2026-09-22  CLAIM P2-01  (GPT-6 Sol)
+Extract tyre, drivetrain and aids into shared vehicle modules with byte-identical old-suite output and an unchanged P2-00 spike. Working on branch `rb/P2-01-extract-vehicle-modules` in the isolated RacingSim-p201 worktree.
