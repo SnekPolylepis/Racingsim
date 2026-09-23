@@ -155,7 +155,8 @@ func _ready():
 	ui = Interface.new()
 	add_child(ui)
 	ui.initialize(self)
-	ui.car_picker.select(presets.keys().find(preset_key))
+	if ui and ui.menu_car:
+		ui.menu_car.select(presets.keys().find(preset_key))
 	sound = Sound.new()
 	add_child(sound)
 	record_writer = preload("res://scripts/record_writer.gd").new()
@@ -206,7 +207,6 @@ func request_quit():
 
 func refresh_tracks():
 	track_files = []
-	ui.track_picker.clear()
 	var bundled = Array(DirAccess.get_files_at("res://tracks"))
 	bundled.sort()
 	bundled.erase("Spa-Francorchamps.json")
@@ -214,10 +214,13 @@ func refresh_tracks():
 	for name in bundled:
 		if name.ends_with(".json"):
 			track_files.append("res://tracks/" + name)
-			ui.track_picker.add_item(name.get_basename())
-	var index = track_files.find(active_track_file)
-	if index >= 0:
-		ui.track_picker.select(index)
+	if ui and ui.menu_track:
+		ui.menu_track.clear()
+		for file in track_files:
+			ui.menu_track.add_item(file.get_file().get_basename())
+		var index = track_files.find(active_track_file)
+		if index >= 0:
+			ui.menu_track.select(index)
 
 
 func load_track(index):
@@ -227,8 +230,8 @@ func load_track(index):
 
 func request_track_file(file):
 	var previous = track_files.find(active_track_file)
-	if previous >= 0:
-		ui.track_picker.select(previous)
+	if previous >= 0 and ui and ui.menu_track:
+		ui.menu_track.select(previous)
 	guard_dirty(
 		func():
 			load_track_now(file)
@@ -350,7 +353,8 @@ func warm_ghost():
 func change_car(key):
 	preset_key = key
 	car.configure(presets[key])
-	ui.car_picker.select(presets.keys().find(key))
+	if ui and ui.menu_car:
+		ui.menu_car.select(presets.keys().find(key))
 	reset_car()
 	load_record()
 

@@ -412,7 +412,8 @@ func end_demo():
 		app.rebuild_world()
 	app.reset_car()
 	app.instruments.rebuild_map()
-	app.ui.car_picker.select(app.presets.keys().find(app.preset_key))
+	if app.ui and app.ui.menu_car:
+		app.ui.menu_car.select(app.presets.keys().find(app.preset_key))
 	apply_appearance()
 	demo_context.clear()
 

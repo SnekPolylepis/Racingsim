@@ -62,7 +62,7 @@ func run(owner_app):
 	check(app.presets.size() == 3, "three car presets")
 	check(app.preset_key == "f296gt3", "296 GT3 default car")
 	check(app.active_track_file == "res://tracks/Spa-Francorchamps.json", "Spa default circuit")
-	check(app.ui.car_picker.selected == app.presets.keys().find("f296gt3"), "default car selector")
+	check(app.ui.menu_car.selected == app.presets.keys().find("f296gt3"), "default car selector")
 	check(app.setup_fields.size() == 42, "complete garage fields")
 	await check_retro_features()
 	var hull = app.model.body.get_child(0).mesh.surface_get_arrays(0)
@@ -173,6 +173,10 @@ func run(owner_app):
 	app.load_track_now("res://tracks/Monza.json")
 	var ghost = {"schema": 1, "time": 1.0, "samples": [[0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 1]]}
 	var ghost_path = app.storage.path("ghosts", "Integration.ghost.json")
+	app.storage.write_json(ghost_path, ghost)
+	var updated_ghost = {"schema": 1, "time": 2.5, "samples": [[0, 0, 0, 0, 0, 0]]}
+	app.storage.write_json(ghost_path, updated_ghost)
+	check(app.storage.read_json(ghost_path).time == 2.5, "atomic replace existing file")
 	app.storage.write_json(ghost_path, ghost)
 	check(app.import_ghost(ghost_path), "browser ghost import")
 	check(app.race.best == 1 and app.race.ghost.size() == 2, "ghost imported samples")

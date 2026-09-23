@@ -9,8 +9,6 @@ var modal: PanelContainer
 var content: VBoxContainer
 var title_label: Label
 var status: Label
-var track_picker: OptionButton
-var car_picker: OptionButton
 var dialogs = 0
 var screen = ""
 var garage_before = ""
@@ -153,14 +151,6 @@ func initialize(owner_app):
 	app.instruments = app.Instruments.new()
 	root.add_child(app.instruments)
 	app.instruments.initialize(app)
-	track_picker = OptionButton.new()
-	track_picker.focus_mode = Control.FOCUS_NONE
-	track_picker.item_selected.connect(app.load_track)
-	car_picker = OptionButton.new()
-	car_picker.focus_mode = Control.FOCUS_NONE
-	for key in app.presets:
-		car_picker.add_item(app.presets[key].name)
-	car_picker.item_selected.connect(func(i): app.change_car(app.presets.keys()[i]))
 	status = label(root, "", 14)
 	status.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	status.offset_left = 20
@@ -331,9 +321,11 @@ func sync_menus():
 	app.instruments.visible = not app.in_menu
 	if show_main and not main_menu.visible:
 		menu_track.clear()
-		for i in track_picker.item_count:
-			menu_track.add_item(track_picker.get_item_text(i))
-		menu_track.select(track_picker.selected)
+		for file in app.track_files:
+			menu_track.add_item(file.get_file().get_basename())
+		var track_idx = app.track_files.find(app.active_track_file)
+		if track_idx >= 0:
+			menu_track.select(track_idx)
 		menu_car.select(app.presets.keys().find(app.preset_key))
 	if show_main:
 		menu_best.text = (

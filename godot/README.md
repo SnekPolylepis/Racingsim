@@ -64,7 +64,7 @@ Windows checks from this directory:
 ```
 
 - Full-lap regression drives Monza and Spa with zero off-track steps and valid recorded ghosts.
-- Native integration checks cover driving, all cars/tracks, audio capture/mute/pause, remapping, garage/settings, dirty guards, JSON round trips, record storage and smaller-window layout. Screenshots and `feature-results.json` go to `tests/` for source runs and `user://native-tests/` for exported runs. Test saves/settings are isolated in `native-tests`.
+- Native integration checks cover driving, all cars/tracks, audio capture/mute/pause, remapping, garage/settings, JSON round trips, record storage and smaller-window layout. Screenshots and `feature-results.json` go to `tests/` for source runs and `user://native-tests/` for exported runs. Test saves/settings are isolated in `native-tests`.
 
 The game uses Godot's Forward+ renderer with an automatic OpenGL fallback. The follow-up tests both Forward+ and OpenGL on the local RTX 4080; see the dated report for the measured full-lap matrix. Physical controller hardware has not been tested. macOS uses Metal by default; validation and build instructions are in [MACOS.md](docs/MACOS.md).
 

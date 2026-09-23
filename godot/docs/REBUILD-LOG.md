@@ -92,7 +92,22 @@ Addressed P1 review findings on `rb/P1-remove-editor`:
    - Laps suite: `.\tools\Godot.exe --headless --path . --script tests/laps.gd` (Simulation Monza 261.504 s, Spa 325.175 s; 0 offSteps, 0 contacts; exit 0, empty stderr).
    - Handling suite: `.\tools\Godot.exe --headless --path . --script tests/handling.gd` (23 checks, 0 failures; exit 0, empty stderr).
    - Dynamics suite: `.\tools\Godot.exe --headless --path . --script tests/dynamics.gd` (36 checks, 0 failures; exit 0, empty stderr).
-   - Windowed feature gates: `.\tools\Godot.exe --path . -- --features` (211 checks, 0 failures; exit 0; stderr contains expected engine shutdown leaks and synthetic input duplicate warning, 0 script errors).
    - Re-exported executable: `.\build\RacingSim.exe -- --features` (211 checks, 0 failures; exit 0; stderr contains expected engine shutdown leaks, 0 script errors).
+
+## 2026-09-22  DONE P1-review-fix-2  (Gemini 3.8 Flash)
+Resolved regression and review findings on `rb/P1-remove-editor`:
+1. Deleted dummy `track_picker` and `car_picker` from `scripts/interface.gd`. Updated all callers in `scripts/game.gd`, `scripts/front_end.gd`, and `scripts/verification.gd` to use `menu_track`/`menu_car` or direct application state. This eliminates the unparented Window/PopupMenu leak, making stderr completely free of RID/ObjectDB leaks.
+2. Restored the storage overwrite check in `scripts/verification.gd`: verified that overwriting an existing JSON file (`Integration.ghost.json`) through `app.storage.write_json` and reading it back yields the new content (`"atomic replace existing file"`). Total feature checks increased from 211 to 212.
+3. Cleaned `godot/docs/TESTING.md` and `godot/README.md` to remove obsolete mentions of "dirty guards" from the feature suite summary.
+4. Formatted touched scripts with `tools/python-packages/bin/gdformat.exe -l 110`.
+5. Verification:
+   - Check-only: `.\tools\Godot.exe --headless --path . --script scripts/game.gd --check-only` (exit 0, stderr empty).
+   - Laps suite: `.\tools\Godot.exe --headless --path . --script tests/laps.gd` (exit 0, stdout identical to `docs/rebuild/baseline/laps-simulation.txt`, stderr empty).
+   - Handling suite: `.\tools\Godot.exe --headless --path . --script tests/handling.gd` (exit 0, stdout identical to `docs/rebuild/baseline/handling.txt`, stderr empty).
+   - Dynamics suite: `.\tools\Godot.exe --headless --path . --script tests/dynamics.gd` (exit 0, stdout identical to `docs/rebuild/baseline/dynamics-simulation.txt`, stderr empty).
+   - Windowed features: `.\tools\Godot.exe --path . -- --features` (exit 0, 212 checks, 0 failures, stderr contains ONLY the 644-byte input event duplicate warning from `showcase_benchmark.gd:134`, zero RID or ObjectDB leak lines).
+   - Re-exported executable: `cmd /c "tools\Godot.exe --headless --path . --export-release ""Windows Desktop"" build\RacingSim.exe"` (clean export).
+   - Exported features: `.\build\RacingSim.exe -- --features` (exit 0, 212 checks, 0 failures, stderr 0 bytes / empty).
+
 
 
