@@ -19,7 +19,6 @@ extends Node3D
 ##   gdal_translate -ot Float32 -of ENVI input.tif output.raw
 ## (the raw file contains width * height 32-bit IEEE floats in row-major order).
 
-const SurfaceTable = preload("res://scripts/track.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const RoadSection = preload("res://scripts/track/road_section.gd")
 
@@ -119,19 +118,19 @@ static func road_surface_height_at(sec: Dictionary, lat: float) -> float:
 	var lat_mag = absf(lat)
 	if lat_mag <= w:
 		return RoadBuilder.road_height(sec, lat)
-	var kw = maxf(sec.kerb_width, RoadBuilder.MIN_BAND)
+	var sign_lat = -1 if left else 1
+	var h_edge = RoadBuilder.road_height(sec, sign_lat * w)
+	var pts = [[sign_lat * w, h_edge]] + RoadBuilder.side(sec, sign_lat)
+	for i in pts.size() - 1:
+		var l0 = absf(pts[i][0])
+		var l1 = absf(pts[i + 1][0])
+		if lat_mag >= l0 - 1e-4 and lat_mag <= l1 + 1e-4:
+			var span = l1 - l0
+			var t = 0.0 if span <= 1e-9 else clampf((lat_mag - l0) / span, 0.0, 1.0)
+			return lerpf(pts[i][1], pts[i + 1][1], t)
 	var slope = tan(deg_to_rad(sec.verge_slope_deg))
-	var d_kerb = lat_mag - w
-	var kerb = sec.kerb_left if left else sec.kerb_right
-	if d_kerb <= kw:
-		if kerb != RoadSection.Kerb.NONE:
-			return RoadBuilder.kerb_shape(kerb, sec.kerb_height, d_kerb / kw)
-		return -slope * d_kerb
-	var top = (
-		RoadBuilder.kerb_shape(kerb, sec.kerb_height, 1.0) if kerb != RoadSection.Kerb.NONE else -slope * kw
-	)
-	var d_after = d_kerb - kw
-	return top - slope * d_after
+	var last_pt = pts[-1]
+	return last_pt[1] - slope * (lat_mag - absf(last_pt[0]))
 
 
 ## Stitches terrain heights to nearby roads.
@@ -199,7 +198,7 @@ func stitch_heights(grid: Dictionary, roads: Array) -> void:
 			var gx1 = int(floor((maxf(p0.x, p1.x) + max_w) / CELL_GRID))
 			var gz0 = int(floor((minf(p0.y, p1.y) - max_w) / CELL_GRID))
 			var gz1 = int(floor((maxf(p0.y, p1.y) + max_w) / CELL_GRID))
-			var seg_record = {"s0": s0, "s1": s1, "p0": p0, "p1": p1, "max_w": max_w}
+			var seg_record = {"s0": s0, "s1": s1, "p0": p0, "p1": p1, "max_w": max_w, "idx": seg_idx}
 			for gz in range(gz0, gz1 + 1):
 				for gx in range(gx0, gx1 + 1):
 					var key = Vector2i(gx, gz)
@@ -219,21 +218,29 @@ func stitch_heights(grid: Dictionary, roads: Array) -> void:
 				var best_seg = null
 				var best_dist_sq = INF
 				var best_t = 0.0
+				var best_t_raw = 0.0
 				var v2 = Vector2(vx, vz)
 				for seg in cand_list:
 					var ab = seg.p1 - seg.p0
 					var l2 = ab.length_squared()
 					if l2 < 1e-9:
 						continue
-					var t = clampf((v2 - seg.p0).dot(ab) / l2, 0.0, 1.0)
+					var t_raw = (v2 - seg.p0).dot(ab) / l2
+					var t = clampf(t_raw, 0.0, 1.0)
 					var proj = seg.p0 + t * ab
 					var d2 = (v2 - proj).length_squared()
 					if d2 < best_dist_sq:
 						best_dist_sq = d2
 						best_seg = seg
 						best_t = t
+						best_t_raw = t_raw
 				if best_seg == null or best_dist_sq > best_seg.max_w * best_seg.max_w:
 					continue
+				if not closed:
+					if best_seg.idx == 0 and best_t_raw < 0.0:
+						continue
+					if best_seg.idx == seg_count - 1 and best_t_raw > 1.0:
+						continue
 				var s_interp = lerpf(best_seg.s0.s, best_seg.s1.s, best_t)
 				if closed and best_seg.s1.s < best_seg.s0.s:
 					s_interp = fposmod(lerpf(best_seg.s0.s, best_seg.s1.s + length, best_t), length)
@@ -251,7 +258,7 @@ func stitch_heights(grid: Dictionary, roads: Array) -> void:
 				var edge_pt = road.transform * e_outer.point
 				var v_idx = gz * w + gx
 				var h_orig = data[v_idx]
-				if lat_mag < edge_lat - 1e-4:
+				if lat_mag < edge_lat - 0.05:
 					var h_loc = road_surface_height_at(sec_eval, lat)
 					var p_surf = st_eval.pos + fr_eval[0] * lat + fr_eval[1] * h_loc
 					var y_road_surf = (road.transform * p_surf).y

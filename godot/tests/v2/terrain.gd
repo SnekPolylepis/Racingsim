@@ -28,6 +28,7 @@ var results = {}
 
 var analytic_asset: Node3D
 var stitched_asset: Node3D
+var runoff_kerb_asset: Node3D
 var perf_asset: Node3D
 
 
@@ -40,11 +41,13 @@ func check(ok: bool, what: String) -> void:
 
 func _initialize() -> void:
 	# Build fixtures in non-overlapping regions of world space:
-	#   analytic_asset: centered at (0, 0), x in [-128, 127], z in [-128, 127]
-	#   stitched_asset: centered at (0, 600), x in [-128, 127], z in [472, 727]
-	#   perf_asset:     centered at (2500, 0), x in [1500, 3500], z in [-1000, 1000]
+	#   analytic_asset:    centered at (0, 0), x in [-128, 127], z in [-128, 127]
+	#   stitched_asset:    centered at (0, 600), x in [-128, 127], z in [472, 727]
+	#   runoff_kerb_asset: centered at (0, 1100), x in [-128, 127], z in [972, 1227]
+	#   perf_asset:        centered at (2500, 0), x in [1500, 3500], z in [-1000, 1000]
 	build_analytic_fixture()
 	build_stitched_fixture()
+	build_runoff_kerb_fixture()
 	build_perf_fixture()
 
 
@@ -60,6 +63,7 @@ func _physics_process(_delta: float) -> bool:
 	test_analytic_heightmap()
 	test_chunk_seams()
 	test_road_stitch()
+	test_road_stitch_runoff_kerb()
 	test_car_rest_and_drive()
 	test_performance()
 	test_validate()
@@ -107,8 +111,8 @@ func build_stitched_fixture() -> void:
 	road.closed = false
 	road.drives_timing = false
 	var c = Curve3D.new()
-	c.add_point(Vector3(-100.0, 0.0, 600.0))
-	c.add_point(Vector3(100.0, 0.0, 600.0))
+	c.add_point(Vector3(-150.0, 0.0, 600.0))
+	c.add_point(Vector3(150.0, 0.0, 600.0))
 	road.curve = c
 	var sec_dict = {
 		"width_left": 5.0,
@@ -122,8 +126,56 @@ func build_stitched_fixture() -> void:
 		"verge_right": 5.95,
 		"verge_slope_deg": 3.0,
 	}
-	road.sections.assign([RoadSection.make(0.0, sec_dict), RoadSection.make(200.0, sec_dict)])
+	road.sections.assign([RoadSection.make(0.0, sec_dict), RoadSection.make(300.0, sec_dict)])
 	stitched_asset.add_child(road)
+	road.bake()
+	var w = 320
+	var h = 256
+	var floats = PackedFloat32Array()
+	floats.resize(w * h)
+	var img = Image.create_from_data(w, h, false, Image.FORMAT_RF, floats.to_byte_array())
+	var patch = TerrainPatch.new()
+	patch.name = "StitchedTerrain"
+	patch.image = img
+	patch.metres_per_pixel = 1.0
+	patch.origin_offset = Vector2(-160.0, 472.0)
+	patch.chunk_size = 64
+	patch.blend_m = 8.0
+	patch.under_road_drop_m = 0.3
+	stitched_asset.add_child(patch)
+	patch.bake()
+
+
+func build_runoff_kerb_fixture() -> void:
+	runoff_kerb_asset = Node3D.new()
+	runoff_kerb_asset.set_script(TrackAsset)
+	runoff_kerb_asset.name = "RunoffKerbAsset"
+	runoff_kerb_asset.id = "runoff_kerb_asset"
+	root.add_child(runoff_kerb_asset)
+	var road = RoadPath.new()
+	road.name = "Road"
+	road.closed = false
+	road.drives_timing = false
+	var c = Curve3D.new()
+	c.add_point(Vector3(-100.0, 0.0, 1100.0))
+	c.add_point(Vector3(100.0, 0.0, 1100.0))
+	road.curve = c
+	var sec_dict = {
+		"width_left": 6.0,
+		"width_right": 6.0,
+		"kerb_width": 1.0,
+		"kerb_height": 0.05,
+		"kerb_left": RoadSection.Kerb.RAMP,
+		"kerb_right": RoadSection.Kerb.SAUSAGE,
+		"runoff_left": 4.0,
+		"runoff_right": 4.0,
+		"runoff_surface": 4,
+		"verge_left": 4.0,
+		"verge_right": 4.0,
+		"verge_slope_deg": 3.0,
+	}
+	road.sections.assign([RoadSection.make(0.0, sec_dict), RoadSection.make(200.0, sec_dict)])
+	runoff_kerb_asset.add_child(road)
 	road.bake()
 	var w = 256
 	var h = 256
@@ -133,18 +185,18 @@ func build_stitched_fixture() -> void:
 	for gz in h:
 		for gx in w:
 			var vx = -128.0 + gx * 1.0
-			floats[idx] = 1.5 + 0.5 * sin(vx / 20.0)
+			floats[idx] = 0.5 + 0.2 * cos(vx / 25.0)
 			idx += 1
 	var img = Image.create_from_data(w, h, false, Image.FORMAT_RF, floats.to_byte_array())
 	var patch = TerrainPatch.new()
-	patch.name = "StitchedTerrain"
+	patch.name = "RunoffKerbTerrain"
 	patch.image = img
 	patch.metres_per_pixel = 1.0
-	patch.origin_offset = Vector2(-128.0, 472.0)
+	patch.origin_offset = Vector2(-128.0, 972.0)
 	patch.chunk_size = 64
 	patch.blend_m = 8.0
 	patch.under_road_drop_m = 0.3
-	stitched_asset.add_child(patch)
+	runoff_kerb_asset.add_child(patch)
 	patch.bake()
 
 
@@ -245,7 +297,7 @@ func test_road_stitch() -> void:
 	var edge_ok = true
 	for k in 41:
 		var x = -80.0 + k * 4.0
-		var s = x + 100.0
+		var s = x + 150.0
 		var e_r = RoadBuilder.beyond_edge(c, keys, false, [], s, 1, 0.0)
 		var e_l = RoadBuilder.beyond_edge(c, keys, false, [], s, -1, 0.0)
 		var hit_r = surf.contact(Vector3(x, 20.0, 612.0), Vector3.DOWN, 40.0)
@@ -268,7 +320,7 @@ func test_road_stitch() -> void:
 			PhysicsServer3D.body_set_collision_layer(child.get_rid(), 0)
 	var min_drop = INF
 	var no_poke = true
-	var sec_eval = RoadBuilder.section_at(keys, 100.0, 200.0, false)
+	var sec_eval = RoadBuilder.section_at(keys, 150.0, 300.0, false)
 	for k in 21:
 		var x = -50.0 + k * 5.0
 		for j in 21:
@@ -289,6 +341,63 @@ func test_road_stitch() -> void:
 		edge_ok and worst_edge_err < 0.02 and no_poke and min_drop >= 0.3 - 1e-4,
 		(
 			"road stitch: verge outer edge matches within 2 cm (worst %.4f m); no terrain above road footprint (min drop %.3f m >= 0.3 m)"
+			% [worst_edge_err, min_drop]
+		)
+	)
+
+
+func test_road_stitch_runoff_kerb() -> void:
+	var road_node: RoadPath = runoff_kerb_asset.get_node("Road")
+	var c = road_node.working_curve()
+	var keys = road_node.sections
+	var surf = TrackSurface.new(runoff_kerb_asset)
+	var worst_edge_err = 0.0
+	var edge_ok = true
+	# Part 1: verge outer edge matches verge within 2 cm (with kerb and runoff)
+	for k in 41:
+		var x = -80.0 + k * 4.0
+		var s = x + 100.0
+		var e_r = RoadBuilder.beyond_edge(c, keys, false, [], s, 1, 0.0)
+		var e_l = RoadBuilder.beyond_edge(c, keys, false, [], s, -1, 0.0)
+		var hit_r = surf.contact(Vector3(x, 20.0, 1115.0), Vector3.DOWN, 40.0)
+		var hit_l = surf.contact(Vector3(x, 20.0, 1085.0), Vector3.DOWN, 40.0)
+		if hit_r.is_empty() or hit_l.is_empty():
+			edge_ok = false
+			continue
+		var err_r = absf(hit_r.point.y - e_r.point.y)
+		var err_l = absf(hit_l.point.y - e_l.point.y)
+		worst_edge_err = maxf(worst_edge_err, maxf(err_r, err_l))
+		if err_r >= 0.02 or err_l >= 0.02:
+			edge_ok = false
+	results["stitch_rk_worst_edge_err_m"] = worst_edge_err
+	# Part 2: no terrain above footprint across kerb, runoff, and verge
+	var road_rids = []
+	for child in runoff_kerb_asset.get_node("Surfaces").get_children():
+		if str(child.name).begins_with("Road_") and child is StaticBody3D:
+			road_rids.append(child.get_rid())
+			PhysicsServer3D.body_set_collision_layer(child.get_rid(), 0)
+	var min_drop = INF
+	var no_poke = true
+	var sec_eval = RoadBuilder.section_at(keys, 100.0, 200.0, false)
+	for k in 21:
+		var x = -50.0 + k * 5.0
+		for j in 29:
+			var lat = -14.0 + j * 1.0
+			var h_road = TerrainPatch.road_surface_height_at(sec_eval, lat)
+			var hit_t = surf.contact(Vector3(x, 20.0, 1100.0 + lat), Vector3.DOWN, 40.0)
+			if hit_t.is_empty():
+				continue
+			var drop = h_road - hit_t.point.y
+			min_drop = minf(min_drop, drop)
+			if hit_t.point.y > h_road - 0.3 + 1e-4:
+				no_poke = false
+	for rid in road_rids:
+		PhysicsServer3D.body_set_collision_layer(rid, 1)
+	results["stitch_rk_min_drop_m"] = min_drop
+	check(
+		edge_ok and worst_edge_err < 0.02 and no_poke and min_drop >= 0.3 - 1e-4,
+		(
+			"road stitch with runoff and kerb: verge outer edge matches within 2 cm (worst %.4f m); no terrain above footprint (min drop %.3f m >= 0.3 m)"
 			% [worst_edge_err, min_drop]
 		)
 	)
@@ -318,14 +427,20 @@ func test_car_rest_and_drive() -> void:
 	var c2 = CarBody.new()
 	c2.configure(presets.f296gt3)
 	c2.wear_enabled = false
-	var hit_start = stitched_surf.contact(Vector3(-80.0, 20.0, 570.0), Vector3.DOWN, 40.0)
+	var hit_start = stitched_surf.contact(Vector3(-80.0, 20.0, 600.0), Vector3.DOWN, 40.0)
 	var start_y = hit_start.point.y if not hit_start.is_empty() else 0.0
-	var heading = atan2(60.0, 160.0)
-	c2.place(Vector3(-80.0, start_y + 0.3, 570.0), heading, start_y)
+	var heading = atan2(15.0, 200.0)
+	c2.place(Vector3(-80.0, start_y, 600.0), heading, start_y)
+	c2.input = {"throttle": 0.0, "brake": 1.0, "steer": 0.0, "clutch": 0.0, "handbrake": 0.0}
+	for tick in 10:
+		c2.step(DT, stitched_surf, true)
 	var dist = 0.0
 	var prev_pos = c2.pos
 	var has_nan = false
 	var t = 0.0
+	var saw_road_4_wheels = false
+	var saw_terrain_4_wheels = false
+	var min_contacts = 4
 	while dist < 200.0 and t < 30.0:
 		var target_speed = 60.0 / 3.6
 		var err_speed = target_speed - c2.speed
@@ -335,15 +450,40 @@ func test_car_rest_and_drive() -> void:
 		c2.step(DT, stitched_surf, true)
 		t += DT
 		dist += c2.pos.distance_to(prev_pos)
+		prev_pos = c2.pos
+		min_contacts = mini(min_contacts, c2.contacts)
+		if c2.contacts == 4 and c2.contact_hits.size() >= 4:
+			var all_road = true
+			var all_terrain = true
+			for w in 4:
+				var sid = c2.contact_hits[w].get("surface", -1)
+				if sid != 0:
+					all_road = false
+				if sid != 2:
+					all_terrain = false
+			if all_road:
+				saw_road_4_wheels = true
+			if saw_road_4_wheels and all_terrain:
+				saw_terrain_4_wheels = true
 		if is_nan(c2.pos.x) or is_nan(c2.vel.x) or is_nan(c2.speed) or is_nan(c2.rot.x) or is_nan(c2.ang.x):
 			has_nan = true
 			break
 	results["car_drive_dist_m"] = dist
 	results["car_drive_time_s"] = t
+	results["car_drive_min_contacts"] = min_contacts
 	check(
-		settled and contacts_ok and surface_ok and dist >= 200.0 and not has_nan,
 		(
-			"296 CarBody rest check on terrain (settled %.4f m/s, 4 contacts, surface 2) and drives %.1f m across road and terrain at 60 km/h without NaN (%.2f s)"
+			settled
+			and contacts_ok
+			and surface_ok
+			and dist >= 200.0
+			and not has_nan
+			and min_contacts == 4
+			and saw_road_4_wheels
+			and saw_terrain_4_wheels
+		),
+		(
+			"296 CarBody rest check on terrain (settled %.4f m/s, 4 contacts, surface 2) and drives %.1f m in %.2f s crossing road (surface 0) to terrain (surface 2) on 4 wheels"
 			% [c.speed, dist, t]
 		)
 	)

@@ -889,3 +889,11 @@ New: `scripts/track/terrain.gd` (`class_name TerrainPatch`, `@tool`, `Node3D`), 
 - `tests/v2/track_asset.gd` (23/23)
 - `scripts/game.gd --check-only` (clean exit 0)
 - `tools/Godot.exe --headless --editor --quit` (`TerrainPatch` registered in global class cache)
+
+## 2026-09-23  DONE F-P3-03 terrain follow-ups  (Gemini 3.8 Flash) — branch `rb/P3-03-terrain`
+Follow-up fixes and test additions for P3-03:
+1. **REBUILD-LOG.md**: removed merge conflict marker; diff against origin/main is strictly additive (0 deletions).
+2. **Drive test (`test_car_rest_and_drive`)**: fixed distance integration to tick-by-tick delta (`dist += c2.pos.distance_to(prev_pos)`). Car now truly drives 200.0 m in 13.58 s at 60 km/h, smoothly crossing from road (surface 0) to terrain (surface 2) maintaining 4 wheel contacts throughout.
+3. **`terrain.gd`**: removed unused `const SurfaceTable = preload("res://scripts/track.gd")`.
+4. **Road stitch with kerb & runoff**: `road_surface_height_at()` updated to use `RoadBuilder.side()` across kerb, runoff, and verge bands with road edge station prepended. Added `test_road_stitch_runoff_kerb()` verifying verge outer edge match within 2 cm (worst 0.0000 m) and no terrain poke above road/kerb/runoff footprint (min drop 0.300 m >= 0.3 m). In `stitch_heights()`, open road end handling ignores points longitudinally beyond path bounds so artificial drops are not created past the end of open tracks.
+5. **Gates**: all 23 selected suites passed via `run_gates.ps1` (0 failures, 70 s wall clock). `tests/v2/terrain.gd` 7/7 checks pass with empty stderr.
