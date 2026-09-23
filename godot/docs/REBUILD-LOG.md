@@ -1197,3 +1197,57 @@ Docs-only task: no code, tests or data changed.
 1. **`godot/docs/TESTING.md`:** added a "Rebuild (v2) suites" section between the legacy test descriptions and the CI section. Documents `tools/run_gates.ps1` (affected-only by default; `-All`, `-Features`, `-Perf`; the `RACINGSIM_PERF_GATES=0` timing switch) and `tools/gates.json`. Lists every `tests/v2/*.gd` suite (one line each: what it checks and how to run it), including `laps.gd`'s `--car`/`--record`/`--diag` arguments and the baseline file `docs/rebuild/laps-v2-baseline.json`. Records the known acceptable failure: laps rows' stderr carries Spa's "bank changes 2.69 deg/m" warning (F-P6-01). Existing legacy-suite content is preserved unchanged.
 
 2. **`godot/docs/LLM-GUIDE.md`:** added source-map entries for `scripts/vehicle/` (car_body.gd incl. compliance/unsprung mass, tyre_footprint.gd, wall_contact.gd, bot_driver.gd, plus tyre.gd, drivetrain.gd, aids.gd), `scripts/surface/` (track_surface.gd, wall_query.gd, test_surface.gd), `scripts/track/` (track_asset.gd, road_path.gd, terrain.gd, road_builder.gd, road_section.gd, wall_builder.gd, wall_path.gd, the scenery kit: scenery_builder, catch_fence, grandstand, gantry, billboards, marshal_post, pit_building, road_scatter), `trackgen/` (proving_ground.gd, spa.gd), and `scenes/proving/` (test_surfaces.tscn, track_drive.tscn). One or two lines each: what it is, and the one thing an editor must not break. All claims from code or the log; unclear items reference their REBUILD-LOG entry.
+## 2026-09-23  CONTRACT §5.3 Props/  (Claude Opus 5.5) — branch `claude/racing-sim-props-cones-v69o5c`
+Additive: a TrackAsset may have an optional `Props/` node. Any node below it with metadata `"prop"` naming a kind in `data/props.json` is one knock-over prop resting at that node's pose (origin at the base centre on the ground, +Y up). `validate()` rejects unknown kinds and props outside the ±5 km box. Tracks without `Props/` are unchanged. `PropSet.from_asset(asset)` reads them; the prop node then follows the prop (`sync_nodes()`). New data file `data/props.json` (documented in DATA-CONTRACTS "Trackside props").
+
+## 2026-09-23  DONE props  knock-over trackside props  (Claude Opus 5.5) — branch `claude/racing-sim-props-cones-v69o5c` (on `rb/P2-comp-b`)
+The rest of P4-03. New: `scripts/props/prop_body.gd` (PropBody), `scripts/props/prop_set.gd` (PropSet), `data/props.json` (cone, bollard, marker board), `tests/v2/props.gd` (13 checks, in `tools/gates.json`, perf). Changed: `trackgen/proving_ground.gd` (`add_props`), `tests/v2/laps.gd` (runs the track's props, requires zero prop contacts), `scripts/track/track_asset.gd` (Props/ docs and validation), REBUILD-PLAN §5.3 and P4-03, DATA-CONTRACTS.
+
+**What it is.** A prop is a small rigid body on our own 240 Hz integrator (D6: no RigidBody3D), 64-bit position like CarBody, body-frame spin with CarBody's RK4 gyro term. A kind is only data: a frustum (cone, bollard) or a box (marker board), mass, centre-of-mass height, inertia, restitution, friction, drag area. The hull is a point set (cone: 8 on the base ring, 3 rings of 6 up the side, the tip).
+
+**One tick** (after `car.step()` and `WallContact.step()`, in the physics frame: `props.step(dt, [car])`):
+- Free motion: gravity, quadratic drag (Cd·A 0.12 m² for the cone), spin.
+- **Contacts found at the pose the tick starts from and solved on the velocity before the prop moves.** A first version fixed contacts after the move (like WallContact), and a cone on an 8° ramp crept 2.8 mm before sleeping: the tick's slide had already happened when friction stopped it.
+- **Car:** each hull point is swept relative to the car's hull box (`hull_center`/`hull_half`) from last tick's poses to now. A point that ends inside meets the face it came in through, not the nearest face (at 200 km/h the car moves 0.23 m a tick). The front and rear faces push along a normal raked 25° up (`NOSE_RAKE`), for the slope from bumper to bonnet that the box lacks. Car-body friction is 0.35 (plastic on paint). Without the rake, a vertical box face batted cones along the road: 0.00 m off the ground even at 200 km/h. Floor contacts pinch the prop against the road and the car rides up on it, e.g. a flat board caught under a braking car's nose.
+- **Ground:** one surface ray (§5.2) under the centre of mass gives the local plane (props are under a metre across). A point below it or close enough to reach it this tick is a contact. It is speculative: the prop may close the gap but not cross it, so nothing tunnels. Only the deepest point per quadrant is kept: four well-spread supports hold a prop as well as all of them, at half the solve cost.
+- **Walls:** after the move, a WallQuery with the kind's bounding box sweeps and finds contact points, as WallContact does for the car.
+- Push-out of the deepest penetration per group, then **sequential impulses with accumulated clamping** (4 passes): restitution on the closing speed (none under 1 m/s), Coulomb friction within µ·jn. Each contact's response matrix (both bodies) is built once.
+- **Car side:** the car takes the exact opposite impulse at the same point, with its mass and world inverse inertia (`CarBody.apply_impulse`'s arithmetic, basis cached). Linear velocities are set from the summed impulses in 64 bits, so momentum balances to 5e-14.
+- **Sleep:** asleep after 0.5 s under 0.05 m/s and 0.2 rad/s on the ground. Sleeping props sit in an 8 m grid. Each tick a car costs a lookup of the cells under its swept hull box, a sphere-vs-box test for the props there, and a wake if its hull reaches one. Authored props are seated on the ground under them on the first step.
+
+**Proving ground:** 6 cones lining the inside of the T3 ditch approach, 1340-1390 m, 4.5 m left of centre on flat tarmac. The BotLine crosses to the bypass lane (3.5 m right) between 1360 and 1420 m, so a row between the lanes (the first idea) would sit on its path. I measured every car's hull on the bot's laps against candidate spots, and all 6 runs stay at least 3.4 m clear of these. The scene still validates (+2 KB; one shared cone mesh).
+
+**Results** (`tests/v2/props.gd` 13/13, stderr empty; 296 GT3, 1300 kg, coasting, braking once it hits):
+
+| hit | cone speed / car's | cone height | rests after | car loses (head-on bound (1+e)mv/(M+m)) |
+|---|---|---|---|---|
+| 30 km/h | 1.23x | 0.06 m | 6.4 m, 6.7 s | 0.090 km/h (0.099) |
+| 100 km/h | 1.22x | 0.95 m | 49 m, 9.4 s | 0.345 km/h (0.380) |
+| 200 km/h | 1.23x | 1.85 m | 98 m, 11.7 s | 0.710 km/h (0.783) |
+
+- No prop point ever ends a tick inside the hull (0.0000 m cones, 0.0045 m the board). At most 3 mm below the ground.
+- A cone left awake stays put: 0.01 mm on flat, 0.07 mm and 0.018° on an 8° ramp. It is asleep after 0.5 s.
+- Dropped tumbling from 1 m onto the proving ground's road (TrackSurface): never below it, asleep on tarmac after 4.0 s.
+- A 100 km/h hit in free fall exchanges 134 N s. Horizontal momentum is kept to 5e-14 of that, and 1409 J is lost of at most ½µv² = 1530 J.
+- A bollard and a marker board at 100 km/h: 1.26x and 1.15x the car's speed, both come to rest.
+- A cone thrown at a 0.15 m armco at 25 m/s never passes the face (-2 mm) and bounces back at 6.6 m/s.
+- The same 100 km/h run twice gives an identical final state.
+- **Cost** (`-Perf`, alone): 50 sleeping cones beside a passing car cost 8.9 µs per tick (budget 15); an awake cone costs 47.5 µs per tick (budget 100). 0.4 µs with no props nearby.
+- Laps: all 12 (proving ground and Spa × 3 cars × 2 models) have 0 prop-contact ticks, and lap times are unchanged to the hundredth.
+
+**For P4-core (game loop):** `var props = PropSet.from_asset(track_asset)` per track. Each physics tick, after `car.step()` and `WallContact.step()`, call `props.step(dt, [car, ...])`, which returns the number of car-prop contact points. Call `props.sync_nodes()` from `_process` to pose the `Props/` markers, and `props.reset()` on a restart. Only authored props render (the markers carry a mesh).
+
+**Gates** (run here on Linux in the cloud container: Godot 4.6.2 Linux build, pwsh 7.4, `run_gates.ps1 -All -Jobs 4`; not the Windows dev box):
+- All v2 suites pass, plus parse check and props.
+- The laps rows fail only on the known Spa bank warning in stderr (F-P6-01).
+- terrain: its car-step timing ignores the parallel flag (F-terrain-perf).
+- The 10 legacy suites "differ" from the Windows baselines only by the Linux banner's blank line (and one 0.13/0.12 rounding in dynamics). Their output is identical to the untouched base commit run on the same machine, and stderr is empty.
+- `-Perf`: props and barrier pass. chassis_spike, footprint and track_asset car-step budgets read 310-370 µs on this slower CPU, and the base commit reads the same (322, 340 µs).
+- Windowed `--features` (under Xvfb): FEATURE RESULTS 212 checks, failures [], stderr empty.
+- **Re-run `run_gates.ps1 -All -Perf -Features` on the dev PC before merging.**
+
+**Not done:**
+- Props don't collide with each other.
+- No crushing or damage.
+- The game loop doesn't call PropSet yet (P4-core).
+- The nose rake is a stand-in for a real nose shape until the hull gets one.

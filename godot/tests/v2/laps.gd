@@ -1,7 +1,8 @@
 extends SceneTree
 ## P4-07 / section 6 "Laps": the bot (scripts/vehicle/bot_driver.gd) on each generated track, every car,
 ## both handling models: a valid flying lap (gates in order), zero wheels off the track (grass, gravel,
-## runoff), zero wall contacts, finite throughout. Lap times are compared with the recorded baseline in
+## runoff), zero wall contacts, zero prop contacts (the track's Props/ cones are off the racing line),
+## finite throughout. Lap times are compared with the recorded baseline in
 ## docs/rebuild/laps-v2-baseline.json (within 2 %); `-- --record` writes it. The car starts at rest on
 ## grid slot 1 and the lap is timed from its first start-line crossing to the next.
 ## Tracks: every trackgen/*.gd generator listed in TRACKS that exists (proving ground now; Spa when it lands).
@@ -12,6 +13,7 @@ const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const WallQuery = preload("res://scripts/surface/wall_query.gd")
 const WallContact = preload("res://scripts/vehicle/wall_contact.gd")
+const PropSet = preload("res://scripts/props/prop_set.gd")
 const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const DT = 1.0 / 240
 const BASELINE = "res://docs/rebuild/laps-v2-baseline.json"
@@ -76,10 +78,20 @@ func _physics_process(_delta):
 					timing = "baseline %.2f s (%+.2f%%)" % [base, (r.lap / base - 1) * 100]
 					timing_ok = absf(r.lap / base - 1) < .02
 				check(
-					r.ok and r.lap > 0 and r.off == 0 and r.walls == 0 and timing_ok,
+					r.ok and r.lap > 0 and r.off == 0 and r.walls == 0 and r.props == 0 and timing_ok,
 					(
-						"%s: lap %.2f s, %d off-track wheel-ticks, %d wall-contact ticks, max %.1f m off the line, top %.0f km/h; %s"
-						% [name, r.lap, r.off, r.walls, r.max_off_line, r.top * 3.6, timing]
+						"%s: lap %.2f s, %d off-track wheel-ticks, %d wall-contact ticks, %d prop-contact ticks (%d props), max %.1f m off the line, top %.0f km/h; %s"
+						% [
+							name,
+							r.lap,
+							r.off,
+							r.walls,
+							r.props,
+							r.prop_count,
+							r.max_off_line,
+							r.top * 3.6,
+							timing
+						]
 					)
 				)
 	if record:
@@ -106,6 +118,8 @@ func lap(asset, key, simcade):
 	c.place(pole.origin, atan2(fwd.z, fwd.x), pole.origin.y)
 	var surf = asset.surface()
 	var walls = WallQuery.new(asset, c.hull_half)
+	var props = PropSet.from_asset(asset)
+	var prop_ticks = 0
 	var bot = BotDriver.new(asset.get_node("BotLine"), c, surf)
 	var gates = asset.gates()
 	var next_gate = 0
@@ -125,6 +139,8 @@ func lap(asset, key, simcade):
 		c.step(DT, surf, true)
 		if WallContact.step(c, walls) > 0:
 			wall_ticks += 1
+		if props.step(DT, [c]) > 0 or props.awake_count() > 0:
+			prop_ticks += 1
 		time += DT
 		for w in c.wheels:
 			if w.load > 0 and w.surf.id >= 2:
@@ -163,5 +179,12 @@ func lap(asset, key, simcade):
 			ok = false
 			break
 	return {
-		"ok": ok, "lap": lap_time, "off": off, "walls": wall_ticks, "max_off_line": max_off_line, "top": top
+		"ok": ok,
+		"lap": lap_time,
+		"off": off,
+		"walls": wall_ticks,
+		"props": prop_ticks,
+		"prop_count": props.props.size(),
+		"max_off_line": max_off_line,
+		"top": top
 	}

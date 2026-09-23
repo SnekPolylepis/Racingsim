@@ -14,6 +14,7 @@ const Gantry = preload("res://scripts/track/gantry.gd")
 const Billboards = preload("res://scripts/track/billboards.gd")
 const PitBuilding = preload("res://scripts/track/pit_building.gd")
 const MarshalPost = preload("res://scripts/track/marshal_post.gd")
+const PropBody = preload("res://scripts/props/prop_body.gd")
 const OUTPUT = "res://tracks3d/proving_ground/proving_ground.scn"
 const ARC = PI / 2.0
 const QUARTER = PI / 4.0
@@ -398,7 +399,44 @@ static func build_asset() -> Node3D:
 	trees.bake()
 	add_lighting(asset, road)
 	add_scenery_kit(asset, road)
+	add_props(asset, road)
 	return asset
+
+
+## Knock-over cones (P4-03 props) lining the inside of the T3 ditch approach, 4.5 m left of centre on
+## flat tarmac before the trough opens (1380 m), on the ditch's side of the road. The BotLine moves to
+## the bypass lane (3.5 m right) between 1360 and 1420 m, so a row between the two lanes would be on
+## its path; here every car's hull stays at least 3.4 m clear on the bot's laps, and laps stay at zero
+## prop contacts.
+static func add_props(asset: Node3D, road: RoadPath) -> void:
+	var props = Node3D.new()
+	props.name = "Props"
+	asset.add_child(props)
+	props.owner = asset
+	var measured = road.last_bake.length
+	var sorted = road.sections.duplicate()
+	sorted.sort_custom(func(a, b): return a.at < b.at)
+	var curve = road.working_curve()
+	var elev = RoadBuilder.elevation_spline(road.elevation_keys, measured, true)
+	var k = 0
+	for nominal in [1340.0, 1350.0, 1360.0, 1370.0, 1380.0, 1390.0]:
+		var s = actual_station(curve, nominal, measured)
+		var st = RoadBuilder.station_at(curve, true, measured, elev, s)
+		var sec = RoadBuilder.section_at(sorted, s, measured, true)
+		var fr = RoadBuilder.frame(st.tangent, sec.bank_deg)
+		var lat = -4.5
+		var at = st.pos + fr[0] * lat + fr[1] * RoadBuilder.road_height(sec, lat)
+		var fwd = (st.tangent - fr[1] * st.tangent.dot(fr[1])).normalized()
+		var marker = Marker3D.new()
+		k += 1
+		marker.name = "DitchCone%d" % k
+		marker.transform = Transform3D(Basis(fwd, fr[1], fwd.cross(fr[1])), at)
+		marker.set_meta("prop", "cone")
+		props.add_child(marker)
+		marker.owner = asset
+		var mesh = PropBody.visual("cone")
+		marker.add_child(mesh)
+		mesh.owner = asset
 
 
 static func add_scenery_kit(asset: Node3D, _road: RoadPath) -> void:
