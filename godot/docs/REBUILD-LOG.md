@@ -192,3 +192,14 @@ Findings (non-blocking):
 4. **Pre-existing, low.** `showcase_benchmark.gd:135` reuses one InputEvent within a frame; the feature suite's source run prints a warning to stderr every time. One-line fix (`duplicate()` the event), separate task.
 
 Merge order: P2-01 into main first; then my stack (P2-02 → P3-00 → P3-01) on top, resolving the log by keeping both sides.
+
+## 2026-09-22  NOTE P1 review (Claude Opus 5.5)
+Checked `rb/P1-remove-editor` at `406db6b` in a clean detached worktree. **Verdict: NOT YET — one real regression; fix, then merge.** Source `--features`: 211 checks, 0 failures.
+
+1. **Regression, must fix: resources leaked at exit.** P1's feature run ends with stderr reporting leaked RIDs (2 Canvas, 18 CanvasItem, 2 Viewport, 2 RenderTarget, 2 ShadowAtlas, 26+41 Texture, 16 ShapedText, 1 Font) and "ObjectDB instances leaked at exit". Main's run has none (its stderr is only the pre-existing 644-byte input-event warning), so the DONE entry's "expected engine shutdown leaks" is wrong: P1 introduced them.
+   **Cause:** `interface.gd` still creates `track_picker` and `car_picker` with `OptionButton.new()` "for caller compatibility", but the toolbar that parented them is gone, so they are never in the tree and never freed. Each OptionButton owns a PopupMenu (a Window, so its own viewport, canvas and render target): two orphans account for the paired Viewport/Canvas/RenderTarget/ShadowAtlas counts, and their controls, fonts and text for the rest.
+   **Proof:** with only the pickers parented (hidden) under the UI root, a throwaway run's stderr went back to exactly main's 644 bytes, still 211/0.
+   **Fix (preferred):** remove the dummy pickers and change their callers to use the front end's pickers or app state directly. Minimal alternative: parent them hidden, or `free()` them on exit.
+2. **Test coverage, low.** The 49 removed feature checks (125 → 85 `check()` call sites) are all editor-specific, apart from two thresholds correctly lowered (3 bundled circuits; 7 handbook chapters after 3 editor chapters were removed), with one exception: "atomic replace existing file" (overwrite an existing JSON and read back the new content) was storage coverage, not editor coverage. "Record replacement leaves no incomplete temporary file" still exercises the `.tmp` → rename path, but nothing checks that overwriting yields the new content. Restore it as a one-line check on a setup or ghost file.
+3. **Docs, low.** `docs/TESTING.md` still says the feature suite covers "dirty guards"; the only dirty-guard checks were the editor's and were removed. Update the sentence.
+4. The feature count 260 → 211 is explained by 1 and 2. The 4 legacy headless results quoted in the DONE entry match the baseline.
