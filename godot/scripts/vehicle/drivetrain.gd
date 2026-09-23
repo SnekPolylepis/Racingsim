@@ -3,6 +3,10 @@ extends RefCounted
 const VehicleAids = preload("res://scripts/vehicle/aids.gd")
 
 
+static func sg(v):
+	return -1.0 if v < 0 else 1.0
+
+
 static func request_shift(car, direction):
 	if car.shift_timer > 0:
 		return
@@ -64,13 +68,13 @@ static func step(car, dt, torques, automatic):
 		var ground_rpm = absf(speed / p.wheelR * ratio) * 30 / PI
 		if car.gear >= 1 and car.shift_cooldown <= 0:
 			if ground_rpm > p.redline * .96 and car.gear < p.get("gears", 6) and input.throttle > .1:
-				car.request_shift(1)
+				request_shift(car, 1)
 				car.shift_cooldown = .4
 			elif car.gear > 1:
 				var lower_rpm = ground_rpm * s["gear" + str(car.gear - 1)] / s["gear" + str(car.gear)]
 				var lugging = ground_rpm < p.redline * (.62 if input.throttle > .6 else .45)
 				if lugging and lower_rpm < p.redline * .86:
-					car.request_shift(-1)
+					request_shift(car, -1)
 					car.shift_cooldown = .4
 	if automatic and car.shift_timer <= 0:
 		if speed < .3 and input.brake > .5 and input.throttle < .05:
@@ -131,17 +135,17 @@ static func step(car, dt, torques, automatic):
 	car.rpm = car.engine_w * 30 / PI
 	var drive = [0.0, 0.0, 0.0, 0.0]
 	if int(s.layout) == 0:
-		car.axle_split(2, 3, tin, torques, drive, dt)
+		axle_split(car, 2, 3, tin, torques, drive, dt)
 	elif int(s.layout) == 1:
-		car.axle_split(0, 1, tin, torques, drive, dt)
+		axle_split(car, 0, 1, tin, torques, drive, dt)
 	else:
 		var wf = (wheels[0].omega + wheels[1].omega) / 2
 		var wr = (wheels[2].omega + wheels[3].omega) / 2
 		var cap = 20 + absf(tin) * s.awdLock
 		var need = -((wf - wr) * 2 * p.wheelI / dt + torques[0] + torques[1] - torques[2] - torques[3]) / 2
 		var lock = clampf(need, -cap, cap)
-		car.axle_split(0, 1, tin * (1 - s.awdRear) + lock, torques, drive, dt)
-		car.axle_split(2, 3, tin * s.awdRear - lock, torques, drive, dt)
+		axle_split(car, 0, 1, tin * (1 - s.awdRear) + lock, torques, drive, dt)
+		axle_split(car, 2, 3, tin * s.awdRear - lock, torques, drive, dt)
 	car.abs_active = false
 	for i in 4:
 		var w = wheels[i]
@@ -153,4 +157,4 @@ static func step(car, dt, torques, automatic):
 		cap += asm_brakes[i] * w.abs
 		w.brakeT = cap
 		var dw = cap * dt / p.wheelI
-		w.omega = 0.0 if absf(w.omega) <= dw else w.omega - car.sg(w.omega) * dw
+		w.omega = 0.0 if absf(w.omega) <= dw else w.omega - sg(w.omega) * dw
