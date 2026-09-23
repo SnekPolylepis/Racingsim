@@ -1087,78 +1087,6 @@ Found in my own code while reviewing (fixed on `rb/P4-07-bot-laps`):
 - BotDriver: easing off when wide lowered the target speed, which braked hard at full lock and ploughed the aid-free roadster into gravel; it now cuts throttle only. The braking pass shares grip with cornering (friction circle). Brake releases as body slip passes 3-8 deg. Proving-ground laps move +0.2-0.33 % (inside the gate; baseline not re-recorded).
 
 Still open (P4-07b, mine): the plan's curvature uses a ±6-point chord (~4 m), which reads Curve3D bake jitter as curvature and makes the plan conservative by accident. With an honest ±8 m chord every car is 6-11 % faster and the Simulation cars crash at pace 0.85 and even 0.75. The aid-free roadster in Simulation also trail-brakes into a snap spin at Spa s≈780 (right R≈170 m into a left kink, -3 deg camber). The bot needs honest curvature, a recalibrated pace and yaw-aware braking before Spa's baseline is recorded.
-## 2026-09-23  CLAIM P2-08  (Gemini 3.8 Flash)
-Building `scenes/proving/test_surfaces.tscn` and `scripts/proving/test_surfaces.gd`: driving scene with 6-DOF CarBody on every analytic TestSurface shape, visual model posing from CarBody.snapshot(), controls/teleport/car cycling/HUD, chase camera, and headless test `tests/v2/test_surfaces_scene.gd`.
-
-## 2026-09-23  DONE P2-08  (Gemini 3.8 Flash)
-Built `scenes/proving/test_surfaces.tscn` and `scripts/proving/test_surfaces.gd`: a standalone proving ground scene for driving the 6-DOF `CarBody` on all 8 analytic shapes from `scripts/surface/test_surface.gd`:
-1. Flat (origin X = 0 m)
-2. 8° Ramp (origin X = 400 m)
-3. 37° Side Slope (origin X = 800 m)
-4. R200 Crest (origin X = 1200 m)
-5. 20° Banked Bowl (origin X = 1600 m, radius 100 m)
-6. Karussell Ditch (origin X = 2000 m, 37° walls)
-7. 5 cm Step (origin X = 2400 m, 5 cm grid resolution near edge)
-8. 5 cm Block (origin X = 2800 m, 5 cm grid resolution near edge)
-
-Surfaces: generated procedural render meshes by sampling `height()` and `normal()` on a 1 m grid (5 cm near the step and block edges), laid out side by side along +X spaced 400 m apart. Queries satisfy the §5.2 `Surface` contact contract analytically with no physics frame requirement.
-
-Car & Visuals: steps `CarBody` at 240 Hz in `_physics_process` (`Engine.physics_ticks_per_second = 240`). `scripts/proving/visual_adapter.gd` bridges `CarBody.snapshot()` (xform, steer, wheel phase, comp) to `Visuals.make_car()` / `ferrari_296.gd` with tick interpolation (`slerp` basis, `lerp` position/steer/comp, `lerp_angle` phase) and poses the visual root offset by `(0, -cgHeight, 0)` in the body frame. Compression is passed to wheel pivots along the strut axis.
-
-Controls & Features:
-- Driving: WASD / Arrow keys / gamepad via `Controls` (`scripts/controls.gd`).
-- `1`..`8` (and numpad `1`..`8`): Teleport instantly to shapes 1 through 8.
-- `R`: Reset car to the spawn point of the current shape at rest.
-- `C`: Cycle car preset (`roadster` -> `gt` -> `f296gt3`).
-- `F1`: Toggle retro telemetry HUD (speed in km/h & mph, gear, RPM, per-wheel load in N, per-wheel compression in mm, contact flags, body roll & pitch in degrees, contacts count, footprint ray count).
-- `ESC`: Return to main menu (`res://main.tscn`).
-- Chase Camera: smooth exponential tracking (`1 - exp(-dt * 8)`), safety clamp above surface height, instant snap on teleport/reset.
-- Menu integration: Added "Test surfaces (dev)" option to main menu in `scripts/front_end.gd`.
-
-### How to Drive
-- From game: Launch the game, click **Test surfaces (dev)** on the main menu.
-- Standalone command: `tools/Godot.exe --path . res://scenes/proving/test_surfaces.tscn`
-- Use keys `1` to `8` to jump between the proving shapes.
-- Use `W`/`S` (or Up/Down) for throttle/brake, `A`/`D` (or Left/Right) to steer, `Space` for handbrake.
-- Press `C` to switch cars, `R` to reset, `F1` to toggle HUD telemetry.
-
-### Gates
-- Headless test `tests/v2/test_surfaces_scene.gd`: 14/14 checks pass, 0 failures, exit 0, empty stderr.
-- `--script scripts/game.gd --check-only`: exit 0, empty stderr.
-- All 11 existing `tests/v2/*.gd` test suites pass unchanged (exit 0, empty stderr).
-- Windowed integration `--features`: 212/212 checks pass, 0 failures, exit 0, empty stderr.
-- `python -m gdtoolkit.formatter -l 110`: clean.
-- `git diff --check`: clean.
-
-## 2026-09-23  CLAIM P3-03  (Gemini 3.8 Flash)
-Building `scripts/track/terrain.gd` (`class_name TerrainPatch`), road verge stitching with `RoadPath`, chunked render meshes and layer-1 surface collision, and `tests/v2/terrain.gd`.
-
-## 2026-09-23  DONE P3-03  (Gemini 3.8 Flash)
-New: `scripts/track/terrain.gd` (`class_name TerrainPatch`, `@tool`, `Node3D`), `scripts/track/terrain.gd.uid`, `tests/v2/terrain.gd` (6 checks), `tests/v2/terrain.gd.uid`. Output in `docs/rebuild/terrain-P3-03.txt`.
-
-**Implementation:**
-- Heightmap loading: supports grayscale/HDR textures (16-bit PNG, EXR), fast float32 byte-conversion path for `FORMAT_RF`, pixel fallback for other formats, and 32-bit float `.raw` files (documented GDAL conversion: `gdal_translate -ot Float32 -of ENVI input.tif output.raw`). Supports horizontal resolution `metres_per_pixel`, vertical `height_scale` and `height_offset`, and `origin_offset` in TrackAsset coordinates. Precision: 64-bit float arrays during baking within the ±5000 m box.
-- Seamless road stitching: uses 2D spatial grid pruning over RoadPath segments. For terrain vertices within `blend_m` (default 8 m) outside a RoadPath's outer verge edge (`beyond_edge(..., extra = 0.0)`), smoothly blends height toward verge outer edge height using cubic `smoothstep`. Vertices under the road footprint (road, kerbs, runoff, verge) are lowered at least 0.3 m (`under_road_drop_m`) below the banked/cambered road surface (`minf(h_orig, y_road_surf - 0.3)`).
-- Chunking & collision: chunks meshes (default 64x64 cells) into `ArrayMesh` instances under `Terrain/<name>/Chunk_<x>_<z>` with global finite-difference normals across chunk seams. Drivable collision bodies are added under `Surfaces/<name>_c<x>_<z>` as `StaticBody3D` children on layer 1 with metadata `"surface" = 2` (grass) using `ConcavePolygonShape3D` and CCW upward-facing winding matching GodotPhysics3D raycast conventions. `TrackAsset.validate()` passes cleanly.
-
-**Measurements & Results:**
-- `tests/v2/terrain.gd` (6/6 checks, exit 0, empty stderr):
-  1. **Analytic heightmap** ($h = 3 \sin(x/40) \cos(z/55)$): 200 random points hit on grass (surface 2), within 1 cm of analytic value (worst error **0.0003 m** / 0.3 mm).
-  2. **Chunk seams**: border rays on chunk boundaries hit with zero gaps (< 1 mm diff, worst gap **0.00015 m** / 0.15 mm).
-  3. **Road stitch**: verge outer edge matches verge height within 2 cm (worst error **0.0000 m** / 4.5 µm); no terrain pokes above road footprint (min drop **0.300 m** >= 0.3 m).
-  4. **296 CarBody rest & drive**: 296 settles at rest on terrain (speed **3.8e-8 m/s**, 4 contacts, all 4 wheels on surface 2 grass); drives **201.0 m** diagonally across road and terrain at 60 km/h without NaN (1.15 s).
-  5. **Performance**: 2 km x 2 km, 1 m-per-pixel heightmap (**8,000,000 triangles**, 1024 chunks) baked in **11.13 s**; 296 car tick **159.3 µs** on 8M-triangle terrain (well below section 6's 300 µs budget).
-  6. **Validation**: `TrackAsset.validate()` passes cleanly with terrain present (`[]`).
-
-**Gates Passed (all via Start-Process + WaitForExit(240000), exit 0, empty stderr):**
-- `tests/v2/terrain.gd` (6/6)
-- `tests/v2/road_tool.gd` (16/16)
-- `tests/v2/road_tool_v2.gd` (11/11)
-- `tests/v2/walls.gd` (8/8)
-- `tests/v2/track_asset.gd` (23/23)
-- `scripts/game.gd --check-only` (clean exit 0)
-- `tools/Godot.exe --headless --editor --quit` (`TerrainPatch` registered in global class cache)
-
 ## 2026-09-23  CLAIM P6-01  (GPT-6 Astra)
 Owner-directed Spa v0 and generic TrackAsset drive scene, on rb/P6-01-spa in the requested isolated worktree. Merged road density, test surfaces, and terrain dependencies. The owner's explicit three minimal checks and branch-only push override the queue's broader gate and main-merge workflow for this task. Data acquisition, authored generator, and drive scene proceed in parallel; existing user saves remain untouched.
 
@@ -1185,3 +1113,10 @@ Branch `rb/P4-01-game-port` from main `d225af2`. Normal launch now loads the aut
 The remaining P4-02 through P4-06 services are not yet wired to the new path: race timing, wall collision response, final visuals, camera/instruments/audio and frontend. A minimal car and chase camera keep the new path inspectable. The prior planar game loop remains behind existing visual test modes until those dependent ports are complete; `--features` is still on that path. In particular, deleting its coordinate-remap code before P4-04/P4-06 would break the existing test harness, so the removal here applies to the active normal-driving path.
 
 Gates (all Godot launches used Start-Process, WaitForExit(240000), and kill on timeout): fresh-worktree `--headless --editor --quit` import exited 0 with empty stderr; game.gd `--check-only` exited 0 with empty stderr; `--headless -- --v2-smoke` passed after 120 active ticks (14.545 m/s, 4 wheel contacts, finite full and interpolated snapshots); windowed `-- --v2-visual-smoke` passed (13.761 m/s, 4 contacts); windowed `-- --features` passed 212/0. Every final gate had empty stderr. The first unprivileged cache initialization failed to write `.godot` and was rerun in the writable worktree context; its result was not counted as a gate. `gdformat` applied to game.gd and its check passes; the repository-wide check still lists five pre-existing, untouched legacy files (circuit_world.gd, track3d.gd, airborne.gd, karussell.gd, tests/track3d.gd). `git diff --check` clean. P4-01 is ready for independent review; do not merge before that review.
+
+## 2026-09-23  MERGE train into main  (Claude Opus 5.5, owner merges the PR) — branch `rb/merge-train`
+Sol is out of usage, so Claude assembled one branch for the owner to merge on GitHub (per-branch PRs would conflict in REBUILD-LOG/QUEUE after the first). Merged in order onto main d225af2: rb/workflow-gates (P4-03 walls + workflow), rb/F-P2-08 (P2-08 + §5.4 note), rb/F-P3-02c (P3-02c + in-memory size check), rb/P3-03-terrain (with F-P3-03), rb/scenery-kit, rb/P4-07-bot-laps, rb/P6-01-spa, rb/P4-01-game-port. No code conflicts; docs merged keeping both sides, exact duplicate log sections removed, QUEUE.md tidied.
+
+Reviews (Claude): F-P3-03 approve (runoff via RoadBuilder.side(), drive test prev_pos, preload removed, no conflict marker); scenery-kit approve on its gates; P4-01 approve with follow-ups F-P4-01 (Esc quits the app on the v2 path; WallContact not called; trackgen excluded from export). Claude's own P4-03, workflow and P4-07 are merged before review; Sol reviews them after (R-P4-03, R-WF, R-P4-07).
+
+Gates `run_gates.ps1 -All`: 36/39 pass in 147 s. The 3 laps rows fail only on known items: stderr carries the Spa RoadPath bank-twist warning (F-P6-01), and "spa roadster simulation" does not finish (P4-07b). All proving-ground laps pass. Windowed `-- --features`: 212 checks, 0 failures, stderr empty.
