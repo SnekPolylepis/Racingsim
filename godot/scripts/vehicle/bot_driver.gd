@@ -78,6 +78,9 @@ func build_plan(bot_line: Path3D, car, surface):
 	var brake = .75 * mu0 * g
 	var top = 90.0
 	plan.resize(n)
+	# Cornering grip each point needs at its planned speed is taken from braking (friction circle).
+	var lat_use = PackedFloat64Array()
+	lat_use.resize(n)
 	var k = 6
 	var bank = 0.0
 	for i in n:
@@ -108,6 +111,7 @@ func build_plan(bot_line: Path3D, car, surface):
 		if kv < -1e-5:
 			v = minf(v, sqrt(.85 * g / -kv))
 		plan[i] = v
+		lat_use[i] = curv
 	if use_line_targets and bot_line.has_meta("target_speeds_kmh"):
 		var at = bot_line.get_meta("timing_stations_m")
 		var sp = bot_line.get_meta("target_speeds_kmh")
@@ -116,13 +120,18 @@ func build_plan(bot_line: Path3D, car, surface):
 			while j < at.size() - 1 and at[j + 1] <= dist[i]:
 				j += 1
 			plan[i] = minf(plan[i], sp[j] / 3.6)
-	# Braking zones: backward passes around the loop (twice, so the lap's end feeds its start).
+	# Braking zones: backward passes around the loop (twice, so the lap's end feeds its start). Braking
+	# into a corner shares the tyres with cornering: deceleration is cut by the friction circle, so the
+	# car arrives slow enough to turn instead of braking at full grip into the apex (the roadster,
+	# without ABS, locked its fronts at Spa and went straight on).
 	for rep in 2:
 		for step in n:
 			var i = n - 1 - step
 			var nxt = (i + 1) % n
 			var seg = dist[i + 1] - dist[i]
-			plan[i] = minf(plan[i], sqrt(plan[nxt] * plan[nxt] + 2.0 * brake * seg))
+			var lat = plan[nxt] * plan[nxt] * lat_use[nxt] / (mu0 * g)
+			var decel = brake * sqrt(maxf(1.0 - lat * lat, .1))
+			plan[i] = minf(plan[i], sqrt(plan[nxt] * plan[nxt] + 2.0 * decel * seg))
 
 
 ## Curvature (1/m) of the circle through three plan-view points.
@@ -227,12 +236,18 @@ func command(car) -> Dictionary:
 		max_steer /= 1.0 + speed / car.steer_falloff
 	var steer = clampf(delta / maxf(max_steer, 1e-3), -1.0, 1.0)
 	var want = planned(s, maxf(speed * .6, 4.0))
-	# Off the line by more than 1 m: ease off (a car running wide at the limit can't also tighten).
-	want -= 3.0 * maxf(0.0, absf(lateral) - 1.0)
 	var e = want - speed
+	# Off the line by more than 1 m: ease off the throttle (a car running wide at the limit can't also
+	# tighten). Throttle only: braking harder while turning at full lock locks the fronts and ploughs on.
+	var eased = e - 3.0 * maxf(0.0, absf(lateral) - 1.0)
+	# Rear stepping out under braking: release the brake as a driver would, fully by 8 degrees of body
+	# slip. Without it the aid-free roadster trail-braked into a snap spin at Spa (s 780, -3 deg camber).
+	var vb = b.inverse() * car.vel
+	var slip = absf(atan2(vb.z, vb.x)) if speed > 5.0 else 0.0
+	var release = clampf((deg_to_rad(8.0) - slip) / deg_to_rad(5.0), 0.0, 1.0)
 	return {
-		"throttle": clampf(e * .6 + .35, 0.0, 1.0),
-		"brake": clampf(-e * .35, 0.0, 1.0),
+		"throttle": clampf(eased * .6 + .35, 0.0, 1.0),
+		"brake": clampf(-e * .35, 0.0, 1.0) * release,
 		"steer": steer,
 		"clutch": 0.0,
 		"handbrake": 0.0

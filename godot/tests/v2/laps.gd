@@ -39,7 +39,14 @@ func _initialize():
 			continue
 		var asset = load(TRACKS[id]).build_asset()
 		asset.prepare()
-		root.add_child(asset)
+		# Each track in its own physics world: they all sit at the origin, and in a shared world one
+		# track's grass shows through another's road (Spa's 296 went "off" onto proving-ground grass).
+		var world = SubViewport.new()
+		world.own_world_3d = true
+		world.size = Vector2i(2, 2)
+		world.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		root.add_child(world)
+		world.add_child(asset)
 		assets[id] = asset
 
 

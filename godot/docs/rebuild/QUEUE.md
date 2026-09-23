@@ -27,6 +27,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | F-P2-08 | Log a `CONTRACT §5.4` note: CarBody.snapshot() gained "comp" (per-wheel compression) in P2-08; add it to §5.4's snapshot list | Gemini | | open | one-line doc fix |
 | F-P3-03 | Fix P3-03 terrain per Claude's review: REBUILD-LOG conflict marker; terrain.gd drive test never updates prev_pos; drop the unused track.gd preload; runoff via RoadBuilder.side()/profile() | Gemini | | open | **do this next**: still unfixed at cd05fd7; rb/P3-03-terrain |
 | R-P3-03 | Review merged P3-03 terrain | Claude | F-P3-03 | open | |
+| F-P6-01 | Spa v0 fixes per Claude's review: BotLine with smooth handles (not a polyline); spread the 2.69 deg/m bank twist at 2398 m over >= 20 m; get the committed scene under 5 MB; check width at s 6125 m | Astra or Gemini | | open | read "REVIEW P6-01"; land the BotLine change with P4-07b |
+| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | open | read "REVIEW P6-01" |
 
 ## Build
 
