@@ -1,0 +1,279 @@
+{
+  "acquired": "2026-09-23",
+  "osm_copyright": "https://www.openstreetmap.org/copyright",
+  "lidar_catalogue": "https://geoportail.wallonie.be/catalogue/a004e570-99d6-4fe5-b83d-49b774409278.html",
+  "files": {
+    ".gitattributes": {
+      "bytes": 169,
+      "sha256": "f2da684e17bf8b9bc468a9d5412c96d930ef6fbd6f91d143313a869c6a96e9b2"
+    },
+    "build_data.py": {
+      "bytes": 9369,
+      "sha256": "6c5f3032013121f11503713c33895e0faf83983c883264dc0cc81519fe0d8a46"
+    },
+    "centreline.json": {
+      "bytes": 59544,
+      "sha256": "3b7357830ed105fac400220972c54410f0a32f1d4aed307ca56f3d1f76340ec2"
+    },
+    "dem.raw": {
+      "bytes": 82500,
+      "sha256": "147a0bc80be943d3c4cbfe545c75101c0c43c9943db7d44238c4d7522f07b13d"
+    },
+    "licenses/CC-BY-4.0.txt": {
+      "bytes": 18657,
+      "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411"
+    },
+    "licenses/ODbL-1.0.txt": {
+      "bytes": 25278,
+      "sha256": "607680718977f6f6c9607972afd98f208573f19251315ed1362a8589b51beaf5"
+    },
+    "lidar-layer-metadata.json": {
+      "bytes": 2767,
+      "sha256": "09b811d0fb2b088976df10b5b9c1dd1d7adbc7f59524e103abf42231c36803fb"
+    },
+    "lidar-road-query.json": {
+      "bytes": 27186,
+      "sha256": "2c397fe2a7808753b4d7d4b52a8277a6e6ad1b79c918ae480237efe96cb4bdeb"
+    },
+    "lidar-terrain-query.json": {
+      "bytes": 625,
+      "sha256": "643f5ef7e6740fadee3d5b4691f016fd36ade73cfee32b9e98808313617ff9b3"
+    },
+    "osm-nodes.json": {
+      "bytes": 102277,
+      "sha256": "5bee1f4bfb852b151274422ded2bd967a4270426c4c58688f6f18d1d21056d8a"
+    },
+    "osm-query.json": {
+      "bytes": 7485,
+      "sha256": "eeb61fa2fef772df42d6e5a16028bec0b9debb3724c4044ad23d4eacd59b7fdd"
+    },
+    "osm-ways.json": {
+      "bytes": 17939,
+      "sha256": "bf14882d9284fd4edd48de0e93f499d6c3e6737f113e0dd7131b41544cb2d007"
+    },
+    "raw-lidar/road.json": {
+      "bytes": 48663,
+      "sha256": "cec613a0b2ff473db95b45c11f0d5f21c6fbc3f7e07224c8418cd35a49868313"
+    },
+    "raw-lidar/terrain-000.json": {
+      "bytes": 55613,
+      "sha256": "534d193ab61221fe81c351ac6c73d1bb64228f4e4941e377b5b0ce7a156426eb"
+    },
+    "raw-lidar/terrain-001.json": {
+      "bytes": 55613,
+      "sha256": "f38d5336f9e0768b10560029d25fefd6a5a5b6613a215e932a4b0726f7885b8d"
+    },
+    "raw-lidar/terrain-002.json": {
+      "bytes": 55613,
+      "sha256": "06c38010f2721b127f001fa068eff8a549277ca399abe930920111c252dc2faa"
+    },
+    "raw-lidar/terrain-003.json": {
+      "bytes": 55613,
+      "sha256": "f201aca322cc6c3380580cbfaed290927e04fd78b99569a418c880c21a65edf0"
+    },
+    "raw-lidar/terrain-004.json": {
+      "bytes": 55613,
+      "sha256": "532561fee22dbc2f8ee6d6bc9ffa95fadb28669ada53798f1238597463635b42"
+    },
+    "raw-lidar/terrain-005.json": {
+      "bytes": 55613,
+      "sha256": "903bc14dbab1c559a693e874a0b8d6c8212eb5b0276350c38c41fbad320ae824"
+    },
+    "raw-lidar/terrain-006.json": {
+      "bytes": 55613,
+      "sha256": "c506271f9ea7090691ab0ffe314504b5926e9edf10dfd436675f2d9a427c03f1"
+    },
+    "raw-lidar/terrain-007.json": {
+      "bytes": 55613,
+      "sha256": "7d833ab365ab83ba050e14e4cab1fbf9bba903baf2dd7246ee73eeca5243d2d8"
+    },
+    "raw-lidar/terrain-008.json": {
+      "bytes": 55613,
+      "sha256": "c263e138be1c8fb8fa2f35207d7d91a928d7def0c6be548736a6aaa17ebf0dea"
+    },
+    "raw-lidar/terrain-009.json": {
+      "bytes": 55613,
+      "sha256": "f4dbab99590734cfd73cde02ac6574e7f2ac302ee0ec6b539bc9dda2acd54982"
+    },
+    "raw-lidar/terrain-010.json": {
+      "bytes": 55613,
+      "sha256": "0b1680aebc9c93d1d8df8829c44b39e55a86bbaa37dc9d46b3da8e91acc9bc13"
+    },
+    "raw-lidar/terrain-011.json": {
+      "bytes": 55613,
+      "sha256": "147b8e99a9cd28ea952b7735279add9fcf36b34e4aa36c72ccf0c3cfe8885006"
+    },
+    "raw-lidar/terrain-012.json": {
+      "bytes": 55613,
+      "sha256": "7338b84658dbc64b57739526cdb35223eb9f5ef946f0c488fb224e942f4b9cd5"
+    },
+    "raw-lidar/terrain-013.json": {
+      "bytes": 55613,
+      "sha256": "710c9774a3d67b80fbef29ab628ca5695d17315ae632562818d4d56a92d31fc6"
+    },
+    "raw-lidar/terrain-014.json": {
+      "bytes": 55613,
+      "sha256": "c5a0b152202fe6915d9066b083b1d58ef62bdc3635c52d7c8388a63c896561da"
+    },
+    "raw-lidar/terrain-015.json": {
+      "bytes": 55613,
+      "sha256": "da124364a619a2f5368610a4774d00483a186b41b39586d36d2338d825daa3a5"
+    },
+    "raw-lidar/terrain-016.json": {
+      "bytes": 55613,
+      "sha256": "9a53ad273d749f2845de5492644aa020485eead36b8a05d17532f7b1caae5af2"
+    },
+    "raw-lidar/terrain-017.json": {
+      "bytes": 55613,
+      "sha256": "11634bd30fa0e8c493b576683f3a567b6fd6ae9bcc837a477b7ca99c199acd99"
+    },
+    "raw-lidar/terrain-018.json": {
+      "bytes": 55613,
+      "sha256": "40b2ad0f17c955d6baf4c90da1646d887b1d719da390b4fd5c11642432823d80"
+    },
+    "raw-lidar/terrain-019.json": {
+      "bytes": 55613,
+      "sha256": "2915fac11c3a1bf42c906430d931c36cf06b6ad7cf96770d504e2e504a4c3e04"
+    },
+    "raw-lidar/terrain-020.json": {
+      "bytes": 55613,
+      "sha256": "0cbf7615a7e3af8c3364c85b125e2f78d18b580197f7d5d1b519c05bdb00c22c"
+    },
+    "raw-lidar/terrain-021.json": {
+      "bytes": 55613,
+      "sha256": "2ea9a365fecfe6d8f99c1edab5b90029d70e54361c4906927c95caef249ec901"
+    },
+    "raw-lidar/terrain-022.json": {
+      "bytes": 55613,
+      "sha256": "99fe6536edc541fe47b074a9a2d8834a56ca9607e3e38eaf14249c31ad6247a7"
+    },
+    "raw-lidar/terrain-023.json": {
+      "bytes": 55613,
+      "sha256": "36007e1bad7a2ecb099c0c7728b1fb4c80034598f56e1a942017a99b50460d61"
+    },
+    "raw-lidar/terrain-024.json": {
+      "bytes": 55613,
+      "sha256": "0cf6dd04f300294cfb7d1b5aa3a170fb5679d77cefa6084cde724bc0c10b525a"
+    },
+    "raw-lidar/terrain-025.json": {
+      "bytes": 55613,
+      "sha256": "70258d56c2a2e796b84945dc87c0245ae5aa7e68157a54c65f15f95287334319"
+    },
+    "raw-lidar/terrain-026.json": {
+      "bytes": 55613,
+      "sha256": "45c8fc9e2fab1c2a686c39a61b11aea12dba0329f1eec82b9a7979276a8fe21e"
+    },
+    "raw-lidar/terrain-027.json": {
+      "bytes": 55613,
+      "sha256": "788fe2e11830d943357c2615c8ba58904dd24a0e35f05efbdf5b22897e78caba"
+    },
+    "raw-lidar/terrain-028.json": {
+      "bytes": 55613,
+      "sha256": "bc840f425b4efc4d6c543cf941d0f4feb3be4f4efb677112a5cdc167b59cbd6c"
+    },
+    "raw-lidar/terrain-029.json": {
+      "bytes": 55613,
+      "sha256": "21cbabc5bab4be4b6298656da85c201f9827b8ca8423fe3804ce58cafea9b9ad"
+    },
+    "raw-lidar/terrain-030.json": {
+      "bytes": 55613,
+      "sha256": "2274bce4c33e44482f04febc97d797f3a6b2769324106ce918edf2c93ccf1fed"
+    },
+    "raw-lidar/terrain-031.json": {
+      "bytes": 55613,
+      "sha256": "361ebb35cedd030e5cacca6699044333980b39634a067a60493ee44d2a95dbfc"
+    },
+    "raw-lidar/terrain-032.json": {
+      "bytes": 55613,
+      "sha256": "1a27ab4b05baa373aaa58f447e700c1f165474477c1fdafe36bfbfe792a533e5"
+    },
+    "raw-lidar/terrain-033.json": {
+      "bytes": 55613,
+      "sha256": "1cae454c19383d34d37acc74dccab53a65b7e08147ef46690820af1b12be0830"
+    },
+    "raw-lidar/terrain-034.json": {
+      "bytes": 55613,
+      "sha256": "81c6af82a86e0c05a32ca72849d927786af70d0a46f952c334b85c8544c78b0c"
+    },
+    "raw-lidar/terrain-035.json": {
+      "bytes": 55613,
+      "sha256": "2289d117bcf8bb0090c16a175175f81f2822bdc039744b7a82ccaf3ecd5bda4f"
+    },
+    "raw-lidar/terrain-036.json": {
+      "bytes": 55613,
+      "sha256": "83ba03e79343f443e8a4f1fe16787d5e5dc94947634f65941685335942dbbec7"
+    },
+    "raw-lidar/terrain-037.json": {
+      "bytes": 55613,
+      "sha256": "f33aab0bd2b1127ef2607790b7e95092c49d611f8f39234118e2f074f2871a4d"
+    },
+    "raw-lidar/terrain-038.json": {
+      "bytes": 55613,
+      "sha256": "8bea665d41b80d7f224d1815032799449b9e24c690a220e8c70b487fa6b8277c"
+    },
+    "raw-lidar/terrain-039.json": {
+      "bytes": 55613,
+      "sha256": "2fc935a65e356547772dff666161b927cb067284a235405a294baa3df218887e"
+    },
+    "raw-lidar/terrain-040.json": {
+      "bytes": 55613,
+      "sha256": "43a642e353d52a1b29a722d65acfdaa88e32d2363b7a8b6c0e607d5b82a271b3"
+    },
+    "raw-lidar/terrain-041.json": {
+      "bytes": 55613,
+      "sha256": "0b6dbc9d78eac3b99086cc1c181e8004664cf0762474658cbceb494364ef6ab5"
+    },
+    "raw-lidar/terrain-042.json": {
+      "bytes": 55613,
+      "sha256": "faeb1a2d77be0e6a713a2d27d869e0f9e3c9908b1234d2450864a17430cfc8b3"
+    },
+    "raw-lidar/terrain-043.json": {
+      "bytes": 55613,
+      "sha256": "c4b960ddc5b89c07803c34984c236f59189d95d62d5302b3ac40fdb1e61c7578"
+    },
+    "raw-lidar/terrain-044.json": {
+      "bytes": 55613,
+      "sha256": "f31f1e5efa9509a49e153ebbe2592f17d5438b391b59533020964352e940c64c"
+    },
+    "raw-lidar/terrain-045.json": {
+      "bytes": 55613,
+      "sha256": "2395401318cae84350c64ab6ca018ad69ea89ed4103b2a3ea7b2c6849b64dd1c"
+    },
+    "raw-lidar/terrain-046.json": {
+      "bytes": 55613,
+      "sha256": "21b510e3e9a657952aee722ce0e269591e1a94f28f0327d498206a5a7ba8e2af"
+    },
+    "raw-lidar/terrain-047.json": {
+      "bytes": 55613,
+      "sha256": "aa4c2c4f58de38674ad92280fcdcb542ac5a265f150aa199664e0065e895d31c"
+    },
+    "raw-lidar/terrain-048.json": {
+      "bytes": 55613,
+      "sha256": "294d95b4e1c28fa9708dd0f5b443ed1613c6b7f152e421eaab025947673afa1f"
+    },
+    "raw-lidar/terrain-049.json": {
+      "bytes": 55613,
+      "sha256": "9dd9a2292614bd882dec1e20ad62671e4045a6aea1f268ee3bd446e0c7faea30"
+    },
+    "raw-lidar/terrain-050.json": {
+      "bytes": 55613,
+      "sha256": "203c112ba9f519686ab2787fe541d9aebd06fb65de2fe12087782bf5f82ec06e"
+    },
+    "raw-lidar/terrain-051.json": {
+      "bytes": 31288,
+      "sha256": "7dbd8d387926249a913a1e8904adf3f6994f06963e0d25fcc607c1f47c5723e0"
+    },
+    "README.md": {
+      "bytes": 6330,
+      "sha256": "ef1a0986c822d03e575528ab88a79379c49e93245fb6382ebc13f70a0274b140"
+    },
+    "sample-verification.json": {
+      "bytes": 1557,
+      "sha256": "8a136da85ec3970d173aec2d1e1b206b50030a99a0c5965152d328b103484796"
+    },
+    "terrain.json": {
+      "bytes": 807,
+      "sha256": "7e522cdbd9e4df6db5912765d934534e1f51236a107fb0d6c186c1918007258b"
+    }
+  }
+}

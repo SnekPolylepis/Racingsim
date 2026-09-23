@@ -1,0 +1,72 @@
+{
+  "access_date": "2026-09-23",
+  "result": "6/6 individual identify values exactly match batch positions",
+  "checks": [
+    {
+      "kind": "road",
+      "index": 0,
+      "lon_lat": [
+        5.9644324,
+        50.44488296
+      ],
+      "batch_height_m": 418.553101,
+      "individual_height_m": 418.553101,
+      "difference_m": 0.0
+    },
+    {
+      "kind": "road",
+      "index": 175,
+      "lon_lat": [
+        5.97300255,
+        50.4329748
+      ],
+      "batch_height_m": 404.997498,
+      "individual_height_m": 404.997498,
+      "difference_m": 0.0
+    },
+    {
+      "kind": "road",
+      "index": 349,
+      "lon_lat": [
+        5.96457178,
+        50.44472669
+      ],
+      "batch_height_m": 418.190613,
+      "individual_height_m": 418.190613,
+      "difference_m": 0.0
+    },
+    {
+      "kind": "terrain",
+      "index": 0,
+      "lon_lat": [
+        5.95105659,
+        50.4517174
+      ],
+      "batch_height_m": 488.348755,
+      "individual_height_m": 488.348755,
+      "difference_m": 0.0
+    },
+    {
+      "kind": "terrain",
+      "index": 10000,
+      "lon_lat": [
+        5.95105659,
+        50.43732828
+      ],
+      "batch_height_m": 512.82373,
+      "individual_height_m": 512.82373,
+      "difference_m": 0.0
+    },
+    {
+      "kind": "terrain",
+      "index": 20624,
+      "lon_lat": [
+        5.98607341,
+        50.4222197
+      ],
+      "batch_height_m": 384.03125,
+      "individual_height_m": 384.03125,
+      "difference_m": 0.0
+    }
+  ]
+}
