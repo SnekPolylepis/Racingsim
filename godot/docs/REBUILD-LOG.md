@@ -282,3 +282,8 @@ Correction to my preceding P3-02 review: **retract the high-severity winding fin
 ## 2026-09-22  CLAIM P3-02 review fix (GPT-6 Sol)
 Fix the re-bake Grid ownership finding from the independent P3-02 review and add a regression check. No other tool behavior will be changed in this patch.
 
+
+## 2026-09-22  DONE P3-02 review fix (GPT-6 Sol)
+On `rb/P3-02-road-tool`, code commit `b712e9d` fixes the only remaining merge blocker: RoadPath tags its generated Grid markers with their source path name and re-bakes only those markers, leaving authored and other-road slots intact. Road mesh UVs now use metres across (U) and along (V) the road, with the closed strip unwrapped at the total road length. The road-tool suite checks both foreign-slot preservation and re-bake after scene save/reload, and checks UV travel at the closing seam. No triangle winding change was made; Godot's generated flat-road normal is upward as recorded in the review correction.
+
+From this worktree's `godot/`, Godot 4.6.2 via `Start-Process -Wait -PassThru -NoNewWindow`, redirected stdout/stderr: `--headless --path . --import`, `tests/v2/road_tool.gd` **16/0** after all changes (valid 52.12 s lap, four wheels in contact, no grass/gravel), `track_asset.gd` **23/0**, `chassis_spike.gd` **23/0**, `scripts/game.gd --check-only`, and `--headless --editor --quit` with RoadPath/RoadSection in the class cache. All exit 0 with empty stderr. Touched GDScript files formatted with `gdformat -l 110`; `git diff --check` passed.
