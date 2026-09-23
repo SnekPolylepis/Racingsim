@@ -1,0 +1,279 @@
+{
+  "tool": "Pillow",
+  "version": "12.3.0",
+  "textures": [
+    {
+      "source": "assets/textures/asphalt_track/asphalt_track_diff.jpg",
+      "output": "assets/ps2/asphalt_track_diff.png",
+      "format": "CLUT8",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 256,
+      "source_sha256": "742d1d79560bd661d5871afc857e981e25dcd563bfd24385cbd063ebcaeef06c",
+      "sha256": "8ff4c3d0a30d7908955e17629d120a8c76384f599dd292db945bcf993c40f0b1",
+      "nominal_gs_bytes": 66560
+    },
+    {
+      "source": "assets/textures/asphalt_track/asphalt_track_nor_gl.jpg",
+      "output": "assets/ps2/asphalt_track_nor_gl.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 38,
+      "source_sha256": "d9c635867ed0e022580baac711e0dcff679f8301cd906dff162be1bfbad8cfcd",
+      "sha256": "5bbed0667f0341df3e4c2f81c6076a319844b9d6322d4abba291cae9f73a81dd",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/textures/asphalt_track/asphalt_track_rough.jpg",
+      "output": "assets/ps2/asphalt_track_rough.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 2,
+      "source_sha256": "b934fb6fbe05770df95fa94fee3a12d45eb121621ce96e9b262f403d49ee493e",
+      "sha256": "752e35bef7a900a258cd8f7842918a8f8bb46f7368cf72e18b9263bb0f88a78d",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/textures/concrete_floor_02/concrete_floor_02_diff.jpg",
+      "output": "assets/ps2/concrete_floor_02_diff.png",
+      "format": "CLUT8",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 256,
+      "source_sha256": "6db84a6d87dc50508b9d134d6fbd2b7e876b8081a5f43a118a249ca18de73af5",
+      "sha256": "0636b6d9b3ff5c53b14c1e82dc13c5fac2680df812d404e2183a008a0dfb0d63",
+      "nominal_gs_bytes": 66560
+    },
+    {
+      "source": "assets/textures/concrete_floor_02/concrete_floor_02_nor_gl.jpg",
+      "output": "assets/ps2/concrete_floor_02_nor_gl.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 83,
+      "source_sha256": "fcda391b57a816d646ae15544688be53790478da5cd48dbe514b3c6901415e61",
+      "sha256": "34b91eee18e0317e3e0f55ae101ae5f2aa1bc6513c7fa4bb6777434aa7a10077",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/textures/concrete_floor_02/concrete_floor_02_rough.jpg",
+      "output": "assets/ps2/concrete_floor_02_rough.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 8,
+      "source_sha256": "c7f026a611b7859903c61ec7fd4574944157223e9e7796413dd6e2a66eaeac7a",
+      "sha256": "5deb10ff8f8d02ec11097300ea3e0d66f780c8ca1a6f3a24a1d2456baa030e11",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/textures/grass_ground/grass_ground_diff.jpg",
+      "output": "assets/ps2/grass_ground_diff.png",
+      "format": "CLUT8",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 256,
+      "source_sha256": "a79cc5ed65af0f80261b39a383b64a8c5272c5144d724deb43dbc29f0e4cd19b",
+      "sha256": "b670ff9805bf9bd64a5c204f968aa654d81eb95b628c81299c80614c6354a69f",
+      "nominal_gs_bytes": 66560
+    },
+    {
+      "source": "assets/textures/grass_ground/grass_ground_nor_gl.jpg",
+      "output": "assets/ps2/grass_ground_nor_gl.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 290,
+      "source_sha256": "7000e2ccd479bb7b66dcdf4faef7b47554324566886314ca620cbf03e274e826",
+      "sha256": "fc4449e00f41fab4916c96c40b045ea33837f457b61bb0b853c8c2ca31eebf6e",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/textures/grass_ground/grass_ground_rough.jpg",
+      "output": "assets/ps2/grass_ground_rough.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 3,
+      "source_sha256": "111341f948b7e073edf7ac6add8777e1bf10df8959400df3863243e89bbc8c08",
+      "sha256": "329b3ebcf1ef746e17f4883c66d5ff485a8433573d1dff75b1beb85d6a70a1ab",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/textures/gravel_floor/gravel_floor_diff.jpg",
+      "output": "assets/ps2/gravel_floor_diff.png",
+      "format": "CLUT8",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 256,
+      "source_sha256": "4e6ff82988506676cfd8a79ac3e2964af239764c0064d4566040167704c4838d",
+      "sha256": "a0628d2a9bc00fb70a31f3d39f092e7238708c6b2986d21186a8e395be684d81",
+      "nominal_gs_bytes": 66560
+    },
+    {
+      "source": "assets/textures/gravel_floor/gravel_floor_nor_gl.jpg",
+      "output": "assets/ps2/gravel_floor_nor_gl.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 690,
+      "source_sha256": "a3544e4aa7612a0bf0ea4890093b60c9f360234855d389bb9d408d29b90a7131",
+      "sha256": "5899551fa6d7a37927b8776e9a012d7191b86b4381629d9d97fc8f480462697a",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/textures/gravel_floor/gravel_floor_rough.jpg",
+      "output": "assets/ps2/gravel_floor_rough.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        256
+      ],
+      "unique_colors": 6,
+      "source_sha256": "acf3c8607bcf943ac9f9871e4f57961ce46ea0635232d78af68eebbbf5f62b4b",
+      "sha256": "21a650f8155c350c5b17277fc43ed50b2b0f8fc186f92cd9b35f631676c60beb",
+      "nominal_gs_bytes": 131072
+    },
+    {
+      "source": "assets/generated-originals/armco.png",
+      "output": "assets/ps2/armco.png",
+      "format": "CLUT4",
+      "size": [
+        256,
+        128
+      ],
+      "unique_colors": 16,
+      "source_sha256": "ba02184e3341b286e6879f5d51ad7107ec9ca601251ee77ee455c68bff72cb47",
+      "sha256": "edbf34e24252a8c4524467f29e50af895fc5b8d88ac801dfa0dabf178c899236",
+      "nominal_gs_bytes": 16448.0
+    },
+    {
+      "source": "assets/generated-originals/crowd.png",
+      "output": "assets/ps2/crowd.png",
+      "format": "CLUT4",
+      "size": [
+        256,
+        128
+      ],
+      "unique_colors": 11,
+      "source_sha256": "d5e6cdd94cba1db3c66efda30cb3b80cff083381c4ef9a1adb966dd251dc9e84",
+      "sha256": "d3b7ad4606dd5cd79e3bfdb6a378ade862871a5dbdf147c66b87b195b9cb269f",
+      "nominal_gs_bytes": 16448.0
+    },
+    {
+      "source": "assets/generated-originals/skyfalsefalse.png",
+      "output": "assets/ps2/skyfalsefalse.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        128
+      ],
+      "unique_colors": 189,
+      "source_sha256": "dc59ce8cfecfff3b658c67f1db70675a13a5342ca6faae4bb378d181a4fe2daa",
+      "sha256": "5a322eb1f77e3bfd5c9025fa5d7e1d16166a23b3b04e4de37f0dc6b31523b490",
+      "nominal_gs_bytes": 65536
+    },
+    {
+      "source": "assets/generated-originals/skyfalsetrue.png",
+      "output": "assets/ps2/skyfalsetrue.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        128
+      ],
+      "unique_colors": 190,
+      "source_sha256": "12e9579ab4eb99aa4fdb66345e8ba54ec218ea066d72039e40cf24a38ae75ba5",
+      "sha256": "518dedd7335fe13931baeae954e091d7ceb4a8f10584a67bbbfb7d066f01c6ba",
+      "nominal_gs_bytes": 65536
+    },
+    {
+      "source": "assets/generated-originals/skytruefalse.png",
+      "output": "assets/ps2/skytruefalse.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        128
+      ],
+      "unique_colors": 33,
+      "source_sha256": "f8cdd0b1de588fe7eccde6a92610f3e7ef3c2510daff4ac9977504bfb878d213",
+      "sha256": "bf6768844ebeb50bea69c17106df337fe71af46356ee009a20e61278828fc90d",
+      "nominal_gs_bytes": 65536
+    },
+    {
+      "source": "assets/generated-originals/skytruetrue.png",
+      "output": "assets/ps2/skytruetrue.png",
+      "format": "RGB555-expanded",
+      "size": [
+        256,
+        128
+      ],
+      "unique_colors": 34,
+      "source_sha256": "525e7a15a73bf8b159eaec161508209f5b0f8c640946a55770270b278dbb6f0b",
+      "sha256": "4c0d154531b564708814ba1ea1919c913c4ab131291ae44ede007ca311d4022c",
+      "nominal_gs_bytes": 65536
+    },
+    {
+      "source": "assets/generated-originals/treefalse.png",
+      "output": "assets/ps2/treefalse.png",
+      "format": "CLUT4",
+      "size": [
+        128,
+        256
+      ],
+      "unique_colors": 11,
+      "source_sha256": "ceff722717aa3e768d09a27504c1bab69138ad1191376281cb70ddbf2d5a35ae",
+      "sha256": "57d53d44342f5701a31157d20f9a274e1838295d41a917add82d73a2fe7cba94",
+      "nominal_gs_bytes": 16448.0
+    },
+    {
+      "source": "assets/generated-originals/treetrue.png",
+      "output": "assets/ps2/treetrue.png",
+      "format": "CLUT4",
+      "size": [
+        128,
+        256
+      ],
+      "unique_colors": 16,
+      "source_sha256": "7f09e5bcb3b558c00920b1b8a8ea6ad814f0edd96cb0c761e5776f8b3f615865",
+      "sha256": "e40720910178556567d42c36ebc8e327ce760a13644f81bb3297c35c4396b9ec",
+      "nominal_gs_bytes": 16448.0
+    },
+    {
+      "source": "assets/generated-originals/tyre.png",
+      "output": "assets/ps2/tyre.png",
+      "format": "CLUT4",
+      "size": [
+        256,
+        128
+      ],
+      "unique_colors": 15,
+      "source_sha256": "52f4c0f955dabad86677422e1c36846621a0b121c575e7e7096d4087200f47cb",
+      "sha256": "c8109cffae2138b7b518d440070f0aef9a5879b5664199326579992ce516f24d",
+      "nominal_gs_bytes": 16448.0
+    }
+  ]
+}

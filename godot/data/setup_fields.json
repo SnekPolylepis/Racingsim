@@ -1,0 +1,380 @@
+[
+  [
+    "Tires",
+    "tireMu",
+    "Peak grip coefficient",
+    0.8,
+    2,
+    0.01,
+    ""
+  ],
+  [
+    "Tires",
+    "tireBlat",
+    "Lateral stiffness (B)",
+    5,
+    16,
+    0.1,
+    ""
+  ],
+  [
+    "Tires",
+    "tireBlong",
+    "Longitudinal stiffness (B)",
+    6,
+    20,
+    0.1,
+    ""
+  ],
+  [
+    "Tires",
+    "loadSens",
+    "Load sensitivity",
+    0,
+    0.25,
+    0.005,
+    ""
+  ],
+  [
+    "Tires",
+    "tempOpt",
+    "Optimal temperature",
+    60,
+    120,
+    1,
+    "°C"
+  ],
+  [
+    "Tires",
+    "tempWindow",
+    "Temperature window",
+    20,
+    80,
+    1,
+    "°C"
+  ],
+  [
+    "Tires",
+    "pressureHeat",
+    "Heating rate",
+    0.2,
+    3,
+    0.05,
+    "x"
+  ],
+  [
+    "Suspension",
+    "cgHeight",
+    "Ride / CG height",
+    0.25,
+    0.7,
+    0.005,
+    "m"
+  ],
+  [
+    "Suspension",
+    "springF",
+    "Front spring rate",
+    15000,
+    120000,
+    500,
+    "N/m"
+  ],
+  [
+    "Suspension",
+    "springR",
+    "Rear spring rate",
+    15000,
+    120000,
+    500,
+    "N/m"
+  ],
+  [
+    "Suspension",
+    "bumpF",
+    "Front damper (bump)",
+    500,
+    9000,
+    50,
+    "Ns/m"
+  ],
+  [
+    "Suspension",
+    "reboundF",
+    "Front damper (rebound)",
+    500,
+    9000,
+    50,
+    "Ns/m"
+  ],
+  [
+    "Suspension",
+    "bumpR",
+    "Rear damper (bump)",
+    500,
+    9000,
+    50,
+    "Ns/m"
+  ],
+  [
+    "Suspension",
+    "reboundR",
+    "Rear damper (rebound)",
+    500,
+    9000,
+    50,
+    "Ns/m"
+  ],
+  [
+    "Suspension",
+    "arbF",
+    "Front anti-roll bar",
+    0,
+    80000,
+    500,
+    "N/m"
+  ],
+  [
+    "Suspension",
+    "arbR",
+    "Rear anti-roll bar",
+    0,
+    80000,
+    500,
+    "N/m"
+  ],
+  [
+    "Aero",
+    "cdA",
+    "Drag (CdA)",
+    0.2,
+    2,
+    0.01,
+    "m²"
+  ],
+  [
+    "Aero",
+    "clAF",
+    "Front downforce (ClA)",
+    0,
+    4,
+    0.02,
+    "m²"
+  ],
+  [
+    "Aero",
+    "clAR",
+    "Rear downforce (ClA)",
+    0,
+    5,
+    0.02,
+    "m²"
+  ],
+  [
+    "Brakes",
+    "brakeTorque",
+    "Total brake torque",
+    2000,
+    14000,
+    100,
+    "Nm"
+  ],
+  [
+    "Brakes",
+    "brakeBias",
+    "Brake bias (front)",
+    0.4,
+    0.8,
+    0.01,
+    ""
+  ],
+  [
+    "Brakes",
+    "handbrakeTorque",
+    "Handbrake torque",
+    500,
+    6000,
+    100,
+    "Nm"
+  ],
+  [
+    "Diff",
+    "diffType",
+    "Type (0 open, 1 LSD, 2 locked)",
+    0,
+    2,
+    1,
+    ""
+  ],
+  [
+    "Diff",
+    "diffPreload",
+    "LSD preload",
+    0,
+    300,
+    5,
+    "Nm"
+  ],
+  [
+    "Diff",
+    "diffPower",
+    "LSD power lock",
+    0,
+    1,
+    0.02,
+    ""
+  ],
+  [
+    "Diff",
+    "diffCoast",
+    "LSD coast lock",
+    0,
+    1,
+    0.02,
+    ""
+  ],
+  [
+    "Diff",
+    "layout",
+    "Drive (0 RWD, 1 FWD, 2 AWD)",
+    0,
+    2,
+    1,
+    ""
+  ],
+  [
+    "Diff",
+    "awdRear",
+    "AWD rear torque share",
+    0.2,
+    0.8,
+    0.02,
+    ""
+  ],
+  [
+    "Diff",
+    "awdLock",
+    "AWD center lock",
+    0,
+    1,
+    0.02,
+    ""
+  ],
+  [
+    "Gearing",
+    "finalDrive",
+    "Final drive",
+    2.5,
+    5.5,
+    0.05,
+    ""
+  ],
+  [
+    "Gearing",
+    "gear1",
+    "1st",
+    1.5,
+    5,
+    0.01,
+    ""
+  ],
+  [
+    "Gearing",
+    "gear2",
+    "2nd",
+    1,
+    3.5,
+    0.01,
+    ""
+  ],
+  [
+    "Gearing",
+    "gear3",
+    "3rd",
+    0.8,
+    2.5,
+    0.01,
+    ""
+  ],
+  [
+    "Gearing",
+    "gear4",
+    "4th",
+    0.6,
+    2,
+    0.01,
+    ""
+  ],
+  [
+    "Gearing",
+    "gear5",
+    "5th",
+    0.5,
+    1.6,
+    0.01,
+    ""
+  ],
+  [
+    "Gearing",
+    "gear6",
+    "6th",
+    0.4,
+    1.4,
+    0.01,
+    ""
+  ],
+  [
+    "Gearing",
+    "shiftTime",
+    "Shift time",
+    0.03,
+    0.5,
+    0.01,
+    "s"
+  ],
+  [
+    "Gearing",
+    "maxSteer",
+    "Max steering angle",
+    15,
+    45,
+    0.5,
+    "°"
+  ],
+  [
+    "Aids",
+    "absOn",
+    "ABS (0 off, 1 on)",
+    0,
+    1,
+    1,
+    ""
+  ],
+  [
+    "Aids",
+    "absIntensity",
+    "ABS intensity",
+    0,
+    1,
+    0.05,
+    ""
+  ],
+  [
+    "Aids",
+    "tcOn",
+    "Traction control (0 off, 1 on)",
+    0,
+    1,
+    1,
+    ""
+  ],
+  [
+    "Aids",
+    "tcIntensity",
+    "TC intensity",
+    0,
+    1,
+    0.05,
+    ""
+  ]
+]

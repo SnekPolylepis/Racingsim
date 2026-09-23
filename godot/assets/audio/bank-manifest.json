@@ -1,0 +1,112 @@
+{
+  "decoder": "Godot 4.6.2",
+  "numpy": "2.3.5",
+  "rate": 44100,
+  "reference_rpm_note": "Tuned anchors; recorded model/RPM are unspecified",
+  "bands": [
+    {
+      "band": "idle",
+      "source": "ferrari-idle.mp3",
+      "start_seconds": 8.0,
+      "duration_seconds": 3.0,
+      "tracked_hz_median": 105.5,
+      "reference_rpm": 1250,
+      "power": {
+        "file": "assets/audio/engine-idle.wav",
+        "frames": 218768,
+        "seconds": 4.960725623582767,
+        "peak": 0.788482666015625,
+        "rms": 0.2199933118127285,
+        "seam_step": 0.002716064453125,
+        "sha256": "87182519494f9242d709b8e2f3ed2d5618861bdee4767b2fee4489283a6cbbe7"
+      },
+      "coast": {
+        "file": "assets/audio/coast-idle.wav",
+        "frames": 218768,
+        "seconds": 4.960725623582767,
+        "peak": 0.8505859375,
+        "rms": 0.21999330402497277,
+        "seam_step": 0.003936767578125,
+        "sha256": "ebfa56faee036799fa14beda6d834cde42af1e2873f043301af41fd9a64f5815"
+      }
+    },
+    {
+      "band": "low",
+      "source": "ferrari-acceleration.mp3",
+      "start_seconds": 6.0,
+      "duration_seconds": 1.35,
+      "tracked_hz_median": 102.25,
+      "reference_rpm": 2400,
+      "power": {
+        "file": "assets/audio/engine-low.wav",
+        "frames": 46910,
+        "seconds": 1.063718820861678,
+        "peak": 0.80047607421875,
+        "rms": 0.21999320304299308,
+        "seam_step": 0.00128173828125,
+        "sha256": "5779fc26ce4f1bd2d2cbb486d5062943056d2b81391119b7db5db76aca90964b"
+      },
+      "coast": {
+        "file": "assets/audio/coast-low.wav",
+        "frames": 46910,
+        "seconds": 1.063718820861678,
+        "peak": 0.774261474609375,
+        "rms": 0.21999328558397058,
+        "seam_step": 0.000885009765625,
+        "sha256": "861e009f5fb54c8817e9d650220c9ed20cd9c1c5b02ff9dcdb14323a605e50ec"
+      }
+    },
+    {
+      "band": "mid",
+      "source": "ferrari-acceleration.mp3",
+      "start_seconds": 24.0,
+      "duration_seconds": 1.4,
+      "tracked_hz_median": 182.25,
+      "reference_rpm": 4200,
+      "power": {
+        "file": "assets/audio/engine-mid.wav",
+        "frames": 49856,
+        "seconds": 1.1305215419501133,
+        "peak": 0.7935791015625,
+        "rms": 0.21999328164439774,
+        "seam_step": 0.02496337890625,
+        "sha256": "520fc7264534698c1ef5eeff278d081f56271ff7ca5196651d2a011595aaa492"
+      },
+      "coast": {
+        "file": "assets/audio/coast-mid.wav",
+        "frames": 49856,
+        "seconds": 1.1305215419501133,
+        "peak": 0.79071044921875,
+        "rms": 0.21999335515388346,
+        "seam_step": 0.014801025390625,
+        "sha256": "32deb0e0216e4beade37913c9a53d61672608032650b017896d55203c311e407"
+      }
+    },
+    {
+      "band": "high",
+      "source": "ferrari-acceleration.mp3",
+      "start_seconds": 30.0,
+      "duration_seconds": 1.4,
+      "tracked_hz_median": 293.25,
+      "reference_rpm": 6800,
+      "power": {
+        "file": "assets/audio/engine-high.wav",
+        "frames": 49737,
+        "seconds": 1.1278231292517007,
+        "peak": 0.593414306640625,
+        "rms": 0.21999322962110998,
+        "seam_step": 0.073577880859375,
+        "sha256": "14e028bfac8352e38e3dc996644ad1aaa5cfbb552ec93dca8a297f1b733827d2"
+      },
+      "coast": {
+        "file": "assets/audio/coast-high.wav",
+        "frames": 49737,
+        "seconds": 1.1278231292517007,
+        "peak": 0.5860595703125,
+        "rms": 0.21999333957176653,
+        "seam_step": 0.055999755859375,
+        "sha256": "a37ba248ee2d5696966ec44cf9449f08ccdabce3918a54c806ef3968d18d9089"
+      }
+    }
+  ]
+}

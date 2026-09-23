@@ -1,0 +1,23 @@
+[
+  {
+    "name": "sky.hdr",
+    "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr",
+    "license": "CC0-1.0",
+    "source": "kloofendal_48d_partly_cloudy_puresky",
+    "sha256": "FD94C84997B8A3C353B62C2125A9B44E19509956986A126E472684432A02D798"
+  },
+  {
+    "name": "pine-twig.png",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/pine_tree_01/pine_tree_01_twig_diff_1k.png",
+    "license": "CC0-1.0",
+    "source": "pine_tree_01",
+    "sha256": "D02C031DE64B8AD671F3DD0DA19870FA4783D912AE6674AEAB0702871DEEAEAA"
+  },
+  {
+    "name": "pine-alpha.png",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/pine_tree_01/pine_tree_01_twig_alpha_1k.png",
+    "license": "CC0-1.0",
+    "source": "pine_tree_01",
+    "sha256": "6F91AA99F2C27108D6F817F874954AA7DF8BFBB4DEA2673E9322555A6AE79D99"
+  }
+]

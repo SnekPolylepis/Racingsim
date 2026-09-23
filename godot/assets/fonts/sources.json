@@ -1,0 +1,23 @@
+[
+  {
+    "license": "SIL OFL 1.1",
+    "name": "Rajdhani-Medium.ttf",
+    "sha256": "12FF7DCFE4C206E3875AC53B1762EAB57DE6A2FA7F5A86C26B97B88D6591EAC2",
+    "url": "https://raw.githubusercontent.com/google/fonts/e44c4b011a820c2cbe2fd2cfa8052037d7edb571/ofl/rajdhani/Rajdhani-Medium.ttf",
+    "author": "Indian Type Foundry"
+  },
+  {
+    "license": "SIL OFL 1.1",
+    "name": "Rajdhani-Bold.ttf",
+    "sha256": "691470DD3286A14E9677940D0BF75796179841BA5215CBDA1A2C8910A3226AFD",
+    "url": "https://raw.githubusercontent.com/google/fonts/e44c4b011a820c2cbe2fd2cfa8052037d7edb571/ofl/rajdhani/Rajdhani-Bold.ttf",
+    "author": "Indian Type Foundry"
+  },
+  {
+    "license": "SIL OFL 1.1",
+    "name": "OFL.txt",
+    "sha256": "F62EF357D3A1C3D27EDD35A6E1BA350E8A8D13499797964EEADEFBF0B3B15D1F",
+    "url": "https://raw.githubusercontent.com/google/fonts/e44c4b011a820c2cbe2fd2cfa8052037d7edb571/ofl/rajdhani/OFL.txt",
+    "author": "Indian Type Foundry"
+  }
+]

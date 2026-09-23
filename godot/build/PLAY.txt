@@ -1,0 +1,47 @@
+RACING SIM - WINDOWS
+
+Double-click RacingSim.exe. No installation, browser or Godot editor needed.
+
+WASD/arrows: drive. Space: handbrake. R: reset. Q/E: shift. C: clutch.
+M: automatic/manual. V: camera. B/Y: debug/telemetry. F11: fullscreen.
+G: garage. F2: editor. Esc: close menu, return from test drive, or pause.
+Hold brake at rest in automatic mode to switch forward/reverse.
+
+Controller: left stick steering, RT/LT pedals, LB clutch, X handbrake,
+A/B shift, Back reset, Start pause. Remap controls in Settings.
+
+All four circuits, three cars, 42 tuning fields, lap ghosts, minimap,
+telemetry, circuit editing, recorded engine audio and procedural driving effects.
+Settings includes audio volume and mute controls.
+
+EDITOR: 1 select, 2 insert, 3 curbs, 4 grass, 5 gravel, 6 erase, 7 wall,
+8 tire barrier, 9 cone, 0 start. Drag points, objects or barrier endpoints.
+Middle drag pans; wheel zooms; Shift snaps. F frames the circuit.
+Ctrl+Z undo, Ctrl+Shift+Z redo, Ctrl+S save. T test drive; Esc returns.
+
+Circuits: import/export browser-compatible JSON, save as, rename/delete,
+copy/paste, choose an existing data folder. Garage saves named setups.
+Default saves: %APPDATA%/Godot/app_userdata/Racing Sim/
+
+Godot engine license and dependency notices accompany this executable.
+
+HELP: choose a chapter in the in-game Player handbook for detailed driving,
+editor, garage, files and troubleshooting instructions. Source maintainers
+and LLMs should start with AGENTS.md, then godot/docs/LLM-GUIDE.md.
+
+CONSOLE PRESENTATION: Default pairing is Spa-Francorchamps and Ferrari 296 GT3,
+with Simcade, Afternoon and 640x448 Authentic UI. Press Start/Enter on the title,
+then choose Race, car and circuit. D-pad/arrows move; A/Enter selects; B/Esc backs
+out. Shoulder buttons or Page Up/Down switch settings/garage tabs. Mouse works
+too, including the HUD Pause button. The idle title runs a driving demonstration.
+
+Settings offers 480p component, optional 480i fields, CRT/composite, 4:3/16:9,
+Sharp UI, 720p/Native, speed blur and Simulation handling. The editor stays sharp.
+TCS 0-10, ASM 0-10 and ABS On/Off; Simcade defaults to 3/3/On. Handling models
+keep separate best laps; lighting is cosmetic. Pause > Time sheet shows lap
+results and last-lap replay. All assets are local; no runtime internet access.
+
+Rajdhani OFL and Poly Haven CC0 license texts accompany the engine notices.
+CC0 Ferrari engine recordings by jtvdb and biholao are edited into RPM/load loops.
+Recorded models are unspecified; these are not exact 296 GT3 engine recordings.
+The source docs/PS2-FOLLOWUP-REPORT.md records tests and comparison evidence.

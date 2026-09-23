@@ -1,0 +1,40 @@
+# Godot import cache (regenerate with: tools/Godot.exe --headless --path . --import)
+.godot/
+
+# Engine binaries, export templates and local toolchains (large, not source)
+godot/tools/Godot.exe
+godot/tools/Godot.app/
+godot/tools/_sc_
+godot/tools/editor_data/
+godot/tools/windows_*.exe
+godot/tools/macos.zip
+godot/tools/python-packages/
+
+# Build outputs (legal notices and PLAY.txt beside the exe are kept)
+godot/build/*.exe
+godot/build/*.zip
+godot/build/*.log
+godot/build/macos/
+godot/build/legacy/
+
+# Generated test evidence: screenshots, logs, result JSON, capture rounds
+godot/tests/*.png
+godot/tests/*.png.import
+godot/tests/*.log
+godot/tests/*.json
+godot/tests/logs/
+godot/tests/compare/
+godot/tests/ps2-forward/
+godot/tests/ps2-gl/
+godot/tests/showcase/
+godot/tests/audio-study/
+godot/*.log
+
+# Copyrighted reference screenshots, study-only, never distributed
+godot/reference/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.tmp
+__pycache__/

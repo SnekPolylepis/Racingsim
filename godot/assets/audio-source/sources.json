@@ -1,0 +1,25 @@
+{
+  "license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "downloaded": "2026-09-21",
+  "files": [
+    {
+      "file": "ferrari-idle.mp3",
+      "title": "Ferrari_motor_idle",
+      "author": "jtvdb",
+      "source": "https://freesound.org/people/jtvdb/sounds/857147/",
+      "download": "https://cdn.freesound.org/previews/857/857147_14592662-hq.mp3",
+      "sha256": "985c6952318e721b7d3180a7f0eef0b11531cf56ca6fab4ed90f7c27b62f7fa7",
+      "notes": "Public HQ preview. Author identifies Ferrari, exact model unknown."
+    },
+    {
+      "file": "ferrari-acceleration.mp3",
+      "title": "Acceleration 1.wav",
+      "author": "biholao",
+      "source": "https://freesound.org/people/biholao/sounds/370278/",
+      "download": "https://cdn.freesound.org/previews/370/370278_6820745-hq.mp3",
+      "sha256": "11e775d507012816b58fc40e56a9c2afab70dad0c7476e20cf49ea22eafe9fe3",
+      "notes": "Public HQ preview. Described by author as Ferrari acceleration; model/RPM unspecified."
+    }
+  ]
+}

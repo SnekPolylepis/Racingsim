@@ -1,0 +1,21 @@
+Racing Sim for macOS
+
+Open Racing Sim.app. From the source workspace, Play Racing Sim.command opens
+the same app. No Godot editor or network connection is needed to play.
+
+WASD or arrows drive; Space handbrakes; R resets; Esc pauses; V changes camera.
+E/Q shift, C clutches, M changes transmission, G opens the garage.
+F2 opens the circuit editor; F11 toggles fullscreen. On Apple keyboards you
+may need Fn/Globe with the function keys. Menus also expose these actions.
+In the editor use Command+Z / Command+Shift+Z to undo/redo, Command+S to save.
+Control shortcuts also work. Pinch zooms; Settings offers trackpad scroll pan.
+
+Default saves: ~/Library/Application Support/Godot/app_userdata/Racing Sim/
+Circuits > Choose folder connects an existing tracks/setups/ghosts library.
+See in-game Help for complete controls and file workflows.
+
+This universal app contains Apple Silicon and Intel code. Local validation
+and known limits are recorded in godot/docs/MACOS.md in the source project.
+The app is ad-hoc signed, not notarized for public distribution. A downloaded
+copy may require approval in System Settings > Privacy & Security > Open Anyway.
+Keep the accompanying engine and asset license notices with the package.
