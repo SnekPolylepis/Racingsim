@@ -584,3 +584,12 @@ Reviewed the rebased `c0ef2e2` and `4879f25`/`0c18864` stack on fixed P3-02 `172
 From fresh `origin/main` `c8d610f` in an isolated worktree, merged in order `origin/rb/tyre-self-contained`, `origin/rb/P3-02b-road-tool-v2`, then `origin/rb/P3-04-walls`. The only conflicts were in `docs/REBUILD-LOG.md`; all sections were kept once in branch order. No other file conflicted. `git diff origin/main HEAD --check` passed after removing a merge-resolution blank line at EOF.
 
 Every Godot invocation used `Start-Process`, redirected stdout/stderr, and `WaitForExit(240000)` with kill on timeout, from this worktree's `godot/`. All stderr files were empty. `--headless --path . --import` and `scripts/game.gd --check-only` exited 0. V2: `road_tool.gd` 16/0, `road_tool_v2.gd` 11/0, `walls.gd` 8/0, `suspension.gd` 12/0, `chassis_spike.gd` 23/0, `surfaces.gd` 34/0, `track_asset.gd` 23/0; spike stdout matches `docs/rebuild/spike-P2-00.txt` except cost/timing. All ten legacy stdout files match `docs/rebuild/baseline/*.txt` after CR/LF normalization; nine exit 0 and dynamics Simcade exits 1 with the identical known braking failure. `--headless --editor --quit` exited 0 and the class cache lists RoadPath, RoadSection, WallPath, RoadScatter. Windowed `-- --features`: 212 checks, 0 failures, exit 0, empty stderr. Outputs are under ignored `tests/logs/merge-tyre-road-walls/`.
+
+## 2026-09-23  CLAIM test-hardening  (Gemini 3.8 Flash)
+Hardening test suites and working protocol:
+- Add physics-process hang guard pattern from `tests/v2/walls.gd` to every test suite doing work in `_physics_process`.
+- Verify the guard with temporary injected script error proof (exit 1, aborted message, no hang).
+- Add missing `.uid` sidecars under `scripts/`, `tests/`, and `trackgen/`.
+- Add timeout requirement and `.uid` sidecar commit rule to `docs/REBUILD-PLAN.md` §9.
+- Run all verification gates.
+
