@@ -56,3 +56,7 @@ P0 is complete except the remote: GitHub CLI is not installed; pushing to a priv
 ## 2026-09-22  DONE P0-remote  (GPT-6 Sol)
 
 Pushed `main` and tag `pre-rebuild` to [https://github.com/SnekPolylepis/Racingsim](https://github.com/SnekPolylepis/Racingsim) (private). Upstream tracking set.
+
+## 2026-09-22  CLAIM P1  (Gemini 3.8 Flash)
+Claiming Phase P1: remove the in-game circuit editor (tasks P1-01, P1-02, P1-03).
+
