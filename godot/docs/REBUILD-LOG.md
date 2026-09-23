@@ -112,3 +112,33 @@ Approved D6(A): our own 6-DOF integrator with ray suspension, Godot used only fo
 
 ## 2026-09-22  CLAIM P2-01  (GPT-6 Sol)
 Extract tyre, drivetrain and aids into shared vehicle modules with byte-identical old-suite output and an unchanged P2-00 spike. Working on branch `rb/P2-01-extract-vehicle-modules` in the isolated RacingSim-p201 worktree.
+
+## 2026-09-22  DONE P2-01  (GPT-6 Sol)
+
+Branch `rb/P2-01-extract-vehicle-modules`, extraction commit `0832b84`. The P2-00 spike was pushed to its branch and fast-forwarded to remote `main` before this worktree was made; no force push or local main checkout edit.
+
+Module layout/API:
+- `scripts/vehicle/tyre.gd`: shared peak slip, Simcade curve, tyre temperature, Pacejka, contact forces, load sensitivity, combined-slip ellipse, semi-implicit need clamps, aligning torque, rolling/surface drag, heat and wear. Both `CarModel.step()` and `CarBody.step()` call `contact_forces()` and `finish_contact()`; the copied CarBody tyre block is gone.
+- `scripts/vehicle/drivetrain.gd`: request shift, axle split, gearbox/clutch/engine/wheel torque step. Calls aids for TC and ABS.
+- `scripts/vehicle/aids.gd`: TCS/ASM levels, set TCS, steering caps, stability request, TC and ABS. Both chassis paths call the same steering function.
+- `scripts/car.gd` retains thin wrappers for its existing public methods and all existing state fields and wheel keys. Formula order and need clamps were kept.
+
+Commands run from this worktree's `godot/` folder (Godot executable: `C:\Users\Zain's PC\Desktop\RacingSim\godot\tools\Godot.exe`; each launch used PowerShell `Start-Process -Wait -PassThru -NoNewWindow` with stdout/stderr redirected to files):
+- `Godot.exe --headless --path . --import` — exit 0, stderr empty.
+- `Godot.exe --headless --path . --script tests/dynamics.gd` — identical to `docs/rebuild/baseline/dynamics-simulation.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/dynamics.gd -- --simcade` — identical to `dynamics-simcade.txt`, stderr empty; exit 1 is the recorded pre-existing roadster Simcade 100-0 38.372 m failure.
+- `Godot.exe --headless --path . --script tests/handling.gd` — identical to `handling.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/laps.gd` — identical to `laps-simulation.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/laps.gd -- --simcade` — identical to `laps-simcade.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/showcase_laps.gd` — identical to `showcase-laps.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/airborne.gd` — identical to `airborne.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/karussell.gd` — identical to `karussell.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/track3d.gd` — identical to `track3d.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/validation.gd` — identical to `validation.txt`, stderr empty.
+- `Godot.exe --headless --path . --script tests/v2/chassis_spike.gd` — exit 0, stderr empty, 23 checks/0 failures. Identical to `docs/rebuild/spike-P2-00.txt` after excluding only the two `cost … µs per tick` lines and their matching `us_per_tick_flat`/`us_per_tick_crest` JSON values.
+- `Godot.exe --headless --path . --script scripts/game.gd --check-only` — exit 0, stderr empty; run before and after formatting.
+- `Godot.exe --path . -- --features` — windowed run, exit 0, `FEATURE RESULTS` 260 checks with `"failures":[]`. Stderr contains the Godot warning `An input event object is being parsed more than once in the same frame` from unchanged `scripts/showcase_benchmark.gd:135`; this is an exception to the empty-stderr gate for that run and was not fixed in this extraction.
+- `gdformat -l 110 scripts/car.gd scripts/vehicle/car_body.gd scripts/vehicle/tyre.gd scripts/vehicle/drivetrain.gd scripts/vehicle/aids.gd` and `gdformat --check -l 110` on the same five files — five left unchanged on check.
+- `git diff --check` — no whitespace errors.
+
+Legacy comparisons were line-for-line identical after normalizing CR/LF only. No baseline or test file was edited. The branch is for independent review before merging.
