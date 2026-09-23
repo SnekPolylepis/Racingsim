@@ -1,0 +1,11 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  the walled loop validates []
+PASS  a full-loop wall closes on itself: 3568 triangles for 446 points (8 per point, no end caps)
+PASS  validation rejects a wall on the drivable layer and an unknown wall kind
+PASS  freehand concrete wall: suspension rays pass through it; its face is at z 50.0000 (50) facing the track; hit at 0.95 m, clear at 1.05 m (height 1.0); end cap at x 0.0000
+PASS  road-following walls on a flat road: base line within 0.00007 m of width + kerb + runoff + verge + 2 m on both sides, following the 3° verge; tyre wall face hit at 14.050 m from the centreline
+PASS  road-following wall on a 10° banked road: base line within 0.00015 m of the banked frame's prediction (raised 1.973 m on the high side)
+PASS  the 296 laps the walled loop (52.13 s) and never comes within 3.0 m of the wall line (closest 9.05 m)
+PASS  scatter: 48 trees (24 per side per 200 m at 12/100 m), all 4..30 m beyond the verge on the ground (height error 0.00000 m), one MultiMesh; same seed same layout: true, new seed new layout: true
+WALLS RESULTS {"checks":8,"failures":[],"results":{"closest_to_wall_m":9.05383396148682,"loop_lap_s":52.1333333333497}}

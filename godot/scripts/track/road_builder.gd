@@ -162,6 +162,24 @@ static func elevation_at(spline: Array, s: float, length: float, closed: bool) -
 	return u * a.y + t * b.y + ((u * u * u - u) * ma + (t * t * t - t) * mb) * h * h / 6.0
 
 
+## Centreline point at arc distance s (wrapped on a closed road, clamped on an open one), with the
+## elevation spline applied when there is one.
+static func point_at(curve: Curve3D, closed: bool, length: float, spline: Array, s: float) -> Vector3:
+	var q = fposmod(s, length) if closed else clampf(s, 0.0, length)
+	var p = curve.sample_baked(q, true)
+	if not spline.is_empty():
+		p.y = elevation_at(spline, q, length, closed)
+	return p
+
+
+## One station: {s, pos, tangent} at arc distance s.
+static func station_at(curve: Curve3D, closed: bool, length: float, spline: Array, s: float, eps = .25):
+	var tangent = (
+		point_at(curve, closed, length, spline, s + eps) - point_at(curve, closed, length, spline, s - eps)
+	)
+	return {"s": s, "pos": point_at(curve, closed, length, spline, s), "tangent": tangent.normalized()}
+
+
 ## Stations along the curve: [{s, pos, tangent}], evenly spaced at <= step metres. For a closed road
 ## the last station stops one step short of the start (the strip wraps back to station 0).
 static func stations(curve: Curve3D, closed: bool, step: float, elev = PackedVector2Array()) -> Array:
@@ -170,24 +188,31 @@ static func stations(curve: Curve3D, closed: bool, step: float, elev = PackedVec
 	var count = maxi(2, int(ceil(length / (minf(step, MAX_STEP) * .99))))
 	var spacing = length / count
 	var spline = elevation_spline(elev, length, closed) if not elev.is_empty() else []
-	var sample = func(s):
-		var q = s
-		if closed:
-			q = fposmod(s, length)
-		else:
-			q = clampf(s, 0.0, length)
-		var p = curve.sample_baked(q, true)
-		if not spline.is_empty():
-			p.y = elevation_at(spline, q, length, closed)
-		return p
 	var out = []
 	var n = count if closed else count + 1
 	for i in n:
-		var s = i * spacing
-		var eps = minf(.25, spacing * .5)
-		var tangent = (sample.call(s + eps) - sample.call(s - eps)).normalized()
-		out.append({"s": s, "pos": sample.call(s), "tangent": tangent})
+		out.append(station_at(curve, closed, length, spline, i * spacing, minf(.25, spacing * .5)))
 	return out
+
+
+## A point `extra` metres beyond the outer edge of the road's verge on one side (sign -1 left, +1 right)
+## at arc distance s, continuing the verge's fall. Returns {point, outward (horizontal, away from the
+## road), up (banked frame), lat (signed distance from the centreline)}. Used to follow the road with
+## walls and scenery.
+static func beyond_edge(
+	curve: Curve3D, keys: Array, closed: bool, spline: Array, s: float, sign: int, extra: float
+) -> Dictionary:
+	var length = curve.get_baked_length()
+	var st = station_at(curve, closed, length, spline, s)
+	var sec = section_at(keys, fposmod(s, length) if closed else s, length, closed)
+	var fr = frame(st.tangent, sec.bank_deg)
+	var outer = side(sec, sign)[-1]
+	var slope = tan(deg_to_rad(sec.verge_slope_deg))
+	var lat = outer[0] + sign * extra
+	var point = st.pos + fr[0] * lat + fr[1] * (outer[1] - slope * extra)
+	var outward = fr[0] * sign
+	outward.y = 0.0
+	return {"point": point, "outward": outward.normalized(), "up": fr[1], "lat": lat}
 
 
 ## Section values at distance s: numeric values eased between the bounding keys, types and surfaces
