@@ -75,6 +75,7 @@ The old `track.gd`, `track3d.gd`, `circuit_world.gd`, `editor.gd` and `outline_i
 - Angular velocity is a `Vector3` in the **body frame**, right-hand rule. Positive `ω.y` is yaw to the **left**. Positive `ω.x` rolls the right side down. Positive `ω.z` pitches the nose up.
 - Driver inputs keep their existing sign: `steer > 0` = steer right.
 - Tyre `wear` grows from 0. Wheel `ellipse` is utilisation, not µ.
+- **Precision (contract change 2026-09-22):** Godot's `Vector2`/`Vector3`/`Quaternion`/`Transform3D` are 32-bit in standard builds; GDScript `float` is 64-bit. Accumulated solver state that can be far from zero, above all **world position, must be stored in 64-bit floats**. At 5 km from the origin a float32 position cannot represent sub-0.5 mm steps (measured: a car drifting at 1 cm/s does not move at all at x = 5 km). Use vectors for relative/local quantities (offsets from the CG, normals, body-frame rates). Surface queries receive a float32 `Vector3`, so a track's query frame must keep coordinates small (P3-00).
 
 ### 5.2 Surface query
 
@@ -158,9 +159,11 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 - **P2-00 [DEEP] Spike.** Prototype `CarBody` (rigid body, quaternion, body-frame ω with gyroscopic term, semi-implicit Euler at 240 Hz) and four ray-suspension corners on `TestSurface.flat` and `.crest`. Confirm D6(A) is viable (stability at 240 Hz, cost per tick). Write findings in the log. Go/no-go for the owner.
 - **P2-01 [ARCH] Extract without changing behaviour.** Move the tyre, drivetrain and aids code out of `car.gd` into `scripts/vehicle/*.gd`. The old `car.gd` calls them. **Every existing suite must produce byte-identical numbers.** This makes the physics reusable by the new body.
-- **P2-02 [DEEP]** `TestSurface` with flat, bowl, crest, ditch, 37° wall, ramp and step shapes, each with an analytic ground truth.
+- **P2-02 [DEEP]** `TestSurface` with flat, bowl, crest, ditch, 37° wall, ramp and step shapes, each with an analytic ground truth. **Done 2026-09-22** (`tests/v2/surfaces.gd`).
 - **P2-03 [DEEP]** `CarBody` + `Suspension`: hardpoints from `cars.json` (derive them from the existing `a`, `b`, track widths and CG height); spring/damper/bump stop along the hardpoint axis; ARBs; wheel load = suspension force (zero when extended). Tyre forces act at the contact point in the contact frame, built from the surface normal and the wheel's heading. Aero forces on the body. Gravity is a world −Y force, with no slope term.
+  P2-03 must also: store world position (and velocity) in 64-bit scalars per §5.1; start each suspension ray above the mount (a ray that starts inside the ground currently reads distance 0 and fires the bump stop); keep ARBs acting when a wheel is off the ground; add chassis-to-ground contact (sills/roof) so a rolled car cannot fall through the surface (P2-02 probe).
 - **P2-04 [DEEP]** Wheel spin states and the tyre "need" clamps, reworked for 3D contact velocity. **The clamps must stay:** they are what stops standstill jitter and drivetrain oscillation.
+  P2-04 must also give the tyre low-speed stiffness (static friction): a braked car currently creeps 6–8 mm/s down an 8° ramp and 26–35 mm/s across a 37° side slope (P2-02 probes); the old model had the same flaw, hidden by its flat-only standstill hold.
 - **P2-05 [DEEP]** Flat-equivalence, determinism, energy, bowl, crest, flight, landing and wall tests (§6). Tune only the new suspension parameters. **Don't touch tyre or drivetrain constants to pass tests.**
 - **P2-06 [DEEP]** Tyre footprint smoothing (multi-ray) and kerb behaviour on `TestSurface.step`.
 - **P2-07 [DEEP]** Aids and Simcade ported to 3D (ASM uses body-frame yaw rate and slip). Retune Simcade against its existing targets.
