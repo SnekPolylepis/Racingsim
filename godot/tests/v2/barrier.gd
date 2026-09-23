@@ -13,6 +13,7 @@ extends SceneTree
 ##   cost       WallContact per tick, clear of walls and in contact.
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/barrier.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const TestSurface = preload("res://scripts/surface/test_surface.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const WallBuilder = preload("res://scripts/track/wall_builder.gd")
@@ -303,6 +304,9 @@ func cost():
 	var touching = float(Time.get_ticks_usec() - t0) / 480
 	results["cost_us"] = {"clear": clear, "touching": touching}
 	check(
-		clear < 60 and touching < 150,
-		"wall contact costs %.1f µs per tick clear of walls, %.1f µs touching one" % [clear, touching]
+		(clear < 60 and touching < 150) or not GatesEnv.perf(),
+		(
+			"wall contact costs %.1f µs per tick clear of walls, %.1f µs touching one%s"
+			% [clear, touching, GatesEnv.perf_note()]
+		)
 	)

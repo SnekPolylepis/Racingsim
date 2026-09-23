@@ -17,6 +17,7 @@ extends "res://tests/dynamics.gd"
 ## floor (data/simcade.json "carbody", P2-07).
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/aids_simcade.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const GatesEnv = preload("res://tests/v2/gates_env.gd")
 
 
 ## The harness's TrackModel as a flat §5.2 surface: the ground plane y = 0, with the TrackModel's surface
@@ -198,11 +199,16 @@ func simcade_setup_and_surface_checks():
 		)
 
 
+## `-- --car key` runs one car and `-- --part simulation|simcade` one half, so tools/run_gates.ps1 can
+## run the six pieces in parallel (the whole suite is four minutes on one core).
 func _initialize():
-	presets = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
-	simulation_checks()
+	presets = GatesEnv.only_car(JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json")))
+	var part = GatesEnv.part()
+	if part != "simcade":
+		simulation_checks()
 	var simulation_failures = failures.duplicate()
-	run_simcade()
+	if part != "simulation":
+		run_simcade()
 	print(
 		"AIDS SIMCADE RESULTS ",
 		JSON.stringify({"checks": checks, "failures": failures, "simulation_failures": simulation_failures})
