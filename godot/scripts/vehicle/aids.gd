@@ -61,7 +61,11 @@ static func steering(car, body_x, body_y):
 	car.steer_angle = steer_angle
 
 
-static func stability_request(car):
+## ASM. The planar CarModel passes nothing and its slip comes from world velocity and heading, as
+## before. The 6-DOF CarBody (P2-07) passes its body-frame forward and lateral velocity: on a bank,
+## slope or crest the plan-view reading mixes in vertical motion and body tilt, while slip and the
+## body yaw rate `car.r` belong to the body frame.
+static func stability_request(car, body_forward = NAN, body_lateral = NAN):
 	var p = car.p
 	var setup = car.setup
 	var simcade = car.simcade
@@ -79,7 +83,11 @@ static func stability_request(car):
 	if level <= 0 or speed < 5:
 		return
 	var forward = vx * cos(h) + vy * sin(h)
-	var beta = atan2(-vx * sin(h) + vy * cos(h), maxf(absf(forward), 1))
+	var lateral = -vx * sin(h) + vy * cos(h)
+	if not is_nan(body_forward):
+		forward = body_forward
+		lateral = body_lateral
+	var beta = atan2(lateral, maxf(absf(forward), 1))
 	var intended = forward * tan(steer_angle) / (p.a + p.b)
 	var limit = setup.tireMu * G / maxf(speed, 1)
 	intended = clampf(intended, -limit, limit)
