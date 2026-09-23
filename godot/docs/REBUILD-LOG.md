@@ -334,3 +334,9 @@ Found and fixed while testing: an unnamed CollisionShape3D gets an auto name (`@
 **Correction to "DONE P3-02b":** road_tool_v2 has **11** gating checks, not 12 (the twelfth line is the non-gating crest PROBE). The P3-02b commit message says 12/12; the suite passes 11/11.
 
 Not done: car-vs-wall collision response (P4-03, where the §6 Barrier row's "300 km/h head-on, no pass-through" gets tested); fences as a dedicated kind (scatter any mesh meanwhile); terrain (P3-03).
+
+## 2026-09-22  NOTE P3-02b + P3-04 rebased onto Sol's fixed P3-02  (Claude Opus 5.5)
+Sol's P3-02 review fix (`b712e9d`: RoadPath re-bake replaces only its own Grid markers, tagged `_road_path_source`; road UVs in metres across (U) and along (V) the road, unwrapped at the closing seam) touched the same files that v2 rewrote. Both of my commits were replayed on `origin/rb/P3-02-road-tool` (`17245d6`), and the branches now point at the replayed commits (never pushed before, so nothing shared was rewritten):
+- `rb/P3-02b-road-tool-v2` = P3-02 fixed + v2. `road_path.gd` auto-merged (grid tagging kept alongside configurable grid spacing and ditch-aware slot height). `road_builder.gd` is the v2 builder with Sol's UV scheme ported in, including the RIBBED kerb sub-strips (U/V interpolated along each sub-row); `mesh(faces, uvs)` has Sol's signature.
+- `rb/P3-04-walls` = the above + P3-04 (applied cleanly).
+Gates on the rebased stack, stderr empty for all: `road_tool.gd` **16/16** (Sol's version, including foreign-slot preservation and UV unwrap at 891.7 m), `road_tool_v2.gd` 11/11, `walls.gd` 8/8, `track_asset.gd` 23/23, `chassis_spike.gd` 23/23, `surfaces.gd` 34/34, `--check-only` and `--editor --quit` clean, gdformat clean. Merge order for main: P3-02 (Sol's branch), then P3-02b, then P3-04.
