@@ -1,8 +1,14 @@
 {
-  "proving_ground f296gt3 simcade": 64.254,
-  "proving_ground f296gt3 simulation": 64.6,
-  "proving_ground gt simcade": 66.888,
-  "proving_ground gt simulation": 67.129,
-  "proving_ground roadster simcade": 84.267,
-  "proving_ground roadster simulation": 84.271
+  "proving_ground f296gt3 simcade": 58.721,
+  "proving_ground f296gt3 simulation": 60.425,
+  "proving_ground gt simcade": 60.421,
+  "proving_ground gt simulation": 61.629,
+  "proving_ground roadster simcade": 77.413,
+  "proving_ground roadster simulation": 78.896,
+  "spa f296gt3 simcade": 185.083,
+  "spa f296gt3 simulation": 190.1,
+  "spa gt simcade": 187.304,
+  "spa gt simulation": 190.412,
+  "spa roadster simcade": 240.254,
+  "spa roadster simulation": 244.575
 }

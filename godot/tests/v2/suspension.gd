@@ -2,8 +2,9 @@ extends SceneTree
 ## P2-03: suspension rig and chassis fixes on analytic surfaces (REBUILD-PLAN.md P2-03).
 ##   precision   64-bit world state: a slow car 5 km out moves exactly as near the origin.
 ##   warp        one front wheel jacked by delta: the front axle's left-right load difference must equal
-##               delta * Kf * Kr / (Kf + Kr), with axle twist rate K = spring + 2 * ARB (rigid-body
-##               statics, the cross-weight calculation). Checked with ARBs on and off.
+##               delta * Kf * Kr / (Kf + Kr), with axle twist rate K = spring + 2 * ARB in series with
+##               the radial tyre rate (P2-comp; rigid-body statics, the cross-weight calculation).
+##               Checked with ARBs on and off.
 ##   arb_pair    anti-roll bar through a lifted wheel: bar in series with the lifted wheel's spring, and
 ##               the massless lifted wheel in force balance (no force on the body at that corner).
 ##   ray lift    ground rising past the suspension mount gives a continuous, monotonic wheel load.
@@ -78,6 +79,9 @@ func precision():
 	var moved = []
 	for x0 in [0.0, 5000.0]:
 		var c = make("f296gt3")
+		# The state's precision, not the chassis: with compliance the wheels drop to full droop in the void
+		# and move the sprung body by micrometres (physical), so this runs on the massless wheel.
+		c.compliance = false
 		c.setup.cdA = 0.0
 		c.setup.clAF = 0.0
 		c.setup.clAR = 0.0
@@ -132,6 +136,10 @@ func warp(key, arbs_on):
 	var s = probe.setup
 	var kf = s.springF + (2 * s.arbF if arbs_on else 0.0)
 	var kr = s.springR + (2 * s.arbR if arbs_on else 0.0)
+	if probe.compliance:
+		# Each wheel's tyre is in series with its axle's twist rate.
+		kf = kf * probe.tyre_rate[0] / (kf + probe.tyre_rate[0])
+		kr = kr * probe.tyre_rate[2] / (kr + probe.tyre_rate[2])
 	var want = delta * kf * kr / (kf + kr)
 	var front = (jacked[0] - jacked[1]) - (flat[0] - flat[1])
 	var rear = (jacked[2] - jacked[3]) - (flat[2] - flat[3])

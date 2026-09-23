@@ -22,8 +22,9 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | R-WF | Review the workflow change: tools/run_gates.ps1, tools/gates.json, §9 rules 2/5/6/10/11, suite cuts | Sol | M-TRAIN | open | read "NOTE workflow" |
 | R-P4-07 | Review P4-07 bot driver and laps gate | Sol | M-TRAIN | open | read "DONE P4-07" and "REVIEW P6-01" |
 | F-P4-01 | P4-01 follow-ups (Claude's review): Esc on the v2 path quits the app instead of returning to the front end; WallContact not yet called after car.step(); game.gd and track_drive.gd preload trackgen/*.gd but export_presets.cfg excludes trackgen/* so an exported exe breaks | Sol | M-TRAIN | open | fold into P4-core |
-| F-P6-01 | Spa v0 fixes per Claude's review: spread the 2.69 deg/m bank twist at 2398 m; get the committed scene under 5 MB; check width at s 6125 m (BotLine smoothing is Claude's, with P4-07b) | Gemini | | open | read "REVIEW P6-01" |
-| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking, smooth Spa BotLine; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | open | read "REVIEW P6-01"; spa roadster simulation is a known laps failure until then |
+| F-P6-01 | Spa v0 fixes per Claude's review: spread the 2.69 deg/m bank twist at 2398 m; get the committed scene under 5 MB; check width at s 6125 m (BotLine smoothing done in P4-07b: regenerate the committed spa.scn after merging it) | Gemini | | open | read "REVIEW P6-01" |
+| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking, smooth Spa BotLine; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | review: Sol | rb/P4-07b; read "DONE P4-07b" |
+| F-terrain-perf | tests/v2/terrain.gd's "car step" timing check (300 µs budget) ignores GatesEnv.perf(): under the parallel runner it read 671 µs and failed (168 µs alone). Route it through GatesEnv.perf()/perf_note() like the other timing gates | Claude | | review: Sol | small |
 
 ## Build
 
@@ -42,9 +43,10 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 
 | ID | Task | Who | Needs | Status | Notes |
 |---|---|---|---|---|---|
-| D-kerb | Should Simcade kerbs feel softer than Simulation (car.gd's curb_scale 0.55 has no direct 3D equivalent)? | owner | | needs owner | see DONE P2-07 |
-| D-compliance | Add tyre radial stiffness + unsprung mass so kerb strikes are realistic (changes ride height baselines) | owner | | needs owner | proposed in DONE P2-06; DeepSeek design notes pending |
-| P2-comp | Tyre compliance / unsprung mass model | Claude | D-compliance | blocked: owner decision | |
+| D-kerb | Should Simcade kerbs feel softer than Simulation (car.gd's curb_scale 0.55 has no direct 3D equivalent)? | owner | | done: no (2026-09-23) | same kerbs in both handling models |
+| D-compliance | Add tyre radial stiffness + unsprung mass so kerb strikes are realistic (changes ride height baselines) | owner | | done: yes (2026-09-23) | P2-comp |
+| P2-comp | Tyre compliance / unsprung mass model | Claude | | review: Sol | rb/P2-comp; read "DONE P2-comp" |
+| P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | review: Sol | rb/P2-comp-b (on rb/P2-comp); read "DONE P2-comp-b" |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-02 | Nordschleife in sections | Gemini, Claude review | P6-01 | open | |
 | P6-03 | Monza (if still wanted) | owner | | needs owner | |
