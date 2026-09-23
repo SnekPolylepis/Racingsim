@@ -70,6 +70,9 @@ var footprint = true
 var tread = TyreFootprint.DEFAULT_TREAD
 ## Surface queries made by the footprints last tick (centre rays included).
 var footprint_rays = 0
+## Last tick's contact per wheel (the Surface contract dictionary, {} when off the ground), for
+## telemetry, skid marks and tests.
+var contact_hits = []
 
 
 func configure(preset):
@@ -234,9 +237,10 @@ func step(dt, surface, automatic = true):
 		# stop then answers the real penetration, continuously.
 		comp[i] = free_length[i] - (hit.distance - ray_offset - p.wheelR)
 		# Compression rate from the mount's velocity into the contact normal (first order: ignores the
-		# ray direction's own rotation). On a kerb edge the footprint's normal leans back from the edge,
-		# so the rate includes the climb the tyre's curvature makes onto it.
+		# ray direction's own rotation). The footprint takes the normal from the ground (5.2), so a kerb
+		# edge's climb shows in the compression, not the rate (no tyre compliance to absorb the rate).
 		rate[i] = -n.dot(top_vel) / maxf(n.dot(up), .05)
+	contact_hits = hits
 	var loads = [0.0, 0.0, 0.0, 0.0]
 	for i in 4:
 		if hits[i].is_empty():

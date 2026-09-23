@@ -495,3 +495,28 @@ Results (10/10, stderr empty):
 - A centre ray that just misses (low ground past the wheel's reach) is recast to the samples' reach; before, it read as a void and made false edges that used up the bisection budget (a parked car jittered on a pad edge).
 
 Not done: RIBBED and SAUSAGE kerbs (P3-02b, not on `main` yet) are not exercised; run `footprint.gd`'s road part on them once merged. `.uid` sidecars for the two new scripts were not generated (Gemini's test-hardening task adds missing ones).
+
+## 2026-09-23  NOTE P2-06 rework after driving the P5-03 kerbs  (Claude Opus 5.5) — `rb/P2-06-footprint`
+Reviewing Sol's P5-03 I drove the 296 across the proving ground's real kerb meshes (bevel s 990 left, ribbed s 1750 right, sausage s 2150 left; ~11°, 60 and 120 km/h). **The first P2-06 made them worse**: the largest per-tick compression change went from 8.0 to 46.1 mm on the sausage and 2.9 to 19.0 mm on the ribbed kerb at 60 km/h. Causes, all fixed:
+1. **Too few samples.** Humps and ribs between the 5 rays were only found by bisection rays, and those came and went with the bisection budget (fore-aft pairs spent it first), so the wheel flickered 2–5 cm. Now **9 fixed samples**: ±0.375 R and ±0.75 R along, ±¼ and ±½ tread across; edges are bisected only between neighbours, largest disagreement first; bisection rays never become contact candidates unless they located an edge.
+2. **False edges on slopes.** An edge's height came from the first high-side sample; on a sausage's 25° side that is 3.5 cm up the slope, so a smooth slope read as a 1.5 cm step. Now the nearest bearing high-side ray gives the height (1 mm from the low side on a slope, no edge).
+3. **Flat tread vs body roll.** The ±¼ samples on a flat tread tie with the centre at any relative tilt. The tread now has a 0.4 m **crown** (a stand-in for the camber control and tyre compliance this rigid wheel lacks), and BLEND is 2 mm. Smooth ground is again bit-identical to the centre ray (1200/1200 poses tilted up to 3°).
+4. **Cost.** The outer ring (±0.75 R, ±½ tread) is cast first; the inner four only when it disagrees with the plane under the centre by more than 2 mm (`SMOOTH_TOL`, under a rib's 8 mm, so a ribbed kerb always gets the full footprint rather than switching every few ticks).
+
+Results (`tests/v2/footprint.gd` 10/10, stderr empty; output in `docs/rebuild/footprint-P2-06.txt`):
+- Step envelope within 0.28 mm head-on and rolling off, **0.54 mm** side-on; 5 cm step at 50 km/h: largest per-tick jump 26.0 mm (single ray 50.0).
+- TrackSurface kerb road: **184 µs per car tick** (23.4 rays), single ray 78 µs; peak load 2.90x (single 3.43x).
+- **P5-03 kerbs** (footprint vs single ray: peak load / largest per-tick compression change):
+
+| kerb | 60 km/h | 120 km/h |
+|---|---|---|
+| bevel 40 mm | 2.16x / 2.2 mm vs 2.18x / 1.5 mm | 3.32x / 3.2 mm vs 3.33x / 3.0 mm |
+| ribbed 45 mm | 3.21x / 2.9 mm vs 3.06x / 2.9 mm | 6.96x / 22.6 mm vs 7.88x / 45.2 mm |
+| sausage 90 mm | 4.87x / 8.0 mm vs 5.31x / 8.0 mm | 6.57x / 12.5 mm vs 6.50x / 16.4 mm |
+
+  Within 0.7 mm and 5 % of the single ray or better everywhere; the ribbed kerb's +5 % at 60 km/h is the footprint feeling ribs the centre ray misses (239 vs 233 kerb wheel-ticks).
+- P5-03 `proving_ground.gd` with the footprint: 19/19, every line identical to the single-ray run (lap 143.79 s): the road is smooth at the tyre's scale.
+- Ditch weave sweep (15 variants, see DONE P2-06): single ray 0.114–0.184 m, footprint now **0.131–0.196 m** (was 0.20–0.24); the 0.25 m limit stands.
+- Spike 23/23 (identical apart from cost: flat 148 µs with the footprint), suspension 12/12, surfaces 34/34, track_asset 23/23 (169 µs), road_tool 16/16; on the tree merged with P5-03: road_tool_v2 11/11, walls 8/8; parse clean; 10 legacy suites identical to the baseline.
+
+CarBody now also keeps `contact_hits` (last tick's contact per wheel; the footprint adds `at`, where on the tyre it bears) for telemetry, skids and tests. For P5-03 (Sol): the kerb drive can gate on "footprint never more than 1 mm / 10 % harsher than the single ray" alongside no-NaN.
