@@ -120,7 +120,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		"verge_surface_left": -1,
 		"verge_surface_right": -1,
 	}
-	var strongest = 0.0
+	var total_bank = 0.0
+	var total_bank_weight = 0.0
 	for corner in corners:
 		var delta = circular_delta(s, corner[1], length)
 		var weight = smoothstep(-130.0, -45.0, delta) * (1.0 - smoothstep(35.0, 145.0, delta))
@@ -128,9 +129,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 			continue
 		values.width_left = maxf(values.width_left, lerpf(6.2, corner[3], weight))
 		values.width_right = maxf(values.width_right, lerpf(6.2, corner[3], weight))
-		if weight > strongest:
-			values.bank_deg = corner[2] * weight
-			strongest = weight
+		total_bank += corner[2] * weight
+		total_bank_weight += weight
 		var inside = "right" if corner[4] > 0 else "left"
 		var outside = "left" if corner[4] > 0 else "right"
 		values["runoff_" + outside] = maxf(values["runoff_" + outside], 4.0 + 20.0 * weight)
@@ -143,6 +143,9 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		if corner[0] in ["Les Combes", "Pouhon", "Stavelot"] and weight > .1:
 			values["verge_surface_" + outside] = 3
 			values["verge_" + outside] = 8.0 + 12.0 * weight
+	# Overlapping corners blend their banks by weight (the strongest alone flipped the bank 3.8 degrees
+	# in 2.5 m between Les Combes and Malmedy); a lone corner still fades in by its own weight.
+	values.bank_deg = total_bank / maxf(total_bank_weight, 1.0)
 	return values
 
 
@@ -473,7 +476,7 @@ static func build_asset() -> Node3D:
 		"ArdennesNear",
 		positions["Raidillon"] + 180.0,
 		positions["Blanchimont"] + 120.0,
-		32.0,
+		18.0,
 		12.0,
 		65.0,
 		601
@@ -484,7 +487,7 @@ static func build_asset() -> Node3D:
 		"ArdennesDeep",
 		positions["Raidillon"] + 200.0,
 		positions["Blanchimont"] + 100.0,
-		42.0,
+		24.0,
 		70.0,
 		180.0,
 		602
