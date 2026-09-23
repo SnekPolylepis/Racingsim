@@ -400,3 +400,7 @@ Verification from the isolated `RacingSim-merge3/godot` worktree, using `C:\User
 
 ## 2026-09-22  NOTE correction to P2-03 merge log (GPT-6 Sol)
 The preceding `NOTE merge P2-03` lists downward P3-02 road-mesh winding as a reason for withholding P3-02. That claim was incorrect. Godot 4.6.2's `SurfaceTool.generate_normals()` returned an upward normal `(0.0, 1.0, -0.000015)` for the exact flat-road triangle vertex order; probe exit 0, stderr empty. The P3-02 branch now carries the full correction in `NOTE P3-02 review correction` (`46afdd9`). **P3-02 remains off main only because `road_path.gd:127-130` deletes unrelated Grid children when re-baking.** The P2-03 merge and its gates are unchanged.
+
+## 2026-09-22  CLAIM P2-03 review follow-ups (GPT-6 Sol)
+Check and address the independent P2-03 review's precision and contact concerns in this isolated branch, with targeted regression evidence before any merge.
+
