@@ -185,6 +185,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 - **P3-02 [TOOL]** Road plugin (`addons/road_tool/`, editor-only, excluded from export).
   - A `RoadPath` (Path3D) with cross-section keys along its length: left/right width, camber, crown, left/right kerb type and width, verge width and slope, surface type.
   - It bakes the road, kerbs and verges into render meshes plus per-surface collision.
+  - **Done 2026-09-22** (`tests/v2/road_tool.gd`): `RoadPath` (@tool Path3D with an Inspector **Bake road** button via `@export_tool_button`; no separate plugin needed), `RoadSection` keys, `scripts/track/road_builder.gd`. Bake warns when bank changes faster than 0.2°/m.
   - Junctions/pit lane: out of scope for v1. Hand-model them.
 - **P3-03 [TOOL]** Terrain: import a DEM GeoTIFF/heightmap into chunked mesh terrain with collision, stitched to the verge edges of the road. No third-party GDExtension unless the owner approves it.
 - **P3-04 [TOOL]** Wall/barrier tool (armco, tyre wall, concrete) along paths with collision; scenery scatter brush (trees, fences) with MultiMesh.

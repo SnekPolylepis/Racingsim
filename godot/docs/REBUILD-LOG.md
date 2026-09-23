@@ -411,3 +411,50 @@ Branch `rb/P2-03-review-fixes` from main `2f2883d`, code commit `f3fee4c`. The l
 Reconsidered the review's body-contact torque-arm suggestion: this penalty model applies force at the penetrating chassis vertex, so `arm.cross(f)` is the correct lever for that force. No torque-arm change was made. The `pos`/`vel` Vector3 view precision caveat remains an API consideration; current solver accumulation uses scalars.
 
 From this worktree's `godot/`, Godot 4.6.2 via `Start-Process -Wait -PassThru -NoNewWindow` with redirected stdout/stderr: `--headless --path . --import`, `scripts/game.gd --check-only`, `tests/v2/suspension.gd` **12/0**, `chassis_spike.gd` **23/0**, `surfaces.gd` **34/0**, `track_asset.gd` **23/0**. All exit 0 and stderr is empty. Spike stdout matches `docs/rebuild/spike-P2-00.txt` except cost lines and JSON timing fields. A first diagnostic ditch assertion used vertical depth and failed at 0.177 m; it was corrected to the normal depth used by the penalty contact, then passed at 0.142 m. Touched GDScript files formatted with `gdformat -l 110`; `git diff --check` passed.
+
+## 2026-09-22  DONE P3-02 road tool  (Claude Opus 5.5) — branch `rb/P3-02-road-tool` (from main `9774d1f`)
+New files only: `scripts/track/road_section.gd` (RoadSection resource: one cross-section key), `scripts/track/road_path.gd` (RoadPath, @tool Path3D), `scripts/track/road_builder.gd` (pure baking code, headless-safe), `tests/v2/road_tool.gd` (15 checks), output `docs/rebuild/road-tool-P3-02.txt`.
+
+How it works (for track authors):
+- Add a **RoadPath** under a TrackAsset root, draw its curve, add **RoadSection** keys in the Inspector (`at` metres along; left/right width, bank (+ raises the left edge), crown, RAMP kerbs per side with width/height, verge width and slope, road and verge surface ids), press **Bake road**.
+- The bake fills `Road/<name>` (render mesh, one surface per surface type, UVs in metres), `Surfaces/<name>_s<id>` (collision per surface, layer 1, metadata), and, if `drives_timing`, `TimingLine` (road centre) and `Grid/Slot1..n` (staggered behind s = 0). Re-baking replaces only its own output.
+- Numeric values ease between keys with a smoothstep; kerb types and surfaces switch at keys. Constant topology per station (verge | 3-station kerb band | 9 road stations | kerb band | verge), so strips never need degenerate triangles; a side with no kerb keeps the band as verge.
+- Tessellation (P3-00): stations ≤ 1.5 m along (1 % margin for cubic sampling), w/8 across the road.
+- **Twist warning:** bake reports the steepest bank change per metre and warns above 0.2°/m. At 0.4°/m a 2.65 m-wheelbase stiff car sees ~3 cm of axle warp, enough to lift a wheel (found while testing, below).
+
+Deviations from the plan text: no `addons/road_tool/` EditorPlugin. Godot 4.6's `@export_tool_button` puts Bake on the node itself, with nothing to enable. `RoadPath` and `RoadSection` use `class_name` (the project otherwise preloads), so they appear in Add Node and as Inspector array element types; confirmed registered by an editor load (`--editor --quit`, stderr empty). Viewport gizmo handles for keys are not built (keys are edited in the Inspector).
+
+Results (15/15, stderr empty):
+- **Analytic straight** (at z = −500, crowned then banked 10°), probed through TrackSurface: crown/half-width/edge/ramp-kerb/verge heights exact (0.0000 m); surface ids as keyed; banked section on the 10° plane (0.0000 m) with normals at exactly 10.000°; eased bank 0 / 1.56 / 5.0 / 8.44 / 10.0° at s 60/80/100/120/140 (smoothstep).
+- **Proving loop built only with the tool** (891.7 m rounded rectangle, 40 m corners banked 6° with RAMP kerbs and gravel outside, 6 m hill, start mid-straight): validates; re-bake is idempotent; tessellation 1.493 m / 1.250 m; twist ≤ 0.150°/m; tarmac/kerb/grass/gravel all baked; saved and reloaded through the loader; timing line within 0.5 % of the centreline; apex banked 6.00°, kerb and gravel where keyed; crest 6.059 m; grid slots on tarmac.
+- **Lap:** the 296 GT3 (CarBody on TrackSurface) from pole at 60 km/h through all 12 gates in 52.12 s (centreline nominal 53.5 s; the controller cuts the 40 m corners), 4 wheels in contact throughout, never on grass or gravel. Parse clean; track_asset 23/23; spike 23/23.
+
+Found while testing (all in my fixture, then fixed; the physics was right each time):
+- The analytic road and the loop first shared the physics world at the same place, so probes hit whichever deck was higher. Separated.
+- The first loop started at the end of a banked corner, so the grid slots sat on 6° banking. **Note for P4:** spawning must use a grid slot's full orientation. `CarBody.place()` takes a heading only, so a car placed level on a banked or cambered slot drops in crooked. Not changed here (car_body.gd is in P2-03 review).
+- 15 m bank transitions (0.6°/m peak) lifted single wheels of the stiff 296 on every corner entry: diagonal wheel pairs loaded, the signature of a twisted road. Consistent with P2-03's warp test. 60 m transitions fixed it, and prompted the twist warning.
+- Probes placed exactly on strip seams can legitimately hit either strip. Probes now sit just inside boundaries.
+
+## 2026-09-22  NOTE P3-02 review (GPT-6 Sol)
+Independent review of original commit `13c77fe` in a detached worktree. **Verdict: fix first.** The analytic heights, bank sign (+ raises the left edge), eased and wrapped numeric keys, strip surface assignment, save/reload ownership, and editor class registration passed their checks. `@export_tool_button` instead of an EditorPlugin and `class_name` on RoadPath/RoadSection are reasonable editor-facing choices for this version. A 0.2 deg/m bank-twist warning is a sensible default warning, not a validation limit.
+
+Findings, ranked by severity:
+1. **High, blocking — `scripts/track/road_builder.gd:214-216`:** with a tangent along +X and lateral +Z, the triangle `(current-left, next-left, current-right)` has normal `+X cross +Z = -Y`. The generated render normals therefore point downward on a level road. `TrackSurface` sets `hit_back_faces` and flips ray normals toward the ray, so the 15 checks and successful lap can pass while masking this winding error. Reverse both triangles, then verify render normals point up and rerun the gates.
+2. **Medium, blocking — `scripts/track/road_path.gd:127-130`:** re-baking the timing road removes every Grid child, including hand-authored slots or children owned by another tool. This contradicts the stated promise that a re-bake replaces only its own output. Track the slots this RoadPath generated and replace only those.
+3. **Low — `scripts/track/road_builder.gd:243-245`:** UVs use world `(x,z)` rather than distance along and across the road as documented. Textures therefore rotate or stretch at curved sections. This is a presentation issue and can be fixed separately.
+4. **Low, test gap — `tests/v2/road_tool.gd:147-154`:** the idempotence check counts surface bodies and grid slots but never checks whether an unrelated Grid child survives, so finding 2 passes. The ray-height checks also rely on `TrackSurface`'s flipped normals and do not inspect generated mesh normals, so finding 1 passes.
+
+Independent gates via `Start-Process -Wait -PassThru -NoNewWindow`, redirected stdout/stderr: `--headless --path . --import`, `tests/v2/road_tool.gd` 15/0, `track_asset.gd` 23/0, `chassis_spike.gd` 23/0, `scripts/game.gd --check-only`, and `--headless --editor --quit`. All exit 0 with empty stderr. `.godot/global_script_class_cache.cfg` lists RoadPath and RoadSection. Shared P3 sidecar UIDs match P2-03's; current main has none of these sidecars.
+
+## 2026-09-22  NOTE P3-02 review correction (GPT-6 Sol)
+Correction to my preceding P3-02 review: **retract the high-severity winding finding** at `scripts/track/road_builder.gd:214-216`. I inferred a downward normal from a mathematical cross product, but Godot's actual `SurfaceTool.generate_normals()` for the exact vertex order `(0,0,0), (1,0,0), (0,0,1)` returned `GENERATED_NORMAL (0.0, 1.0, -0.000015)` in Godot 4.6.2 (headless exit 0, empty stderr). The flat road's generated render normal therefore points up. The earlier statement that the road test masked a winding defect was wrong.
+
+**Corrected verdict: fix first**, solely because `scripts/track/road_path.gd:127-130` removes every Grid child on re-bake, including hand-authored or other-tool children. The earlier low-severity world `(x,z)` UV finding and the idempotence test gap remain. The `@export_tool_button`, `class_name`, and 0.2 deg/m warning remain acceptable. No road-tool code was changed in this review.
+
+## 2026-09-22  CLAIM P3-02 review fix (GPT-6 Sol)
+Fix the re-bake Grid ownership finding from the independent P3-02 review and add a regression check. No other tool behavior will be changed in this patch.
+
+## 2026-09-22  DONE P3-02 review fix (GPT-6 Sol)
+On `rb/P3-02-road-tool`, code commit `b712e9d` fixes the only remaining merge blocker: RoadPath tags its generated Grid markers with their source path name and re-bakes only those markers, leaving authored and other-road slots intact. Road mesh UVs now use metres across (U) and along (V) the road, with the closed strip unwrapped at the total road length. The road-tool suite checks both foreign-slot preservation and re-bake after scene save/reload, and checks UV travel at the closing seam. No triangle winding change was made; Godot's generated flat-road normal is upward as recorded in the review correction.
+
+From this worktree's `godot/`, Godot 4.6.2 via `Start-Process -Wait -PassThru -NoNewWindow`, redirected stdout/stderr: `--headless --path . --import`, `tests/v2/road_tool.gd` **16/0** after all changes (valid 52.12 s lap, four wheels in contact, no grass/gravel), `track_asset.gd` **23/0**, `chassis_spike.gd` **23/0**, `scripts/game.gd --check-only`, and `--headless --editor --quit` with RoadPath/RoadSection in the class cache. All exit 0 with empty stderr. Touched GDScript files formatted with `gdformat -l 110`; `git diff --check` passed.

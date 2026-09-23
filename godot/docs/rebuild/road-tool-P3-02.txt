@@ -1,0 +1,18 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  the tool-built loop validates as a TrackAsset []
+PASS  re-baking replaces its own output (4 surface bodies, 4 grid slots, no duplicates)
+PASS  tessellation within P3-00: 1.493 m along (<= 1.5), 1.250 m across the road (<= w/8 = 1.25)
+PASS  loop bank twist at most 0.150 deg/m (warning threshold 0.2)
+PASS  loop bakes tarmac, kerb, grass and gravel surfaces [0, 1, 2, 3]
+PASS  saved and reloaded through the loader: []
+PASS  straight: 1.482 m along, 1.251 m across the road
+PASS  crowned section: crown 8 cm, half-width 6 cm, edges 0, ramp kerb 2.5/5 cm, 3° grass verge; worst height error 0.0000 m, surfaces as keyed
+PASS  banked section: surface on the 10° plane within 0.0000 m, normal tilt within 0.000° of 10°, left edge raised to 0.866 m (+5 sin 10° = 0.868)
+PASS  bank eases smoothly between keys: [0.0, 1.56, 5.0, 8.44, 10.0] deg at s 60/80/100/120/140
+PASS  timing line 891.7 m follows the road's own centreline (891.7 m) within 0.5%
+PASS  first corner apex: banked 6.00° (keyed 6°), kerb (1) at 5.5 m out, gravel (3) beyond: 1 / 3
+PASS  hill crest at 6 m (plus 6 cm crown): 6.059 m
+PASS  all grid slots sit on tarmac
+PASS  296 GT3 laps the tool-built loop through all 12 gates: 52.12 s (one lap at 60 km/h ≈ 53.5 s), min contacts 4, wheel-ticks on grass/gravel 0
+ROAD TOOL RESULTS {"checks":15,"failures":[],"results":{"car_step_us":78.7389739663093,"lap_s":52.1208333333497,"loop":{"length_m":891.661254882813,"max_across_road_m":1.25027668476105,"max_along_m":1.4929426908493},"loop_lap_m":891.650520205498}}
