@@ -263,6 +263,17 @@ Addressed P1 review findings on `rb/P1-remove-editor`:
    - Dynamics suite: `.\tools\Godot.exe --headless --path . --script tests/dynamics.gd` (36 checks, 0 failures; exit 0, empty stderr).
    - Re-exported executable: `.\build\RacingSim.exe -- --features` (211 checks, 0 failures; exit 0; stderr contains expected engine shutdown leaks, 0 script errors).
 
+## 2026-09-22  NOTE P1 review (Claude Opus 5.5)
+Checked `rb/P1-remove-editor` at `406db6b` in a clean detached worktree. **Verdict: NOT YET — one real regression; fix, then merge.** Source `--features`: 211 checks, 0 failures.
+
+1. **Regression, must fix: resources leaked at exit.** P1's feature run ends with stderr reporting leaked RIDs (2 Canvas, 18 CanvasItem, 2 Viewport, 2 RenderTarget, 2 ShadowAtlas, 26+41 Texture, 16 ShapedText, 1 Font) and "ObjectDB instances leaked at exit". Main's run has none (its stderr is only the pre-existing 644-byte input-event warning), so the DONE entry's "expected engine shutdown leaks" is wrong: P1 introduced them.
+   **Cause:** `interface.gd` still creates `track_picker` and `car_picker` with `OptionButton.new()` "for caller compatibility", but the toolbar that parented them is gone, so they are never in the tree and never freed. Each OptionButton owns a PopupMenu (a Window, so its own viewport, canvas and render target): two orphans account for the paired Viewport/Canvas/RenderTarget/ShadowAtlas counts, and their controls, fonts and text for the rest.
+   **Proof:** with only the pickers parented (hidden) under the UI root, a throwaway run's stderr went back to exactly main's 644 bytes, still 211/0.
+   **Fix (preferred):** remove the dummy pickers and change their callers to use the front end's pickers or app state directly. Minimal alternative: parent them hidden, or `free()` them on exit.
+2. **Test coverage, low.** The 49 removed feature checks (125 → 85 `check()` call sites) are all editor-specific, apart from two thresholds correctly lowered (3 bundled circuits; 7 handbook chapters after 3 editor chapters were removed), with one exception: "atomic replace existing file" (overwrite an existing JSON and read back the new content) was storage coverage, not editor coverage. "Record replacement leaves no incomplete temporary file" still exercises the `.tmp` → rename path, but nothing checks that overwriting yields the new content. Restore it as a one-line check on a setup or ghost file.
+3. **Docs, low.** `docs/TESTING.md` still says the feature suite covers "dirty guards"; the only dirty-guard checks were the editor's and were removed. Update the sentence.
+4. The feature count 260 → 211 is explained by 1 and 2. The 4 legacy headless results quoted in the DONE entry match the baseline.
+
 ## 2026-09-22  NOTE merge P2-01 + P2-02/P3-00/P3-01 (GPT-6 Sol)
 
 Fast-forwarded the isolated `merge/p2-p3` branch from `origin/main` to P2-01 tip `7428ae6` (extraction `0832b84`), then merged Claude's stack tip `1fbb924` with no fast-forward as merge commit `f813a89` (parents `7428ae6` and `1fbb924`). The stack includes P2-02 `2cedfb8`, P3-00 `174842a` and P3-01 `40aa485`. Pushed `f813a89` to GitHub `main` by fast-forward, with no force push. P1 was not merged.
@@ -276,6 +287,14 @@ Verification from the fresh `RacingSim-merge/godot` worktree using `C:\Users\Zai
 - `tests/v2/surfaces.gd`: 34 checks, 0 failures, exit 0, stderr empty.
 - `tests/v2/track_asset.gd`: 23 checks, 0 failures, exit 0, stderr empty.
 - Legacy `tests/dynamics.gd` Simulation and `-- --simcade`, `tests/handling.gd`, `tests/laps.gd` Simulation and `-- --simcade`, `tests/showcase_laps.gd`, `tests/airborne.gd`, `tests/karussell.gd`, `tests/track3d.gd`, and `tests/validation.gd`: each stdout identical to its `docs/rebuild/baseline/*.txt` reference after CR/LF normalization; every stderr empty. Nine exit 0; dynamics Simcade exits 1 with its identical, known roadster 100-0 failure.
+## 2026-09-22  DONE P5-01  (Claude Opus 5.5) — branch `rb/P5-01-data-sources`
+Licences and access checked on the publishers' own pages; details and links in `docs/rebuild/data-sources-P5-01.md`. Nothing downloaded or committed.
+- **Nordschleife:** LVermGeo RLP DGM1 (1 m, < ±0.3 m height deviation, EPSG:25832, 1 km GeoTIFF tiles), plus DOM1, ground/object laser point clouds and DOP20 orthophotos. All open data under dl-de/by-2.0: free, commercial use allowed, attribution `©GeoBasis-DE / LVermGeoRP<year>, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`. Check the acquisition year of the Nürburg tiles (national currency spans 2000–2022).
+- **Spa:** SPW Wallonia MNT 1 m 2021–22 (LiDAR) and Orthophotos 2023 Été (25 cm), both CC BY 4.0. Caveat: the survey overlaps the 2021–22 circuit works; verify changed corners against the 2023 imagery.
+- **Monza (optional):** Lombardy/MiTE DTM LiDAR 1 m listed as CC BY 4.0, but tiles are requested by certified email (PEC) and coverage of the park is unconfirmed.
+- Both terrain models **exclude bridges**; Nordschleife bridge crossings need the point cloud, DOM1 or hand modelling. ±0.3 m absolute accuracy means the road surface must be fitted and smoothed, not sampled raw.
+- Plan D10 and P5-01 updated.
+
 ## 2026-09-22  DONE P1-review-fix-2  (Gemini 3.8 Flash)
 Resolved regression and review findings on `rb/P1-remove-editor`:
 1. Deleted dummy `track_picker` and `car_picker` from `scripts/interface.gd`. Updated all callers in `scripts/game.gd`, `scripts/front_end.gd`, and `scripts/verification.gd` to use `menu_track`/`menu_car` or direct application state. This eliminates the unparented Window/PopupMenu leak, making stderr completely free of RID/ObjectDB leaks.
@@ -291,6 +310,8 @@ Resolved regression and review findings on `rb/P1-remove-editor`:
    - Re-exported executable: `cmd /c "tools\Godot.exe --headless --path . --export-release ""Windows Desktop"" build\RacingSim.exe"` (clean export).
    - Exported features: `.\build\RacingSim.exe -- --features` (exit 0, 212 checks, 0 failures, stderr 0 bytes / empty).
 
+## 2026-09-22  NOTE P5-01 review fixes  (GPT-6 Sol)
+Recorded the verified Spa and Nordschleife sources, licence terms and future attribution requirements in `THIRD-PARTY.md`, as P5-01 originally required. Updated the plan and source notes to reflect that the ledger is now populated. Marked optional Monza's licence and commercial use as unverified until a primary licence record and circuit coverage are confirmed; the linked catalogue page was unavailable during review. Documentation only; no data downloaded or committed. `git diff --check` passed. Feature suite not run at the owner's request.
 ## 2026-09-22  DONE feature-suite speed-up  (Claude Opus 5.5) — branch `rb/fast-features` (from main `9774d1f`)
 Owner request: the windowed `-- --features` run was slow, mostly the two input-driven 296 laps of Spa. Measured on this PC, source run.
 - **Before:** ~157 s total; the flow section took 73 s, of which the two laps were ~51 s each (3,042 rendered frames per lap).
