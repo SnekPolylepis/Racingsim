@@ -904,3 +904,16 @@ Since the compressed `.scn` size is 3.87 MB (well below the 5 MB threshold and g
   (All key metrics unchanged: bevel 60/120, ribbed 60/120, sausage 60/120, crest takeoff 145.8 km/h, bowl |Fy| 3.5% of mg, compression 2.69 x mg with 0 body contacts, ditch challenge -1.16 m ride with 0 light and 0 off-tarmac wheel ticks, simulation & simcade 296 BotLine laps 143.80 s with 0 off-wheel ticks).
 - `gdformat --check -l 110`: 4 files unchanged.
 - `git diff --check`: 0 errors.
+
+## 2026-09-23  CLAIM scenery-kit  (Gemini 3.8 Flash) — branch `rb/scenery-kit`
+Building trackside scenery kit following the WallPath / RoadScatter house style (@tool Node3D, @export fields, bake() callable headless, seeded and deterministic, output under Scenery/<name> or Walls/<name>).
+- Low-poly procedural meshes from SurfaceTool, one MultiMesh per repeated item.
+- CatchFence: steel posts every 3 m + mesh panels 3-4 m high, road-following or along a WallPath. Collision (layer 2, wall_kind "armco") only if solid.
+- Grandstand: stepped seating block (rows, depth, length), roof option, placed at a station & offset; static collision on layer 2 (wall_kind "concrete") for front wall.
+- Gantry: start/finish gantry spanning the road at a station (two towers + beam + light panel), no collision on the road.
+- Billboards: boards on posts beside the road, spaced and seeded, flat retro colors.
+- MarshalPost: small cabins every N m behind the barrier.
+- PitBuilding: long garage block with roof, station and offset, front pit-wall collision (layer 2, concrete).
+- KerbPaint: alternate red/white stripes on kerb UVs/material.
+- Proving ground placement: gantry at start line, grandstand at bowl, catch fences on crest landing, billboards on main straight, pit building by grid. Generator bake warnings 0, validation clean.
+- Test suite tests/v2/scenery.gd and registration in tools/gates.json.

@@ -34,6 +34,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 |---|---|---|---|---|---|
 | P2-08 | Debug scene to drive CarBody on the analytic test surfaces | Gemini | | review: done (Claude approve), waits for M-GEM | rb/P2-08-test-surfaces 3b0143c |
 | P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | review: done (Claude approve + F-P3-02c), waits for M-GEM | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
+| scenery-kit | Trackside scenery kit (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding) and proving ground placement | Gemini | | claimed: Gemini | rb/scenery-kit |
 | P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | M-WF | claimed: Sol | rb/P4-01-game-port; one task: these share the game loop (§9 rule 11) |
 | P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | open | headless, independent of the game loop |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Gemini | P2-08, P4-core | open | P2-08's pose adapter is the start |
