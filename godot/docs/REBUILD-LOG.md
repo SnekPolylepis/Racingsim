@@ -860,6 +860,7 @@ Owner's request: cut the time lost between steps. Three changes, plus a suite au
 - Not cut: legacy suites (they prove CarModel is untouched; now they only run when legacy code changes), aids_simcade (the legacy targets), the proving ground's Simcade lap (it exercises the aids on a real track even below the limit).
 
 **3. `docs/rebuild/QUEUE.md` + §9 rules 2, 5, 6, 10, 11.** Each model takes the first open task it may do from the queue, claims it with a one-line commit to main, and goes back to the queue when done, so the owner no longer relays prompts. **Merge first, review after:** a model merges its own branch once `run_gates.ps1 -All` passes on the merged tree; the reviewer files problems as `fix` tasks. Read your own diff before calling a task done (rule 10, after the P3-03 conflict marker). Size tasks by coupling (rule 11): the P4 game-loop tasks go to Sol as one block.
+<<<<<<< HEAD
 ## 2026-09-23  DONE P3-02c  (Gemini 3.8 Flash) — branch `rb/P3-02c-road-density`
 Implemented variable lateral road station density along authored roads (`RoadPath.dense_ranges`), allowing high-density tessellation (e.g. 57 stations across 14 m for the concrete ditch) to be localized to specific track segments rather than spanning the entire circuit.
 
@@ -991,3 +992,51 @@ Built Spa v0 as an authored TrackAsset and a generic 6-DOF dev drive scene on `r
 **Approximations / remaining issues:** widths, camber, kerb placement, runoff, barriers, scenery and sector positions are authored approximations, not an orthophoto survey. Terrain uses flat verges to avoid the known P3-03 runoff/slope stitching defect. No scenery-kit grandstands, gantry, fences or pit building were available. The banking warning and bot line-following need review; the short finite-state smoke is not a clean-lap or visual-playtest result. Dev lap times are in-session only; no new export was made.
 
 **Drive:** from this worktree's `godot/`, run `tools/Godot.exe --path . res://scenes/proving/track_drive.tscn`, or run the source main scene and choose **Drive Spa (dev)** / **Drive proving ground (dev)**. WASD/arrows/gamepad drive; R resets, C cycles cars, M switches handling, F1 toggles HUD, F2 switches free-fly (WASD/QE, Shift fast, hold RMB to look), Esc returns to menu. Full commands: `docs/rebuild/spa-P6-01.md`. Added separate **P6-01 Spa v0 — review/bug-fix** queue rows for Claude and Gemini.
+
+## 2026-09-23  DONE P4-07 bot driver and the Laps gate  (Claude Opus 5.5) — branch `rb/P4-07-bot-laps` (on `rb/workflow-gates`)
+New: `scripts/vehicle/bot_driver.gd` (BotDriver), `tests/v2/laps.gd` (one check per track × car × handling model), `docs/rebuild/laps-v2-baseline.json` (recorded lap times), output `docs/rebuild/laps-P4-07.txt`; `tools/gates.json` runs laps split by car. The legacy `scripts/showcase_driver.gd` (planar CarModel, JSON tracks, legacy baselines) is untouched; P7 removes it.
+
+**BotDriver** drives CarBody along a TrackAsset's BotLine at a fraction (`pace`, 0.85) of *that car's* grip, so one line serves every car:
+- speed plan per metre: the banked-turn limit a = (g sinθ + µ(g cosθ + downforce)) / (cosθ − µ sinθ) from the line's plan-view curvature, the road's bank sampled from the surface under the line (θ negative off-camber), downforce with the tyre model's load sensitivity (µ falls as downforce loads the tyres, Simcade's scale included); a crest limit v² ≤ 0.85 g R; 90 m/s cap; backward braking pass at 0.75 µ g. The BotLine's target speeds (the proving ground's are 60-75 km/h) are only used with `use_line_targets`.
+- steering: pure pursuit (look-ahead 8 + 0.35 v m) plus a small cross-track term capped at 3°, converted into the car's steer input at its speed; throttle/brake proportional on the lowest planned speed over the next 0.6 v m, easing off when more than 1 m off the line.
+- For P4-core: `BotDriver.new(asset.get_node("BotLine"), car, asset.surface())` inside a physics frame, then `car.input = bot.command(car)` each tick before `car.step()`.
+
+What it took (each measured on the proving ground):
+- The first plan ignored bank and load sensitivity: the 296 at plan speed slid 5-13 m wide in T2's 4° adverse camber, then onto gravel in the ditch bypass. Both added.
+- The ditch bypass lane is ~4.4 m wide for a 2 m car; pure pursuit alone let the 296 sit 1.6 m off the line there. A cross-track gain of 2 over-corrected and spun cars; 0.5, capped at 3°, holds it.
+- Rate-limiting the steering (0.25 s to full lock) lagged pure pursuit and made every car overshoot; removed.
+- At pace 0.88 the aid-free roadster (Simulation) was on the edge in the bypass; 0.85 gives the validation bot margin.
+
+**Laps (proving ground, from rest on grid slot 1, one flying lap):** zero off-track wheel-ticks, zero wall contacts, all gates in order, for all six:
+
+| | Simulation | Simcade | max off line |
+|---|---|---|---|
+| roadster | 84.27 s | 84.27 s | 1.3 m |
+| gt | 67.13 s | 66.89 s | 1.8 m |
+| f296gt3 | 64.60 s | 64.25 s | 2.1 m |
+
+(The old test-local bot in proving_ground.gd drives the BotLine's 60-75 km/h targets: 143.8 s.) Re-runs match the baseline to the millisecond (deterministic). Later changes that move a lap by more than 2 % fail the gate; re-record deliberately with `-- --record`.
+
+Gates (`run_gates.ps1`, affected): 35/35 pass, 135 s. `laps.gd` picks up `trackgen/spa.gd` automatically when it lands (record its baseline then).
+
+## 2026-09-23  REVIEW P6-01 Spa v0 (Astra)  (Claude Opus 5.5) — reviewed `rb/P6-01-spa` merged with `rb/P4-07-bot-laps`
+**Verdict: approve as v0 with fixes queued (F-P6-01).** The road is right where it matters: every BotLine point sits on tarmac within 0.15 m of the road surface; the road is 12-13 m wide with the line 6-7 m from both edges everywhere except one station (s 6125 m: 0.1 m to grass on the right); a ±6 m surface grid through the corners checked shows no terrain poking through. With the bot, 5 of 6 car × model laps are clean (zero off-track, zero walls):
+
+| | Simulation | Simcade |
+|---|---|---|
+| f296gt3 | 197.5 s | 196.8 s |
+| gt | 204.9 s | 204.6 s |
+| roadster | spins at s≈780 (see below) | 263.0 s |
+
+Findings for Spa (F-P6-01):
+1. **BotLine is a polyline.** `add_bot_line` adds every 4th station with `curve.add_point(p)` and no handles, so the line is straight between vertices ~10 m apart and turns only at them. Needs in/out handles (Catmull-Rom from the neighbouring stations) or every station. Change together with P4-07b below: a smoother line makes today's bot faster and less safe.
+2. **Bank twist 2.69 deg/m at 2398 m**: the bank flips from -1.9 to +1.9 deg in ~2.5 m (the RoadPath warning). Spread it over >= 20 m.
+3. **Scene size**: 11.2 MB committed, over the 5 MB rule; bake-on-load (P4-06) or a compressed/generated scene instead of committing it.
+4. **s 6125 m**: the centreline is 0.1 m from a non-road surface on the right; check the width/OSM data there.
+
+Found in my own code while reviewing (fixed on `rb/P4-07-bot-laps`):
+- `tests/v2/laps.gd` added every track to one physics world at the origin, so Spa's wheels hit the proving ground's grass (the "off-track at s 1420" in the first run). Each track now gets its own world (SubViewport, own_world_3d).
+- BotDriver: easing off when wide lowered the target speed, which braked hard at full lock and ploughed the aid-free roadster into gravel; it now cuts throttle only. The braking pass shares grip with cornering (friction circle). Brake releases as body slip passes 3-8 deg. Proving-ground laps move +0.2-0.33 % (inside the gate; baseline not re-recorded).
+
+Still open (P4-07b, mine): the plan's curvature uses a ±6-point chord (~4 m), which reads Curve3D bake jitter as curvature and makes the plan conservative by accident. With an honest ±8 m chord every car is 6-11 % faster and the Simulation cars crash at pace 0.85 and even 0.75. The aid-free roadster in Simulation also trail-brakes into a snap spin at Spa s≈780 (right R≈170 m into a left kink, -3 deg camber). The bot needs honest curvature, a recalibrated pace and yaw-aware braking before Spa's baseline is recorded.
+

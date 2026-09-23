@@ -1,0 +1,9 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  proving_ground roadster simulation: lap 84.27 s, 0 off-track wheel-ticks, 0 wall-contact ticks, max 1.3 m off the line, top 154 km/h; baseline 84.27 s (-0.00%)
+PASS  proving_ground roadster simcade: lap 84.27 s, 0 off-track wheel-ticks, 0 wall-contact ticks, max 0.9 m off the line, top 154 km/h; baseline 84.27 s (-0.00%)
+PASS  proving_ground gt simulation: lap 67.13 s, 0 off-track wheel-ticks, 0 wall-contact ticks, max 1.8 m off the line, top 219 km/h; baseline 67.13 s (+0.00%)
+PASS  proving_ground gt simcade: lap 66.89 s, 0 off-track wheel-ticks, 0 wall-contact ticks, max 1.4 m off the line, top 220 km/h; baseline 66.89 s (-0.00%)
+PASS  proving_ground f296gt3 simulation: lap 64.60 s, 0 off-track wheel-ticks, 0 wall-contact ticks, max 2.1 m off the line, top 231 km/h; baseline 64.60 s (+0.00%)
+PASS  proving_ground f296gt3 simcade: lap 64.25 s, 0 off-track wheel-ticks, 0 wall-contact ticks, max 1.8 m off the line, top 232 km/h; baseline 64.25 s (+0.00%)
+LAPS RESULTS {"checks":6,"failures":[],"results":{"proving_ground f296gt3 simcade":{"lap":64.2541666666868,"max_off_line":1.75959558543948,"off":0,"ok":true,"top":64.3198444913034,"walls":0},"proving_ground f296gt3 simulation":{"lap":64.6000000000198,"max_off_line":2.12743036750134,"off":0,"ok":true,"top":64.0974413154381,"walls":0},"proving_ground gt simcade":{"lap":66.8875000000176,"max_off_line":1.42234224460392,"off":0,"ok":true,"top":61.0530067084099,"walls":0},"proving_ground gt simulation":{"lap":67.129166666684,"max_off_line":1.75007486183261,"off":0,"ok":true,"top":60.8380158734126,"walls":0},"proving_ground roadster simcade":{"lap":84.2666666666678,"max_off_line":0.907943228994957,"off":0,"ok":true,"top":42.6684167400904,"walls":0},"proving_ground roadster simulation":{"lap":84.2708333333349,"max_off_line":1.27430924609369,"off":0,"ok":true,"top":42.6767511356129,"walls":0}}}
