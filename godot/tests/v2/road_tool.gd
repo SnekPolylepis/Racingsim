@@ -144,23 +144,64 @@ func _initialize():
 	var errors = built.validate()
 	check(errors.is_empty(), "the tool-built loop validates as a TrackAsset %s" % [errors])
 	var bodies = built.get_node("Surfaces").get_child_count()
+	var grid = built.get_node("Grid")
+	var manual_slot = Marker3D.new()
+	manual_slot.name = "ManualSlot"
+	grid.add_child(manual_slot)
+	manual_slot.owner = built
+	var other_road_slot = Marker3D.new()
+	other_road_slot.name = "OtherRoadSlot"
+	other_road_slot.set_meta("_road_path_source", "OtherRoad")
+	grid.add_child(other_road_slot)
+	other_road_slot.owner = built
 	built.get_node("Main").bake()
+	var own_slots = 0
+	for child in grid.get_children():
+		if child.get_meta("_road_path_source", "") == "Main":
+			own_slots += 1
 	check(
 		(
 			built.get_node("Surfaces").get_child_count() == bodies
-			and built.get_node("Grid").get_child_count() == 4
+			and grid.get_child_count() == 6
+			and own_slots == 4
+			and is_instance_valid(manual_slot)
+			and is_instance_valid(other_road_slot)
+			and manual_slot.get_parent() == grid
+			and other_road_slot.get_parent() == grid
 		),
-		"re-baking replaces its own output (%d surface bodies, 4 grid slots, no duplicates)" % bodies
+		(
+			"re-baking replaces 4 own slots and %d surface bodies; preserves authored and other-road slots"
+			% bodies
+		)
 	)
+	# The two sentinels are not racing grid slots for the lap fixture below.
+	if is_instance_valid(manual_slot):
+		grid.remove_child(manual_slot)
+		manual_slot.free()
+	if is_instance_valid(other_road_slot):
+		grid.remove_child(other_road_slot)
+		other_road_slot.free()
 	var bake = built.get_node("Main").last_bake
 	results["loop"] = {
 		"length_m": bake.length, "max_along_m": bake.max_along, "max_across_road_m": bake.max_across_road
 	}
+	var max_uv_step = 0.0
+	var max_uv_station = 0.0
+	for sid in bake.uvs:
+		var uv = bake.uvs[sid]
+		for i in range(0, uv.size(), 3):
+			max_uv_step = maxf(max_uv_step, absf(uv[i + 1].y - uv[i].y))
+			max_uv_station = maxf(max_uv_station, uv[i + 1].y)
 	check(
-		bake.max_along <= 1.5 + 1e-6 and bake.max_across_road <= 10.0 / 8 + 1e-3,
 		(
-			"tessellation within P3-00: %.3f m along (<= 1.5), %.3f m across the road (<= w/8 = 1.25)"
-			% [bake.max_along, bake.max_across_road]
+			bake.max_along <= 1.5 + 1e-6
+			and bake.max_across_road <= 10.0 / 8 + 1e-3
+			and max_uv_step <= 1.5 + 1e-6
+			and absf(max_uv_station - bake.length) < .01
+		),
+		(
+			"tessellation %.3f m along / %.3f m across; road UVs advance <= %.3f m and unwrap at %.1f m"
+			% [bake.max_along, bake.max_across_road, max_uv_step, max_uv_station]
 		)
 	)
 	check(
@@ -183,6 +224,16 @@ func _initialize():
 		"saved and reloaded through the loader: %s" % [loaded.errors]
 	)
 	root.add_child(loop_asset)
+	var loaded_road = loop_asset.get_node("Main")
+	loaded_road.bake()
+	var owned = true
+	var loaded_grid = loop_asset.get_node("Grid")
+	for child in loaded_grid.get_children():
+		owned = owned and child.owner == loop_asset and child.get_meta("_road_path_source", "") == "Main"
+	check(
+		loaded_grid.get_child_count() == 4 and owned,
+		"saved road re-bakes to 4 owned grid slots without duplicates"
+	)
 
 
 func _physics_process(_delta):

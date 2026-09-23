@@ -172,6 +172,7 @@ static func bake(curve: Curve3D, keys: Array, closed: bool, step = MAX_STEP) -> 
 	var length = curve.get_baked_length()
 	var st = stations(curve, closed, step)
 	var rows = []
+	var uv_rows = []
 	var bands = []
 	var center = PackedVector3Array()
 	var max_across = 0.0
@@ -182,17 +183,21 @@ static func bake(curve: Curve3D, keys: Array, closed: bool, step = MAX_STEP) -> 
 		var fr = frame(station.tangent, sec.bank_deg)
 		var prof = profile(sec)
 		var row = PackedVector3Array()
+		var uv_row = PackedVector2Array()
 		var band = []
 		for p in prof:
 			row.append(station.pos + fr[0] * p[0] + fr[1] * p[1])
+			uv_row.append(Vector2(p[0], station.s))
 			band.append(p[2])
 		rows.append(row)
+		uv_rows.append(uv_row)
 		bands.append(band)
 		var first_road = 3
 		center.append(row[first_road + (ROAD_STATIONS - 1) / 2])
 		for k in range(first_road, first_road + ROAD_STATIONS - 1):
 			max_across = maxf(max_across, row[k].distance_to(row[k + 1]))
 	var faces = {}
+	var uvs = {}
 	var max_along = 0.0
 	var max_twist = 0.0
 	var twist_at = 0.0
@@ -200,6 +205,9 @@ static func bake(curve: Curve3D, keys: Array, closed: bool, step = MAX_STEP) -> 
 	for i in count:
 		var r0 = rows[i]
 		var r1 = rows[(i + 1) % rows.size()]
+		var uv0 = uv_rows[i]
+		var uv1 = uv_rows[(i + 1) % uv_rows.size()]
+		var next_s = length if closed and i == count - 1 else st[i + 1].s
 		# Station spacing along the path itself (the chord between curve points; <= the arc step).
 		var gap = st[i].pos.distance_to(st[(i + 1) % st.size()].pos)
 		max_along = maxf(max_along, gap)
@@ -211,12 +219,27 @@ static func bake(curve: Curve3D, keys: Array, closed: bool, step = MAX_STEP) -> 
 			var sid = bands[i][k]
 			if not faces.has(sid):
 				faces[sid] = PackedVector3Array()
+				uvs[sid] = PackedVector2Array()
 			# Winding as ribbon.gd: (a, c, b), (b, c, d) with a/b on this station and c/d on the next.
 			faces[sid].append_array(
 				PackedVector3Array([r0[k], r1[k], r0[k + 1], r0[k + 1], r1[k], r1[k + 1]])
 			)
+			# U is across the section and V follows the road in metres; unwrap the closing strip.
+			uvs[sid].append_array(
+				PackedVector2Array(
+					[
+						uv0[k],
+						Vector2(uv1[k].x, next_s),
+						uv0[k + 1],
+						uv0[k + 1],
+						Vector2(uv1[k].x, next_s),
+						Vector2(uv1[k + 1].x, next_s)
+					]
+				)
+			)
 	return {
 		"faces": faces,
+		"uvs": uvs,
 		"center": center,
 		"stations": st,
 		"length": length,
@@ -228,7 +251,7 @@ static func bake(curve: Curve3D, keys: Array, closed: bool, step = MAX_STEP) -> 
 
 
 ## Render mesh: one surface per surface type, UVs in metres (u across, v along) for tiling textures.
-static func mesh(faces: Dictionary) -> ArrayMesh:
+static func mesh(faces: Dictionary, uvs: Dictionary) -> ArrayMesh:
 	var out = ArrayMesh.new()
 	var colors = {
 		0: Color(.22, .22, .24),
@@ -240,9 +263,9 @@ static func mesh(faces: Dictionary) -> ArrayMesh:
 	for sid in faces:
 		var st = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		for v in faces[sid]:
-			st.set_uv(Vector2(v.x, v.z))
-			st.add_vertex(v)
+		for i in faces[sid].size():
+			st.set_uv(uvs[sid][i])
+			st.add_vertex(faces[sid][i])
 		st.generate_normals()
 		var mat = StandardMaterial3D.new()
 		mat.albedo_color = colors.get(sid, Color.MAGENTA)

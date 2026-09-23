@@ -13,6 +13,7 @@ extends Path3D
 ## Junctions and pit lanes are out of scope for v1: model them by hand.
 
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const GRID_SOURCE_META = "_road_path_source"
 
 @export var sections: Array[RoadSection] = []
 ## A closed road joins its end back to its start (the curve does not need to repeat its first point).
@@ -80,7 +81,7 @@ func bake():
 
 func mesh_node(result) -> MeshInstance3D:
 	var m = MeshInstance3D.new()
-	m.mesh = RoadBuilder.mesh(result.faces)
+	m.mesh = RoadBuilder.mesh(result.faces, result.uvs)
 	return m
 
 
@@ -125,9 +126,11 @@ func timing(host, result, owner_node):
 ## Grid slots behind the start line, staggered 2 m either side of the centre, 9 m apart, 12 m back.
 func slots(host, result, owner_node):
 	var grid = group(host, "Grid", owner_node)
+	# Keep authored slots and output from other roads. Only markers tagged by this path are ours.
 	for child in grid.get_children():
-		grid.remove_child(child)
-		child.free()
+		if str(child.get_meta(GRID_SOURCE_META, "")) == str(name):
+			grid.remove_child(child)
+			child.free()
 	var st = result.stations
 	var spacing = result.length / st.size()
 	var keys = sections.duplicate()
@@ -147,6 +150,7 @@ func slots(host, result, owner_node):
 		var ground = station.pos + fr[0] * lat + fr[1] * (sec.crown * (1 - u * u))
 		var m = Marker3D.new()
 		m.name = "Slot%d" % (k + 1)
+		m.set_meta(GRID_SOURCE_META, str(name))
 		m.transform = Transform3D(Basis(fr[0], fr[1], -station.tangent).orthonormalized(), ground)
 		grid.add_child(m)
 		m.owner = owner_node
