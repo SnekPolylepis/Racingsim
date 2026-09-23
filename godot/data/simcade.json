@@ -24,7 +24,7 @@
   "ratio_end_scale": 1.8,
   "asm_slip_cut_gain": 8.0,
   "carbody": {
-    "asm_slip_cut_gain": 16.0,
+    "asm_slip_cut_gain": 18.0,
     "sliding_grip_long": 0.84
   }
 }

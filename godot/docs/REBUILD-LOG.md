@@ -1143,3 +1143,50 @@ Gates (`run_gates.ps1`, affected): all pass except known items. The laps stderr 
 
 ## 2026-09-23  DONE F-terrain-perf  (Claude Opus 5.5) — branch `rb/F-terrain-perf`
 `tests/v2/terrain.gd`'s car-step timing check (300 µs) now goes through `GatesEnv.perf()` / `perf_note()` like the other timing gates, so the parallel runner (RACINGSIM_PERF_GATES=0) reports it without failing on machine load (it read 671 µs in parallel, 166 µs alone). Terrain 7/7 with and without the flag.
+## 2026-09-23  DONE P2-comp tyre compliance and unsprung mass  (Claude Opus 5.5) — branch `rb/P2-comp` (from main)
+Owner decisions (2026-09-23): **D-kerb: no**, so Simcade and Simulation kerbs stay the same. **D-compliance: yes**, which is this task.
+
+**Model** (`scripts/vehicle/car_body.gd`, `compliance = true`; off gives P2-06's massless wheel for comparison):
+- Each wheel is a mass moving along its suspension axis: the spring, damper, bump stop and ARB above it, and a radial tyre spring (plus 500 N s/m hysteresis) below it on the footprint's rigid-wheel contact distance. The tyre cannot pull.
+- Wheel load (grip, static friction, telemetry) is the tyre force.
+- The body keeps the whole car's mass and inertia, but along each suspension axis it receives the suspension force plus unsprung mass × felt acceleration (last tick) instead of the tyre force. So the sprung body moves on its springs and dampers alone, and a tyre spike is felt through the wheel. The tyre's in-plane forces still reach the body through the rigid links.
+- Exact at rest (felt = g: springs carry the sprung weight, tyres the whole car) and in free fall (felt = 0).
+- Wheel travel is integrated with linearised backward Euler over spring, damper and tyre terms, so 14-17 Hz wheel hop is stable at 240 Hz. A full-droop stop sits at the spring's free length.
+- Ride height is unchanged: the mount sits the static tyre squash higher, keeping cgHeight.
+- `place()` seats each wheel where spring (bump stop included) and tyre balance on the ground under it (flat: exactly static). Without it a wheel started off the ground on a cambered grid for 13 ms.
+- New `cars.json` keys (documented in DATA-CONTRACTS): `unsprungMass` [F, R] kg and `tyreRate` N/m. Roadster 28/30 kg, 190 kN/m. GT 40/43 kg, 300 kN/m. 296 GT3 42/45 kg, 340 kN/m. Hop damping ratio 0.4-1.0.
+- `bodyClearance`: the roadster's box sill is now 0.13 m (the NA's front lip). Its 10 cm generic sill already cleared by only 9 mm in a full stop, and the extra dive touched it by 1 mm.
+
+**Kerbs** (proving-ground driven kerbs, massless → compliant):
+
+| kerb | peak wheel load (x static) | compression jolt |
+|---|---|---|
+| ribbed, 120 km/h | 6.95 → 5.75 | 9.2 → 4.4 mm |
+| sausage, 120 km/h | 6.72 → 6.29 | 11.8 → 6.5 mm |
+| bevel, 120 km/h | 3.32 → 3.49 | 3.2 → 2.0 mm |
+
+The compression dip at 100 km/h drops from 2.69 to 2.39 mg. On the analytic 5 cm step the *tyre* load rises (3.3 → 6.5x at 150 km/h: the wheel mass cannot get out of the way of a square edge, which is physical), while the body no longer takes it directly. Edge normals still come from the ground (§5.2). Leaning them, so a kerb pushes the car back and up, is now possible and is left as a follow-up (P2-comp-b).
+
+**Test changes**
+- `suspension.gd` warp statics put the tyre rate in series with each axle's twist rate. The 296 matches to 0.0-0.1 %, the roadster to -0.7/-1.9 %.
+- The 64-bit precision check runs on the massless wheel: in the void the compliant wheels drop to droop and move the sprung body by 1.6 µm, which is physical.
+- `proving_ground.gd` runs the crest flight 3 km/h over the take-off threshold the bisection finds, instead of a fixed 150 km/h. The threshold moved from 148 to 152.5 km/h input (observed 145.8 → 149.3 km/h, closer to the design's 148.5 estimate and ~150 target): the wheels follow the falling road longer.
+- `flat_equivalence.gd` keeps the strict ±3 % CarModel gate on the massless wheel and adds a ±5 % gate with compliance. Worst with compliance: roadster Simcade 100-0 +3.06 %, of which +2.66 % was already there massless.
+- `data/simcade.json` carbody `asm_slip_cut_gain` 16 → 18: the 296's Simcade power-on ASM peak went 7.86 → 8.07 deg (limit 8), and is now 7.83.
+- Lap times move -0.1 to -0.3 %. Baseline re-recorded.
+
+**Gates:** `run_gates.ps1 -All` passes, except that laps stderr carries the known Spa bank warning (F-P6-01). Windowed `--features` 212/0, stderr empty. `--v2-smoke` passes. Car step cost is unchanged (the chassis spike reads ~158 µs).
+
+## 2026-09-23  DONE P2-comp-b kerb edges push the tyre back  (Claude Opus 5.5) — branch `rb/P2-comp-b` (on `rb/P2-comp`)
+With compliance on, a tyre resting on a sharp edge's corner takes the rigid tread's own contact normal along the wheel instead of the high side's ground normal (`TyreFootprint.contact(..., lean)`, `tread_normal()`). The corner pushes the wheel back as well as up. Before, a car rose onto a step with no horizontal cost, which was quietly non-conservative.
+- **The lean starts from the ground normal and tilts it along the wheel by the circle's slope at the corner.** So no lean means exactly the old normal. A first version leaned the tyre's own up, which tilts with the body: a parked car with a shoulder on a pad edge crept at 2 mm/s.
+- **Along the wheel only.** Across the tread, the crown and shoulder are stand-ins for sidewall compliance, not a real surface. Leaning across made the parked car slide off the pad edge.
+- **Scaled by how squarely the bisection pair crossed the edge along the wheel.** An edge running alongside the tyre (found by pairs across the tread) cannot push it forward or back.
+- The massless wheel (compliance off) keeps ground normals: its damper would take the climb rate whole (9-28x static on 5 cm, DONE P2-06).
+
+Results (`tests/v2/footprint.gd` 10/10, parked on a pad edge settles in 4 mm with no creep):
+- Climbing a 5 cm step costs a little speed: 50 km/h lost 5.58 → 5.83 km/h (lifting the car 5 cm alone costs ~0.13), 150 km/h 1.77 → 1.93.
+- Peak tyre load +7-10 % on the square step.
+- The proving ground's shaped kerbs (bevel, ribbed, sausage) are unchanged to the hundredth: the footprint follows a shaped kerb's surface, and only sharp corners (steps, pad edges, a road-to-verge drop) are edges. Laps, crest and compression results are unchanged.
+
+Gates: `run_gates.ps1 -All` passes, except the known Spa bank warning in the laps stderr (F-P6-01). `--features` 212/0, stderr empty.

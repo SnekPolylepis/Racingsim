@@ -81,6 +81,24 @@ static func drop(x: float, y: float, radius: float, tread: float) -> float:
 ## the tyre's bottom point would meet flat ground holding it at the same height), plus `rays`
 ## (queries made, the centre included), `edge` (true when an edge corner carries the tyre) and `at`
 ## (where on the tyre it is carried: offset along the heading and across the tread, metres).
+## The rigid tread's contact normal at footprint offset (x along, y across), leaning only along the
+## wheel by the circle's slope there, from drop()'s gradient (central differences, 1 mm). Across the
+## tread the crown and shoulder are stand-ins for a compliant sidewall and camber control, not a real
+## surface: leaning across made a car parked with a shoulder on a 5 cm pad edge creep off it. `along`
+## (0..1) scales the lean by how squarely the edge was found crossing the wheel, so an edge alongside the
+## tyre (found by pairs across the tread) does not push it forward or back either.
+## It leans the high side's own ground normal, so an edge with no lean keeps exactly the ground's normal.
+static func tread_normal(
+	x: float, y: float, radius: float, tread: float, ground: Vector3, fwd: Vector3, along: float
+):
+	var h = .001
+	var dx = (drop(x + h, y, radius, tread) - drop(x - h, y, radius, tread)) / (2 * h)
+	if dx * along == 0.0:
+		return ground
+	var ahead = (fwd - ground * fwd.dot(ground)).normalized()
+	return (ground - ahead * dx * along).normalized()
+
+
 static func contact(
 	surface,
 	origin: Vector3,
@@ -91,7 +109,8 @@ static func contact(
 	hint: int,
 	radius: float,
 	tread: float,
-	centre: Dictionary
+	centre: Dictionary,
+	lean = false
 ) -> Dictionary:
 	var up = -down
 	# A sample past the tyre's reach can still hold its curved tread within reach.
@@ -202,7 +221,10 @@ static func contact(
 		# exists on some ticks and not others makes the wheel flicker, and the fixed samples are dense
 		# enough to follow a kerb's shape.
 		if bearing(top[3], up) and (is_inf(low[2]) or low[2] - top[2] > EDGE_TOL):
-			edges.append([(high[0] + low[0]) * .5, (high[1] + low[1]) * .5, top])
+			# How squarely the bracket crossed the edge along the wheel: a pair across the tread finds an
+			# edge running alongside the wheel, which cannot push it forward or back.
+			var along = absf(b[0] - a[0]) / maxf(Vector2(b[0] - a[0], b[1] - a[1]).length(), 1e-9)
+			edges.append([(high[0] + low[0]) * .5, (high[1] + low[1]) * .5, top, along])
 	rays += extra
 	# Candidates: [bottom-point distance, normal, point, surface, is edge].
 	var cands = []
@@ -223,16 +245,22 @@ static func contact(
 				Vector2(s[0], s[1])
 			]
 		)
-	# The tyre on an edge's corner takes the high side's surface normal (5.2: normals from the ground).
-	# The rigid tread's own normal there leans away from the edge, and its climb rate then reaches the
-	# damper whole: with no tyre compliance or unsprung mass that gave 9-28x static load on a 5 cm step.
+	# The tyre on an edge's corner: by default it takes the high side's surface normal (5.2: normals from
+	# the ground). With `lean` it takes the tread's own normal there, leaning away from the edge, so the
+	# corner pushes the wheel back as well as up (the speed a kerb strike costs). That needs tyre
+	# compliance and unsprung mass (P2-comp) to absorb the climb rate: on a massless wheel it reached the
+	# damper whole, 9-28x static load on a 5 cm step.
 	for e in edges:
 		var ground = ref + gf * e[0] + gs * e[1] + e[2][2]
 		var point = origin + fwd * e[0] + side * e[1] + down * ground
 		cands.append(
 			[
 				ground + drop(e[0], e[1], radius, tread),
-				e[2][3].normal,
+				(
+					tread_normal(e[0], e[1], radius, tread, e[2][3].normal, fwd, e[3])
+					if lean
+					else e[2][3].normal
+				),
 				point,
 				e[2][3].surface,
 				true,

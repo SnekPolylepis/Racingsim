@@ -7,7 +7,9 @@ extends SceneTree
 ##   skidpad        steady-state limit on a 150 m circle (the baseline's radius; the plan's "60 m" is not
 ##                  what tests/dynamics.gd or the baseline measure)
 ##   top speed      full throttle until the speed gains under 0.02 m/s over 2 s (at most 120 s)
-## Gate: within +/-3 % of CarModel measured live. CarModel is unchanged since the pre-rebuild baseline;
+## Gate: within +/-3 % of CarModel measured live, on CarBody's massless wheel (compliance off): the 6-DOF
+## chassis reproduces the planar model. Tyre compliance and unsprung mass (P2-comp) are a deliberate
+## departure (series tyre rate, softer transient load transfer), gated separately within +/-5 %. CarModel is unchanged since the pre-rebuild baseline;
 ## the live Simulation figures are cross-checked against docs/rebuild/baseline.json to prove it.
 ## Both handling models gate. Simcade's aids and transient handling (ASM, recovery) are P2-07's; these
 ## straight-line and steady-state figures already match, and P2-07 must keep them matching.
@@ -122,10 +124,11 @@ func legacy(key, simcade):
 # --- CarBody on TestSurface.flat (P2-00 spike procedures) ---
 
 
-func body(key, simcade):
+func body(key, simcade, compliant = false):
 	var out = {}
 	var surf = TestSurface.flat()
 	var c = prepare(CarBody.new(), key, simcade)
+	c.compliance = compliant
 	out.peak_angle = c.peak_slip_angle()
 	out.peak_ratio = c.peak_slip_ratio()
 	c.place(Vector3(-2000, 0, 0), 0.0, 0.0)
@@ -202,7 +205,8 @@ func _initialize():
 		for key in presets:
 			var old = legacy(key, simcade)
 			var new = body(key, simcade)
-			results["%s %s" % [model, key]] = {"carmodel": old, "carbody": new}
+			var soft = body(key, simcade, true)
+			results["%s %s" % [model, key]] = {"carmodel": old, "carbody": new, "carbody_compliant": soft}
 			var peaks_exact = old.peak_angle == new.peak_angle and old.peak_ratio == new.peak_ratio
 			var worst = 0.0
 			var parts = []
@@ -215,6 +219,16 @@ func _initialize():
 				% [model, key, "exact" if peaks_exact else "DIFFER", ", ".join(parts)]
 			)
 			check(peaks_exact and worst <= .03, line)
+			var worst_soft = 0.0
+			var soft_parts = []
+			for k in ["accel", "brake", "skidpad", "top"]:
+				var ratio = soft[k] / old[k] - 1
+				worst_soft = maxf(worst_soft, absf(ratio))
+				soft_parts.append("%s %+.2f%%" % [names[k], ratio * 100])
+			check(
+				worst_soft <= .05,
+				"%s %s with compliance, vs CarModel (within 5 %%): %s" % [model, key, ", ".join(soft_parts)]
+			)
 		if not simcade:
 			# The live CarModel is the baseline model: its Simulation figures match the recorded ones.
 			var off = []

@@ -62,6 +62,8 @@ Optional `presentation.landmarks` = array of landmark definitions built tracksid
 
 Preset keys are `roadster`, `gt`, `f296gt3`. `data/cars.json` contains fixed constants and a default `setup` for each. The garage definition rows are `[group,key,label,min,max,step,unit]`; currently 42 legacy fields grouped into Tires, Suspension, Aero, Brakes, Diff, Gearing and Aids. Presentation-only preset keys (no physics or record effect): `body` (`roadster`, `coupe` or `gt3`, the lofted body style in `visuals.gd::BODIES`), `color`, `rim`, `caliper` (hex colours), `wing` (bool) and `num` (livery number). Missing keys fall back to defaults.
 
+Chassis keys read only by the 6-DOF `CarBody` (the planar CarModel ignores them): `treadWidth` (m, tyre footprint), `unsprungMass` (`[front, rear]` kg per corner; default 3 % of `mass`), `tyreRate` (radial tyre stiffness, N/m; default 260000) and `bodyClearance` (m, the chassis contact box's sill height above static ground; default 0.1). They are fixed constants, not garage fields.
+
 Setup document: `{"schema":1,"savedAt":"...","car":"roadster","setup":{"tireMu":1.38,...}}`. Import verifies the car and values, starts with that preset's defaults, applies recognized fields within their bounds, switches car, resets and loads its record. Missing fields retain preset defaults. Optional `tcsLevel` and `asmLevel` (0–10) add numbered aids without replacing the legacy fields; old TC intensity maps to its equivalent level (fractional legacy values are preserved), old ABS remains unchanged, and missing ASM imports as off. Exports include effective levels and synchronized tcOn/tcIntensity. Garage changes also reset the run when applied. Native export remains compatible with the browser's schema-1 structure.
 
 ## Ghosts and records

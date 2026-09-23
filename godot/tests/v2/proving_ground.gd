@@ -460,7 +460,11 @@ func crest() -> void:
 
 
 func crest_landing() -> void:
-	var c = car_at(1020.0, 150.0)
+	# A few km/h over the take-off threshold the bisection found (crest() runs first), so the flight
+	# check follows the chassis: compliance (P2-comp) moved take-off from 148 to 152.5 km/h input.
+	var bracket = results.get("crest_bracket_input_kmh", [147.0, 147.0])
+	var kmh = bracket[1] + 3.0
+	var c = car_at(1020.0, kmh)
 	var hint = -1
 	var off_run = 0
 	var run_start_s = -1.0
@@ -473,7 +477,7 @@ func crest_landing() -> void:
 		hint = pr.idx
 		if pr.s > 1390.0:
 			break
-		driver(c, asset.station(pr.s + 20.0).pos, 150.0)
+		driver(c, asset.station(pr.s + 20.0).pos, kmh)
 		c.step(DT, surf, true)
 		if pr.s > 1040.0 and c.contacts == 0:
 			off_run += 1
@@ -491,14 +495,15 @@ func crest_landing() -> void:
 			if airborne and land_s < 0.0:
 				land_s = pr.s
 				break
-	results["crest_150_takeoff_s"] = first_off_s
-	results["crest_150_landing_s"] = land_s
-	results["crest_150_peak_clearance_m"] = peak_clearance
+	results["crest_flight_kmh"] = kmh
+	results["crest_flight_takeoff_s"] = first_off_s
+	results["crest_flight_landing_s"] = land_s
+	results["crest_flight_peak_clearance_m"] = peak_clearance
 	check(
 		airborne and first_off_s >= 1040.0 and land_s > first_off_s and land_s < 1380.0,
 		(
-			"150 km/h crest flight: takeoff s %.1f, landing s %.1f before T3, peak clearance %.2f m"
-			% [first_off_s, land_s, peak_clearance]
+			"%.1f km/h crest flight: takeoff s %.1f, landing s %.1f before T3, peak clearance %.2f m"
+			% [kmh, first_off_s, land_s, peak_clearance]
 		)
 	)
 
