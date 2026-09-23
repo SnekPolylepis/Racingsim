@@ -73,10 +73,24 @@ var footprint_rays = 0
 ## Last tick's contact per wheel (the Surface contract dictionary, {} when off the ground), for
 ## telemetry, skid marks and tests.
 var contact_hits = []
+## Chassis hull box for car-vs-wall contact (P4-03), body frame: the body contact points' box.
+var hull_center = Vector3.ZERO
+var hull_half = Vector3.ONE
+## Pose at the start of the last step(), so wall contact can sweep the hull along the tick's motion.
+var last_x = 0.0
+var last_y = 0.0
+var last_z = 0.0
+var last_rot = Quaternion.IDENTITY
 
 
 func configure(preset):
 	super(preset)
+	# Simcade retuned for the 6-DOF chassis (P2-07): data/simcade.json's "carbody" section goes over the
+	# shared defaults, and the car's own preset overrides still go over both. The planar CarModel never
+	# reads that section, so its behaviour and baselines are unchanged.
+	simcade = SIMCADE_DEFAULTS.duplicate(true)
+	simcade.merge(SIMCADE_DEFAULTS.get("carbody", {}), true)
+	simcade.merge(p.get("simcade", {}), true)
 	rig()
 
 
@@ -111,6 +125,8 @@ func rig():
 	for bx in [p.a * .4, -p.b * .6]:
 		for bz in [-side * .8, side * .8]:
 			body_points.append(Vector3(bx, roof, bz))
+	hull_center = Vector3((front_x + rear_x) * .5, (sill + roof) * .5, 0.0)
+	hull_half = Vector3((front_x - rear_x) * .5, (roof - sill) * .5, side)
 
 
 ## Place the car at rest on the ground below `at`, heading in the legacy sense
@@ -124,7 +140,31 @@ func place(at: Vector3, heading: float, ground_y: float):
 	rot = Quaternion(Vector3.UP, -heading)
 	vel = Vector3.ZERO
 	ang = Vector3.ZERO
+	mark_pose()
 	sync_legacy()
+
+
+## Record the current pose as the start of the next tick's motion (step() does this itself).
+func mark_pose():
+	last_x = pos_x
+	last_y = pos_y
+	last_z = pos_z
+	last_rot = rot
+
+
+## Apply an impulse `j` (N s, world axes) at world point `at`: linear and angular (body frame) velocity.
+func apply_impulse(at: Vector3, j: Vector3):
+	vel_x += j.x / p.mass
+	vel_y += j.y / p.mass
+	vel_z += j.z / p.mass
+	var b = basis()
+	ang += b.transposed() * (at - pos).cross(j) / inertia
+
+
+## World-frame inverse inertia applied to a world vector.
+func inverse_inertia_world(v: Vector3) -> Vector3:
+	var b = basis()
+	return b * ((b.transposed() * v) / inertia)
 
 
 ## Place the car at rest on `surface` at (px, pz), body aligned with the surface normal there.
@@ -158,6 +198,12 @@ func basis():
 	return Basis(rot)
 
 
+## ASM from the body frame (P2-07): slip from the body-frame forward and lateral velocity, with the
+## body yaw rate `r`, so it reads a bank, slope or crest the way the driver feels it.
+func stability_request():
+	VehicleAids.stability_request(self, vbx, vby)
+
+
 func sync_legacy():
 	var b = basis()
 	var fwd = b.x
@@ -178,6 +224,7 @@ func sync_legacy():
 
 ## Advance one fixed tick. `surface` implements contact(origin, direction, max_dist, hint).
 func step(dt, surface, automatic = true):
+	mark_pose()
 	var s = setup
 	var m = p.mass
 	sync_legacy()
@@ -240,6 +287,12 @@ func step(dt, surface, automatic = true):
 		# ray direction's own rotation). The footprint takes the normal from the ground (5.2), so a kerb
 		# edge's climb shows in the compression, not the rate (no tyre compliance to absorb the rate).
 		rate[i] = -n.dot(top_vel) / maxf(n.dot(up), .05)
+		# Rough ground (grass, gravel, runoff) shakes the damper as car.gd does, scaled down in Simcade.
+		# Kerbs are real geometry here, as they are there, so they add none.
+		var rough = TrackModel.SURF[hit.surface]
+		if rough.bump > 0 and rough.id != 1:
+			var bump = (rnd() - .5) * rough.bump * minf(1, speed / 10)
+			rate[i] += bump * (simcade.rough_bump_scale if simcade_enabled else 1.0)
 	contact_hits = hits
 	var loads = [0.0, 0.0, 0.0, 0.0]
 	for i in 4:
