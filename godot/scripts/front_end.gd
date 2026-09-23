@@ -165,7 +165,12 @@ func show_page(next):
 			add_option("Circuits", func(): show_page("circuits"), 2)
 			add_option("Settings", func(): open_panel("settings"), 3)
 			add_option("Help", func(): open_panel("help"), 4)
-			add_option("Quit", app.request_quit, 5)
+			add_option(
+				"Test surfaces (dev)",
+				func(): app.get_tree().change_scene_to_file("res://scenes/proving/test_surfaces.tscn"),
+				5
+			)
+			add_option("Quit", app.request_quit, 6)
 			add_option("Back", back, 0, Vector2(500, 370), 112)
 		"race":
 			add_option(

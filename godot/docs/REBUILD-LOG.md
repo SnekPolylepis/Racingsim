@@ -903,3 +903,46 @@ Since the compressed `.scn` size is 3.87 MB (well below the 5 MB threshold and g
   (All key metrics unchanged: bevel 60/120, ribbed 60/120, sausage 60/120, crest takeoff 145.8 km/h, bowl |Fy| 3.5% of mg, compression 2.69 x mg with 0 body contacts, ditch challenge -1.16 m ride with 0 light and 0 off-tarmac wheel ticks, simulation & simcade 296 BotLine laps 143.80 s with 0 off-wheel ticks).
 - `gdformat --check -l 110`: 4 files unchanged.
 - `git diff --check`: 0 errors.
+## 2026-09-23  CLAIM P2-08  (Gemini 3.8 Flash)
+Building `scenes/proving/test_surfaces.tscn` and `scripts/proving/test_surfaces.gd`: driving scene with 6-DOF CarBody on every analytic TestSurface shape, visual model posing from CarBody.snapshot(), controls/teleport/car cycling/HUD, chase camera, and headless test `tests/v2/test_surfaces_scene.gd`.
+
+## 2026-09-23  DONE P2-08  (Gemini 3.8 Flash)
+Built `scenes/proving/test_surfaces.tscn` and `scripts/proving/test_surfaces.gd`: a standalone proving ground scene for driving the 6-DOF `CarBody` on all 8 analytic shapes from `scripts/surface/test_surface.gd`:
+1. Flat (origin X = 0 m)
+2. 8° Ramp (origin X = 400 m)
+3. 37° Side Slope (origin X = 800 m)
+4. R200 Crest (origin X = 1200 m)
+5. 20° Banked Bowl (origin X = 1600 m, radius 100 m)
+6. Karussell Ditch (origin X = 2000 m, 37° walls)
+7. 5 cm Step (origin X = 2400 m, 5 cm grid resolution near edge)
+8. 5 cm Block (origin X = 2800 m, 5 cm grid resolution near edge)
+
+Surfaces: generated procedural render meshes by sampling `height()` and `normal()` on a 1 m grid (5 cm near the step and block edges), laid out side by side along +X spaced 400 m apart. Queries satisfy the §5.2 `Surface` contact contract analytically with no physics frame requirement.
+
+Car & Visuals: steps `CarBody` at 240 Hz in `_physics_process` (`Engine.physics_ticks_per_second = 240`). `scripts/proving/visual_adapter.gd` bridges `CarBody.snapshot()` (xform, steer, wheel phase, comp) to `Visuals.make_car()` / `ferrari_296.gd` with tick interpolation (`slerp` basis, `lerp` position/steer/comp, `lerp_angle` phase) and poses the visual root offset by `(0, -cgHeight, 0)` in the body frame. Compression is passed to wheel pivots along the strut axis.
+
+Controls & Features:
+- Driving: WASD / Arrow keys / gamepad via `Controls` (`scripts/controls.gd`).
+- `1`..`8` (and numpad `1`..`8`): Teleport instantly to shapes 1 through 8.
+- `R`: Reset car to the spawn point of the current shape at rest.
+- `C`: Cycle car preset (`roadster` -> `gt` -> `f296gt3`).
+- `F1`: Toggle retro telemetry HUD (speed in km/h & mph, gear, RPM, per-wheel load in N, per-wheel compression in mm, contact flags, body roll & pitch in degrees, contacts count, footprint ray count).
+- `ESC`: Return to main menu (`res://main.tscn`).
+- Chase Camera: smooth exponential tracking (`1 - exp(-dt * 8)`), safety clamp above surface height, instant snap on teleport/reset.
+- Menu integration: Added "Test surfaces (dev)" option to main menu in `scripts/front_end.gd`.
+
+### How to Drive
+- From game: Launch the game, click **Test surfaces (dev)** on the main menu.
+- Standalone command: `tools/Godot.exe --path . res://scenes/proving/test_surfaces.tscn`
+- Use keys `1` to `8` to jump between the proving shapes.
+- Use `W`/`S` (or Up/Down) for throttle/brake, `A`/`D` (or Left/Right) to steer, `Space` for handbrake.
+- Press `C` to switch cars, `R` to reset, `F1` to toggle HUD telemetry.
+
+### Gates
+- Headless test `tests/v2/test_surfaces_scene.gd`: 14/14 checks pass, 0 failures, exit 0, empty stderr.
+- `--script scripts/game.gd --check-only`: exit 0, empty stderr.
+- All 11 existing `tests/v2/*.gd` test suites pass unchanged (exit 0, empty stderr).
+- Windowed integration `--features`: 212/212 checks pass, 0 failures, exit 0, empty stderr.
+- `python -m gdtoolkit.formatter -l 110`: clean.
+- `git diff --check`: clean.
+
