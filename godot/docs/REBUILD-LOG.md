@@ -1205,4 +1205,3 @@ Built GitHub Actions workflow (`.github/workflows/gates.yml`) and cross-platform
 - Treats `laps.gd` "spa roadster simulation" failure as an allowed failure (P4-07b) rather than failing the run.
 - Uploads all stdout/stderr logs from `godot/tests/logs/ci/` as an artifact (`gate-logs`) on pass and failure.
 - Local verification: 39/39 run in 183.8 s wall clock (39 PASS, 0 failed, exit 0).
-
