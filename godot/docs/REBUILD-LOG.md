@@ -52,3 +52,7 @@ Headline flat targets for P2 flat equivalence (Simulation): roadster 0-100 8.24 
 **P0-04:** `build/legacy/RacingSim-pre-rebuild.exe` (19:24 export, 260/0 features) and `RacingSim-macOS-pre-rebuild.zip` (17:07 build, not re-verified), git-ignored. Root launcher `Play Legacy (pre-rebuild).cmd`. **Caution:** the legacy and new builds share the same user data folder (`%APPDATA%/Godot/app_userdata/Racing Sim/`). Once the new build changes the settings/record/ghost formats, give it a different `config/name` or a custom user dir so the two don't overwrite each other's saves (P4-06).
 
 P0 is complete except the remote: GitHub CLI is not installed; pushing to a private remote is up to the owner.
+
+## 2026-09-22  DONE P0-remote  (GPT-6 Sol)
+
+Pushed `main` and tag `pre-rebuild` to [https://github.com/SnekPolylepis/Racingsim](https://github.com/SnekPolylepis/Racingsim) (private). Upstream tracking set.
