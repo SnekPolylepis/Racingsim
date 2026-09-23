@@ -41,3 +41,5 @@ godot/reference/
 Thumbs.db
 *.tmp
 __pycache__/
+# Spa bake (11 MB): regenerate from godot/trackgen/spa.gd; the dev drive scene caches it in user://tracks3d/
+godot/tracks3d/spa/spa.scn
