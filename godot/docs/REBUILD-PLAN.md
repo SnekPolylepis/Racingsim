@@ -173,7 +173,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 - **P2-04 [DEEP]** Wheel spin states and the tyre "need" clamps, reworked for 3D contact velocity. **The clamps must stay:** they are what stops standstill jitter and drivetrain oscillation.
   P2-04 must also give the tyre low-speed stiffness (static friction): a braked car currently creeps 6–8 mm/s down an 8° ramp and 26–35 mm/s across a 37° side slope (P2-02 probes); the old model had the same flaw, hidden by its flat-only standstill hold.
 - **P2-05 [DEEP]** Flat-equivalence, determinism, energy, bowl, crest, flight, landing and wall tests (§6). Tune only the new suspension parameters. **Don't touch tyre or drivetrain constants to pass tests.**
-- **P2-06 [DEEP]** Tyre footprint smoothing (multi-ray) and kerb behaviour on `TestSurface.step`.
+- **P2-06 [DEEP]** Tyre footprint smoothing (multi-ray) and kerb behaviour on `TestSurface.step`. **Done 2026-09-23** (`scripts/vehicle/tyre_footprint.gd`, `tests/v2/footprint.gd`): rigid-tyre envelope over 5 rays per wheel plus edge bisection; bit-identical to the centre ray on smooth ground.
 - **P2-07 [DEEP]** Aids and Simcade ported to 3D (ASM uses body-frame yaw rate and slip). Retune Simcade against its existing targets.
 - **Gate:** every §6 row marked P2 passes. The owner drives it on a test-surface scene (P2-08).
 - **P2-08 [MECH]** Debug scene `scenes/proving/test_surfaces.tscn`: drive the new car on all the analytic shapes with the existing camera and car model.

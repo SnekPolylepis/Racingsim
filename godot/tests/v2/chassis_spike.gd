@@ -379,6 +379,9 @@ func cost():
 	for which in ["flat", "crest"]:
 		var surf = TestSurface.flat() if which == "flat" else TestSurface.crest(0.0, 200.0, 20.0, 40.0)
 		var c = make("f296gt3")
+		# The crest's analytic rays march and bisect (~10 µs each), standing in for a heavy query, so
+		# it runs the centre rays only; tests/v2/footprint.gd budgets the footprint on a TrackSurface.
+		c.footprint = which == "flat"
 		c.place_on(surf, -300.0, 0.0, 0.0)
 		var n = 240 * 20
 		var t0 = Time.get_ticks_usec()
@@ -387,7 +390,8 @@ func cost():
 			c.step(DT, surf, true)
 		var us = float(Time.get_ticks_usec() - t0) / n
 		results["us_per_tick_" + which] = us
-		check(us < 300, "cost %.1f µs per tick on %s (budget 300 µs)" % [us, which])
+		var rays = "footprint" if c.footprint else "centre rays only"
+		check(us < 300, "cost %.1f µs per tick on %s, %s (budget 300 µs)" % [us, which, rays])
 
 
 func _initialize():
