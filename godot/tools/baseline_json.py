@@ -62,7 +62,7 @@ def main():
         "note": "Pre-rebuild equivalence targets (REBUILD-PLAN.md section 6). Raw output in baseline/*.txt.",
         "suites": suites,
     }
-    OUT.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    OUT.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     for name, s in suites.items():
         print(f"{name}: {len(s['checks'])} checks, {len(s['failures'])} failures, {len(s.get('laps', []))} laps")
 
