@@ -104,7 +104,7 @@ static func numeric(v):
 	return (v is float or v is int) and is_finite(float(v))
 
 
-## Structural format validation allows incomplete editor drafts. Track.validate gates save/drive.
+## Structural format validation for track documents. Track.validate gates driving.
 ## Optional presentation metadata is not exhaustively validated here.
 func validate_track(d):
 	if not d is Dictionary or not d.get("points") is Array:

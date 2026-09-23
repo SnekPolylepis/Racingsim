@@ -14,7 +14,6 @@ var ui_view: SubViewport
 var output_views = []
 var output_passes = []
 var sharp_display: TextureRect
-var editor_layer: CanvasLayer
 var field_valid = false
 var output_clock = 0.0
 var field_phase = 0
@@ -99,9 +98,6 @@ func initialize(owner_app):
 	sharp_display.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	sharp_display.texture = ui_view.get_texture()
 	layer.add_child(sharp_display)
-	editor_layer = CanvasLayer.new()
-	editor_layer.layer = 1
-	app.add_child(editor_layer)
 	RenderingServer.frame_pre_draw.connect(apply_projection)
 	app.get_viewport().size_changed.connect(apply_settings)
 	apply_settings()
@@ -165,13 +161,6 @@ func apply_settings():
 func _process(_dt):
 	if app == null or app.ui == null:
 		return
-	layer.visible = not app.editing
-	world_view.render_target_update_mode = (
-		SubViewport.UPDATE_DISABLED if app.editing else SubViewport.UPDATE_ALWAYS
-	)
-	if app.editing:
-		valid_history = false
-		return
 	output_clock += _dt
 	if app.settings.get("output_mode", 0) == 1 and output_clock < 1.0 / 59.94:
 		return
@@ -195,7 +184,7 @@ func _process(_dt):
 	field_valid = true
 
 
-## Camera rays use internal pixels. The editor retains its independent native 2D canvas transform.
+## Camera rays use internal pixels.
 func world_pixel(screen_position):
 	return (screen_position - presentation.position) * Vector2(world_view.size) / presentation.size
 
@@ -208,22 +197,14 @@ func unproject(world_position):
 
 
 func attach_ui():
-	var parent = app if app.editing else ui_view
-	if app.ui.get_parent() != parent:
-		app.ui.reparent(parent)
-	if app.editor.get_parent() != editor_layer:
-		app.editor.reparent(editor_layer)
-		app.editor.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ui_view.render_target_update_mode = (
-		SubViewport.UPDATE_DISABLED if app.editing else SubViewport.UPDATE_ALWAYS
-	)
-	app.ui.root.theme.default_font_size = 16 if app.editing else 32
+	if app.ui.get_parent() != ui_view:
+		app.ui.reparent(ui_view)
+	ui_view.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	app.ui.root.theme.default_font_size = 32
 	app.ui.layout.call_deferred()
 
 
 func forward_input(event):
-	if app.editing:
-		return false
 	var forwarded = event.duplicate()
 	if event is InputEventMouse:
 		if not presentation.has_point(event.position):
@@ -243,7 +224,7 @@ func forward_input(event):
 
 
 func apply_projection():
-	if app == null or app.editing:
+	if app == null:
 		return
 	# The server accepts an affine camera transform. Its X scale compensates
 	# non-square SD pixels while keeping the actual 3D raster at 640x448/224.

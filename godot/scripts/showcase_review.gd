@@ -158,10 +158,6 @@ func run_compare(owner_app):
 			app.frontend.open_panel(panel)
 			await shot("ui-%dx%d-%s" % [dimensions.x, dimensions.y, panel])
 			app.ui.close()
-		app.start_editor()
-		app.frontend._process(.016)
-		await shot("ui-%dx%d-editor" % [dimensions.x, dimensions.y])
-		app.set_editor(false)
 		app.frontend.show_page("main")
 	for settings_case in [
 		[1, false, 0, "480i"],

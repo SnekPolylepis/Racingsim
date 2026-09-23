@@ -1,6 +1,6 @@
 extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
-## See docs/ARCHITECTURE.md before changing frame order or editor/drive transitions.
+## See docs/ARCHITECTURE.md before changing frame order.
 ## Resource models use simulation XY coordinates; scene nodes use Godot XZ ground coordinates.
 const TrackModel = preload("res://scripts/track3d.gd")
 const CarModel = preload("res://scripts/car.gd")
@@ -10,10 +10,8 @@ const Visuals = preload("res://scripts/visuals.gd")
 const Storage = preload("res://scripts/storage.gd")
 const Controls = preload("res://scripts/controls.gd")
 const Interface = preload("res://scripts/interface.gd")
-const CircuitEditor = preload("res://scripts/editor.gd")
 const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
-const OutlineImport = preload("res://scripts/outline_import.gd")
 const DEFAULT_SETTINGS = {
 	"camera": 0,
 	"tilt": .72,
@@ -79,16 +77,13 @@ var environment: Environment
 var retro
 var applied_time = -1
 var ui
-var editor
 var instruments
 var sound
 var frontend
-var editing = false
 var paused = false
 ## Title screen is up: simulation blocked, toolbar/HUD hidden, camera orbits the car.
 var in_menu = false
 var menu_time = 0.0
-var test_from_editor = false
 var elapsed = 0.0
 var zoom_user = 1.0
 var quality = 2
@@ -181,8 +176,7 @@ func _ready():
 			if test_mode and benchmark_driver != null:
 				return
 			controls.clear()
-			editor.finish_gesture()
-			if not test_mode and not in_menu and not editing:
+			if not test_mode and not in_menu:
 				set_paused(true)
 	)
 	if test_mode:
@@ -199,16 +193,11 @@ func message(value):
 
 
 func blocked():
-	return paused or editing or in_menu or ui.is_open()
+	return paused or in_menu or ui.is_open()
 
 
-## Finish any active editor transaction before deciding whether an action may discard it.
 func guard_dirty(action):
-	editor.finish_gesture()
-	if editor.dirty:
-		ui.confirm("Unsaved circuit", "Discard the current unsaved circuit changes?", action)
-	else:
-		action.call()
+	action.call()
 
 
 func request_quit():
@@ -226,9 +215,6 @@ func refresh_tracks():
 		if name.ends_with(".json"):
 			track_files.append("res://tracks/" + name)
 			ui.track_picker.add_item(name.get_basename())
-	for file in storage.list_files("tracks"):
-		track_files.append(file)
-		ui.track_picker.add_item(file.get_file().get_basename() + " · saved")
 	var index = track_files.find(active_track_file)
 	if index >= 0:
 		ui.track_picker.select(index)
@@ -259,16 +245,11 @@ func load_track_now(file):
 		return false
 	track.load_data(d)
 	active_track_file = file
-	editor.reset_document()
 	rebuild_world()
 	reset_car()
 	load_record()
 	refresh_tracks()
 	instruments.rebuild_map()
-	if not track.validate().errors.is_empty() and not editing:
-		set_editor(true)
-	if editing:
-		editor.queue_redraw()
 	message("%s · %.3f km" % [track.data.name, track.length / 1000])
 	return true
 
@@ -281,7 +262,6 @@ func rebuild_world():
 	track.build_barriers()
 	if not track.samples.is_empty():
 		visuals.build_track(scenery, track)
-	scenery.visible = not editing
 	apply_time_of_day()
 
 
@@ -317,7 +297,7 @@ func reset_car():
 		for mesh in ghost_model.root.find_children("*", "MeshInstance3D", true, false):
 			mesh.layers = 2
 		warm_ghost.call_deferred()
-	model.root.visible = not editing
+	model.root.visible = true
 	ghost_model.root.visible = false
 	prev_pose = {}
 	if retro:
@@ -375,143 +355,6 @@ func change_car(key):
 	load_record()
 
 
-## Central mode transition: validate before driving, restore cone state before editing.
-## The editor retains its undo history across a test drive.
-func set_editor(value):
-	if value:
-		in_menu = false
-	if editing == value:
-		return
-	editor.finish_gesture()
-	if not value:
-		var report = track.validate()
-		if not report.errors.is_empty():
-			message("Cannot test drive: " + report.errors[0])
-			return
-	ui.close()
-	controls.clear()
-	editing = value
-	if retro:
-		retro.attach_ui()
-	editor.visible = value
-	instruments.visible = not value
-	environment.fog_enabled = not value
-	model.root.visible = not value
-	scenery.visible = not value
-	ghost_model.root.visible = false
-	ui.mode_button.text = "Test drive · T" if value else "Editor · F2"
-	if skid_root:
-		skid_root.visible = not value
-	if value:
-		for o in track.data.objects:
-			if o.type == "cone":
-				o.x = o.ox
-				o.y = o.oy
-			for k in ["vx", "vy", "hit"]:
-				o.erase(k)
-		test_from_editor = false
-		editor.validate()
-		editor.refresh_props()
-		editor.layout_panels()
-		editor.frame_track()
-	else:
-		test_from_editor = true
-		paused = false
-		rebuild_world()
-		reset_car()
-		load_record()
-		message("Test drive · Esc returns to your circuit")
-
-
-func new_track():
-	guard_dirty(
-		func():
-			track.load_data(
-				{
-					"schema": 1,
-					"name": "Untitled",
-					"points": [],
-					"objects": [],
-					"paint": {},
-					"curbOverride": {},
-					"curbAuto": true,
-					"startS": null,
-					"gridS": null
-				}
-			)
-			active_track_file = ""
-			ui.close()
-			if not editing:
-				set_editor(true)
-			editor.reset_document()
-			editor.dirty = true
-			editor.set_tool("select")
-			rebuild_world()
-			message("New circuit: click to place points, then use Start / finish")
-	)
-
-
-func save_track():
-	editor.finish_gesture()
-	var report = track.validate()
-	if not report.errors.is_empty():
-		message("Cannot save: " + report.errors[0])
-		return
-	if track.data.name == "Untitled":
-		save_track_as()
-		return
-	write_track_named(track.data.name)
-
-
-func save_track_as():
-	ui.ask_name("Save circuit as", track.data.name, write_track_named)
-
-
-func write_track_named(name):
-	var report = track.validate()
-	if not report.errors.is_empty():
-		message(report.errors[0])
-		return
-	var file = storage.path("tracks", storage.safe_name(name) + ".json")
-	var save_action = func():
-		var old_name = track.data.name
-		track.data.name = name
-		var ok = storage.write_json(file, track.to_json())
-		if ok:
-			active_track_file = file
-			editor.mark_saved()
-			refresh_tracks()
-			message("Saved " + file.get_file())
-		else:
-			track.data.name = old_name
-			message(storage.error)
-	if FileAccess.file_exists(file) and file != active_track_file:
-		ui.confirm("Replace circuit?", file.get_file() + " already exists.", save_action)
-	else:
-		save_action.call()
-
-
-func import_track_data(d):
-	var error = storage.validate_track(d)
-	if not error.is_empty():
-		message(error)
-		return false
-	guard_dirty(
-		func():
-			track.load_data(d)
-			active_track_file = ""
-			ui.close()
-			if not editing:
-				set_editor(true)
-			editor.reset_document()
-			editor.dirty = true
-			editor.refresh_props()
-			rebuild_world()
-			message("Imported circuit · Save to keep it")
-	)
-	return true
-
-
 func choose_file(kind, write):
 	ui.dialogs += 1
 	controls.clear()
@@ -523,7 +366,7 @@ func choose_file(kind, write):
 	add_child(dialog)
 	if write:
 		dialog.current_file = (
-			storage.safe_name(track.data.name if kind != "setup" else car.p.name)
+			storage.safe_name(car.p.name if kind == "setup" else track.data.name)
 			+ (".ghost.json" if kind == "ghost" else ".json")
 		)
 	dialog.file_selected.connect(
@@ -531,83 +374,15 @@ func choose_file(kind, write):
 			ui.dialogs -= 1
 			dialog.queue_free()
 			if write:
-				var data = (
-					track.to_json()
-					if kind == "track"
-					else (setup_document() if kind == "setup" else ghost_document())
-				)
+				var data = setup_document() if kind == "setup" else ghost_document()
 				if kind == "ghost" and race.ghost.is_empty():
 					message("No best lap to export")
 					return
 				message("Exported " + path.get_file() if storage.write_json(path, data) else storage.error)
-			elif kind == "track":
-				import_track_data(storage.read_json(path))
 			elif kind == "setup":
 				import_setup(path)
 			else:
 				import_ghost(path)
-	)
-	dialog.canceled.connect(
-		func():
-			ui.dialogs -= 1
-			dialog.queue_free()
-	)
-	dialog.popup_centered_ratio(.75)
-
-
-## Import a real circuit outline (GPX / GeoJSON / OpenStreetMap) as a new unsaved circuit.
-func choose_outline():
-	ui.dialogs += 1
-	controls.clear()
-	var dialog = FileDialog.new()
-	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	dialog.filters = PackedStringArray(
-		["*.gpx ; GPS track", "*.geojson, *.json ; GeoJSON", "*.osm ; OpenStreetMap XML"]
-	)
-	dialog.title = "Import real circuit outline"
-	add_child(dialog)
-	dialog.file_selected.connect(
-		func(path):
-			ui.dialogs -= 1
-			dialog.queue_free()
-			import_outline(path)
-	)
-	dialog.canceled.connect(
-		func():
-			ui.dialogs -= 1
-			dialog.queue_free()
-	)
-	dialog.popup_centered_ratio(.75)
-
-
-func import_outline(path):
-	var result = OutlineImport.load_file(path)
-	if result.has("error"):
-		message(result.error)
-		return false
-	if import_track_data(result.doc):
-		message(
-			(
-				"Imported %s · %d points · check direction, start line and widths, then save"
-				% [path.get_file(), result.doc.points.size()]
-			)
-		)
-	return true
-
-
-func choose_folder():
-	ui.dialogs += 1
-	var dialog = FileDialog.new()
-	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
-	dialog.title = "Choose racing data folder"
-	add_child(dialog)
-	dialog.dir_selected.connect(
-		func(path):
-			ui.dialogs -= 1
-			dialog.queue_free()
-			guard_dirty(func(): connect_storage(path))
 	)
 	dialog.canceled.connect(
 		func():
@@ -641,40 +416,8 @@ func delete_file(file):
 	if DirAccess.remove_absolute(file) != OK:
 		message("Could not delete " + file.get_file())
 		return
-	if active_track_file == file:
-		active_track_file = ""
-		editor.dirty = true
 	refresh_tracks()
 	message("Deleted " + file.get_file())
-
-
-func rename_file(file, value):
-	var data = storage.read_json(file)
-	if not data is Dictionary:
-		message(storage.error)
-		return
-	var destination = storage.path("tracks", storage.safe_name(value) + ".json")
-	if destination == file:
-		return
-	var action = func():
-		data.name = value
-		if storage.write_json(destination, data):
-			if not file.begins_with("res://"):
-				DirAccess.remove_absolute(file)
-			if active_track_file == file:
-				active_track_file = destination
-				if editor.dirty:
-					editor.rename_track(value)
-				else:
-					track.data.name = value
-					editor.mark_saved()
-			ui.open_library()
-		else:
-			message(storage.error)
-	if FileAccess.file_exists(destination):
-		ui.confirm("Replace circuit?", destination.get_file() + " already exists.", action)
-	else:
-		action.call()
 
 
 func effective_setup():
@@ -998,7 +741,7 @@ func _process(dt):
 		message(record_writer.errors.pop_front())
 	var started = Time.get_ticks_usec()
 	ui.sync_menus()
-	if in_menu and not editing:
+	if in_menu:
 		menu_time += dt
 		visuals.pose_car(model, car.snapshot(), track)
 		visuals.animate(track, elapsed)
@@ -1010,7 +753,7 @@ func _process(dt):
 		camera.look_at(pos + Vector3.UP * .55 + model.root.basis.x * .3, Vector3.UP)
 		# Frame the car in the unobscured right side of the menu.
 		camera.look_at(pos + Vector3.UP * .55 + model.root.basis.x * .3 - camera.basis.x * 1.55, Vector3.UP)
-	elif not editing:
+	else:
 		var now = car.snapshot()
 		visuals.pose_car(
 			model,
@@ -1025,7 +768,7 @@ func _process(dt):
 		update_camera(dt)
 	var gp = race.ghost_pose()
 	if not ghost_warming:
-		ghost_model.root.visible = settings.ghost and not gp.is_empty() and not editing
+		ghost_model.root.visible = settings.ghost and not gp.is_empty()
 	if ghost_model.root.visible and not ghost_warming:
 		var el = track.elev_at(gp[0], gp[1])
 		var forward = Vector3(cos(gp[2]), el.gx * cos(gp[2]) + el.gy * sin(gp[2]), sin(gp[2])).normalized()
@@ -1052,7 +795,7 @@ func _process(dt):
 
 
 func update_camera(dt, snap = false):
-	if editing or model.is_empty():
+	if model.is_empty():
 		return
 	var forward = model.root.basis.x
 	var pos = model.root.position
@@ -1103,16 +846,13 @@ func set_paused(value):
 	paused = value
 	controls.clear()
 	prev_pose = {}
-	if frontend and not editing:
+	if frontend:
 		frontend.show_page("pause" if value else "drive")
 
 
-## Return to the title screen from anywhere outside the editor. The car waits on the grid.
+## Return to the title screen. The car waits on the grid.
 func show_main_menu():
 	ui.close()
-	if editing:
-		set_editor(false)
-	test_from_editor = false
 	paused = false
 	in_menu = true
 	menu_time = 0.0
@@ -1129,14 +869,6 @@ func start_drive():
 	reset_car()
 	if frontend:
 		frontend.show_page("drive")
-	ui.sync_menus()
-
-
-func start_editor():
-	ui.close()
-	in_menu = false
-	paused = false
-	set_editor(true)
 	ui.sync_menus()
 
 
@@ -1165,18 +897,10 @@ func _unhandled_input(event):
 		if event.physical_keycode == KEY_ESCAPE:
 			if ui.is_open():
 				ui.close()
-			elif test_from_editor and not editing:
-				set_editor(true)
 			else:
 				toggle_pause()
 			return
 		if ui.is_open() or in_menu:
-			return
-		if event.physical_keycode == KEY_F2:
-			set_editor(not editing)
-			return
-		if editing:
-			editor.shortcut(event)
 			return
 		match event.physical_keycode:
 			KEY_G:
@@ -1196,7 +920,7 @@ func _unhandled_input(event):
 				settings.fullscreen = not settings.fullscreen
 				apply_settings()
 				save_settings()
-	if ui.is_open() or editing or in_menu:
+	if ui.is_open() or in_menu:
 		return
 	if (
 		event is InputEventMouseButton

@@ -8,7 +8,7 @@ func _process(_dt):
 
 
 func _draw():
-	if app == null or app.editing or app.settings.time_of_day != 0 or app.visuals.world == null:
+	if app == null or app.settings.time_of_day != 0 or app.visuals.world == null:
 		return
 	var cam = app.camera
 	var dir = app.sun.global_basis.z.normalized()

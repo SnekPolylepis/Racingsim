@@ -31,31 +31,6 @@ func shot(name):
 	)
 
 
-func click_editor(world, release = true):
-	var e = InputEventMouseButton.new()
-	e.button_index = MOUSE_BUTTON_LEFT
-	e.pressed = true
-	e.position = app.editor.to_screen(world)
-	app.editor._gui_input(e)
-	if release:
-		e.pressed = false
-		app.editor._input(e)
-		app.editor._gui_input(e)
-
-
-func drag_editor(a, b):
-	click_editor(a, false)
-	var e = InputEventMouseMotion.new()
-	e.position = app.editor.to_screen(b)
-	e.relative = app.editor.to_screen(b) - app.editor.to_screen(a)
-	app.editor._gui_input(e)
-	var up = InputEventMouseButton.new()
-	up.button_index = MOUSE_BUTTON_LEFT
-	up.pressed = false
-	up.position = Vector2(30, 120)
-	app.editor._input(up)
-
-
 func key(code, down = true):
 	var e = InputEventKey.new()
 	e.physical_keycode = code
@@ -83,7 +58,7 @@ func run(owner_app):
 	app.paused = false
 	app.start_drive()
 	await frames(10)
-	check(app.track_files.size() >= 4, "four bundled circuits")
+	check(app.track_files.size() >= 3, "three bundled circuits")
 	check(app.presets.size() == 3, "three car presets")
 	check(app.preset_key == "f296gt3", "296 GT3 default car")
 	check(app.active_track_file == "res://tracks/Spa-Francorchamps.json", "Spa default circuit")
@@ -99,11 +74,6 @@ func run(owner_app):
 	check(app.model.body.find_child("Headlights", true, false) != null, "296 night headlights")
 	check_car_animation()
 	check(app.scenery.get_node_or_null("NightCircuit") != null, "night circuit lighting")
-
-	check(
-		app.ui.top.get_global_rect().end.y < app.editor.canvas_rect().position.y,
-		"toolbar clears editor workspace"
-	)
 	var capture = AudioEffectCapture.new()
 	capture.buffer_length = 2
 	AudioServer.add_bus_effect(0, capture)
@@ -149,7 +119,7 @@ func run(owner_app):
 	app.ui.open_help()
 	await frames()
 	var chapter_picker = app.ui.content.find_child("HelpChapters", true, false)
-	check(chapter_picker.item_count >= 10, "packaged handbook chapters")
+	check(chapter_picker.item_count >= 7, "packaged handbook chapters")
 	for i in chapter_picker.item_count:
 		chapter_picker.select(i)
 		chapter_picker.item_selected.emit(i)
@@ -193,182 +163,14 @@ func run(owner_app):
 	app.settings.camera = 0
 	app.settings.debug = false
 	app.settings.telemetry = false
-	app.editor.mark_saved()
-	app.new_track()
-	await frames()
-	var ed = app.editor
-	check(app.editing and app.track.data.points.is_empty(), "blank new circuit")
-	app.set_editor(false)
-	check(app.editing, "invalid draft cannot test drive")
-	for v in [Vector2(-80, -60), Vector2(80, -60), Vector2(80, 60)]:
-		click_editor(v)
-	check(app.track.data.points.size() == 3, "new circuit points from clicks")
-	ed.set_tool("insert")
-	ed.insert_at(2, Vector2(-80, 60))
-	ed.frame_track()
-	await frames()
-	check(app.track.data.points.size() == 4, "insert control point")
-	ed.set_tool("start")
-	click_editor(Vector2(-80, -60))
-	ed.set_tool("grid")
-	click_editor(Vector2(-80, 20))
-	check(app.track.data.startS != null and app.track.data.gridS != null, "place start and grid")
-	check(app.track.validate().errors.is_empty(), "valid new circuit")
-	ed.set_tool("select")
-	var initial = Vector2(app.track.data.points[0].x, app.track.data.points[0].y)
-	drag_editor(initial, initial + Vector2(8, 6))
-	check(
-		absf(app.track.data.points[0].x - initial.x - 8) < .1,
-		"drag control point across release outside canvas"
-	)
-	ed.undo()
-	check(absf(app.track.data.points[0].x - initial.x) < .1, "undo drag")
-	ed.redo()
-	check(absf(app.track.data.points[0].x - initial.x - 8) < .1, "redo drag")
-	# Exercise the platform's editor modifier, including Command on macOS.
-	var shortcut_event = InputEventKey.new()
-	shortcut_event.physical_keycode = KEY_Z
-	shortcut_event.pressed = true
-	if OS.has_feature("macos"):
-		shortcut_event.meta_pressed = true
-	else:
-		shortcut_event.ctrl_pressed = true
-	ed.shortcut(shortcut_event)
-	check(absf(app.track.data.points[0].x - initial.x) < .1, "platform shortcut undoes drag")
-	shortcut_event.shift_pressed = true
-	ed.shortcut(shortcut_event)
-	check(absf(app.track.data.points[0].x - initial.x - 8) < .1, "platform shortcut redoes drag")
-	ed.selection = {"kind": "point", "index": 0}
-	ed.change_point("w", 16)
-	ed.change_point("z", 3)
-	ed.change_point("bank", 4)
-	check(
-		(
-			app.track.data.points[0].w == 16
-			and app.track.data.points[0].z == 3
-			and app.track.data.points[0].bank == 4
-		),
-		"width elevation banking properties"
-	)
-	ed.begin_change()
-	ed.set_curb(2, "off")
-	ed.commit_change()
-	ed.insert_at(1, Vector2(90, 0))
-	check(app.track.data.curbOverride.get("3") == "off", "insert preserves curb segment indices")
-	ed.delete_selected()
-	check(app.track.data.curbOverride.get("2") == "off", "delete restores curb indices")
-	for tool in ["grass", "gravel"]:
-		ed.set_tool(tool)
-		drag_editor(Vector2(-20, 0), Vector2(20, 0))
-		check(app.track.data.paint.size() > 10, "paint " + tool)
-	check(app.track.data.paint.get("0,0") == 2, "gravel replaces grass")
-	ed.set_tool("erase")
-	click_editor(Vector2.ZERO)
-	check(not app.track.data.paint.has("0,0"), "erase paint")
-	ed.undo()
-	check(app.track.data.paint.has("0,0"), "undo paint")
-	for tool in ["wall", "tire"]:
-		ed.set_tool(tool)
-		drag_editor(Vector2(-30, 25 if tool == "wall" else -25), Vector2(30, 25 if tool == "wall" else -25))
-	ed.set_tool("cone")
-	click_editor(Vector2(0, 40))
-	check(app.track.data.objects.size() == 3, "wall tire barrier cone placement")
-	ed.set_tool("select")
-	drag_editor(Vector2(-30, 25), Vector2(-45, 32))
-	check(absf(app.track.data.objects[0].x1 + 45) < .1, "resize wall endpoint")
-	check(absf(app.track.data.objects[0].x2 - 30) < .1, "wall opposite endpoint stays")
-	drag_editor(Vector2(0, 40), Vector2(10, 45))
-	check(absf(app.track.data.objects[2].ox - 10) < .1, "cone move updates reset position")
-	var cursor = ed.to_screen(Vector2(0, 10))
-	var before = ed.to_world(cursor)
-	ed.zoom_at(cursor, 1.2)
-	check(ed.to_world(cursor).distance_to(before) < .0001, "cursor centered zoom")
-	ed.snap_enabled = true
-	check(ed.snap_point(Vector2(3, 7)) == Vector2(5, 5), "snap to grid")
-	ed.snap_enabled = false
-	ed.frame_track()
-	# Height profile: drag the first control point's handle upward, then undo.
-	ed.show_profile = true
-	ed.queue_redraw()
-	await frames()
-	check(
-		ed.profile_rect().end.y <= ed.size.y and ed.profile_rect().position.y > ed.canvas_rect().end.y,
-		"height profile sits below the canvas"
-	)
-	var arcs = ed.point_arcs()
-	var rz = ed.profile_range()
-	var z0 = app.track.data.points[1].z
-	var handle = ed.profile_to_screen(arcs[1], z0, rz)
-	ed.press(handle)
-	ed.motion(handle + Vector2(0, -30), Vector2(0, -30))
-	ed.finish_gesture()
-	check(
-		app.track.data.points[1].z > z0 + .5 and ed.selection.get("index") == 1,
-		"profile drag raises a point (%.1f → %.1f m)" % [z0, app.track.data.points[1].z]
-	)
-	ed.undo()
-	check(is_equal_approx(app.track.data.points[1].z, z0), "undo profile drag")
-	var before_pts = JSON.stringify(app.track.data.points)
-	var before_start = float(app.track.data.startS)
-	ed.reverse_direction()
-	check(JSON.stringify(app.track.data.points) != before_pts, "reverse direction")
-	ed.reverse_direction()
-	check(
-		(
-			absf(
-				wrapf(
-					float(app.track.data.startS) - before_start, -app.track.length / 2, app.track.length / 2
-				)
-			)
-			< .5
-		),
-		(
-			"reversing twice restores the start line (%.2f vs %.2f, L %.1f)"
-			% [float(app.track.data.startS), before_start, app.track.length]
-		)
-	)
-	ed.undo()
-	ed.undo()
-	check(JSON.stringify(app.track.data.points) == before_pts, "undo reverse")
-	ed.rename_track("Native integration circuit")
-	var file = app.storage.path("tracks", "Native integration circuit.json")
-	app.active_track_file = file
-	app.write_track_named("Native integration circuit")
-	check(FileAccess.file_exists(file) and not ed.dirty, "save edited circuit")
-	ed.selection = {"kind": "point", "index": 0}
-	ed.change_point("w", 17)
-	app.save_track()
-	check(app.storage.read_json(file).points[0].w == 17, "atomic replace existing file")
-	var saved_data = app.track.to_json()
-	check(app.storage.validate_track(saved_data).is_empty(), "track export valid")
+	var track_data = app.track.to_json()
+	check(app.storage.validate_track(track_data).is_empty(), "track export valid")
 	check(
 		app.storage.validate_track({"points": [{"x": "bad", "y": 0, "w": 12}]}) != "",
 		"reject malformed track"
 	)
 	check(app.storage.safe_name("CON") == "CON_", "Windows reserved file name")
-	await frames()
-	check(ed.props_panel.get_global_rect().end.x <= ed.size.x, "editor properties fit window")
-	await shot("native-editor")
-	app.set_editor(false)
-	await frames(5)
-	check(not app.editing, "test drive edited circuit")
-	key(KEY_ESCAPE)
-	key(KEY_ESCAPE, false)
-	await frames()
-	check(app.editing, "escape returns to editor")
-	ed.selection = {"kind": "point", "index": 0}
-	ed.change_point("w", 18)
-	var before_name = app.track.data.name
-	app.new_track()
-	check(app.ui.dialogs == 1 and app.track.data.name == before_name, "dirty guard protects circuit")
-	for child in app.ui.get_children():
-		if child is ConfirmationDialog:
-			child.canceled.emit()
-	check(app.ui.dialogs == 0 and ed.dirty, "cancel preserves unsaved edits")
-	ed.undo()
-	ed.mark_saved()
 	app.load_track_now("res://tracks/Monza.json")
-	app.set_editor(false)
 	var ghost = {"schema": 1, "time": 1.0, "samples": [[0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 1]]}
 	var ghost_path = app.storage.path("ghosts", "Integration.ghost.json")
 	app.storage.write_json(ghost_path, ghost)
@@ -410,17 +212,11 @@ func run(owner_app):
 	app.show_main_menu()
 	await frames(3)
 	check(
-		(
-			app.in_menu
-			and app.blocked()
-			and app.frontend.page == "main"
-			and not app.ui.top.visible
-			and not app.instruments.visible
-		),
+		app.in_menu and app.blocked() and app.frontend.page == "main" and not app.instruments.visible,
 		"title screen blocks driving and hides HUD"
 	)
 	check(
-		app.track_files.size() >= 4 and app.frontend.buttons[0].has_focus(),
+		app.track_files.size() >= 3 and app.frontend.buttons[0].has_focus(),
 		"main menu retains circuits and focuses Race"
 	)
 	await shot("native-menu")
@@ -758,18 +554,6 @@ func check_retro_features():
 			app.camera.project_ray_normal(pixel).dot(-app.camera.global_basis.z) > .999,
 			"camera centre ray " + str(resolution)
 		)
-		app.set_editor(true)
-		await frames(3)
-		app.editor.set_tool("select")
-		var cp = app.track.data.points[0]
-		click_editor(Vector2(cp.x, cp.y))
-		check(
-			app.editor.selection.get("index", -1) == 0,
-			"native editor picks through resolution switch " + str(resolution)
-		)
-		check(not app.retro.layer.visible, "post pass hidden in editor " + str(resolution))
-		app.set_editor(false)
-	app.test_from_editor = false
 	app.settings.time_of_day = 0
 	app.settings.render_resolution = 0
 	app.apply_settings()

@@ -101,7 +101,6 @@ func setup(owner_app):
 	app.settings.adaptive = false
 	app.controls.configure(app.settings)
 	app.controls.poll_hardware = false
-	app.set_editor(false)
 	if app.preset_key != "f296gt3":
 		app.change_car("f296gt3")
 	if app.active_track_file != "res://tracks/Spa-Francorchamps.json":
