@@ -1,0 +1,40 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  flat circle arc length 1256.6 m (expected 1256.6)
+PASS  frames are orthonormal at every sample
+PASS  unbanked road has a horizontal right vector
+PASS  unbanked road has up along world up
+PASS  right vector matches track.gd's (-ty, tx) normal convention
+PASS  banked road keeps its width across the surface (6.000 m)
+PASS  positive bank raises the left edge by width * sin(bank)
+PASS  right vector tilts by the bank angle
+PASS  banked geometry is a rotation, not the old linear cross-slope
+PASS  circle curvature resolves to 1/r laterally and zero vertically
+PASS  overpass has two decks at the crossing
+PASS  decks are 12.0 m apart vertically
+PASS  cold query above the upper deck resolves to the upper deck
+PASS  cold query above the lower deck resolves to the lower deck
+PASS  the two decks report arc stations half a lap apart
+PASS  height above surface is measured directly
+PASS  a tracked point stays on its own deck through the crossing
+PASS  Monza loads as a ribbon: 3951 samples, 5793 m
+PASS  Spa-Francorchamps loads as a ribbon: 4817 samples, 7007 m
+PASS  Nurburgring-Nordschleife loads as a ribbon: 14322 samples, 20859 m
+PASS  profile survives resampling onto the sample grid
+PASS  flat side of the profile stays flat
+PASS  ditch reaches its authored depth
+PASS  surface point drops into the ditch by 0.88 m
+PASS  ditch wall tilts the surface normal (29.1 deg)
+PASS  flat road keeps an upright normal (0.0 deg)
+PASS  unprofiled circuits carry no cross-section data
+PASS  Caracciola-Karussell is a ditch 1.26 m deep
+PASS  Caracciola-Karussell banks to 37 deg across the concrete
+PASS  Kleines Karussell is a ditch 0.69 m deep
+PASS  Kleines Karussell banks to 22 deg across the concrete
+PASS  Antoniusbuche straight is left unprofiled
+PASS  sample counts match (4817)
+PASS  centreline is the same curve in space (worst 0.0002 m)
+PASS  checkpoint count matches (15)
+PASS  3-space lap is 8.25 m longer than the plan-view lap (0.118%), as elevation requires
+PASS  surface classification agrees on 900 of 900 probes
+TRACK3D PASS  37 checks, 0 failures

@@ -1,0 +1,1843 @@
+{
+ "captured": "2026-09-22",
+ "git_tag": "pre-rebuild",
+ "engine": "Godot 4.6.2.stable.official.71f334935",
+ "note": "Pre-rebuild equivalence targets (REBUILD-PLAN.md section 6). Raw output in baseline/*.txt.",
+ "suites": {
+  "airborne": {
+   "checks": [
+    {
+     "status": "PASS",
+     "text": "fast run stays finite",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "the car leaves the ground over the crest at 40 m/s",
+     "values": [
+      40.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "it stays airborne for 1.30 s",
+     "values": [
+      1.3
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "it rises 1.94 m clear of the road",
+     "values": [
+      1.94
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "no tyre carries load while airborne",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "it lands again",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "landing compresses the suspension",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "slow control stays finite",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "at 15 m/s the same crest is driven, not jumped",
+     "values": [
+      15.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Flugplatz flies a no-downforce car from 161 km/h (modelled 160)",
+     "values": [
+      161.0,
+      160.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Sprunghügel flies a no-downforce car from 151 km/h (modelled 150)",
+     "values": [
+      151.0,
+      150.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Pflanzgarten flies a no-downforce car from 150 km/h (modelled 150)",
+     "values": [
+      150.0,
+      150.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "the roadster leaves the ground at Pflanzgarten at 175 km/h",
+     "values": [
+      175.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "and lands again (0.27 s airborne, 0.03 m clear)",
+     "values": [
+      0.27,
+      0.03
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "at 120 km/h Pflanzgarten is driven, not jumped",
+     "values": [
+      120.0
+     ]
+    }
+   ],
+   "summary": "AIRBORNE PASS  15 checks, 0 failures",
+   "failures": []
+  },
+  "dynamics-simcade": {
+   "checks": [
+    {
+     "status": "PASS",
+     "text": "roadster Simcade 0-100 8.571 s / Simulation 8.242 s",
+     "values": [
+      0.0,
+      100.0,
+      8.571,
+      8.242
+     ]
+    },
+    {
+     "status": "FAIL",
+     "text": "roadster Simcade 100-0 38.372 m / Simulation 42.282 m",
+     "values": [
+      100.0,
+      0.0,
+      38.372,
+      42.282
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster Simcade skidpad 0.724 g / Simulation 0.717 g",
+     "values": [
+      0.724,
+      0.717
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster tyre plateau 5-13 degrees minimum 1.000",
+     "values": [
+      5.0,
+      13.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster full lock at 80 km/h: 4.49 deg body slip",
+     "values": [
+      80.0,
+      4.49
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster full lock at 120 km/h: 7.74 deg body slip",
+     "values": [
+      120.0,
+      7.74
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster full lock at 160 km/h: 9.56 deg body slip",
+     "values": [
+      160.0,
+      9.56
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster keyboard 160 km/h ASM 1: 12.27 deg",
+     "values": [
+      160.0,
+      1.0,
+      12.27
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster lift ASM 3 peak 2.21 deg at 90% limit",
+     "values": [
+      3.0,
+      2.21,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster lift ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster lift-off yaw increase 0.04405 rad/s",
+     "values": [
+      0.04405
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster brake ASM 3 peak 4.16 deg at 90% limit",
+     "values": [
+      3.0,
+      4.16,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster brake ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster trail braking yaw 0.560 rad/s versus zero straight braking yaw",
+     "values": [
+      0.56
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster power ASM 3 peak 5.79 deg at 90% limit",
+     "values": [
+      3.0,
+      5.79,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster power ASM 3 recovery 0.11 deg after 2s neutral",
+     "values": [
+      3.0,
+      0.11,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster lift ASM 0 peak 2.22 deg at 90% limit",
+     "values": [
+      0.0,
+      2.22,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster lift ASM 0 recovery 0.00 deg after 2s neutral",
+     "values": [
+      0.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster brake ASM 0 peak 5.95 deg at 90% limit",
+     "values": [
+      0.0,
+      5.95,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster brake ASM 0 recovery 0.00 deg after 2s neutral",
+     "values": [
+      0.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster power ASM 0 peak 12.03 deg at 90% limit",
+     "values": [
+      0.0,
+      12.03,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster power ASM 0 recovery 0.04 deg after 2s neutral",
+     "values": [
+      0.0,
+      0.04,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster one-minute heat soak 69.2 C, conservative grip floor 0.9997",
+     "values": [
+      69.2,
+      0.9997
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt Simcade 0-100 4.400 s / Simulation 4.475 s",
+     "values": [
+      0.0,
+      100.0,
+      4.4,
+      4.475
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt Simcade 100-0 28.845 m / Simulation 29.503 m",
+     "values": [
+      100.0,
+      0.0,
+      28.845,
+      29.503
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt Simcade skidpad 1.807 g / Simulation 1.749 g",
+     "values": [
+      1.807,
+      1.749
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt tyre plateau 5-13 degrees minimum 1.000",
+     "values": [
+      5.0,
+      13.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt full lock at 80 km/h: 2.22 deg body slip",
+     "values": [
+      80.0,
+      2.22
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt full lock at 120 km/h: 2.84 deg body slip",
+     "values": [
+      120.0,
+      2.84
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt full lock at 160 km/h: 3.45 deg body slip",
+     "values": [
+      160.0,
+      3.45
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt keyboard 160 km/h ASM 1: 3.63 deg",
+     "values": [
+      160.0,
+      1.0,
+      3.63
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt lift ASM 3 peak 2.16 deg at 90% limit",
+     "values": [
+      3.0,
+      2.16,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt lift ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt lift-off yaw increase 0.06496 rad/s",
+     "values": [
+      0.06496
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt brake ASM 3 peak 1.82 deg at 90% limit",
+     "values": [
+      3.0,
+      1.82,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt brake ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt trail braking yaw 0.537 rad/s versus zero straight braking yaw",
+     "values": [
+      0.537
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt power ASM 3 peak 6.80 deg at 90% limit",
+     "values": [
+      3.0,
+      6.8,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt power ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt lift ASM 0 peak 2.12 deg at 90% limit",
+     "values": [
+      0.0,
+      2.12,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt lift ASM 0 recovery 0.00 deg after 2s neutral",
+     "values": [
+      0.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt brake ASM 0 peak 1.82 deg at 90% limit",
+     "values": [
+      0.0,
+      1.82,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt brake ASM 0 recovery 0.00 deg after 2s neutral",
+     "values": [
+      0.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt power ASM 0 peak 19.43 deg at 90% limit",
+     "values": [
+      0.0,
+      19.43,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt power ASM 0 recovery 0.01 deg after 2s neutral",
+     "values": [
+      0.0,
+      0.01,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt one-minute heat soak 104.3 C, conservative grip floor 0.9896",
+     "values": [
+      104.3,
+      0.9896
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 Simcade 0-100 4.050 s / Simulation 4.121 s",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      100.0,
+      4.05,
+      4.121
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 Simcade 100-0 28.015 m / Simulation 28.666 m",
+     "values": [
+      296.0,
+      3.0,
+      100.0,
+      0.0,
+      28.015,
+      28.666
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 Simcade skidpad 2.089 g / Simulation 1.986 g",
+     "values": [
+      296.0,
+      3.0,
+      2.089,
+      1.986
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 tyre plateau 5-13 degrees minimum 1.000",
+     "values": [
+      296.0,
+      3.0,
+      5.0,
+      13.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 full lock at 80 km/h: 2.33 deg body slip",
+     "values": [
+      296.0,
+      3.0,
+      80.0,
+      2.33
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 full lock at 120 km/h: 2.95 deg body slip",
+     "values": [
+      296.0,
+      3.0,
+      120.0,
+      2.95
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 full lock at 160 km/h: 3.51 deg body slip",
+     "values": [
+      296.0,
+      3.0,
+      160.0,
+      3.51
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 keyboard 160 km/h ASM 1: 3.71 deg",
+     "values": [
+      296.0,
+      3.0,
+      160.0,
+      1.0,
+      3.71
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 lift ASM 3 peak 2.49 deg at 90% limit",
+     "values": [
+      296.0,
+      3.0,
+      3.0,
+      2.49,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 lift ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      296.0,
+      3.0,
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 lift-off yaw increase 0.09622 rad/s",
+     "values": [
+      296.0,
+      3.0,
+      0.09622
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 brake ASM 3 peak 2.57 deg at 90% limit",
+     "values": [
+      296.0,
+      3.0,
+      3.0,
+      2.57,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 brake ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      296.0,
+      3.0,
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 trail braking yaw 0.515 rad/s versus zero straight braking yaw",
+     "values": [
+      296.0,
+      3.0,
+      0.515
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 power ASM 3 peak 6.35 deg at 90% limit",
+     "values": [
+      296.0,
+      3.0,
+      3.0,
+      6.35,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 power ASM 3 recovery 0.00 deg after 2s neutral",
+     "values": [
+      296.0,
+      3.0,
+      3.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 lift ASM 0 peak 2.64 deg at 90% limit",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      2.64,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 lift ASM 0 recovery 0.00 deg after 2s neutral",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 brake ASM 0 peak 2.89 deg at 90% limit",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      2.89,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 brake ASM 0 recovery 0.00 deg after 2s neutral",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      0.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 power ASM 0 peak 17.45 deg at 90% limit",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      17.45,
+      90.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 power ASM 0 recovery 0.01 deg after 2s neutral",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      0.01,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 one-minute heat soak 99.9 C, conservative grip floor 0.9931",
+     "values": [
+      296.0,
+      3.0,
+      99.9,
+      0.9931
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster ratio plateau 1.000, sliding floor 0.870",
+     "values": [
+      1.0,
+      0.87
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster surface 2 coast: 22.24 m/s, 0.002 deg slip",
+     "values": [
+      2.0,
+      22.24,
+      0.002
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster surface 3 coast: 5.56 m/s, 0.009 deg slip",
+     "values": [
+      3.0,
+      5.56,
+      0.009
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster glancing contact dissipates yaw and speed",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "roadster differential torque split open 0.0 / locked 1800.0 Nm",
+     "values": [
+      0.0,
+      1800.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster front share of mid-corner load transfer: soft 0.219 / stiff 0.800",
+     "values": [
+      0.219,
+      0.8
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt ratio plateau 1.000, sliding floor 0.870",
+     "values": [
+      1.0,
+      0.87
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt surface 2 coast: 21.15 m/s, 0.001 deg slip",
+     "values": [
+      2.0,
+      21.15,
+      0.001
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt surface 3 coast: 4.86 m/s, 0.008 deg slip",
+     "values": [
+      3.0,
+      4.86,
+      0.008
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt glancing contact dissipates yaw and speed",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "gt differential torque split open 0.0 / locked 3360.0 Nm",
+     "values": [
+      0.0,
+      3360.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt front share of mid-corner load transfer: soft 0.333 / stiff 0.633",
+     "values": [
+      0.333,
+      0.633
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 ratio plateau 1.000, sliding floor 0.870",
+     "values": [
+      296.0,
+      3.0,
+      1.0,
+      0.87
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 surface 2 coast: 21.24 m/s, 0.001 deg slip",
+     "values": [
+      296.0,
+      3.0,
+      2.0,
+      21.24,
+      0.001
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 surface 3 coast: 4.75 m/s, 0.007 deg slip",
+     "values": [
+      296.0,
+      3.0,
+      3.0,
+      4.75,
+      0.007
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 glancing contact dissipates yaw and speed",
+     "values": [
+      296.0,
+      3.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 differential torque split open 0.0 / locked 3240.0 Nm",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      3240.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 front share of mid-corner load transfer: soft 0.338 / stiff 0.615",
+     "values": [
+      296.0,
+      3.0,
+      0.338,
+      0.615
+     ]
+    }
+   ],
+   "summary": "SIMCADE DYNAMICS FAIL 87 checks, 1 failures",
+   "failures": [
+    "roadster Simcade 100-0 38.372 m / Simulation 42.282 m"
+   ]
+  },
+  "dynamics-simulation": {
+   "checks": [
+    {
+     "status": "PASS",
+     "text": "roadster tyre peaks at 8.6° slip angle, 0.16 slip ratio",
+     "values": [
+      8.6,
+      0.16
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster 0-100 km/h in 8.24 s",
+     "values": [
+      0.0,
+      100.0,
+      8.24
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster 100-0 km/h in 42.3 m",
+     "values": [
+      100.0,
+      0.0,
+      42.3
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster holds 0.72 g on a 150 m skidpad",
+     "values": [
+      0.72,
+      150.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster lift mid-corner at 90% of the limit: body slip 1° (default aids)",
+     "values": [
+      90.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster brake mid-corner at 90% of the limit: body slip 1° (default aids)",
+     "values": [
+      90.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster power mid-corner at 90% of the limit: body slip 28° (default aids)",
+     "values": [
+      90.0,
+      28.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster one minute at 90% cornering: hottest tyre 56 °C (window 65±40)",
+     "values": [
+      90.0,
+      56.0,
+      65.0,
+      40.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster full stick at 80 km/h with grip assist: peak body slip 5° (no spin)",
+     "values": [
+      80.0,
+      5.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "roadster full stick at 160 km/h with grip assist: peak body slip 14° (no spin)",
+     "values": [
+      160.0,
+      14.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt tyre peaks at 7.1° slip angle, 0.13 slip ratio",
+     "values": [
+      7.1,
+      0.13
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt 0-100 km/h in 4.48 s",
+     "values": [
+      0.0,
+      100.0,
+      4.48
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt 100-0 km/h in 29.5 m",
+     "values": [
+      100.0,
+      0.0,
+      29.5
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt holds 1.75 g on a 150 m skidpad",
+     "values": [
+      1.75,
+      150.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt lift mid-corner at 90% of the limit: body slip 1° (default aids)",
+     "values": [
+      90.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt brake mid-corner at 90% of the limit: body slip 1° (default aids)",
+     "values": [
+      90.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt power mid-corner at 90% of the limit: body slip 13° (default aids)",
+     "values": [
+      90.0,
+      13.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt one minute at 90% cornering: hottest tyre 85 °C (window 78±40)",
+     "values": [
+      90.0,
+      85.0,
+      78.0,
+      40.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt full stick at 80 km/h with grip assist: peak body slip 1° (no spin)",
+     "values": [
+      80.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "gt full stick at 160 km/h with grip assist: peak body slip 4° (no spin)",
+     "values": [
+      160.0,
+      4.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 tyre peaks at 6.8° slip angle, 0.12 slip ratio",
+     "values": [
+      296.0,
+      3.0,
+      6.8,
+      0.12
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 0-100 km/h in 4.12 s",
+     "values": [
+      296.0,
+      3.0,
+      0.0,
+      100.0,
+      4.12
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 100-0 km/h in 28.7 m",
+     "values": [
+      296.0,
+      3.0,
+      100.0,
+      0.0,
+      28.7
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 holds 1.99 g on a 150 m skidpad",
+     "values": [
+      296.0,
+      3.0,
+      1.99,
+      150.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 lift mid-corner at 90% of the limit: body slip 1° (default aids)",
+     "values": [
+      296.0,
+      3.0,
+      90.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 brake mid-corner at 90% of the limit: body slip 2° (default aids)",
+     "values": [
+      296.0,
+      3.0,
+      90.0,
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 power mid-corner at 90% of the limit: body slip 10° (default aids)",
+     "values": [
+      296.0,
+      3.0,
+      90.0,
+      10.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 one minute at 90% cornering: hottest tyre 86 °C (window 80±38)",
+     "values": [
+      296.0,
+      3.0,
+      90.0,
+      86.0,
+      80.0,
+      38.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 full stick at 80 km/h with grip assist: peak body slip 1° (no spin)",
+     "values": [
+      296.0,
+      3.0,
+      80.0,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "f296gt3 full stick at 160 km/h with grip assist: peak body slip 3° (no spin)",
+     "values": [
+      296.0,
+      3.0,
+      160.0,
+      3.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Monza compression curvature 0.0017 1/m (under 1 g extra at 180 km/h)",
+     "values": [
+      0.0017,
+      1.0,
+      1.0,
+      180.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Monza crest curvature -0.0027 1/m (no survey spikes)",
+     "values": [
+      -0.0027,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Nurburgring-Nordschleife compression curvature 0.0034 1/m (under 1 g extra at 180 km/h)",
+     "values": [
+      0.0034,
+      1.0,
+      1.0,
+      180.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Nurburgring-Nordschleife crest curvature -0.0056 1/m (no survey spikes)",
+     "values": [
+      -0.0056,
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Spa-Francorchamps compression curvature 0.0027 1/m (under 1 g extra at 180 km/h)",
+     "values": [
+      0.0027,
+      1.0,
+      1.0,
+      180.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Spa-Francorchamps crest curvature -0.0030 1/m (no survey spikes)",
+     "values": [
+      -0.003,
+      1.0
+     ]
+    }
+   ],
+   "summary": "DYNAMICS PASS  36 checks, 0 failures",
+   "failures": []
+  },
+  "handling": {
+   "checks": [
+    {
+     "status": "PASS",
+     "text": "right wheels stay on the curb (960 ticks)",
+     "values": [
+      960.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "curb lifts the wheel 0.053 m above the road plane",
+     "values": [
+      0.053
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "body tilts away from raised curb (-1.99°)",
+     "values": [
+      -1.99
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "curb ridges shake the wheel load (σ 347 N)",
+     "values": [
+      347.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "slides heat the surface (57.0°) ahead of the core (30.6°)",
+     "values": [
+      57.0,
+      30.6
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "surface cools faster than the core (15.0° vs -2.9° drop)",
+     "values": [
+      15.0,
+      -2.9
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "aligning torque opposes a right-hand steer (-111, -170 N·m)",
+     "values": [
+      -111.0,
+      -170.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "aligning torque builds with slip below the peak",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "pneumatic trail shrinks at large slip angles",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "pitch/roll velocity is stopped at the travel limit",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "falloff 0 gives full lock at 144 km/h (assisted 8.3°)",
+     "values": [
+      0.0,
+      144.0,
+      8.3
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "snapshot blend interpolates and wraps phase",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "missed checkpoint is reported (\"missed CP 2\")",
+     "values": [
+      2.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "runoff is allowed at checkpoints when off-track laps count",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "auto barriers generated (794 segments)",
+     "values": [
+      794.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "barriers keep clear of the road",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "a 300 km/h head-on hit does not pass through an auto barrier",
+     "values": [
+      300.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "tarmac runoff surface (grip 0.97)",
+     "values": [
+      0.97
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "storage accepts runoff paint",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "three sector splits per lap ([39.7499999999999, 39.6999999999978, 39.4499999999978])",
+     "values": [
+      39.7499999999999,
+      39.6999999999978,
+      39.4499999999978
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "ideal lap is the sum of best sectors (118.90)",
+     "values": [
+      118.9
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "slower lap sectors are not purple ([\"yellow\", \"yellow\", \"purple\"])",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "new best sectors request a save",
+     "values": []
+    }
+   ],
+   "summary": "HANDLING PASS  23 checks, 0 failures",
+   "failures": []
+  },
+  "karussell": {
+   "checks": [
+    {
+     "status": "PASS",
+     "text": "located the Karussell and the control straight",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "control run stays finite",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "flat straight barely deviates (0.006 m)",
+     "values": [
+      0.006
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "flat straight barely rolls (1.23 deg)",
+     "values": [
+      1.23
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "no wheel lifts on the flat straight",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "Karussell run stays finite",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "drove 190 m through the corner",
+     "values": [
+      190.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "wheels leave the old 12 cm clamp behind: peak deviation 0.64 m",
+     "values": [
+      12.0,
+      0.64
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "chassis rolls into the banking (6.88 deg, flat control 1.23 deg)",
+     "values": [
+      6.88,
+      1.23
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Karussell roll is far beyond the control run",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "a corner unloads over the concrete that never unloads flat",
+     "values": []
+    }
+   ],
+   "summary": "KARUSSELL PASS  11 checks, 0 failures",
+   "failures": []
+  },
+  "laps-simcade": {
+   "checks": [],
+   "laps": [
+    {
+     "model": "Simcade",
+     "track": "Monza",
+     "best_s": 261.812499999844,
+     "off_steps": 0,
+     "ghost_samples": 7854,
+     "barrier_segments": 1920,
+     "contacts": 0
+    },
+    {
+     "model": "Simcade",
+     "track": "Spa-Francorchamps",
+     "best_s": 325.687499999786,
+     "off_steps": 0,
+     "ghost_samples": 9770,
+     "barrier_segments": 2306,
+     "contacts": 0
+    }
+   ],
+   "summary": "ALL NATIVE LAPS PASS",
+   "failures": []
+  },
+  "laps-simulation": {
+   "checks": [],
+   "laps": [
+    {
+     "model": "Simulation",
+     "track": "Monza",
+     "best_s": 261.504166666511,
+     "off_steps": 0,
+     "ghost_samples": 7845,
+     "barrier_segments": 1920,
+     "contacts": 0
+    },
+    {
+     "model": "Simulation",
+     "track": "Spa-Francorchamps",
+     "best_s": 325.174999999786,
+     "off_steps": 0,
+     "ghost_samples": 9755,
+     "barrier_segments": 2306,
+     "contacts": 0
+    }
+   ],
+   "summary": "ALL NATIVE LAPS PASS",
+   "failures": []
+  },
+  "showcase-laps": {
+   "checks": [],
+   "showcase": [
+    {
+     "case": "Simulation-pad",
+     "contacts": 0,
+     "interventions": {
+      "bus_stop_late": 0,
+      "la_source_late": 0,
+      "raidillon_power": 0
+     },
+     "kemmel_kmh": 160.030025868004,
+     "lap": 302.441666666474,
+     "off_steps": 0,
+     "peak_slip_deg": 5.4897035956833,
+     "top_kmh": 160.410981437034,
+     "valid": true
+    },
+    {
+     "case": "Simcade-pad",
+     "contacts": 0,
+     "interventions": {
+      "bus_stop_late": 0,
+      "la_source_late": 0,
+      "raidillon_power": 0
+     },
+     "kemmel_kmh": 160.030901594411,
+     "lap": 302.070833333141,
+     "off_steps": 0,
+     "peak_slip_deg": 5.39903846296066,
+     "top_kmh": 160.416591111649,
+     "valid": true
+    },
+    {
+     "case": "Simcade-keyboard",
+     "contacts": 0,
+     "interventions": {
+      "bus_stop_late": 0,
+      "la_source_late": 0,
+      "raidillon_power": 0
+     },
+     "kemmel_kmh": 161.958329336259,
+     "lap": 303.666666666473,
+     "off_steps": 0,
+     "peak_slip_deg": 5.28334608490548,
+     "top_kmh": 162.177123248591,
+     "valid": true
+    },
+    {
+     "case": "Simcade-human",
+     "contacts": 0,
+     "interventions": {
+      "bus_stop_late": 2053,
+      "la_source_late": 2396,
+      "raidillon_power": 801
+     },
+     "kemmel_kmh": 162.025607851428,
+     "lap": 301.745833333141,
+     "off_steps": 0,
+     "peak_slip_deg": 5.0620928528524,
+     "top_kmh": 162.174119525619,
+     "valid": true
+    }
+   ],
+   "summary": "SHOWCASE LAPS PASS []",
+   "failures": []
+  },
+  "track3d": {
+   "checks": [
+    {
+     "status": "PASS",
+     "text": "flat circle arc length 1256.6 m (expected 1256.6)",
+     "values": [
+      1256.6,
+      1256.6
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "frames are orthonormal at every sample",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "unbanked road has a horizontal right vector",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "unbanked road has up along world up",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "right vector matches track.gd's (-ty, tx) normal convention",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "banked road keeps its width across the surface (6.000 m)",
+     "values": [
+      6.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "positive bank raises the left edge by width * sin(bank)",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "right vector tilts by the bank angle",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "banked geometry is a rotation, not the old linear cross-slope",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "circle curvature resolves to 1/r laterally and zero vertically",
+     "values": [
+      1.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "overpass has two decks at the crossing",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "decks are 12.0 m apart vertically",
+     "values": [
+      12.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "cold query above the upper deck resolves to the upper deck",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "cold query above the lower deck resolves to the lower deck",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "the two decks report arc stations half a lap apart",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "height above surface is measured directly",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "a tracked point stays on its own deck through the crossing",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "Monza loads as a ribbon: 3951 samples, 5793 m",
+     "values": [
+      3951.0,
+      5793.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Spa-Francorchamps loads as a ribbon: 4817 samples, 7007 m",
+     "values": [
+      4817.0,
+      7007.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Nurburgring-Nordschleife loads as a ribbon: 14322 samples, 20859 m",
+     "values": [
+      14322.0,
+      20859.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "profile survives resampling onto the sample grid",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "flat side of the profile stays flat",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "ditch reaches its authored depth",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "surface point drops into the ditch by 0.88 m",
+     "values": [
+      0.88
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "ditch wall tilts the surface normal (29.1 deg)",
+     "values": [
+      29.1
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "flat road keeps an upright normal (0.0 deg)",
+     "values": [
+      0.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "unprofiled circuits carry no cross-section data",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "Caracciola-Karussell is a ditch 1.26 m deep",
+     "values": [
+      1.26
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Caracciola-Karussell banks to 37 deg across the concrete",
+     "values": [
+      37.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Kleines Karussell is a ditch 0.69 m deep",
+     "values": [
+      0.69
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Kleines Karussell banks to 22 deg across the concrete",
+     "values": [
+      22.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "Antoniusbuche straight is left unprofiled",
+     "values": []
+    },
+    {
+     "status": "PASS",
+     "text": "sample counts match (4817)",
+     "values": [
+      4817.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "centreline is the same curve in space (worst 0.0002 m)",
+     "values": [
+      0.0002
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "checkpoint count matches (15)",
+     "values": [
+      15.0
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "3-space lap is 8.25 m longer than the plan-view lap (0.118%), as elevation requires",
+     "values": [
+      3.0,
+      8.25,
+      0.118
+     ]
+    },
+    {
+     "status": "PASS",
+     "text": "surface classification agrees on 900 of 900 probes",
+     "values": [
+      900.0,
+      900.0
+     ]
+    }
+   ],
+   "summary": "TRACK3D PASS  37 checks, 0 failures",
+   "failures": []
+  },
+  "validation": {
+   "checks": [],
+   "summary": {
+    "checks": 103,
+    "failures": []
+   },
+   "failures": []
+  }
+ }
+}

@@ -1,0 +1,26 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  right wheels stay on the curb (960 ticks)
+PASS  curb lifts the wheel 0.053 m above the road plane
+PASS  body tilts away from raised curb (-1.99°)
+PASS  curb ridges shake the wheel load (σ 347 N)
+PASS  slides heat the surface (57.0°) ahead of the core (30.6°)
+PASS  surface cools faster than the core (15.0° vs -2.9° drop)
+PASS  aligning torque opposes a right-hand steer (-111, -170 N·m)
+PASS  aligning torque builds with slip below the peak
+PASS  pneumatic trail shrinks at large slip angles
+PASS  pitch/roll velocity is stopped at the travel limit
+PASS  falloff 0 gives full lock at 144 km/h (assisted 8.3°)
+PASS  snapshot blend interpolates and wraps phase
+PASS  missed checkpoint is reported ("missed CP 2")
+PASS  runoff is allowed at checkpoints when off-track laps count
+PASS  auto barriers generated (794 segments)
+PASS  barriers keep clear of the road
+PASS  a 300 km/h head-on hit does not pass through an auto barrier
+PASS  tarmac runoff surface (grip 0.97)
+PASS  storage accepts runoff paint
+PASS  three sector splits per lap ([39.7499999999999, 39.6999999999978, 39.4499999999978])
+PASS  ideal lap is the sum of best sectors (118.90)
+PASS  slower lap sectors are not purple (["yellow", "yellow", "purple"])
+PASS  new best sectors request a save
+HANDLING PASS  23 checks, 0 failures
