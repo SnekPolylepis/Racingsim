@@ -266,6 +266,10 @@ func step(dt, surface, automatic = true):
 	contacts = 0
 	all_off = true
 	var torques = [0.0, 0.0, 0.0, 0.0]
+	var total_load = 0.0
+	for i in 4:
+		if not hits[i].is_empty():
+			total_load += maxf(0.0, loads[i])
 	for i in 4:
 		var w = wheels[i]
 		var hit = hits[i]
@@ -300,7 +304,11 @@ func step(dt, surface, automatic = true):
 		var cvel = v + w_world.cross(point - here)
 		var vwx = cvel.dot(fwd)
 		var vwy = cvel.dot(side)
-		var tyre = VehicleTyre.contact_forces(self, w, i, sf, vwx, vwy, dt, stf, strr)
+		# Gravity on this wheel's share of the car, along the contact's axes: the tyre must cancel it too
+		# to hold still (P2-04 static friction). Shared by wheel load, not in quarters: across a steep
+		# slope the uphill wheels carry little and cannot hold a quarter. Exactly zero on level ground.
+		var hold = Vector2(fwd.y, side.y) * (-m * G * w.load / maxf(total_load, 1e-6))
+		var tyre = VehicleTyre.contact_forces(self, w, i, sf, vwx, vwy, dt, stf, strr, hold, true)
 		var fx = tyre[0]
 		var fy = tyre[1]
 		var fxr = tyre[2]

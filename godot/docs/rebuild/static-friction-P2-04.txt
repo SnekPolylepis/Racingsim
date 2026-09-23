@@ -1,0 +1,19 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+      roadster 8° grade 0.0005 mm/s
+      roadster 20° grade 0.0006 mm/s
+      roadster 30° grade 0.0022 mm/s
+      roadster 20° side slope 0.0014 mm/s
+      roadster 37° side slope 0.0035 mm/s
+      f296gt3 8° grade 0.0000 mm/s
+      f296gt3 20° grade 0.0009 mm/s
+      f296gt3 30° grade 0.0016 mm/s
+      f296gt3 20° side slope 0.0006 mm/s
+      f296gt3 37° side slope 0.0017 mm/s
+PASS  braked roadster and 296 parked on 8/20/30° grades and 20/37° side slopes: worst creep 0.0035 mm/s (limit 0.1; was 6-35 mm/s)
+PASS  on grass a braked roadster holds a 20° grade (creep 0.0006 mm/s) and slides down a 40° one (5.52 m/s after 3 s): static friction stops at the friction limit
+PASS  roadster unbraked in neutral rolls from rest down an 8° grade: 3.633 m/s after 3 s vs analytic 3.610 (+0.6%)
+PASS  f296gt3 unbraked in neutral rolls from rest down an 8° grade: 3.643 m/s after 3 s vs analytic 3.620 (+0.6%)
+PASS  296 on an 8° grade: held at 0.00000 m/s, rolls away at 2.43 m/s after 2 s without brakes, stops 0.38 s after 60 % brake, then creeps 0.0001 mm/s
+PASS  braked cars at rest on level ground: speed + spin stays below 0.150 µm/s (limit 1)
+STATIC FRICTION RESULTS {"checks":6,"failures":[],"results":{"creep_mm_s f296gt3 20° grade":0.000945429019338917,"creep_mm_s f296gt3 20° side slope":0.000586704800298321,"creep_mm_s f296gt3 30° grade":0.00156695896293968,"creep_mm_s f296gt3 37° side slope":0.0017213906176039,"creep_mm_s f296gt3 8° grade":0.0000216066837310791,"creep_mm_s roadster 20° grade":0.00056230910558952,"creep_mm_s roadster 20° side slope":0.00142385279104928,"creep_mm_s roadster 30° grade":0.00222502039832762,"creep_mm_s roadster 37° side slope":0.00346308152074926,"creep_mm_s roadster 8° grade":0.000465450830233749,"grass 20° creep_mm_s":0.000558950478080078,"grass 40° speed_after_3s":5.5209554420836,"release":{"creep_after":0.000000081352093654156,"held":0.000000163776553304366,"rolled":2.43395179985512,"stopped_at":0.379166666666667},"rolling f296gt3":{"speed":3.64261358600866,"want":3.61981363664516},"rolling roadster":{"speed":3.63281996335515,"want":3.61035012378737}}}

@@ -696,3 +696,25 @@ Results (`tests/v2/footprint.gd` 10/10, stderr empty; output in `docs/rebuild/fo
 - Spike 23/23 (identical apart from cost: flat 148 µs with the footprint), suspension 12/12, surfaces 34/34, track_asset 23/23 (169 µs), road_tool 16/16; on the tree merged with P5-03: road_tool_v2 11/11, walls 8/8; parse clean; 10 legacy suites identical to the baseline.
 
 CarBody now also keeps `contact_hits` (last tick's contact per wheel; the footprint adds `at`, where on the tyre it bears) for telemetry, skids and tests. For P5-03 (Sol): the kerb drive can gate on "footprint never more than 1 mm / 10 % harsher than the single ray" alongside no-NaN.
+
+## 2026-09-23  DONE P2-04 static friction and 3D need clamps  (Claude Opus 5.5) — branch `rb/P2-04-static-friction` (on `rb/P2-06-footprint` + current `main`)
+New: `tests/v2/static_friction.gd` (6 checks), output `docs/rebuild/static-friction-P2-04.txt`. Changed: `scripts/vehicle/tyre.gd` (`contact_forces()` gains optional `hold` and `sticky`; the planar CarModel passes neither and takes the unchanged path), `car_body.gd` (passes them).
+
+**Why a braked car crept.** The one-tick need clamps cap the tyre force at what stops the contact's *current* slip, ignoring gravity, so on a slope each tick gravity added g·sinθ·dt that the next tick removed: steady creep of g·sinθ·dt, **5.7 mm/s on 8° and 24.6 mm/s on 37°**, which is exactly what P2-02 measured (6–8 and 26–35). And at millimetre-per-second slip the slip curves give too little force anyway.
+
+**Changes (CarBody only, `sticky`):**
+1. **Need clamps include the external force** `hold`: gravity on the wheel's share of the car along the contact's forward and side axes, shared by wheel load (not quarters: across a steep slope the uphill wheels cannot hold a quarter; quarters left the roadster creeping 6.7 mm/s on 37°). Free wheel: (sv − 4·H·dt/m) / (dt·(r²/I + 4/m)); locked: sv·m/4/dt − H; lateral: −vwy·m/4/dt − H_y. Exactly zero on level ground (the contact axes are level there).
+2. **Braked-wheel lock test:** a wheel with |ω| < 0.5 stays locked when its brake torque exceeds min(stopping force, friction limit) × r. The old test used the stopping force alone (12 kN at 0.16 m/s), called a firmly braked wheel free at walking pace, and the free-wheel clamp then allowed only the force that spins it up: a car at 60 % brake **settled at 0.16 m/s down an 8° grade**.
+3. **Static friction:** below 0.3 m/s contact speed (fading out by 0.6), the tyre takes exactly the holding force within the friction ellipse: laterally always, longitudinally only when the brake holds the wheel (an unbraked car still rolls).
+The need clamps stay: they are still what caps the force at "no overshoot this tick".
+
+Results (6/6, stderr empty):
+- **Parked, brakes on:** roadster and 296 on 8/20/30° grades and 20/37° side slopes: worst creep **0.0035 mm/s** (was 6–35 mm/s). The `surfaces.gd` creep probes now read 0.0 mm/s.
+- **Friction limit:** on grass (0.55 grip; roadster µ 1.15 × 0.55 = 0.63) a braked roadster holds 20° and slides down 40° (5.5 m/s after 3 s).
+- **Rolling:** unbraked cars in neutral roll from rest down 8° at the analytic rate (+0.6 %, wheel inertia and rolling resistance included).
+- **Hold, release, re-brake** on 8°: held at 0.00000 m/s, rolls to 2.43 m/s in 2 s, 60 % brake stops it in 0.38 s, then 0.0001 mm/s.
+- **Level ground:** braked cars at rest stay below 0.15 µm/s speed + spin.
+- Spike 23/23; results equal to `spike-P2-00.txt` except: 100–0 braking **28.47 → 28.42 m** (296, −0.18 %), GT −0.16 %, roadster −0.07 % (the last centimetres of the stop now end cleanly), skidpad lat g and roll in the 9th digit, bowl lateral share in the 7th, the determinism hash (still identical between its two runs). All within the ±3 % flat-equivalence band.
+- footprint 10/10, suspension 12/12, surfaces 34/34, track_asset 23/23, road_tool 16/16, road_tool_v2 11/11, walls 8/8, parse clean; 10 legacy suites byte-identical to the baseline (the CarModel path through `tyre.gd` is unchanged).
+
+Not done: the old flat-only standstill hold in `car_body.gd` still runs (now redundant on slopes, harmless); rolling resistance at standstill is still a velocity-gated term, not a torque. Simcade (P2-07) still uses the same clamps.
