@@ -141,7 +141,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 ### P0: Foundations (blocking everything)
 
-- **P0-01 [MECH] Put the project under git.** Nothing is under version control right now, although the docs cite commit hashes. First ask the owner whether the old history exists elsewhere (another folder, GitHub). Otherwise `git init`, with a `.gitignore` for `.godot/`, `build/*.exe`, `build/*.zip`, `build/macos/`, `tests/logs/`, test screenshots/logs, `tools/Godot.app`, `tools/*.exe`, `tools/macos.zip`, `tools/python-packages/`. Commit the baseline and tag it `pre-rebuild`.
+- **P0-01 [MECH] Put the project under git.** Nothing is under version control right now, although the docs cite commit hashes. First ask the owner whether the old history exists elsewhere (another folder, GitHub). Otherwise `git init`, with a `.gitignore` for `.godot/`, `build/*.exe`, `build/*.zip`, `build/macos/`, `tests/logs/`, test screenshots/logs, `tools/Godot.app`, `tools/*.exe`, `tools/macos.zip`, `tools/python-packages/`. Commit the baseline and tag it `pre-rebuild`. **Done 2026-09-22** (see log); `godot/reference/` is also ignored.
 - **P0-02 [DOC] Rebuild workflow rules.** Keep this plan and the log current; point `AGENTS.md`, `CLAUDE.md` (and `GEMINI.md` if Gemini CLI is used) at them.
 - **P0-03 [MECH] Capture the baseline.** Run the current suites. Write `docs/rebuild/baseline.json` with every measurement (see §6).
 - **P0-04 [MECH] Release the old build.** Copy the current `build/RacingSim.exe` to `build/legacy/` (git-ignored) so the old game stays playable during the rebuild.
