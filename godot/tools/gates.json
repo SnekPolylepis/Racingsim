@@ -1,10 +1,10 @@
 {
   "_doc": "Gate manifest for tools/run_gates.ps1. deps are path prefixes under godot/ (a changed file that starts with any of them makes the suite 'affected'); 'except' removes prefixes from that. kind v2: pass = exit 0, empty stderr, and a '<NAME> RESULTS {json}' line with no failures. kind legacy: pass = stdout identical to the baseline file (CR/LF normalised), expected exit code, empty stderr. perf: has timing gates (run alone again by -Perf). window: needs a real window (only with -Features).",
   "groups": {
-    "vehicle": ["scripts/vehicle/", "scripts/car.gd", "scripts/track3d.gd", "scripts/surface/", "data/", "tests/v2/gates_env.gd", "project.godot"],
-    "track": ["scripts/track/", "scripts/surface/", "trackgen/", "tests/v2/gates_env.gd", "project.godot"],
+    "vehicle": ["scripts/vehicle/", "scripts/props/", "scripts/car.gd", "scripts/track3d.gd", "scripts/surface/", "data/", "tests/v2/gates_env.gd", "project.godot"],
+    "track": ["scripts/track/", "scripts/props/", "scripts/surface/", "trackgen/", "tests/v2/gates_env.gd", "project.godot"],
     "legacy": ["scripts/", "data/", "tracks/", "tests/dynamics.gd", "tests/laps.gd", "tests/handling.gd", "tests/airborne.gd", "tests/karussell.gd", "tests/track3d.gd", "tests/validation.gd", "tests/showcase_laps.gd", "docs/rebuild/baseline/", "project.godot"],
-    "legacy_except": ["scripts/vehicle/car_body.gd", "scripts/vehicle/tyre_footprint.gd", "scripts/vehicle/wall_contact.gd", "scripts/surface/", "scripts/track/", "scripts/proving/"],
+    "legacy_except": ["scripts/vehicle/car_body.gd", "scripts/vehicle/tyre_footprint.gd", "scripts/vehicle/wall_contact.gd", "scripts/surface/", "scripts/track/", "scripts/proving/", "scripts/props/", "data/props.json"],
     "game": ["scripts/", "scenes/", "data/", "tracks/", "assets/", "project.godot"]
   },
   "suites": [
@@ -24,6 +24,7 @@
     {"name": "aids_simcade f296gt3 simcade", "script": "tests/v2/aids_simcade.gd", "args": ["--car", "f296gt3", "--part", "simcade"], "groups": ["vehicle"], "deps": ["tests/dynamics.gd"]},
     {"name": "footprint", "script": "tests/v2/footprint.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "barrier", "script": "tests/v2/barrier.gd", "groups": ["vehicle", "track"], "perf": true},
+    {"name": "props", "script": "tests/v2/props.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "track_asset", "script": "tests/v2/track_asset.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "road_tool", "script": "tests/v2/road_tool.gd", "groups": ["vehicle", "track"]},
     {"name": "road_tool_v2", "script": "tests/v2/road_tool_v2.gd", "groups": ["vehicle", "track"]},
