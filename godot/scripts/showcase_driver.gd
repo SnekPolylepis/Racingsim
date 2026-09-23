@@ -11,6 +11,19 @@ var off_steps = 0
 var contacts = 0
 var markers = {}
 var interventions = {"la_source_late": 0, "bus_stop_late": 0, "raidillon_power": 0}
+## Speed plan limits. The defaults are the original, very conservative ones (a 302 s Spa lap in the
+## 296) and are what showcase_laps.gd and the performance benchmark use, so their results stay
+## comparable. `corner_accel` is the lateral acceleration assumed in corners (m/s², v² = a / curvature),
+## `brake_gain` the v² allowance per metre of approach (twice the assumed deceleration), `top_speed`
+## the cap (m/s) and `plan_distance` how far ahead corners are scanned (m).
+var top_speed = 45.0
+var corner_accel = 3.2
+var brake_gain = 6.0
+var plan_distance = 170
+## Corner scan spacing (m), and how often the speed plan is recomputed (every Nth tick; 1 = every tick).
+var plan_step = 5
+var plan_every = 1
+var planned = 0.0
 
 
 func reset():
@@ -33,15 +46,22 @@ func command(car, track, falloff = 0.0):
 	var steer = clampf(wrapf(atan2(target.y - car.y, target.x - car.x) - car.h, -PI, PI) * 2.2, -1, 1)
 	if falloff > 0:
 		steer *= 1 + car.speed / falloff
-	var wanted = 45.0
+	var wanted = top_speed
 	var late = 0.0
 	if human_errors:
 		for item in [["La Source", "la_source_late"], ["Bus Stop", "bus_stop_late"]]:
 			if fposmod(markers.get(item[0], -1000) - pr.s, track.length) < 160:
 				late = 4.0
 				interventions[item[1]] += 1
-	for d in range(0, 170, 5):
-		wanted = minf(wanted, sqrt(3.2 / maxf(absf(track.pos_at(pr.s + d).curv), .0001) + 6.0 * (d + late)))
+	# Speed plan over the next plan_distance metres. curv_at() is pos_at().curv without building the pose.
+	if plan_every <= 1 or tick % plan_every == 1:
+		for d in range(0, plan_distance, plan_step):
+			wanted = minf(
+				wanted,
+				sqrt(corner_accel / maxf(absf(track.curv_at(pr.s + d)), .0001) + brake_gain * (d + late))
+			)
+		planned = wanted
+	wanted = planned
 	var error = wanted - car.speed
 	var throttle = clampf(error * .5, 0, 1)
 	var brake = clampf(-error * .35, 0, 1)

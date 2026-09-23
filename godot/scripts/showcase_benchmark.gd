@@ -7,6 +7,26 @@ var output = ""
 var pad = true
 var checks = 0
 var timing_case = ""
+## Physics ticks simulated per rendered frame in the functional flow laps. At 24 (ten frames per
+## simulated second) each ~300 s Spa lap drew ~3,000 frames. At 240 (one frame per simulated second) the
+## same ticks run with ~300 frames. Every tick still feeds input and steps physics, and `_process` only
+## presents, so lap results are bit-identical. The performance benchmark keeps
+## PERFORMANCE_TICKS_PER_FRAME, since it measures frame times.
+const FLOW_TICKS_PER_FRAME = 240
+const PERFORMANCE_TICKS_PER_FRAME = 4
+## Speed-plan limits for the functional flow laps. The flow needs a clean, valid, input-driven lap, not
+## a slow one: the driver's defaults (45 m/s, ~0.33 g corners) take 302 s round Spa in the 296. These
+## (~1 g corners, ~0.8 g braking, 75 m/s) take ~190 s, clean on pad and keyboard with slip <= 5 deg,
+## well inside the car's ~2 g. The next setting swept (85 m/s, 1.3 g) was also clean; 90 m/s / 1.6 g ran
+## wide. The performance benchmark keeps the defaults so its frame-time runs stay comparable.
+const FLOW_DRIVER = {
+	"top_speed": 75.0,
+	"corner_accel": 10.0,
+	"brake_gain": 16.0,
+	"plan_distance": 450,
+	"plan_step": 10,
+	"plan_every": 4
+}
 
 
 func check(value, label):
@@ -123,6 +143,9 @@ func lap(digital = false, timing = false):
 	var driver = preload("res://scripts/showcase_driver.gd").new()
 	driver.digital = digital
 	driver.input_bus = true
+	if not timing:
+		for key in FLOW_DRIVER:
+			driver.set(key, FLOW_DRIVER[key])
 	app.benchmark_driver = driver
 	app.controls.clear()
 	var desktop_escape = InputEventKey.new()
@@ -131,8 +154,11 @@ func lap(digital = false, timing = false):
 	desktop_escape.pressed = true
 	Input.parse_input_event(desktop_escape)
 	Input.flush_buffered_events()
-	desktop_escape.pressed = false
-	Input.parse_input_event(desktop_escape)
+	# The release must be a new event: re-sending the same object within one frame is unsafe and makes
+	# Godot print a warning to stderr on every feature run.
+	var desktop_release = desktop_escape.duplicate()
+	desktop_release.pressed = false
+	Input.parse_input_event(desktop_release)
 	Input.flush_buffered_events()
 	check(not app.blocked() and app.frontend.page == "drive", "desktop input cannot pause automated lap")
 	var samples = []
@@ -142,7 +168,7 @@ func lap(digital = false, timing = false):
 	print(
 		"LAP CONFIG ", digital, " ", JSON.stringify(app.car.setup), " settings=", JSON.stringify(app.settings)
 	)
-	var steps = 4 if timing else 24
+	var steps = PERFORMANCE_TICKS_PER_FRAME if timing else FLOW_TICKS_PER_FRAME
 	var start_usec = Time.get_ticks_usec()
 	var maximum_primitives = 0
 	app.set_process(false)
@@ -184,7 +210,8 @@ func lap(digital = false, timing = false):
 				maximum_primitives,
 				RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME)
 			)
-		if frame % 2400 == 0:
+		# Progress every 60 simulated seconds, whatever the ticks per frame.
+		if (frame * steps) % (240 * 60) == 0:
 			print("LAP PROGRESS " + str(frame) + " time=" + str(app.race.lap_time))
 		if app.race.completed > starting_completed:
 			break
