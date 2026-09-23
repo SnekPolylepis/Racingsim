@@ -15,8 +15,6 @@ Run these PowerShell commands from the `godot` directory. `tools/Godot.exe` and 
 & ./tools/Godot.exe --headless --path . --script tests/handling.gd
 # Vehicle-dynamics targets: tyre peaks, 0-100, braking, skidpad, controller stability, track vertical curvature.
 & ./tools/Godot.exe --headless --path . --script tests/dynamics.gd
-# Real-circuit outline import (synthetic GPX / GeoJSON / OSM files).
-& ./tools/Godot.exe --headless --path . --script tests/import.gd
 # Real window/audio integration; do not add --headless.
 & ./tools/Godot.exe --path . -- --features
 # Build and verify the actual deliverable.
@@ -31,7 +29,7 @@ Run these PowerShell commands from the `godot` directory. `tools/Godot.exe` and 
 | Change | Relevant checks |
 |---|---|
 | Pure explanatory comments/technical Markdown | Review facts, paths and code references; parser if scripts touched |
-| In-game Help, UI, audio, editor, storage/input | Source or exported feature runner; inspect screenshots and errors |
+| In-game Help, UI, audio, storage/input | Source or exported feature runner; inspect screenshots and errors |
 | Car, track queries, collisions, race rules | Handling + vehicle dynamics + four-circuit laps; feature runner for affected workflows |
 | Export filters/resources or release delivery | Rebuild and run exported feature suite; source success alone is insufficient |
 | Browser HTML changes | Follow root `docs/TESTING.md`; native tests do not cover browser DOM behavior |
@@ -50,13 +48,13 @@ The browser-parity comparison (`tests/physics.gd` against `tests/reference.json`
 
 `tests/laps.gd` builds the auto barriers and also requires zero barrier contacts. It uses a conservative look-ahead controller and the Roadster. It advances up to 500 simulated seconds per track, requires a valid best lap, zero all-off-track ticks, finite physics and more than 100 ghost samples. Re-recorded Simulation baselines: Monza 261.50 s and Spa 325.17 s. They replace 260.30 / 323.00, recorded on the plan-view track model; the 3-space ribbon measures lap distance including elevation and derives curvature in 3-D, so both circuits are marginally longer and slower. Those in turn replaced 248.23 / 308.43, from before the roadster preset became the MX-5. The suite also covered Ridgeback (96.10 s) and Oval (42.78 s) until those circuits were removed on 2026-09-22. These are regression outcomes, not competitive benchmarks or proof of all handling conditions.
 
-`scripts/verification.gd` uses explicit failure collection rather than GDScript asserts, which may be removed in release exports. It covers acceleration; nonzero captured audio and mute/pause silence; generated sound streams; garage/settings; input mapping; five cameras; editor geometry, start/grid, snapping, paint, barriers/cones, endpoint dragging, undo/redo; dirty guards; JSON writes/replacement; ghosts/record identity; layout and all cars/tracks. Some domain operations are invoked directly; key remapping uses synthetic input and audio capture uses the engine mixer. This does not replace physical-device or human usability testing.
+`scripts/verification.gd` uses explicit failure collection rather than GDScript asserts, which may be removed in release exports. It covers acceleration; nonzero captured audio and mute/pause silence; generated sound streams; garage/settings; input mapping; five cameras; track validation and safe naming; JSON writes/replacement; ghosts/record identity; layout and all cars/tracks. Some domain operations are invoked directly; key remapping uses synthetic input and audio capture uses the engine mixer. This does not replace physical-device or human usability testing.
 
 Each run prints `FEATURE RESULTS` and exits nonzero on collected failures. Read the resulting `feature-results.json` for the current check count; documentation should not hard-code a count that changes when checks are added. Source runs save reports/images under `tests/`; exports use `user://native-tests/`. Reports copied into the project may use `release-feature-results.json`. Log/screenshots are evidence from a particular build, not source assets.
 
 ## Continuous integration and formatting
 
-`.github/workflows/native-tests.yml` runs on every push once the folder is a GitHub repository: `gdformat --check`, script parsing, handling, import, bot laps and the rendered feature suite. The feature suite runs on Mesa's software OpenGL under Xvfb, using the renderer's OpenGL fallback; the workflow switches off anisotropic texture filtering for that run only, because software anisotropic sampling takes minutes per frame. The same trick applies to any local software-rendered run (Vulkan lavapipe or llvmpipe). Format before committing with `gdformat -l 110 scripts tests` (`pip install "gdtoolkit==4.*"`).
+`.github/workflows/native-tests.yml` runs on every push once the folder is a GitHub repository: `gdformat --check`, script parsing, handling, bot laps and the rendered feature suite. The feature suite runs on Mesa's software OpenGL under Xvfb, using the renderer's OpenGL fallback; the workflow switches off anisotropic texture filtering for that run only, because software anisotropic sampling takes minutes per frame. The same trick applies to any local software-rendered run (Vulkan lavapipe or llvmpipe). Format before committing with `gdformat -l 110 scripts tests` (`pip install "gdtoolkit==4.*"`).
 
 Old run logs live in `tests/logs/` (git-ignored).
 
@@ -66,9 +64,9 @@ The separate `.github/workflows/macos-native.yml` workflow downloads the pinned 
 
 1. Launch the executable normally; drive, brake, shift, change camera and reset. Confirm engine pitch and tire/surface effects are sensible.
 2. Open Help, select chapters and scroll. Open garage/settings/library, including at a smaller window size. Check all buttons/fields are reachable.
-3. Create a circuit; add points, start and grid; paint runoff, draw a barrier and place a cone. Drag a point then undo/redo; release over a sidebar.
-4. Save, test drive and return with Esc. Reload saved JSON. Cancel a discard dialog and verify edits remain.
-5. Import a browser setup/track/ghost from a temporary folder. Confirm the selected save folder and avoid overwriting real user files during validation.
+3. Open garage and adjust settings; verify changes apply and persist across sessions.
+4. Connect an existing racing data folder via Circuits → Choose folder; verify portable setups, ghosts and records load.
+5. Import a setup/ghost from a temporary folder. Confirm the selected save folder and avoid overwriting real user files during validation.
 6. If a real controller is available, exercise triggers, signed steering, remapping, disconnection and pause/reset. Synthetic events do not establish hardware compatibility.
 
 ## Common failure modes
@@ -76,8 +74,6 @@ The separate `.github/workflows/macos-native.yml` workflow downloads the pinned 
 - **Could not resolve class:** check the directly named/preloaded script with `--script ... --check-only`; it often exposes the underlying parse error.
 - **No test output or app hangs:** inspect stderr for errors before the runner's quit. Do not count a launched process as a pass.
 - **Export cannot save screenshots:** tests must use `user://` in exports. `OS.has_feature("editor")` selects source output; do not rely on a `standalone` feature flag.
-- **Imported paint rejected:** JSON numbers are floats; validate numeric equality, not strict membership in an integer Array.
-- **Properties extend past the window:** inspect container minimum sizes and explicitly relayout after deferred property rebuild. Logical viewport size differs from physical window size.
 - **No sound:** check mute/levels, blocked state, engine/player setup and system output device. Headless runs cannot validate audible playback.
 - **Sandbox certificate/save errors:** the host may restrict Windows certificate-store or user-data access. Report the environment condition distinctly from application failures and rerun with an authorized native environment.
 - **Stale executable:** source edits do not patch `build/RacingSim.exe`; export again. Close a running executable if Windows prevents replacement.

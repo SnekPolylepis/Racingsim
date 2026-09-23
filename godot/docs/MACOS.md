@@ -6,7 +6,7 @@ The native Godot game has a universal macOS export containing arm64 (Apple Silic
 
 Open `godot/build/macos/Racing Sim.app`, or double-click `Play Racing Sim.command` in the workspace root. The distributable is `godot/build/RacingSim-macOS.zip`; it includes the app and engine/asset notices. The exported app runs offline without Python, Godot or Xcode installed.
 
-Use Command+Z, Command+Shift+Z and Command+S in the circuit editor. Control shortcuts still work. Apple keyboards may need Fn/Globe for F2 (editor) and F11 (fullscreen); both actions are also available in menus. Pinch zoom and trackpad pan gestures use Godot's native input events; scroll-to-pan is selectable in Settings.
+Control shortcuts work across dialogs and menus. Apple keyboards may need Fn/Globe for F11 (fullscreen); fullscreen is also available in Settings.
 
 Saves default to `~/Library/Application Support/Godot/app_userdata/Racing Sim/`. Choose folder in Circuits can connect the existing portable data folders. The app bundle is read-only game content, never a save destination. Verification uses `native-tests` beneath the same application data directory, separate from normal saves.
 
@@ -35,7 +35,6 @@ GODOT_BIN="$PWD/tools/Godot.app/Contents/MacOS/Godot"
 "$GODOT_BIN" --headless --path . --script tests/handling.gd
 "$GODOT_BIN" --headless --path . --script tests/dynamics.gd
 "$GODOT_BIN" --headless --path . --script tests/dynamics.gd -- --simcade
-"$GODOT_BIN" --headless --path . --script tests/import.gd
 "$GODOT_BIN" --headless --path . --script tests/validation.gd
 "$GODOT_BIN" --headless --path . --script tests/laps.gd
 "$GODOT_BIN" --headless --path . --script tests/laps.gd -- --simcade
@@ -43,7 +42,7 @@ GODOT_BIN="$PWD/tools/Godot.app/Contents/MacOS/Godot"
 "build/macos/Racing Sim.app/Contents/MacOS/Racing Sim" -- --features
 ```
 
-The feature suite requires a graphical login session; do not add `--headless`. It exercises rendered UI, audio PCM, driving, editor operations (including the platform's Command/Ctrl undo/redo modifier), save round trips and full-lap frontend flows. Inspect stderr as well as `~/Library/Application Support/Godot/app_userdata/Racing Sim/native-tests/feature-results.json`. For the fallback renderer, repeat with `--rendering-method gl_compatibility` before `--`.
+The feature suite requires a graphical login session; do not add `--headless`. It exercises rendered UI, audio PCM, driving, save round trips and full-lap frontend flows. Inspect stderr as well as `~/Library/Application Support/Godot/app_userdata/Racing Sim/native-tests/feature-results.json`. For the fallback renderer, repeat with `--rendering-method gl_compatibility` before `--`.
 
 ## Recorded validation — 2026-09-22
 

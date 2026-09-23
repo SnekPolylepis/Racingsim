@@ -6,7 +6,7 @@ This guide is included in the native game. Open Help and choose a chapter. It al
 
 On Windows launch RacingSim.exe or Play Racing Sim.cmd. On macOS open Racing Sim.app or Play Racing Sim.command from the project folder. No browser, installation or Godot editor is needed. Skip the studio card or let it finish, then press Enter or the controller's main action button at PRESS START. Choose Race, Time Trial or Free Run, your car and setup, then your circuit and light. Load circuit prepares the run and shows a three-second grid countdown. Back cancels preparation or returns from the grid to circuit selection. Garage, Circuits, Settings, Help and Quit are on the main menu. Use the mouse, arrows / D-pad and Enter / main action; Esc or the second controller action goes back. W or Up accelerates, S or Down brakes, and A/D or Left/Right steer. The title starts a driving demonstration after 25 seconds without input.
 
-The default showcase is the 296 GT3 at Spa. For learning the controls, the Roadster and Monza are also available. Brake before a corner, turn smoothly and apply throttle gradually on exit. R resets to the grid and restores the car and tires. Escape (or Start on a controller) opens the pause menu: Resume, Restart run, Garage, Settings, Help, Main menu and Quit game. Closing Garage or Settings returns to the pause menu. Escape also closes an open window. The game pauses when its window loses focus. During an editor test drive, Escape returns straight to the editor instead.
+The default showcase is the 296 GT3 at Spa. For learning the controls, the Roadster and Monza are also available. Brake before a corner, turn smoothly and apply throttle gradually on exit. R resets to the grid and restores the car and tires. Escape (or Start on a controller) opens the pause menu: Resume, Restart run, Garage, Settings, Help, Main menu and Quit game. Closing Garage or Settings returns to the pause menu. Escape also closes an open window. The game pauses when its window loses focus.
 
 The default selection is Spa-Francorchamps with the Ferrari 296 GT3, Simcade handling and Afternoon lighting. The console-era presentation uses small filtered textures, glossy reflected paint, painted forests, soft glow and subtle colour dithering. Settings on the title screen also offers Afterhours: indigo skies, amber pit accents and amber floodlights. Time of day and the wet-looking night streaks do not change grip or records. The dedicated 296 body, steering wheels, suspension and brake lights remain animated.
 
@@ -40,11 +40,11 @@ Old setups keep their original TC/ABS choices and load with ASM off. Saved nativ
 
 ## Cameras, display and sound
 
-V cycles chase, high chase, bonnet, north-up overhead and car-relative overhead views. The mouse wheel changes driving zoom. Settings → Display also provides camera selection, chase height, km/h or mph, graphics quality, adaptive quality and fullscreen. F11 toggles fullscreen. On Apple keyboards, function shortcuts may require Fn/Globe; the menus also offer fullscreen and editor access.
+V cycles chase, high chase, bonnet, north-up overhead and car-relative overhead views. The mouse wheel changes driving zoom. Settings → Display also provides camera selection, chase height, km/h or mph, graphics quality, adaptive quality and fullscreen. F11 toggles fullscreen. On Apple keyboards, function shortcuts may require Fn/Globe; the menus also offer fullscreen access.
 
-Render resolution offers 480p (the default), 720p and Native. Default 480p component uses a 640×448 world and Authentic UI, displayed in anamorphic 16:9. Choose 4:3 for a conventional TV shape. Authentic menus and HUD share the output filter; Sharp UI is optional. The circuit editor always stays sharp. Optional 480i generates alternating fields with deflicker; CRT / composite adds mild colour bleed and a mask. The default framebuffer is 24-bit; colour dithering applies to optional 16-bit RGB555. Low speed blur affects the driving world. Afternoon and Afterhours use the same pipeline and OpenGL fallback. Medium and High quality add directional shadows; Low uses car drop shadows and painted ground darkening. Native offers optional MSAA 2×. Road height and banking remain physical at every setting.
+Render resolution offers 480p (the default), 720p and Native. Default 480p component uses a 640×448 world and Authentic UI, displayed in anamorphic 16:9. Choose 4:3 for a conventional TV shape. Authentic menus and HUD share the output filter; Sharp UI is optional. Optional 480i generates alternating fields with deflicker; CRT / composite adds mild colour bleed and a mask. The default framebuffer is 24-bit; colour dithering applies to optional 16-bit RGB555. Low speed blur affects the driving world. Afternoon and Afterhours use the same pipeline and OpenGL fallback. Medium and High quality add directional shadows; Low uses car drop shadows and painted ground darkening. Native offers optional MSAA 2×. Road height and banking remain physical at every setting.
 
-Settings → Audio provides mute, master, engine and effects levels. Engine pitch follows RPM; throttle changes its tone and level. Tire squeal responds to slip, surface noise changes with speed and terrain, and shifts/impacts have short effects. Sound fades out in menus, the editor and while paused.
+Settings → Audio provides mute, master, engine and effects levels. Engine pitch follows RPM; throttle changes its tone and level. Tire squeal responds to slip, surface noise changes with speed and terrain, and shifts/impacts have short effects. Sound fades out in menus and while paused.
 
 If the game is silent, close menus, resume driving, check mute and volume, then check your system output device. The engine blends edited real-car recordings across rev ranges, with a softer off-throttle layer. The source Ferrari models are unspecified; these are tuned game voices rather than exact recordings of each selectable car. Tire, road and mechanical effects remain synthesized.
 
@@ -68,64 +68,20 @@ Tires affect available grip and temperature behavior. Suspension affects body mo
 
 Close the garage to apply a changed setup. The car resets and loads the record associated with that setup. Save as creates a named setup. Load restores one; loading a setup for another car also changes the car. Defaults restores that preset's tuning. Import and Export exchange setup JSON with the browser version or another native installation.
 
-## Creating a circuit
-
-Open Editor with F2, then New circuit. Unsaved changes are protected by a discard confirmation. Click three separated positions in the central workspace to create the first closed loop. Add more points with Insert or by double-clicking an edge. Use broad, smooth bends before fine-tuning.
-
-Select a point and drag it to reshape the road. Properties exposes X/Y, full width, height and bank angle. Width is 4–40 m. Height is in meters and bank is in degrees; positive bank raises the left edge in the driving direction. Elevation follows a smooth curve between points.
-
-Use Start / finish and click the road to place the timing line. Use Grid position to choose a spawn point. Without an explicit grid, the car starts ten meters before the start. A circuit needs at least three useful points and a start line before it can be saved or test-driven.
-
-The height profile under the map shows elevation along the lap from the start line, coloured by gradient (green under 6 %, amber under 12 %, red steeper). Drag a point's dot up or down to change its height; hold Shift for 0.5 m steps. H shows or hides it. Properties also has Reverse direction, Smooth heights and a width for all points.
-
-Import real circuit (in the tool list and the circuit library) reads a GPX track, a GeoJSON line or polygon, or an OpenStreetMap export (.osm; ways tagged highway=raceway are joined). The outline is converted to metres, simplified to control points at 12 m width, and uses GPS elevation when the file has it. Check the driving direction, start line and widths, then save.
-
-Automatic trackside barriers (on by default, in Properties) place armco around the lap and tire walls on the outside of slow corners, set back further where the corner is fast. They are solid. Turn them off for an open airfield-style layout.
-
-Properties reports blocking errors and warnings. Very steep slopes or a crossing layout may be driveable but behave poorly. The game does not model bridges or cars becoming airborne, so avoid relying on vertical separation at crossings.
-
-## Editor tools and navigation
-
-Tool shortcuts:
-• 1 Select / move; 2 Insert point; 3 Curb override.
-• 4 Paint grass; 5 Paint gravel; 6 Erase paint. Paint tarmac runoff is in the tool list (no number key): near-road grip, but it counts as off the circuit for track limits.
-• 7 Wall; 8 Tire barrier; 9 Cone; 0 Start / finish.
-• Grid position and Pan are available as buttons.
-
-Curbs can be automatic, on or off for a segment. The curb tool cycles that setting; Properties also offers a selector. Curbs apply to both road edges on that segment.
-
-Drag a paint brush across the ground; adjust its radius in Properties. Paint changes off-road surfaces, not the asphalt underneath. Erase restores the default ground surface. Drag to create a wall or tire barrier. Click to place a cone. Select an object to move it; drag a barrier endpoint to resize it. Cones reset to their placed positions each lap.
-
-Wheel or pinch zooms around the cursor. Middle drag, Space+drag or Pan moves the view. Settings can make trackpad scrolling pan. Hold Shift or enable Snap to grid; set grid spacing in Properties. F frames the whole circuit.
-
-Cmd/Ctrl+Z undoes; Cmd/Ctrl+Shift+Z or Cmd/Ctrl+Y redoes. On macOS use Command; Control also works. A continuous drag or paint stroke is one undo step. Delete removes the selection. Brackets change selected-point width. Comma/period change height; hold Shift for larger height steps. Semicolon/apostrophe change bank.
-
-## Saving and test driving
-
-Cmd/Ctrl+S or Save stores the circuit in the selected data folder. Give an untitled circuit a name. Save as in Circuits creates a separately named copy. Built-in resources are protected; editing a built-in circuit saves a user version. The saved version appears separately in the circuit list.
-
-T starts a test drive from the grid; Escape returns to the editor. You can repeatedly adjust, test and return. Test driving does not automatically save your changes. The Properties heading indicates unsaved edits. Save before closing the game if you want to keep them.
-
-Circuits provides Load, Rename, Delete, Import JSON, Export current and a copy/paste text area. Fill / copy current places the document in the text area and clipboard. Load text validates the pasted document and opens it for editing. Imported tracks remain unsaved until you save them.
-
-Rename or delete operates on saved files, so take care when using a shared folder. Deletion asks for confirmation. Cancelling an unsaved-change prompt retains your current work.
-
 ## Files, ghosts and portability
 
-Default saves are under %APPDATA%/Godot/app_userdata/Racing Sim/ on Windows, or ~/Library/Application Support/Godot/app_userdata/Racing Sim/ on macOS. Circuits → Choose folder connects another directory using tracks, setups, ghosts and records subfolders. Local saves switches back to the default location; Rescan refreshes the library. Settings remain in the local application folder.
+Default saves are under %APPDATA%/Godot/app_userdata/Racing Sim/ on Windows, or ~/Library/Application Support/Godot/app_userdata/Racing Sim/ on macOS. Local saves switches back to the default location; Rescan refreshes the library. Settings remain in the local application folder.
 
-The native game reads browser-compatible track, setup and ghost JSON. To move data held only in browser localStorage, first export it from the browser. Selecting a folder does not read private browser storage. Existing exported files can be selected individually or through their racing-data folder.
+The native game reads setup and ghost JSON. Existing exported files can be selected individually or through their racing-data folder.
 
-Native best laps are separated by circuit configuration, car, tuning and race rules. A per-track exchange ghost is also maintained for browser compatibility. Older imported ghosts may lack setup/rule information, so treat them as reference laps rather than certified comparisons. Explicit ghost import assigns the replay to your current configuration.
+Native best laps are separated by circuit configuration, car, tuning and race rules. A per-track exchange ghost is also maintained for compatibility. Older imported ghosts may lack setup/rule information, so treat them as reference laps rather than certified comparisons. Explicit ghost import assigns the replay to your current configuration.
 
-Circuits includes Import ghost, Export ghost and Clear best lap. Clearing removes the current configuration's best and the track's exchange ghost; other native configuration records remain. Back up the racing-data folder to preserve circuits, named setups and records.
+Circuits includes Import ghost, Export ghost and Clear best lap. Clearing removes the current configuration's best and the track's exchange ghost; other native configuration records remain. Back up the racing-data folder to preserve named setups and records.
 
 ## Remapping and troubleshooting
 
 Open Settings → Controls. Click a keyboard binding, then press the replacement key. Click a controller binding, then press a button or move an axis. Escape cancels capture. Steering needs a signed axis; pedals use positive trigger travel. Reset mappings restores defaults. Deadzone and steering-response controls tune controller feel.
 
-If the car will not move, close any menu/dialog, leave the editor, resume from pause and check gear/input bindings. Reset with R if needed. A circuit that refuses to test-drive needs its blocking Properties errors resolved, usually insufficient points or a missing start line.
-
-If a saved circuit is missing, verify the connected folder and press Rescan. An imported circuit must still be saved. A failed write appears in the status line; choose a writable folder. User circuits do not overwrite bundled resources inside the executable.
+If the car will not move, close any menu/dialog, resume from pause and check gear/input bindings. Reset with R if needed.
 
 Native builds target Windows x64 and macOS (Apple Silicon and Intel). Mac validation limits are recorded in the source project’s godot/docs/MACOS.md. Rendered checks have passed on the Windows RTX 4080 and macOS Apple M4 using Metal. Intel Macs, other GPUs and real controller hardware need further testing. There is no multiplayer, force feedback or airborne vehicle simulation. The source project's godot/docs directory contains architecture, file formats and maintenance instructions for developers and LLMs.

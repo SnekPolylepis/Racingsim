@@ -110,6 +110,9 @@ Cost on the crest rose to 193 µs/tick from the extra march samples (test surfac
 ## 2026-09-22  DECISION D6  (owner)
 Approved D6(A): our own 6-DOF integrator with ray suspension, Godot used only for geometry queries. P2-00 branch cleared to merge into main. Next: P2-01 (GPT-6 Sol) and P2-02/P2-03 (Claude Opus 5.5).
 
+## 2026-09-22  CLAIM P1  (Gemini 3.8 Flash)
+Claiming Phase P1: remove the in-game circuit editor (tasks P1-01, P1-02, P1-03).
+
 ## 2026-09-22  CLAIM P2-01  (GPT-6 Sol)
 Extract tyre, drivetrain and aids into shared vehicle modules with byte-identical old-suite output and an unchanged P2-00 spike. Working on branch `rb/P2-01-extract-vehicle-modules` in the isolated RacingSim-p201 worktree.
 
@@ -204,6 +207,28 @@ Fixture: a figure-eight (x = 240 sin t, z = 120 sin t cos t, y = 4(1 − cos t))
 
 Bug found and fixed during the task: `gates()` first returned start, sectors, checkpoints as separate groups rather than sorted by lap offset. Timing that walks the list in order then needed two laps, and the first lap check passed with a 115 s "lap". Gates are now sorted, and the lap check bounds the time against one lap at the held speed.
 
+## 2026-09-22  DONE P1  (Gemini 3.8 Flash)
+Removed the in-game circuit editor, outline importer, and editor workflows/bindings/UI (tasks P1-01, P1-02, P1-03).
+- Deleted files: `scripts/editor.gd`, `editor.gd.uid`, `scripts/outline_import.gd`, `outline_import.gd.uid`, `tests/import.gd`, `import.gd.uid`.
+- Scope expanded per review to include `retro_renderer.gd`, `retro_flare.gd`, `showcase_review.gd`, and `showcase_benchmark.gd` to remove live editor references.
+- In `game.gd`: removed `editing`, `editor`, `test_from_editor` variables; removed `set_editor`, `new_track`, `save_track`, `save_track_as`, `write_track_named`, `import_track_data`, `choose_outline`, `import_outline`, `start_editor`, and `rename_file`. Cleaned `choose_file` to support only setups and ghosts. Cleaned `delete_file`. Removed saved 2D track read path in `game.gd::refresh_tracks()` so user tracks are no longer listed or loaded, leaving user files untouched on disk.
+- Preserved `storage.validate_track()` in `storage.gd` to validate bundled circuits at runtime and in tests.
+- In `interface.gd`: removed top toolbar, mode button, pause menu editor entry, outline/JSON import/export/rename/delete/folder buttons. Retained dummy `track_picker` and `car_picker` properties for caller compatibility.
+- In `front_end.gd`: removed Circuit editor option from circuits page, removed editor branches in `back()`, `_draw()`, and `_process()`.
+- In `instruments.gd`: removed `app.editing` check in `_draw()`.
+- In `verification.gd`: removed editor interaction helpers (`click_editor`, `drag_editor`), removed editor test block (retaining track validation and safe name checks), updated bundled circuits check to >= 3, updated handbook chapters check to >= 7.
+- Updated documentation and play guides: `docs/PLAYER-GUIDE.md` (removed 3 editor chapters and stray mentions), `build/PLAY.txt`, `packaging/PLAY-MACOS.txt`, `docs/LLM-GUIDE.md`.
+- Formatted all modified files with `tools/python-packages/bin/gdformat.exe -l 110`.
+- All checks pass:
+  - `.\tools\Godot.exe --headless --path . --script scripts/game.gd --check-only` (exit 0, empty stderr)
+  - `tests/laps.gd`: Simulation Monza best=261.504 s (0 offSteps, 0 contacts), Spa best=325.175 s (0 offSteps, 0 contacts) (exit 0, empty stderr)
+  - `tests/handling.gd`: 23 checks, 0 failures (exit 0, empty stderr)
+  - `tests/dynamics.gd`: 36 checks, 0 failures (exit 0, empty stderr)
+  - `.\tools\Godot.exe -- --features`: 211 checks, 0 failures (exit 0)
+  - Re-exported `build/RacingSim.exe` via `Godot.exe --headless --path . --export-release "Windows Desktop" build/RacingSim.exe`
+  - Exported `./build/RacingSim.exe -- --features`: 211 checks, 0 failures (exit 0)
+- Ready for owner review and merge to main.
+
 ## 2026-09-22  CONTRACT §5.3 track asset  (Claude Opus 5.5)
 §5.3 rewritten to match the implementation: root at the origin; Surfaces on layer 1 and Walls on layer 2; TimingLine closed implicitly (don't repeat the first point); Grid markers face −Z down the track; `record_key()` = `id@vN`; metadata defaults; gate bounds ±15 m lateral / ±3 m vertical, `gates()` sorted by lap offset; 3D lap length; minimap computed on demand rather than stored; ±5 km validation; surface queries only in a physics frame.
 
@@ -226,6 +251,18 @@ Findings (non-blocking):
 
 Merge order: P2-01 into main first; then my stack (P2-02 → P3-00 → P3-01) on top, resolving the log by keeping both sides.
 
+## 2026-09-22  DONE P1-review-fix  (Gemini 3.8 Flash)
+Addressed P1 review findings on `rb/P1-remove-editor`:
+1. Restored folder selection in `scripts/game.gd` (`choose_folder()`) and `scripts/interface.gd` (`open_library()` "Choose folder…" button) to connect portable racing data folders for setups, ghosts, and records. Kept "Local saves" (`use_local_storage()`). Preserved the removal of user track loading/modifying.
+2. Cleaned `godot/README.md`, `godot/docs/TESTING.md`, and `godot/docs/MACOS.md`: removed editor instructions, keybindings, section, and commands for deleted `tests/import.gd`. Preserved dated historical test evidence.
+3. Formatted modified scripts with `tools/python-packages/bin/gdformat.exe -l 110`.
+4. Verification:
+   - Headless check-only: `.\tools\Godot.exe --headless --path . --script scripts/game.gd --check-only` (exit 0, empty stderr).
+   - Laps suite: `.\tools\Godot.exe --headless --path . --script tests/laps.gd` (Simulation Monza 261.504 s, Spa 325.175 s; 0 offSteps, 0 contacts; exit 0, empty stderr).
+   - Handling suite: `.\tools\Godot.exe --headless --path . --script tests/handling.gd` (23 checks, 0 failures; exit 0, empty stderr).
+   - Dynamics suite: `.\tools\Godot.exe --headless --path . --script tests/dynamics.gd` (36 checks, 0 failures; exit 0, empty stderr).
+   - Re-exported executable: `.\build\RacingSim.exe -- --features` (211 checks, 0 failures; exit 0; stderr contains expected engine shutdown leaks, 0 script errors).
+
 ## 2026-09-22  NOTE merge P2-01 + P2-02/P3-00/P3-01 (GPT-6 Sol)
 
 Fast-forwarded the isolated `merge/p2-p3` branch from `origin/main` to P2-01 tip `7428ae6` (extraction `0832b84`), then merged Claude's stack tip `1fbb924` with no fast-forward as merge commit `f813a89` (parents `7428ae6` and `1fbb924`). The stack includes P2-02 `2cedfb8`, P3-00 `174842a` and P3-01 `40aa485`. Pushed `f813a89` to GitHub `main` by fast-forward, with no force push. P1 was not merged.
@@ -239,3 +276,17 @@ Verification from the fresh `RacingSim-merge/godot` worktree using `C:\Users\Zai
 - `tests/v2/surfaces.gd`: 34 checks, 0 failures, exit 0, stderr empty.
 - `tests/v2/track_asset.gd`: 23 checks, 0 failures, exit 0, stderr empty.
 - Legacy `tests/dynamics.gd` Simulation and `-- --simcade`, `tests/handling.gd`, `tests/laps.gd` Simulation and `-- --simcade`, `tests/showcase_laps.gd`, `tests/airborne.gd`, `tests/karussell.gd`, `tests/track3d.gd`, and `tests/validation.gd`: each stdout identical to its `docs/rebuild/baseline/*.txt` reference after CR/LF normalization; every stderr empty. Nine exit 0; dynamics Simcade exits 1 with its identical, known roadster 100-0 failure.
+## 2026-09-22  DONE P1-review-fix-2  (Gemini 3.8 Flash)
+Resolved regression and review findings on `rb/P1-remove-editor`:
+1. Deleted dummy `track_picker` and `car_picker` from `scripts/interface.gd`. Updated all callers in `scripts/game.gd`, `scripts/front_end.gd`, and `scripts/verification.gd` to use `menu_track`/`menu_car` or direct application state. This eliminates the unparented Window/PopupMenu leak, making stderr completely free of RID/ObjectDB leaks.
+2. Restored the storage overwrite check in `scripts/verification.gd`: verified that overwriting an existing JSON file (`Integration.ghost.json`) through `app.storage.write_json` and reading it back yields the new content (`"atomic replace existing file"`). Total feature checks increased from 211 to 212.
+3. Cleaned `godot/docs/TESTING.md` and `godot/README.md` to remove obsolete mentions of "dirty guards" from the feature suite summary.
+4. Formatted touched scripts with `tools/python-packages/bin/gdformat.exe -l 110`.
+5. Verification:
+   - Check-only: `.\tools\Godot.exe --headless --path . --script scripts/game.gd --check-only` (exit 0, stderr empty).
+   - Laps suite: `.\tools\Godot.exe --headless --path . --script tests/laps.gd` (exit 0, stdout identical to `docs/rebuild/baseline/laps-simulation.txt`, stderr empty).
+   - Handling suite: `.\tools\Godot.exe --headless --path . --script tests/handling.gd` (exit 0, stdout identical to `docs/rebuild/baseline/handling.txt`, stderr empty).
+   - Dynamics suite: `.\tools\Godot.exe --headless --path . --script tests/dynamics.gd` (exit 0, stdout identical to `docs/rebuild/baseline/dynamics-simulation.txt`, stderr empty).
+   - Windowed features: `.\tools\Godot.exe --path . -- --features` (exit 0, 212 checks, 0 failures, stderr contains ONLY the 644-byte input event duplicate warning from `showcase_benchmark.gd:134`, zero RID or ObjectDB leak lines).
+   - Re-exported executable: `cmd /c "tools\Godot.exe --headless --path . --export-release ""Windows Desktop"" build\RacingSim.exe"` (clean export).
+   - Exported features: `.\build\RacingSim.exe -- --features` (exit 0, 212 checks, 0 failures, stderr 0 bytes / empty).

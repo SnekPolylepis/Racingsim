@@ -207,7 +207,6 @@ func show_page(next):
 			add_option("Back", back, 4, Vector2(24, 225))
 		"circuits":
 			add_option("Circuit library", func(): open_panel("library"), 0)
-			add_option("Circuit editor", func(): app.start_editor(), 1)
 			add_option("Back", back, 3)
 		"pause":
 			app.in_menu = false
@@ -281,13 +280,6 @@ func back():
 					return
 		app.ui.close()
 		return
-	if app.editing:
-		app.guard_dirty(
-			func():
-				app.set_editor(false)
-				app.show_main_menu()
-		)
-		return
 	if loading:
 		loading = false
 		loading_serial += 1
@@ -309,10 +301,7 @@ func back():
 		"pause":
 			app.set_paused(false)
 		"drive":
-			if app.test_from_editor:
-				app.set_editor(true)
-			else:
-				app.set_paused(true)
+			app.set_paused(true)
 		"results":
 			app.show_main_menu()
 		"replay":
@@ -423,7 +412,8 @@ func end_demo():
 		app.rebuild_world()
 	app.reset_car()
 	app.instruments.rebuild_map()
-	app.ui.car_picker.select(app.presets.keys().find(app.preset_key))
+	if app.ui and app.ui.menu_car:
+		app.ui.menu_car.select(app.presets.keys().find(app.preset_key))
 	apply_appearance()
 	demo_context.clear()
 
@@ -573,7 +563,7 @@ func draw_map(rect):
 
 
 func _draw():
-	if app == null or app.editing:
+	if app == null:
 		return
 	draw_set_transform(Vector2.ZERO, 0, size / Vector2(640, 448))
 	if page == "drive":
@@ -740,10 +730,10 @@ func _process(dt):
 		return
 	age += dt
 	idle += dt
-	visible = not app.editing
+	visible = true
 	choices.visible = not app.ui.is_open()
 	choices.modulate.a = clampf(age / .12, 0, 1)
-	prompt.visible = not app.editing
+	prompt.visible = true
 	prompt.text = (
 		"[NAV] Move   [1] Select   [2] Back   [MENU] Pause"
 		if pad_prompts

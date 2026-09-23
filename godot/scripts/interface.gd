@@ -1,23 +1,18 @@
 extends CanvasLayer
 ## Native toolbar, modal screens and dialog helpers; calls game.gd for application actions.
-## Instruments/editor are child Controls of root. Modals/dialog counts block custom physics.
+## Instruments is a child Control of root. Modals/dialog counts block custom physics.
 ## The player handbook is loaded from docs/PLAYER-GUIDE.md, which must be included in export.
 var app
 var root: Control
-var top: PanelContainer
 var blocker: ColorRect
 var modal: PanelContainer
 var content: VBoxContainer
 var title_label: Label
 var status: Label
-var track_picker: OptionButton
-var car_picker: OptionButton
-var mode_button: Button
 var dialogs = 0
 var screen = ""
 var garage_before = ""
 var mapping_buttons = []
-var json_box: TextEdit
 var main_menu: Control
 var pause_menu: Control
 var menu_track: OptionButton
@@ -26,7 +21,6 @@ var menu_best: Label
 var menu_first: Button
 var pause_first: Button
 var pause_info: Label
-var pause_editor: Button
 var selection_bars = []
 
 
@@ -51,7 +45,7 @@ func label(parent, value, font_size = 17, color = Color("e5eef0")):
 	var l = Label.new()
 	l.text = value
 	l.add_theme_font_size_override(
-		"font_size", maxi(32, font_size * 2) if app and app.frontend and not app.editing else font_size
+		"font_size", maxi(32, font_size * 2) if app and app.frontend else font_size
 	)
 	l.add_theme_color_override("font_color", color)
 	parent.add_child(l)
@@ -69,7 +63,7 @@ func button(parent, value, action):
 	var b = Button.new()
 	b.text = value
 	b.focus_mode = Control.FOCUS_ALL
-	b.custom_minimum_size.y = 52 if app and app.frontend and not app.editing else 34
+	b.custom_minimum_size.y = 52 if app and app.frontend else 34
 	parent.add_child(b)
 	b.pressed.connect(action)
 	return b
@@ -97,7 +91,7 @@ func number(parent, caption, value, low, high, step, action):
 	spin.max_value = high
 	spin.step = step
 	spin.value = value
-	spin.custom_minimum_size.x = 168 if app.frontend and not app.editing else 108
+	spin.custom_minimum_size.x = 168 if app.frontend else 108
 	r.add_child(spin)
 	spin.value_changed.connect(action)
 	return spin
@@ -109,7 +103,7 @@ func choice(parent, caption, values, selected, action):
 	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var p = OptionButton.new()
 	p.focus_mode = Control.FOCUS_ALL
-	p.custom_minimum_size.x = 250 if app.frontend and not app.editing else 160
+	p.custom_minimum_size.x = 250 if app.frontend else 160
 	r.add_child(p)
 	for v in values:
 		p.add_item(v)
@@ -157,43 +151,6 @@ func initialize(owner_app):
 	app.instruments = app.Instruments.new()
 	root.add_child(app.instruments)
 	app.instruments.initialize(app)
-	app.editor = app.CircuitEditor.new()
-	root.add_child(app.editor)
-	app.editor.initialize(app)
-	top = panel(root)
-	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	top.offset_left = 12
-	top.offset_right = -12
-	top.offset_top = 10
-	var box = VBoxContainer.new()
-	top.add_child(box)
-	var nav = row(box)
-	label(nav, "RACING SIM", 20, Color("f3cd7a"))
-	var spacer = Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	nav.add_child(spacer)
-	mode_button = button(nav, "Editor · F2", func(): app.set_editor(not app.editing))
-	button(nav, "Garage · G", open_garage)
-	button(nav, "Circuits", open_library)
-	button(nav, "Settings", open_settings)
-	button(nav, "Help", open_help)
-	button(nav, "Pause", app.toggle_pause)
-	var selectors = row(box)
-	label(selectors, "CIRCUIT", 11, Color("9ab1bd"))
-	track_picker = OptionButton.new()
-	track_picker.focus_mode = Control.FOCUS_NONE
-	track_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	selectors.add_child(track_picker)
-	track_picker.item_selected.connect(app.load_track)
-	label(selectors, "CAR", 11, Color("9ab1bd"))
-	car_picker = OptionButton.new()
-	car_picker.focus_mode = Control.FOCUS_NONE
-	car_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	selectors.add_child(car_picker)
-	for key in app.presets:
-		car_picker.add_item(app.presets[key].name)
-	car_picker.item_selected.connect(func(i): app.change_car(app.presets.keys()[i]))
-	button(selectors, "Camera · V", app.cycle_camera)
 	status = label(root, "", 14)
 	status.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	status.offset_left = 20
@@ -301,7 +258,6 @@ func build_menus():
 	col.add_child(gap)
 	menu_first = menu_button(col, "Drive", app.start_drive, true)
 	menu_button(col, "Garage", open_garage)
-	menu_button(col, "Circuit editor", func(): app.start_editor())
 	menu_button(col, "Circuit library", open_library)
 	menu_button(col, "Settings", open_settings)
 	menu_button(col, "Help", open_help)
@@ -344,13 +300,6 @@ func build_menus():
 	menu_button(list, "Garage", open_garage)
 	menu_button(list, "Settings", open_settings)
 	menu_button(list, "Help", open_help)
-	pause_editor = menu_button(
-		list,
-		"Back to editor",
-		func():
-			app.set_paused(false)
-			app.set_editor(true)
-	)
 	menu_button(list, "Main menu", app.show_main_menu)
 	menu_button(list, "Quit game", app.request_quit)
 
@@ -360,24 +309,23 @@ func sync_menus():
 	if app.frontend:
 		main_menu.visible = false
 		pause_menu.visible = false
-		top.visible = app.editing
-		status.visible = app.editing
-		app.instruments.visible = not app.editing and app.frontend.page == "drive"
+		app.instruments.visible = app.frontend.page == "drive"
 		return
 	for item in selection_bars:
 		item[1].visible = item[0].has_focus()
 		item[1].modulate.a = .65 + .35 * sin(Time.get_ticks_msec() * .006)
 		item[1].size.y = item[0].size.y - 8
 	var show_main = app.in_menu
-	var show_pause = app.paused and not app.in_menu and not app.editing
-	top.visible = not app.in_menu
+	var show_pause = app.paused and not app.in_menu
 	status.visible = not app.in_menu
-	app.instruments.visible = not app.editing and not app.in_menu
+	app.instruments.visible = not app.in_menu
 	if show_main and not main_menu.visible:
 		menu_track.clear()
-		for i in track_picker.item_count:
-			menu_track.add_item(track_picker.get_item_text(i))
-		menu_track.select(track_picker.selected)
+		for file in app.track_files:
+			menu_track.add_item(file.get_file().get_basename())
+		var track_idx = app.track_files.find(app.active_track_file)
+		if track_idx >= 0:
+			menu_track.select(track_idx)
 		menu_car.select(app.presets.keys().find(app.preset_key))
 	if show_main:
 		menu_best.text = (
@@ -387,7 +335,6 @@ func sync_menus():
 		)
 	if show_pause:
 		pause_info.text = "%s  ·  %s" % [app.track.data.name, app.car.p.name]
-		pause_editor.visible = app.test_from_editor
 	var grab = (show_main and not main_menu.visible) or (show_pause and not pause_menu.visible)
 	main_menu.visible = show_main
 	pause_menu.visible = show_pause
@@ -399,8 +346,6 @@ func layout():
 	var viewport = root.size
 	modal.size = Vector2(minf(920, viewport.x - 48), minf(740, viewport.y - 52))
 	modal.position = (viewport - modal.size) / 2
-	if app.editor:
-		app.editor.layout_panels()
 
 
 func open(title, key):
@@ -410,7 +355,7 @@ func open(title, key):
 	clear(content)
 	screen = key
 	title_label.text = title
-	if app.frontend and not app.editing:
+	if app.frontend:
 		title_label.add_theme_font_size_override("font_size", 40)
 	blocker.visible = true
 	layout()
@@ -595,40 +540,6 @@ func open_library():
 		var l = label(r, name, 16)
 		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button(r, "Load", func(): app.request_track_file(file))
-		button(r, "Rename", func(): ask_name("Circuit name", name, func(value): app.rename_file(file, value)))
-		var del = button(
-			r,
-			"Delete",
-			func():
-				confirm(
-					"Delete circuit",
-					"Delete " + name + "?",
-					func():
-						app.delete_file(file)
-						open_library()
-				)
-		)
-		del.disabled = file.begins_with("res://")
-	var actions2 = row(content)
-	button(actions2, "New circuit", app.new_track)
-	button(actions2, "Import JSON…", func(): app.choose_file("track", false))
-	button(actions2, "Import real circuit…", app.choose_outline)
-	button(actions2, "Export current…", func(): app.choose_file("track", true))
-	button(actions2, "Save as…", app.save_track_as)
-	section(content, "Copy / paste track JSON")
-	json_box = TextEdit.new()
-	json_box.custom_minimum_size.y = 130
-	json_box.placeholder_text = "Paste a Racing Sim track document here"
-	content.add_child(json_box)
-	var actions3 = row(content)
-	button(
-		actions3,
-		"Fill / copy current",
-		func():
-			json_box.text = JSON.stringify(app.track.to_json(), "  ")
-			DisplayServer.clipboard_set(json_box.text)
-	)
-	button(actions3, "Load text", func(): app.import_track_data(JSON.parse_string(json_box.text)))
 	section(content, "Best lap / ghost")
 	var ghost_row = row(content)
 	button(ghost_row, "Import ghost…", func(): app.choose_file("ghost", false))
@@ -712,13 +623,6 @@ func open_settings():
 	choice(d, "Graphics quality", ["Low", "Medium", "High"], s.quality, func(v): setting("quality", v))
 	check(d, "Adaptive quality", s.adaptive, func(v): setting("adaptive", v))
 	check(d, "Fullscreen · F11", s.fullscreen, func(v): setting("fullscreen", v))
-	choice(
-		d,
-		"Editor scroll",
-		["Mouse wheel / auto gestures", "Trackpad: scroll pans"],
-		s.trackpad,
-		func(v): setting("trackpad", v)
-	)
 	var r = groups.Driving
 	number(
 		r,
@@ -845,7 +749,7 @@ func open_settings():
 	number(a, "Tires / road / impacts", s.effects_volume, 0, 1, .05, func(v): setting("effects_volume", v))
 	wrapped(
 		a,
-		"Procedural engine harmonics follow RPM and throttle. Tire squeal follows slip; gravel, shifts and impacts have separate effects. Sound fades out in menus, the editor and while paused."
+		"Procedural engine harmonics follow RPM and throttle. Tire squeal follows slip; gravel, shifts and impacts have separate effects. Sound fades out in menus and while paused."
 	)
 
 

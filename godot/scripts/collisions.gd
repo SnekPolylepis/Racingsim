@@ -1,7 +1,7 @@
 extends RefCounted
 ## Planar contact solver applied after Car.step and before Race.update.
 ## Wall/tire segments and cones use simulation XY coordinates; height does not separate contacts.
-## Mutates car velocities/contact flag and cone runtime position/velocity; never runs in editor mode.
+## Mutates car velocities/contact flag and cone runtime position/velocity.
 
 
 static func impulse(car, point, normal, bounce, friction):

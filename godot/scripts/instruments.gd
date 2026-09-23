@@ -80,7 +80,7 @@ func box(rect):
 
 
 func _draw():
-	if app == null or app.editing or app.track.samples.is_empty():
+	if app == null or app.track.samples.is_empty():
 		return
 	if app.frontend:
 		draw_console()
