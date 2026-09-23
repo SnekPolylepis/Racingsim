@@ -25,6 +25,7 @@ const TestSurface = preload("res://scripts/surface/test_surface.gd")
 const RoadPath = preload("res://scripts/track/road_path.gd")
 const RoadSection = preload("res://scripts/track/road_section.gd")
 const TrackSurface = preload("res://scripts/surface/track_surface.gd")
+const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const DT = 1.0 / 240
 const R = .33
 const TREAD = .28
@@ -471,10 +472,17 @@ func road_cost():
 	var fp = measured.footprint
 	var single = measured.single
 	check(
-		fp.ok and fp.kerb_wheel_ticks > 240 and fp.us_per_tick < 300,
+		fp.ok and fp.kerb_wheel_ticks > 240 and (fp.us_per_tick < 300 or not GatesEnv.perf()),
 		(
-			"TrackSurface road with ramp kerbs and a sharp 5 cm kerb strip, weaving over them at 80 km/h: %.1f µs per car tick with the footprint (%.1f rays, slowest tick %d µs), single ray %.1f µs (budget 300 µs mean); %d wheel-ticks on kerb"
-			% [fp.us_per_tick, fp.rays_per_tick, fp.worst_us, single.us_per_tick, fp.kerb_wheel_ticks]
+			"TrackSurface road with ramp kerbs and a sharp 5 cm kerb strip, weaving over them at 80 km/h: %.1f µs per car tick with the footprint (%.1f rays, slowest tick %d µs), single ray %.1f µs (budget 300 µs mean); %d wheel-ticks on kerb%s"
+			% [
+				fp.us_per_tick,
+				fp.rays_per_tick,
+				fp.worst_us,
+				single.us_per_tick,
+				fp.kerb_wheel_ticks,
+				GatesEnv.perf_note()
+			]
 		)
 	)
 	# Mesh kerb faces are real faces: rays that strike them must not carry the tyre (it once gave

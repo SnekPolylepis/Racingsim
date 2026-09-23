@@ -1,0 +1,118 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  roadster tyre peaks at 8.6° slip angle, 0.16 slip ratio
+PASS  roadster 0-100 km/h in 8.24 s
+PASS  roadster 100-0 km/h in 42.3 m
+PASS  roadster holds 0.72 g on a 150 m skidpad
+PASS  roadster lift mid-corner at 90% of the limit: body slip 1° (default aids)
+PASS  roadster brake mid-corner at 90% of the limit: body slip 1° (default aids)
+PASS  roadster power mid-corner at 90% of the limit: body slip 6° (default aids)
+PASS  roadster one minute at 90% cornering: hottest tyre 56 °C (window 65±40)
+PASS  roadster full stick at 80 km/h with grip assist: peak body slip 5° (no spin)
+PASS  roadster full stick at 160 km/h with grip assist: peak body slip 9° (no spin)
+PASS  gt tyre peaks at 7.1° slip angle, 0.13 slip ratio
+PASS  gt 0-100 km/h in 4.46 s
+PASS  gt 100-0 km/h in 29.4 m
+PASS  gt holds 1.74 g on a 150 m skidpad
+PASS  gt lift mid-corner at 90% of the limit: body slip 1° (default aids)
+PASS  gt brake mid-corner at 90% of the limit: body slip 1° (default aids)
+PASS  gt power mid-corner at 90% of the limit: body slip 12° (default aids)
+PASS  gt one minute at 90% cornering: hottest tyre 86 °C (window 78±40)
+PASS  gt full stick at 80 km/h with grip assist: peak body slip 1° (no spin)
+PASS  gt full stick at 160 km/h with grip assist: peak body slip 3° (no spin)
+PASS  f296gt3 tyre peaks at 6.8° slip angle, 0.12 slip ratio
+PASS  f296gt3 0-100 km/h in 4.12 s
+PASS  f296gt3 100-0 km/h in 28.4 m
+PASS  f296gt3 holds 1.97 g on a 150 m skidpad
+PASS  f296gt3 lift mid-corner at 90% of the limit: body slip 1° (default aids)
+PASS  f296gt3 brake mid-corner at 90% of the limit: body slip 2° (default aids)
+PASS  f296gt3 power mid-corner at 90% of the limit: body slip 8° (default aids)
+PASS  f296gt3 one minute at 90% cornering: hottest tyre 86 °C (window 80±38)
+PASS  f296gt3 full stick at 80 km/h with grip assist: peak body slip 1° (no spin)
+PASS  f296gt3 full stick at 160 km/h with grip assist: peak body slip 3° (no spin)
+PASS  roadster Simcade 0-100 8.558 s / Simulation 8.237 s
+PASS  roadster Simcade 100-0 39.392 m / Simulation 42.260 m
+PASS  roadster Simcade skidpad 0.724 g / Simulation 0.716 g
+PASS  roadster tyre plateau 5-13 degrees minimum 1.000
+PASS  roadster full lock at 80 km/h: 4.17 deg body slip
+PASS  roadster full lock at 120 km/h: 6.58 deg body slip
+PASS  roadster full lock at 160 km/h: 7.38 deg body slip
+PASS  roadster keyboard 160 km/h ASM 1: 8.95 deg
+PASS  roadster lift ASM 3 peak 2.23 deg at 90% limit
+PASS  roadster lift ASM 3 recovery 0.00 deg after 2s neutral
+PASS  roadster lift-off yaw increase 0.04398 rad/s
+PASS  roadster brake ASM 3 peak 3.47 deg at 90% limit
+PASS  roadster brake ASM 3 recovery 0.00 deg after 2s neutral
+PASS  roadster trail braking yaw 0.528 rad/s versus zero straight braking yaw
+PASS  roadster power ASM 3 peak 5.00 deg at 90% limit
+PASS  roadster power ASM 3 recovery 0.04 deg after 2s neutral
+PASS  roadster lift ASM 0 peak 2.24 deg at 90% limit
+PASS  roadster lift ASM 0 recovery 0.00 deg after 2s neutral
+PASS  roadster brake ASM 0 peak 4.25 deg at 90% limit
+PASS  roadster brake ASM 0 recovery 0.00 deg after 2s neutral
+PASS  roadster power ASM 0 peak 8.56 deg at 90% limit
+PASS  roadster power ASM 0 recovery 0.01 deg after 2s neutral
+PASS  roadster one-minute heat soak 69.8 C, conservative grip floor 0.9996
+PASS  gt Simcade 0-100 4.379 s / Simulation 4.463 s
+PASS  gt Simcade 100-0 28.816 m / Simulation 29.357 m
+PASS  gt Simcade skidpad 1.806 g / Simulation 1.740 g
+PASS  gt tyre plateau 5-13 degrees minimum 1.000
+PASS  gt full lock at 80 km/h: 2.24 deg body slip
+PASS  gt full lock at 120 km/h: 2.78 deg body slip
+PASS  gt full lock at 160 km/h: 3.18 deg body slip
+PASS  gt keyboard 160 km/h ASM 1: 3.28 deg
+PASS  gt lift ASM 3 peak 2.17 deg at 90% limit
+PASS  gt lift ASM 3 recovery 0.00 deg after 2s neutral
+PASS  gt lift-off yaw increase 0.07017 rad/s
+PASS  gt brake ASM 3 peak 1.74 deg at 90% limit
+PASS  gt brake ASM 3 recovery 0.00 deg after 2s neutral
+PASS  gt trail braking yaw 0.525 rad/s versus zero straight braking yaw
+PASS  gt power ASM 3 peak 5.73 deg at 90% limit
+PASS  gt power ASM 3 recovery 0.00 deg after 2s neutral
+PASS  gt lift ASM 0 peak 2.11 deg at 90% limit
+PASS  gt lift ASM 0 recovery 0.00 deg after 2s neutral
+PASS  gt brake ASM 0 peak 1.73 deg at 90% limit
+PASS  gt brake ASM 0 recovery 0.00 deg after 2s neutral
+PASS  gt power ASM 0 peak 17.84 deg at 90% limit
+PASS  gt power ASM 0 recovery 0.00 deg after 2s neutral
+PASS  gt one-minute heat soak 103.2 C, conservative grip floor 0.9904
+PASS  f296gt3 Simcade 0-100 4.046 s / Simulation 4.117 s
+PASS  f296gt3 Simcade 100-0 27.799 m / Simulation 28.418 m
+PASS  f296gt3 Simcade skidpad 2.103 g / Simulation 1.967 g
+PASS  f296gt3 tyre plateau 5-13 degrees minimum 1.000
+PASS  f296gt3 full lock at 80 km/h: 2.38 deg body slip
+PASS  f296gt3 full lock at 120 km/h: 2.92 deg body slip
+PASS  f296gt3 full lock at 160 km/h: 3.31 deg body slip
+PASS  f296gt3 keyboard 160 km/h ASM 1: 3.41 deg
+PASS  f296gt3 lift ASM 3 peak 2.49 deg at 90% limit
+PASS  f296gt3 lift ASM 3 recovery 0.00 deg after 2s neutral
+PASS  f296gt3 lift-off yaw increase 0.09627 rad/s
+PASS  f296gt3 brake ASM 3 peak 2.58 deg at 90% limit
+PASS  f296gt3 brake ASM 3 recovery 0.00 deg after 2s neutral
+PASS  f296gt3 trail braking yaw 0.512 rad/s versus zero straight braking yaw
+PASS  f296gt3 power ASM 3 peak 7.86 deg at 90% limit
+PASS  f296gt3 power ASM 3 recovery 0.00 deg after 2s neutral
+PASS  f296gt3 lift ASM 0 peak 2.61 deg at 90% limit
+PASS  f296gt3 lift ASM 0 recovery 0.00 deg after 2s neutral
+PASS  f296gt3 brake ASM 0 peak 3.00 deg at 90% limit
+PASS  f296gt3 brake ASM 0 recovery 0.00 deg after 2s neutral
+PASS  f296gt3 power ASM 0 peak 15.97 deg at 90% limit
+PASS  f296gt3 power ASM 0 recovery 0.00 deg after 2s neutral
+PASS  f296gt3 one-minute heat soak 99.0 C, conservative grip floor 0.9937
+PASS  roadster ratio plateau 1.000, sliding floor 0.870
+PASS  roadster surface 2 coast: 22.23 m/s, 0.003 deg slip
+PASS  roadster surface 3 coast: 5.56 m/s, 0.031 deg slip
+PASS  roadster differential torque split open 0.0 / locked 1800.0 Nm
+PASS  roadster front share of mid-corner load transfer: soft 0.219 / stiff 0.800
+PASS  gt ratio plateau 1.000, sliding floor 0.870
+PASS  gt surface 2 coast: 21.13 m/s, 0.003 deg slip
+PASS  gt surface 3 coast: 4.84 m/s, 0.016 deg slip
+PASS  gt differential torque split open 0.0 / locked 3360.0 Nm
+PASS  gt front share of mid-corner load transfer: soft 0.333 / stiff 0.633
+PASS  f296gt3 ratio plateau 1.000, sliding floor 0.870
+PASS  f296gt3 surface 2 coast: 21.22 m/s, 0.003 deg slip
+PASS  f296gt3 surface 3 coast: 4.73 m/s, 0.017 deg slip
+PASS  f296gt3 differential torque split open 0.0 / locked 3240.0 Nm
+PASS  f296gt3 front share of mid-corner load transfer: soft 0.338 / stiff 0.615
+SIMCADE DYNAMICS PASS 114 checks, 0 failures
+AIDS SIMCADE RESULTS {"checks":114,"failures":[],"simulation_failures":[]}
