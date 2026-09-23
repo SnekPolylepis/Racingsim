@@ -206,7 +206,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 - **P5-01 [CONTENT]** Verify the DEM/orthophoto sources and licences for Spa and the Nordschleife (D10). Record them in `THIRD-PARTY.md`. No data is committed before this. **Licences verified 2026-09-22** (`docs/rebuild/data-sources-P5-01.md`): Nordschleife dl-de/by-2.0, Spa CC BY 4.0; both allow commercial derived works with attribution. Verified sources and licence terms are recorded in `THIRD-PARTY.md`; add acquisition details and in-game credits when derived data first ships (P6).
 - **P5-02 [CONTENT]** Design the proving ground on paper: corner list, elevation profile, the features to test (bowl, crest to take off at ~150 km/h, compression, off-camber, concrete ditch, kerbs of each type). **Designed 2026-09-22** in `docs/rebuild/proving-ground-P5-02.md`; P5-03 builds and measures it.
-- **P5-03 [CONTENT]** Build it with the P3 tools; scenery; night lighting.
+- **P5-03 [CONTENT]** Build it with the P3 tools; scenery; night lighting. **Built 2026-09-23 on `rb/P5-03-proving-ground`, review pending** (`trackgen/proving_ground.gd`, `tests/v2/proving_ground.gd`). The 32.75 MB baked scene exceeds the ~5 MB commit budget, so the generator is the branch deliverable and bake-on-load is proposed in the log.
 - **P5-04** Owner playtest and iterate. Record the lap baselines.
 
 ### P6: Real circuits

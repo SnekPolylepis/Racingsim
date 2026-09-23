@@ -30,6 +30,9 @@ godot/tests/showcase/
 godot/tests/audio-study/
 godot/*.log
 
+# Oversized generated proving-ground bake; regenerate from godot/trackgen/proving_ground.gd
+godot/tracks3d/proving_ground/proving_ground.scn
+
 # Copyrighted reference screenshots, study-only, never distributed
 godot/reference/
 
