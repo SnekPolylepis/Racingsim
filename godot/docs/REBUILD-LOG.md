@@ -1140,3 +1140,37 @@ Proving-ground laps are 6-9 % faster than the P4-07 baseline, because the old pl
 `trackgen/spa.gd` `add_bot_line`: Catmull-Rom handles (P6-01 review item 1). The line is now a smooth curve, not a polyline. Laps are 1-2 s faster and still clean. **The committed `tracks3d/spa/spa.scn` still has the old line.** Anything that loads the generator (laps, the dev drive scene's bake-on-load cache) gets the new one. F-P6-01 regenerates the scene.
 
 Gates (`run_gates.ps1`, affected): all pass except known items. The laps stderr is the Spa bank-twist warning (F-P6-01). The terrain timing check read 671 µs under parallel load and passes alone at 168 µs (queued as F-terrain-perf).
+
+## 2026-09-23  DONE P2-comp tyre compliance and unsprung mass  (Claude Opus 5.5) — branch `rb/P2-comp` (from main)
+Owner decisions (2026-09-23): **D-kerb: no**, so Simcade and Simulation kerbs stay the same. **D-compliance: yes**, which is this task.
+
+**Model** (`scripts/vehicle/car_body.gd`, `compliance = true`; off gives P2-06's massless wheel for comparison):
+- Each wheel is a mass moving along its suspension axis: the spring, damper, bump stop and ARB above it, and a radial tyre spring (plus 500 N s/m hysteresis) below it on the footprint's rigid-wheel contact distance. The tyre cannot pull.
+- Wheel load (grip, static friction, telemetry) is the tyre force.
+- The body keeps the whole car's mass and inertia, but along each suspension axis it receives the suspension force plus unsprung mass × felt acceleration (last tick) instead of the tyre force. So the sprung body moves on its springs and dampers alone, and a tyre spike is felt through the wheel. The tyre's in-plane forces still reach the body through the rigid links.
+- Exact at rest (felt = g: springs carry the sprung weight, tyres the whole car) and in free fall (felt = 0).
+- Wheel travel is integrated with linearised backward Euler over spring, damper and tyre terms, so 14-17 Hz wheel hop is stable at 240 Hz. A full-droop stop sits at the spring's free length.
+- Ride height is unchanged: the mount sits the static tyre squash higher, keeping cgHeight.
+- `place()` seats each wheel where spring (bump stop included) and tyre balance on the ground under it (flat: exactly static). Without it a wheel started off the ground on a cambered grid for 13 ms.
+- New `cars.json` keys (documented in DATA-CONTRACTS): `unsprungMass` [F, R] kg and `tyreRate` N/m. Roadster 28/30 kg, 190 kN/m. GT 40/43 kg, 300 kN/m. 296 GT3 42/45 kg, 340 kN/m. Hop damping ratio 0.4-1.0.
+- `bodyClearance`: the roadster's box sill is now 0.13 m (the NA's front lip). Its 10 cm generic sill already cleared by only 9 mm in a full stop, and the extra dive touched it by 1 mm.
+
+**Kerbs** (proving-ground driven kerbs, massless → compliant):
+
+| kerb | peak wheel load (x static) | compression jolt |
+|---|---|---|
+| ribbed, 120 km/h | 6.95 → 5.75 | 9.2 → 4.4 mm |
+| sausage, 120 km/h | 6.72 → 6.29 | 11.8 → 6.5 mm |
+| bevel, 120 km/h | 3.32 → 3.49 | 3.2 → 2.0 mm |
+
+The compression dip at 100 km/h drops from 2.69 to 2.39 mg. On the analytic 5 cm step the *tyre* load rises (3.3 → 6.5x at 150 km/h: the wheel mass cannot get out of the way of a square edge, which is physical), while the body no longer takes it directly. Edge normals still come from the ground (§5.2). Leaning them, so a kerb pushes the car back and up, is now possible and is left as a follow-up (P2-comp-b).
+
+**Test changes**
+- `suspension.gd` warp statics put the tyre rate in series with each axle's twist rate. The 296 matches to 0.0-0.1 %, the roadster to -0.7/-1.9 %.
+- The 64-bit precision check runs on the massless wheel: in the void the compliant wheels drop to droop and move the sprung body by 1.6 µm, which is physical.
+- `proving_ground.gd` runs the crest flight 3 km/h over the take-off threshold the bisection finds, instead of a fixed 150 km/h. The threshold moved from 148 to 152.5 km/h input (observed 145.8 → 149.3 km/h, closer to the design's 148.5 estimate and ~150 target): the wheels follow the falling road longer.
+- `flat_equivalence.gd` keeps the strict ±3 % CarModel gate on the massless wheel and adds a ±5 % gate with compliance. Worst with compliance: roadster Simcade 100-0 +3.06 %, of which +2.66 % was already there massless.
+- `data/simcade.json` carbody `asm_slip_cut_gain` 16 → 18: the 296's Simcade power-on ASM peak went 7.86 → 8.07 deg (limit 8), and is now 7.83.
+- Lap times move -0.1 to -0.3 %. Baseline re-recorded.
+
+**Gates:** `run_gates.ps1 -All` passes, except that laps stderr carries the known Spa bank warning (F-P6-01). Windowed `--features` 212/0, stderr empty. `--v2-smoke` passes. Car step cost is unchanged (the chassis spike reads ~158 µs).

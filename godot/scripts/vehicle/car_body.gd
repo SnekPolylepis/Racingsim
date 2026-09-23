@@ -17,7 +17,8 @@ const STATIC_LENGTH = .15
 ## a kerb under a bottomed corner) still returns a hit, and the bump stop sees the real penetration
 ## instead of a ray that starts inside the surface.
 const RAY_LIFT = .5
-## Chassis box used for body-to-ground contact, relative to the axles and the static ground plane.
+## Chassis box used for body-to-ground contact, relative to the axles and the static ground plane
+## (a preset's "bodyClearance" overrides the sill height).
 const BODY_OVERHANG = .8
 const BODY_SIDE = .12
 const BODY_CLEARANCE = .1
@@ -26,6 +27,12 @@ const BODY_HEIGHT = 1.25
 const BODY_STIFFNESS = 200000.0
 const BODY_DAMPING = 12000.0
 const BODY_FRICTION = .6
+## Unsprung mass per corner as a fraction of the car's mass, and the radial tyre rate (N/m), when the
+## preset has no "unsprungMass" ([front, rear] kg) or "tyreRate" (N/m).
+const UNSPRUNG_FRACTION = .03
+const TYRE_RATE = 260000.0
+## Radial tyre damping (N s/m): rubber hysteresis, small beside the damper.
+const TYRE_DAMPING = 500.0
 const TyreFootprint = preload("res://scripts/vehicle/tyre_footprint.gd")
 
 ## World position and velocity of the CG in 64-bit scalars (5.1 precision contract). Godot's Vector3
@@ -66,6 +73,20 @@ var body_points = []
 var body_contacts = 0
 ## Tyre footprint contact (P2-06): off gives the single centre ray per wheel, for comparison.
 var footprint = true
+## Tyre compliance and unsprung mass (P2-comp): each wheel is a mass moving along its suspension axis,
+## between the spring/damper/bump stop/ARB above and a radial tyre spring below, so a kerb's climb rate
+## is filtered by the wheel instead of reaching the damper whole. Off gives P2-06's massless wheel on a
+## rigid tyre, for comparison.
+var compliance = true
+## Per wheel (compliance): unsprung mass (kg), radial tyre rate (N/m), and the wheel centre's extension
+## below the mount along the body's -Y (m) with its rate (m/s).
+var unsprung = []
+var tyre_rate = []
+var ext = []
+var ext_v = []
+## Whether the next step seats each wheel on the ground under it (set by place(): the wheels start at
+## flat-ground static extension, which is off on a camber or a jack).
+var seat_wheels = false
 ## Tread width for the footprint, metres (preset "treadWidth", else TyreFootprint.DEFAULT_TREAD).
 var tread = TyreFootprint.DEFAULT_TREAD
 ## Surface queries made by the footprints last tick (centre rays included).
@@ -103,20 +124,35 @@ func rig():
 	mount.clear()
 	free_length.clear()
 	static_comp.clear()
+	unsprung.clear()
+	tyre_rate.clear()
+	ext.clear()
+	ext_v.clear()
 	var stf = p.mass * G * p.b / (p.a + p.b) / 2
 	var strr = p.mass * G * p.a / (p.a + p.b) / 2
+	var masses = p.get("unsprungMass", [p.mass * UNSPRUNG_FRACTION, p.mass * UNSPRUNG_FRACTION])
 	for i in 4:
 		var front = i < 2
-		var comp = (stf if front else strr) / (setup.springF if front else setup.springR)
+		var corner = stf if front else strr
+		var mu = float(masses[0 if front else 1]) if compliance else 0.0
+		var kt = float(p.get("tyreRate", TYRE_RATE))
+		# With compliance the tyre carries the whole corner and the spring only the sprung part; the tyre
+		# squats by corner / kt at rest, so the mount sits that much lower to keep cgHeight (5.1).
+		var comp = (corner - mu * G) / (setup.springF if front else setup.springR)
+		var sq = corner / kt if compliance else 0.0
+		unsprung.append(mu)
+		tyre_rate.append(kt)
+		ext.append(STATIC_LENGTH)
+		ext_v.append(0.0)
 		static_comp.append(comp)
 		free_length.append(STATIC_LENGTH + comp)
-		mount.append(Vector3(wheels[i].bx, -setup.cgHeight + p.wheelR + STATIC_LENGTH, wheels[i].by))
+		mount.append(Vector3(wheels[i].bx, -setup.cgHeight + p.wheelR - sq + STATIC_LENGTH, wheels[i].by))
 	# Chassis box: sills at ground clearance and roof at body height (both above the static ground
 	# plane), front and rear overhang beyond the axles, a little wider than the track.
 	var front_x = p.a + BODY_OVERHANG
 	var rear_x = -p.b - BODY_OVERHANG
 	var side = p.track * .5 + BODY_SIDE
-	var sill = -setup.cgHeight + BODY_CLEARANCE
+	var sill = -setup.cgHeight + float(p.get("bodyClearance", BODY_CLEARANCE))
 	var roof = -setup.cgHeight + BODY_HEIGHT
 	body_points.clear()
 	for bx in [front_x, 0.0, rear_x]:
@@ -140,6 +176,9 @@ func place(at: Vector3, heading: float, ground_y: float):
 	rot = Quaternion(Vector3.UP, -heading)
 	vel = Vector3.ZERO
 	ang = Vector3.ZERO
+	# At rest on the ground: the felt acceleration the wheels (compliance) are in equilibrium with.
+	accel = Vector3(0, G, 0)
+	seat_wheels = compliance
 	mark_pose()
 	sync_legacy()
 
@@ -241,6 +280,9 @@ func step(dt, surface, automatic = true):
 	var hits = []
 	var comp = [0.0, 0.0, 0.0, 0.0]
 	var rate = [0.0, 0.0, 0.0, 0.0]
+	# Compliance: the tyre's radial penetration into the ground under the wheel centre, and its rate.
+	var pen = [0.0, 0.0, 0.0, 0.0]
+	var pen_rate = [0.0, 0.0, 0.0, 0.0]
 	var here = pos
 	var v = vel
 	footprint_rays = 0
@@ -276,17 +318,45 @@ func step(dt, surface, automatic = true):
 			if not hit.is_empty():
 				footprint_rays += hit.rays
 		hits.append(hit)
+		if compliance:
+			# The spring and damper work on the wheel's own travel, whatever the ground does.
+			comp[i] = free_length[i] - ext[i]
+			rate[i] = -ext_v[i]
 		if hit.is_empty():
 			continue
 		var n = hit.normal
 		var top_vel = v + w_world.cross(top - here)
-		# Beyond free_length + wheel radius of compression the ground is above the mount; the bump
-		# stop then answers the real penetration, continuously.
-		comp[i] = free_length[i] - (hit.distance - ray_offset - p.wheelR)
-		# Compression rate from the mount's velocity into the contact normal (first order: ignores the
-		# ray direction's own rotation). The footprint takes the normal from the ground (5.2), so a kerb
-		# edge's climb shows in the compression, not the rate (no tyre compliance to absorb the rate).
-		rate[i] = -n.dot(top_vel) / maxf(n.dot(up), .05)
+		# The mount's approach to the ground along the axis, from its velocity into the contact normal
+		# (first order: ignores the ray direction's own rotation).
+		var approach = -n.dot(top_vel) / maxf(n.dot(up), .05)
+		if compliance and seat_wheels:
+			# The wheel where spring (bump stop included) and tyre balance on the ground under it: on
+			# flat ground exactly the static extension, and deeper ground compresses both in series.
+			var k = s.springF if i < 2 else s.springR
+			var ground = hit.distance - ray_offset - p.wheelR
+			var e = (k * free_length[i] + unsprung[i] * G + tyre_rate[i] * ground) / (k + tyre_rate[i])
+			var stop = free_length[i] - static_comp[i] - SUSP_TRAVEL
+			if e < stop:
+				var kb = k * BUMP_STOP_RATE
+				e = (
+					(k * free_length[i] + kb * stop + unsprung[i] * G + tyre_rate[i] * ground)
+					/ (k + kb + tyre_rate[i])
+				)
+			ext[i] = clampf(e, 0.0, free_length[i])
+			ext_v[i] = 0.0
+			comp[i] = free_length[i] - ext[i]
+		if compliance:
+			# The footprint's distance is where a rigid wheel of this radius touches; the tyre squashes
+			# by how far the wheel centre sits below that. A kerb's climb reaches the tyre spring and
+			# the wheel mass, not the damper.
+			pen[i] = ext[i] + ray_offset + p.wheelR - hit.distance
+			pen_rate[i] = approach + ext_v[i]
+		else:
+			# Beyond free_length + wheel radius of compression the ground is above the mount; the bump
+			# stop then answers the real penetration, continuously. The footprint takes the normal from
+			# the ground (5.2), so a kerb edge's climb reaches the damper whole on this massless wheel.
+			comp[i] = free_length[i] - (hit.distance - ray_offset - p.wheelR)
+			rate[i] = approach
 		# Rough ground (grass, gravel, runoff) shakes the damper as car.gd does, scaled down in Simcade.
 		# Kerbs are real geometry here, as they are there, so they add none.
 		var rough = TrackModel.SURF[hit.surface]
@@ -294,40 +364,67 @@ func step(dt, surface, automatic = true):
 			var bump = (rnd() - .5) * rough.bump * minf(1, speed / 10)
 			rate[i] += bump * (simcade.rough_bump_scale if simcade_enabled else 1.0)
 	contact_hits = hits
+	seat_wheels = false
+	# Suspension force per corner (spring, damper, bump stop, ARB). On the massless wheel it is the
+	# wheel load; with compliance it acts between body and wheel, and the tyre carries the wheel.
 	var loads = [0.0, 0.0, 0.0, 0.0]
+	var travel_k = [0.0, 0.0, 0.0, 0.0]
+	var travel_c = [0.0, 0.0, 0.0, 0.0]
 	for i in 4:
-		if hits[i].is_empty():
+		if hits[i].is_empty() and not compliance:
 			continue
 		var front = i < 2
 		var k = s.springF if front else s.springR
 		var c = (s.bumpF if front else s.bumpR) if rate[i] > 0 else (s.reboundF if front else s.reboundR)
 		loads[i] = k * comp[i] + c * rate[i]
+		travel_k[i] = k + (s.arbF if front else s.arbR)
+		travel_c[i] = c
 		var over = comp[i] - static_comp[i] - SUSP_TRAVEL
 		if over > 0:
 			loads[i] += k * BUMP_STOP_RATE * over
+			travel_k[i] += k * BUMP_STOP_RATE
 	for axle in [[0, 1, s.arbF, s.springF], [2, 3, s.arbR, s.springR]]:
 		var add = arb_pair(
 			axle[2],
 			axle[3],
 			comp[axle[0]],
 			comp[axle[1]],
-			not hits[axle[0]].is_empty(),
-			not hits[axle[1]].is_empty()
+			compliance or not hits[axle[0]].is_empty(),
+			compliance or not hits[axle[1]].is_empty()
 		)
 		loads[axle[0]] += add[0]
 		loads[axle[1]] += add[1]
+	# Wheel load: the tyre's radial spring and damper with compliance (it cannot pull), else the
+	# suspension force.
+	var tyre_load = loads.duplicate()
+	if compliance:
+		for i in 4:
+			tyre_load[i] = 0.0
+			if not hits[i].is_empty() and pen[i] > 0:
+				tyre_load[i] = maxf(0.0, tyre_rate[i] * pen[i] + TYRE_DAMPING * pen_rate[i])
+	var axial = [0.0, 0.0, 0.0, 0.0]
+	# Compliance: the body is integrated with the whole car's mass, so along each suspension axis it takes
+	# the suspension force plus the unsprung mass times the felt acceleration (last tick's) instead of the
+	# tyre force. Its true (sprung) motion then follows from the springs and dampers alone, a tyre spike
+	# is felt through the wheel, and at rest (felt = g) or in free fall (felt = 0) it is exact.
+	var felt = accel.dot(up)
 	contacts = 0
 	all_off = true
 	var torques = [0.0, 0.0, 0.0, 0.0]
 	var total_load = 0.0
 	for i in 4:
 		if not hits[i].is_empty():
-			total_load += maxf(0.0, loads[i])
+			total_load += maxf(0.0, tyre_load[i])
 	for i in 4:
 		var w = wheels[i]
 		var hit = hits[i]
 		w.comp = comp[i] - static_comp[i]
-		w.load = maxf(0.0, loads[i]) if not hit.is_empty() else 0.0
+		w.load = maxf(0.0, tyre_load[i]) if not hit.is_empty() else 0.0
+		if compliance:
+			var carried = up * (loads[i] + unsprung[i] * felt)
+			var at = here + b * mount[i] if hit.is_empty() else hit.point
+			force += carried
+			torque += (at - here).cross(carried)
 		if hit.is_empty() or w.load <= 0:
 			w.load = 0.0
 			w.fx = 0.0
@@ -369,11 +466,18 @@ func step(dt, surface, automatic = true):
 		var sv = tyre[4]
 		var radius = tyre[5]
 		var f = fwd * (fx + fxr) + side * (fy + fyr) + n * w.load
+		if compliance:
+			# The tyre's push along the suspension axis goes into the wheel; the rest reaches the body
+			# through the rigid links.
+			axial[i] = f.dot(up)
+			f -= up * axial[i]
 		force += f
 		torque += (point - here).cross(f)
 		torques[i] = -fx * radius
 		VehicleTyre.finish_contact(self, w, fx, fy, sv, vwy, nominal, dt, sf)
 	airborne = contacts == 0
+	if compliance:
+		travel(dt, up, loads, axial, travel_k, travel_c, tyre_load)
 	steer_torque = wheels[0].mz + wheels[1].mz
 	drivetrain(dt, torques, automatic)
 	# Aero: downforce at each axle along the body's down axis, drag at the CG against the velocity.
@@ -474,6 +578,35 @@ func body_contact(surface, b, up, v, w_world, here, dt):
 ## c_air = arb c_ground / (k + arb). The bar then adds arb (c_ground - c_air) = c_ground arb k / (k + arb)
 ## to the grounded wheel (the bar in series with the lifted wheel's spring), and nothing to the body
 ## at the lifted corner, whose spring force and bar force cancel. Neither on the ground: nothing.
+## Compliance: advance each wheel along its suspension axis one tick. Extension (down the body's -Y)
+## accelerates by (suspension force - tyre force along the axis) / unsprung mass, plus the felt
+## acceleration along the axis (gravity less the body's acceleration, last tick's). Spring and damper
+## terms, suspension and tyre, are taken implicitly (linearised backward Euler), so a stiff tyre on a
+## light wheel (wheel hop ~15-20 Hz) and a firm damper stay stable at 240 Hz. The wheel stops at full
+## droop (the spring's free length) and never passes the mount.
+func travel(dt, up, spring, axial, k, c, tyre_load):
+	var felt = accel.dot(up)
+	for i in 4:
+		var mu = unsprung[i]
+		var kk = k[i]
+		var cc = c[i]
+		if tyre_load[i] > 0:
+			kk += tyre_rate[i]
+			cc += TYRE_DAMPING
+		var f0 = (spring[i] - axial[i]) / mu + felt
+		var v0 = ext_v[i]
+		var v1 = (v0 * (1 + dt * cc / mu) + dt * f0) / (1 + dt * cc / mu + dt * dt * kk / mu)
+		var e1 = ext[i] + v1 * dt
+		if e1 > free_length[i]:
+			e1 = free_length[i]
+			v1 = minf(v1, 0.0)
+		elif e1 < 0.0:
+			e1 = 0.0
+			v1 = maxf(v1, 0.0)
+		ext[i] = e1
+		ext_v[i] = v1
+
+
 static func arb_pair(arb, k, cl, cr, left_down, right_down):
 	if left_down and right_down:
 		var f = arb * (cl - cr)
