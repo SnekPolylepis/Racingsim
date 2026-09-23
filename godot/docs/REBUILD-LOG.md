@@ -518,3 +518,29 @@ Medians:
 - Delta (B − A): flat −8.8 µs (−11.2 %), crest −10.9 µs (−4.4 %)
 Recovers ~8.8 µs per tick on flat ground, eliminating over half of the +13 µs vehicle module extraction overhead.
 
+## 2026-09-22  DONE P3-02b road tool v2  (Claude Opus 5.5) — branch `rb/P3-02b-road-tool-v2` (on `rb/P3-02-road-tool`)
+Built for Sol's P5-02 proving-ground design, whose cross-sections the v1 tool could not express. Changed: `road_section.gd`, `road_builder.gd`, `road_path.gd`. New: `tests/v2/road_tool_v2.gd` (12 checks), output `docs/rebuild/road-tool-v2-P3-02b.txt`. The v1 suite (`road_tool.gd`) still passes 15/15 unchanged: the new fields default to v1 behaviour.
+
+New in the tool:
+- **Kerbs:** `SAUSAGE` (rounded hump, h·sin(πf)) and `RIBBED` (rises to kerb_height in its first quarter, then transverse ridges of `rib_height` every `rib_pitch`, built as geometry by subdividing the kerb band along the road at a quarter pitch; the ridges vanish at both band edges, so the extra vertices lie on the neighbouring strips' edges). The kerb band now has 4 stations.
+- **Verges:** `verge_surface_left/right` (−1 = shared `verge_surface`) and a `runoff_left/right` band of `runoff_surface` (default 4, tarmac runoff) between kerb and verge.
+- **Inset ditch:** `ditch` (0..1 depth factor, eased, so keys taper it), `ditch_offset`, `ditch_floor`, `ditch_wall`, `ditch_angle_deg`, `ditch_fillet`. The same profile as `TestSurface.ditch()`, in closed form. Needs fine road stations: `RoadPath.road_stations` (odd; 9 = v1's w/8). Bake warns when the ditch is sampled coarser than 0.25 m laterally.
+- **Elevation keys:** `RoadPath.elevation_keys` (station, height) replace the curve's own heights with an interpolating **cubic spline** (natural ends when open, periodic when closed), so the plan is drawn flat and the profile keyed by station. C2, so vertical curvature never steps at a key.
+- **Grid:** `grid_first_m`, `grid_spacing_m`, `grid_offset_m`; slot heights now include any ditch.
+- Warnings are returned in `bake().warnings` (RoadPath pushes them), so tests can check them without writing to stderr.
+
+Results (12/12, stderr empty):
+- SAUSAGE hump within 0.4 mm of 9 cm·sin(πf); RIBBED base 9 cm, ridges 7.9 mm (8 mm keyed), 4 per 2 m (0.5 m pitch); runoff 4 for 10 m then gravel on the right, grass on the left.
+- **Ditch within 2.2 mm of `TestSurface.ditch()` across the whole road** (57 stations over 14 m), walls 37.00°, depth 1.2057 m (analytic 1.2057), 15 m taper at 0 / half / full depth. Warning fires with 9 stations and not with 57.
+- The **296 drives into the ditch, 150 m along its floor and out**: lowest ride −1.215 m (floor −1.206 m), stays on tarmac.
+- Elevation: passes through all 8 P5-02 keys within 3.2 mm; curvature jump at keys ≤ 0.00001 1/m (C2); keys sampled every 20 m from a true R 130 m crest give **R 129.5 m** at the apex.
+- Grid slots at 35.6 / 75.7 / 114.3 / 154.4 m behind the start (35/75/115/155; within station spacing), staggered ±3.0 m.
+- Also: parse clean; track_asset 23/23; spike 23/23; editor load clean.
+
+**For P5-03 (Sol), from building P5-02's own numbers:**
+1. **The crest keys as written give apex R ≈ 86 m, not 130 m** (≈ 102 m averaged over ±10 m). The approach keys (18 m at s 1006 to 25.46 m at s 1095) average an 8.4 % grade, but an R 130 m arc is at 15.4 % 20 m before its apex, so no smooth profile can honour both, and every interpolant tightens the crest. With P5-02's own formula, v² (1/R − ρ(clAF + clAR)/(2m)) = g, the 296 would unload at roughly **115–127 km/h instead of ~148**. Re-key the approach (steeper final grade, or more keys along the arc) and measure on the built mesh.
+2. **The 15 m ditch taper is abrupt:** 1.2 m over 15 m has a ~31 m lip radius, and the 296's front wheels went light for 0.15 s entering and leaving at 50 km/h. Consider 25–30 m tapers, or keep the challenge line slow.
+3. Tool usage for P5-02's cross-sections: ditch → `ditch`, `ditch_offset` ≈ −2 toward the corner's inside, `road_stations` ≥ 49 for a 12 m road (0.25 m); bevel kerb → RAMP 0.04 × 0.6; ribbed → RIBBED 0.045 × 0.8, rib 0.008; high sausage → SAUSAGE 0.09 × 0.6; crest/compression runoff → `runoff_*` 10 with `runoff_surface` 4; grid → `grid_first_m` 35, `grid_spacing_m` 40.
+
+Not done: walls (P3-04), terrain (P3-03), tyre footprint for kerb contact (P2-06); BotLine authoring is still manual (a Path3D named BotLine).
+

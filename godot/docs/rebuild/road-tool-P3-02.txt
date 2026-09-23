@@ -15,4 +15,4 @@ PASS  first corner apex: banked 6.00° (keyed 6°), kerb (1) at 5.5 m out, grave
 PASS  hill crest at 6 m (plus 6 cm crown): 6.059 m
 PASS  all grid slots sit on tarmac
 PASS  296 GT3 laps the tool-built loop through all 12 gates: 52.12 s (one lap at 60 km/h ≈ 53.5 s), min contacts 4, wheel-ticks on grass/gravel 0
-ROAD TOOL RESULTS {"checks":15,"failures":[],"results":{"car_step_us":78.7389739663093,"lap_s":52.1208333333497,"loop":{"length_m":891.661254882813,"max_across_road_m":1.25027668476105,"max_along_m":1.4929426908493},"loop_lap_m":891.650520205498}}
+ROAD TOOL RESULTS {"checks":15,"failures":[],"results":{"car_step_us":78.9097243491577,"lap_s":52.1208333333497,"loop":{"length_m":891.661254882813,"max_across_road_m":1.25027668476105,"max_along_m":1.4929426908493},"loop_lap_m":891.650520205498}}

@@ -1,0 +1,15 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  ditch resolution warning: 9 road stations (1.75 m) warns 1; 57 stations (0.25 m) is clean []
+PASS  SAUSAGE kerb: hump 9 cm at mid-width, sin profile, height error 0.0004 m; left verge grass, falling 3° from the kerb's outer edge
+PASS  RIBBED kerb: base 0.0900 m (9 cm), ridge amplitude 7.9 mm (8 mm, sampled at quarter pitch), 4 ridges over 2 m (pitch 0.5 m)
+PASS  right runoff band tarmac runoff (4) for 10 m, then gravel (3); left verge grass (2): per-side surfaces
+PASS  inset ditch matches TestSurface.ditch() across the road within 0.0022 m; wall 37.00° (37°), depth 1.2057 m (1.2057)
+PASS  ditch tapers in over 15 m: depth 0.003 / 0.603 / 1.201 m at s 60 / 67.5 / 75 (0, half, full; probes fall between 1.48 m stations)
+PASS  296 drives down into the ditch, 150 m along its floor and out: lowest ride -1.215 m (floor -1.206 m), off tarmac 0; front light for 0.15 s at the 15 m taper lips (min contacts 2)
+PASS  elevation keys: the baked road passes through all 8 P5-02 keys within 0.0032 m
+PASS  elevation spline is C2: curvature jump at keys at most 0.00001 1/m
+PASS  keys sampled every 20 m from an R = 130 m crest reproduce it: apex R 129.5 m
+PROBE P5-02 crest keys as written give an apex radius of 86 m (design target 130 m)
+PASS  grid slots [35.6, 75.7, 114.3, 154.4] m behind the start (35/75/115/155), staggered [-3.0, 3.0, -3.0, 3.0] m
+ROAD TOOL V2 RESULTS {"checks":11,"failures":[],"results":{"ditch_depth_m":1.20568084716797,"ditch_light_s":0.15,"p5_02_crest_radius_m":85.7536441468571,"rib_amplitude_m":0.00794601440429688,"rib_peaks_per_2m":4}}
