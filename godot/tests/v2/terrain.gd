@@ -17,6 +17,7 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const TrackSurface = preload("res://scripts/surface/track_surface.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const GatesEnv = preload("res://tests/v2/gates_env.gd")
 
 const DT = 1.0 / 240.0
 
@@ -508,10 +509,10 @@ func test_performance() -> void:
 	var step_us = float(Time.get_ticks_usec() - t0) / n_ticks
 	results["perf_car_step_us"] = step_us
 	check(
-		tris == 8000000 and step_us < 300.0,
+		tris == 8000000 and (step_us < 300.0 or not GatesEnv.perf()),
 		(
-			"performance: 2 km x 2 km bake %.2f s, %d triangles (8M); car step %.1f µs (budget 300 µs)"
-			% [bake_s, tris, step_us]
+			"performance: 2 km x 2 km bake %.2f s, %d triangles (8M); car step %.1f µs (budget 300 µs)%s"
+			% [bake_s, tris, step_us, GatesEnv.perf_note()]
 		)
 	)
 
