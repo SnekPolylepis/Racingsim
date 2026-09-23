@@ -278,3 +278,7 @@ Independent gates via `Start-Process -Wait -PassThru -NoNewWindow`, redirected s
 Correction to my preceding P3-02 review: **retract the high-severity winding finding** at `scripts/track/road_builder.gd:214-216`. I inferred a downward normal from a mathematical cross product, but Godot's actual `SurfaceTool.generate_normals()` for the exact vertex order `(0,0,0), (1,0,0), (0,0,1)` returned `GENERATED_NORMAL (0.0, 1.0, -0.000015)` in Godot 4.6.2 (headless exit 0, empty stderr). The flat road's generated render normal therefore points up. The earlier statement that the road test masked a winding defect was wrong.
 
 **Corrected verdict: fix first**, solely because `scripts/track/road_path.gd:127-130` removes every Grid child on re-bake, including hand-authored or other-tool children. The earlier low-severity world `(x,z)` UV finding and the idempotence test gap remain. The `@export_tool_button`, `class_name`, and 0.2 deg/m warning remain acceptable. No road-tool code was changed in this review.
+
+## 2026-09-22  CLAIM P3-02 review fix (GPT-6 Sol)
+Fix the re-bake Grid ownership finding from the independent P3-02 review and add a regression check. No other tool behavior will be changed in this patch.
+
