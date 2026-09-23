@@ -37,7 +37,7 @@ A racing sim where the car is a real body in 3D space driving on real 3D surface
   - (A) keeps determinism, lets headless tests step manually at full speed, and keeps the semi-implicit "need" clamps exact.
   - (B) gets wall/object collision for free but gives up manual stepping and adds a tick of force lag.
   - Spike task P2-00 confirms (A) before P2-03 commits to it.
-  - **P2-00 done 2026-09-22: recommends (A)** (22/22 checks; see the log). Awaiting owner sign-off and cross-model review.
+  - **P2-00 done 2026-09-22: recommends (A)** (22/22 checks; see the log). Reviewed by GPT-6 Sol (GO). **Owner approved (A) on 2026-09-22; D6 is locked.**
 - **D7. First track.** **A short proving-ground circuit (invented, ~2–3 km, with a bowl, crest, compression, off-camber and a ditch) → Spa → Nordschleife.** Monza is optional later.
 - **D8. Handling models.** **Keep both Simulation and Simcade.** Simcade gets retuned after P2 because its targets were tuned on the old solver.
 - **D9. Coordinates.** **Switch the simulation to Godot-native world space** (see §5.1). Rendering stops doing the `(x,y,h)→(x,h,y)` remap.
