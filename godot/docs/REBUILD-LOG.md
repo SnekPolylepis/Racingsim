@@ -263,3 +263,15 @@ Not done / carried forward:
 - Heightfield test surfaces report an upward normal even on a sharp step's vertical face, so body contact there pushes up, not back. Real meshes (TrackSurface) give face normals; walls and barriers are P4-03.
 - Body box is 10 points: coarse, with no edges between them. Enough for resting and landing, not for detailed scraping.
 - Braked cars still creep on slopes (P2-04); single-ray kerb response (P2-06); aids yaw-rate frame (P2-07).
+
+## 2026-09-22  NOTE P2-03 review (GPT-6 Sol)
+Independent review of original commit `a4ea593` in a detached worktree. **Verdict: merge.** The body frame and force signs, lifted-wheel ARB series rate, and warp formula `delta * Kf * Kr / (Kf + Kr)` with `K = spring + 2 * ARB` are consistent with the stated massless-wheel model. No blocking correctness finding.
+
+Findings, ranked by severity:
+1. **Medium, follow-up — `scripts/vehicle/car_body.gd:190-203`:** lifting each ray origin 0.5 m can select an upper road deck that is above the wheel mount but below the lifted ray origin. The flat and single-heightfield tests do not cover a close overpass. A deck within this clearance needs a targeted two-deck regression before shipping an authored overpass; the current 8 m deck-separation fixture is unaffected.
+2. **Low — `scripts/vehicle/car_body.gd:312-313`:** the standstill hold computes and assigns through the 32-bit `vel` Vector3 property, rounding the three 64-bit scalar velocities each held tick. Position still accumulates through `pos_x/y/z` in 64-bit; the precision test does not exercise this branch. Use scalar components here when full 64-bit velocity accumulation is required.
+3. **Low — `scripts/vehicle/car_body.gd:345-363`:** body-contact torque uses the body point arm rather than the ray's hit-point arm. At penetration, this makes the torque lever longer than the contact point by up to the penetration depth. The tested roof drop is stable, but an angled deep strike can receive excess torque.
+4. **Low, test gap — `tests/v2/suspension.gd:259-272`:** the ditch assertion checks whether the CG goes below the surface and limits tyre load, but does not check sill/roof penetration at their world positions. Flat roof/side drops do check body points separately.
+5. **API caution — `scripts/vehicle/car_body.gd:39-52`:** `pos` and `vel` are 32-bit Vector3 views. Current code writes the scalar position components directly and has no component assignment through these views; future callers should not assume `c.pos.x = value` preserves double precision.
+
+Independent gates via `Start-Process -Wait -PassThru -NoNewWindow`, redirected stdout/stderr: `--headless --path . --import`, `tests/v2/suspension.gd` 11/0, `chassis_spike.gd` 23/0, `surfaces.gd` 34/0, `track_asset.gd` 23/0, `scripts/game.gd --check-only`, and legacy `tests/dynamics.gd` 36/0 and `tests/handling.gd` 23/0, both stdout-identical to their baselines after CR/LF normalization. All exit 0; every stderr file is empty.
