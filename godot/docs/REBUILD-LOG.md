@@ -385,3 +385,15 @@ Findings, ranked by severity:
 5. **API caution — `scripts/vehicle/car_body.gd:39-52`:** `pos` and `vel` are 32-bit Vector3 views. Current code writes the scalar position components directly and has no component assignment through these views; future callers should not assume `c.pos.x = value` preserves double precision.
 
 Independent gates via `Start-Process -Wait -PassThru -NoNewWindow`, redirected stdout/stderr: `--headless --path . --import`, `tests/v2/suspension.gd` 11/0, `chassis_spike.gd` 23/0, `surfaces.gd` 34/0, `track_asset.gd` 23/0, `scripts/game.gd --check-only`, and legacy `tests/dynamics.gd` 36/0 and `tests/handling.gd` 23/0, both stdout-identical to their baselines after CR/LF normalization. All exit 0; every stderr file is empty.
+
+## 2026-09-22  NOTE merge P2-03 (GPT-6 Sol)
+Merged approved `rb/P2-03-suspension-rig` review tip `d9401f8` into current main `baccc7b` as merge commit `ca0f9f4`; pushed `merge/p203-reviewed:main` by fast-forward, no force. `rb/P3-02-road-tool` was **not merged**: its independent review verdict is fix first (downward mesh winding and destructive Grid re-bake). P3-02b and P5-03 remain on hold.
+
+Only `docs/REBUILD-LOG.md` conflicted. Kept all 28 sections already on main and appended the two unique P2-03 DONE/review sections in order; `REBUILD-PLAN.md` and all source files auto-merged. Shared sidecar UIDs in the P2/P3 source branches were verified identical; no P3 sidecars were merged from P3-02. `git diff origin/main HEAD --check` passed before the push.
+
+Verification from the isolated `RacingSim-merge3/godot` worktree, using `C:\Users\Zain's PC\Desktop\RacingSim\godot\tools\Godot.exe` through `Start-Process -Wait -PassThru -NoNewWindow`, stdout/stderr redirected to `tests/logs/merge-p203/`:
+- `--headless --path . --import`; `--headless --path . --script scripts/game.gd --check-only`: exit 0, empty stderr.
+- `--headless --path . --script tests/v2/suspension.gd` 11/0; `chassis_spike.gd` 23/0; `surfaces.gd` 34/0; `track_asset.gd` 23/0: exit 0, empty stderr.
+- Ten legacy invocations: `tests/dynamics.gd` Simulation and `-- --simcade`, `tests/handling.gd`, `tests/laps.gd` Simulation and `-- --simcade`, `tests/showcase_laps.gd`, `tests/airborne.gd`, `tests/karussell.gd`, `tests/track3d.gd`, `tests/validation.gd`. Every stdout matched its `docs/rebuild/baseline/*.txt` after CR/LF normalization and every stderr was empty. Dynamics Simcade exited 1 with the byte-identical known roadster braking failure; the other nine exited 0.
+- Windowed `--path . -- --features`: 212 checks, 0 failures, exit 0, empty stderr, 70.67 s wall time.
+- `tests/v2/road_tool.gd` was run on the isolated P3-02 branch (15/0, empty stderr), not on this merge because P3-02 is withheld and the file is absent here.
