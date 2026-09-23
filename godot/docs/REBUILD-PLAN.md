@@ -75,6 +75,7 @@ The old `track.gd`, `track3d.gd`, `circuit_world.gd`, `editor.gd` and `outline_i
 - Angular velocity is a `Vector3` in the **body frame**, right-hand rule. Positive `ω.y` is yaw to the **left**. Positive `ω.x` rolls the right side down. Positive `ω.z` pitches the nose up.
 - Driver inputs keep their existing sign: `steer > 0` = steer right.
 - Tyre `wear` grows from 0. Wheel `ellipse` is utilisation, not µ.
+- **Precision (contract change 2026-09-22):** Godot's `Vector2`/`Vector3`/`Quaternion`/`Transform3D` are 32-bit in standard builds; GDScript `float` is 64-bit. Accumulated solver state that can be far from zero, above all **world position, must be stored in 64-bit floats**. At 5 km from the origin a float32 position cannot represent sub-0.5 mm steps (measured: a car drifting at 1 cm/s does not move at all at x = 5 km). Use vectors for relative/local quantities (offsets from the CG, normals, body-frame rates). Surface queries receive a float32 `Vector3`, so a track's query frame must keep coordinates small (P3-00).
 
 ### 5.2 Surface query
 
@@ -90,24 +91,32 @@ func contact(origin: Vector3, direction: Vector3, max_dist: float, hint: int) ->
 - **Kerb/edge smoothing:** the tyre is not a point. P2-06 adds a footprint filter, e.g. 3–5 rays across the contact patch, normals averaged and height taken as the max. Single-ray contact makes kerbs and seams harsh.
 - `TestSurface` is analytic and needs no scene tree. `TrackSurface` may use `PhysicsServer3D` space queries or its own BVH (decided in P3-00).
 
-### 5.3 Track asset (a Godot scene, `godot/tracks3d/<id>/<id>.tscn`)
+### 5.3 Track asset (a Godot scene, `godot/tracks3d/<id>/<id>.tscn` or `.scn`)
+
+Implemented in P3-01 (`scripts/track/track_asset.gd`, `track_loader.gd`, `scripts/surface/track_surface.gd`).
 
 ```
-TrackAsset (Node3D, track_asset.gd)
-  exports: id, display_name, version:int, length_m, default_time_of_day, lighting presets
+TrackAsset (Node3D, track_asset.gd) at the origin, identity transform
+  exports: id, display_name, version:int, default_time_of_day, lighting (Dictionary)
   Road/        visual meshes (baked by the road tool)
-  Surfaces/    StaticBody3D per surface type, metadata "surface" = SURF index; collision only
-  Walls/       StaticBody3D barrier/wall collision, metadata "wall_kind"
-  TimingLine   Path3D, closed; metadata start_offset_m, sector offsets, checkpoint offsets
-  Grid/        Marker3D slots, in order (pole first)
+  Surfaces/    StaticBody3D per surface type, metadata "surface" = int SURF index, collision layer 1
+  Walls/       StaticBody3D barrier/wall collision, metadata "wall_kind", collision layer 2
+  TimingLine   Path3D; its baked curve is the lap line, closed implicitly from the last point back to the
+               first (don't repeat the first point). Metadata: start_offset_m, sector_offsets and
+               checkpoint_offsets (metres after the start line, strictly increasing)
+  Grid/        Marker3D slots in order (pole first); each marker's -Z points down the track
   BotLine      Path3D racing line with target speeds (for tests/bot)
   Scenery/     trees, stands, buildings, landmarks
   Lights/      night-style lamp placements
-  Minimap      baked 2D polyline resource
 ```
 
-- **Record identity** = `id + version` + car/setup/handling (setup and handling as today). Bump `version` whenever the drivable surface or timing changes.
-- **Timing gates** are 3D planes perpendicular to `TimingLine`, so overpasses are no longer ambiguous.
+- **Record identity** = `record_key()` = `"<id>@v<version>"` + car/setup/handling (setup and handling as today). Bump `version` whenever the drivable surface or timing changes.
+- **Defaults** when metadata is missing: start offset 0, sectors at thirds, a checkpoint every 90 m.
+- **Timing gates** are vertical planes perpendicular to the lap line, bounded ±15 m laterally and ±3 m vertically, so a car on another deck does not trigger them. `gates()` returns start first, then all others sorted by lap offset.
+- **Lap length** is measured along the lap line in 3D (including elevation). `project(pos, hint)` resolves the nearest point in true 3D distance, so stacked decks resolve by height.
+- **Minimap** is computed on demand from the lap line (`minimap(count)`), not stored as a separate resource.
+- **Precision:** `validate()` rejects lap lines or grid slots beyond ±5 km (§5.1).
+- **Surface queries** go through `asset.surface()` (TrackSurface) and must run inside a physics frame (P3-00).
 
 ### 5.4 Pose snapshot (for interpolation, ghosts, replays)
 
@@ -158,9 +167,11 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 - **P2-00 [DEEP] Spike.** Prototype `CarBody` (rigid body, quaternion, body-frame ω with gyroscopic term, semi-implicit Euler at 240 Hz) and four ray-suspension corners on `TestSurface.flat` and `.crest`. Confirm D6(A) is viable (stability at 240 Hz, cost per tick). Write findings in the log. Go/no-go for the owner.
 - **P2-01 [ARCH] Extract without changing behaviour.** Move the tyre, drivetrain and aids code out of `car.gd` into `scripts/vehicle/*.gd`. The old `car.gd` calls them. **Every existing suite must produce byte-identical numbers.** This makes the physics reusable by the new body.
-- **P2-02 [DEEP]** `TestSurface` with flat, bowl, crest, ditch, 37° wall, ramp and step shapes, each with an analytic ground truth.
+- **P2-02 [DEEP]** `TestSurface` with flat, bowl, crest, ditch, 37° wall, ramp and step shapes, each with an analytic ground truth. **Done 2026-09-22** (`tests/v2/surfaces.gd`).
 - **P2-03 [DEEP]** `CarBody` + `Suspension`: hardpoints from `cars.json` (derive them from the existing `a`, `b`, track widths and CG height); spring/damper/bump stop along the hardpoint axis; ARBs; wheel load = suspension force (zero when extended). Tyre forces act at the contact point in the contact frame, built from the surface normal and the wheel's heading. Aero forces on the body. Gravity is a world −Y force, with no slope term.
+  P2-03 must also: store world position (and velocity) in 64-bit scalars per §5.1; start each suspension ray above the mount (a ray that starts inside the ground currently reads distance 0 and fires the bump stop); keep ARBs acting when a wheel is off the ground; add chassis-to-ground contact (sills/roof) so a rolled car cannot fall through the surface (P2-02 probe).
 - **P2-04 [DEEP]** Wheel spin states and the tyre "need" clamps, reworked for 3D contact velocity. **The clamps must stay:** they are what stops standstill jitter and drivetrain oscillation.
+  P2-04 must also give the tyre low-speed stiffness (static friction): a braked car currently creeps 6–8 mm/s down an 8° ramp and 26–35 mm/s across a 37° side slope (P2-02 probes); the old model had the same flaw, hidden by its flat-only standstill hold.
 - **P2-05 [DEEP]** Flat-equivalence, determinism, energy, bowl, crest, flight, landing and wall tests (§6). Tune only the new suspension parameters. **Don't touch tyre or drivetrain constants to pass tests.**
 - **P2-06 [DEEP]** Tyre footprint smoothing (multi-ray) and kerb behaviour on `TestSurface.step`.
 - **P2-07 [DEEP]** Aids and Simcade ported to 3D (ASM uses body-frame yaw rate and slip). Retune Simcade against its existing targets.
@@ -169,8 +180,8 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 ### P3: Track asset format and road tool
 
-- **P3-00 [ARCH]** Decide the `TrackSurface` query backend (PhysicsServer3D direct space state vs our own BVH over baked triangles). Check determinism, headless use and cost against the §6 performance gate.
-- **P3-01 [ARCH]** `track_asset.gd` + loader: timing line, gates, sectors, grid, minimap bake, record identity.
+- **P3-00 [ARCH]** Decide the `TrackSurface` query backend (PhysicsServer3D direct space state vs our own BVH over baked triangles). Check determinism, headless use and cost against the §6 performance gate. **Done 2026-09-22: recommends PhysicsServer3D rays against a baked triangle mesh, engine pinned to GodotPhysics3D** (see the log). Consequences: surface queries run inside a physics frame (`_physics_process`), including in headless tests; tessellate roads at ≤ 1.5 m along and ≤ w/8 across; keep track coordinates within ±5 km of the origin (§5.1).
+- **P3-01 [ARCH]** `track_asset.gd` + loader: timing line, gates, sectors, grid, minimap bake, record identity. **Done 2026-09-22** (`tests/v2/track_asset.gd`).
 - **P3-02 [TOOL]** Road plugin (`addons/road_tool/`, editor-only, excluded from export).
   - A `RoadPath` (Path3D) with cross-section keys along its length: left/right width, camber, crown, left/right kerb type and width, verge width and slope, surface type.
   - It bakes the road, kerbs and verges into render meshes plus per-surface collision.

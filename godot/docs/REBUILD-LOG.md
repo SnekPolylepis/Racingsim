@@ -142,3 +142,86 @@ Commands run from this worktree's `godot/` folder (Godot executable: `C:\Users\Z
 - `git diff --check` — no whitespace errors.
 
 Legacy comparisons were line-for-line identical after normalizing CR/LF only. No baseline or test file was edited. The branch is for independent review before merging.
+
+## 2026-09-22  DONE P2-02  (Claude Opus 5.5) — branch `rb/P2-02-test-surfaces` (from the P2-00 branch)
+`scripts/surface/test_surface.gd` now has FLAT, PLANE (ramp / side slope), CREST, BOWL, DITCH (Karussell-like trough: floor, 37° walls, smoothstep fillets), STEP (sharp or eased) and VOID. CREST and DITCH share one symmetric integrated profile table (Hermite). All surface maths is 64-bit (see CONTRACT below).
+`tests/v2/surfaces.gd`: 34 gating checks, all pass, stderr empty; output in `docs/rebuild/surfaces-P2-02.txt`.
+- Every shape: normal vs central-difference gradient ≤ 0.0008° (400 points); 300 tilted rays each hit at the first crossing vs a 2 mm brute-force march (0 wrong), on-surface error ≤ 5.5 µm (float32 ray points).
+- Defining quantities: ramp 8°, side slope 37°, bowl 20° (to 0.001°, float32 normals); crest apex curvature −0.005000; ditch wall 37.000°, depth = analytic 1.2057 m; step heights exact.
+- **Physical ground truth passes:** coasting in neutral down a 3° grade matches a = g(sinθ − rr·cosθ)·m/(m + 4I/R²) to +0.03 / −0.01 / +0.01 % (roadster / GT / 296), rolling resistance and wheel inertia included.
+- Spike re-run: 23/23. Determinism hash is now `d4d0d712c338` (was `85089df13e6e`) because the crest heights are now 64-bit; every other spike figure unchanged (crest ratio 1.00703125, flat numbers identical, bowl share differs in the 8th digit). **Sol's P2-01 identity gate compares against main's `spike-P2-00.txt`, which is unaffected; this branch updates it.**
+
+PROBES (non-gating evidence for later tasks):
+- **Precision:** a car drifting at 1 cm/s for 1 s moves 0.010002 m at x = 0 and **0.000000 m at x = 5 km**. `CarBody.pos` is a float32 `Vector3`. → P2-03.
+- **Parked on slopes, brakes on:** creeps 7.6 / 5.7 mm/s on 8° (roadster / 296) and 34.9 / 25.7 mm/s across 37°. No static friction at low speed. → P2-04.
+- **Karussell line:** 296 eases from the ditch floor onto the middle of the 37° wall at 80 km/h and holds it: body 36.6° from vertical, 0.11 m lateral error, peak tyre load 2.8× static, no buried rays; two wheels briefly unloaded during the entry transition (stiff car over a surface twist; P2-03 to confirm plausibility).
+- **Earlier weave probe (replaced):** my first controller didn't track; the car climbed the wall diagonally on two wheels at 75 km/h and rolled over the top edge. Once inverted there is no chassis-ground contact, so it fell into the surface, rays started underground (distance 0 → bump stop) and loads hit 319× static. → P2-03: raise ray origins above the mount; add chassis contact.
+- **5 cm step:** sharp step 3.0× / 3.3× static peak load at 50 / 120 km/h (the ray jumps the step: compression steps up with no damper impulse); a 4 cm eased ramp gives 12.3× at 50 km/h (the analytic rate on a 62° face drives the damper hard) but 3.3× at 120 km/h (ramp shorter than one tick). Single-point contact is wrong both ways. → P2-06 tyre envelope.
+
+## 2026-09-22  CONTRACT §5.1 precision  (Claude Opus 5.5)
+Added to §5.1: Godot vectors are 32-bit in standard builds; accumulated world-space solver state (position above all) must be 64-bit scalars; vectors only for relative/local quantities; track query frames must keep coordinates small (P3-00). Motivated by the P2-02 precision probe. Affects P2-03 (CarBody state), P3-00 (TrackSurface backend) and P4 (ghosts/replays storing positions).
+
+## 2026-09-22  DONE P3-00  (Claude Opus 5.5) — branch `rb/P3-00-surface-backend` (from P2-02)
+**Recommendation: `TrackSurface` = Godot PhysicsServer3D rays (`direct_space_state.intersect_ray`) against a baked triangle mesh; pin `physics/3d/physics_engine = "GodotPhysics3D"` in project.godot.** Cheap to revisit: it sits behind the §5.2 contract.
+
+Method (`tests/v2/surface_backends.gd`, output `docs/rebuild/backends-P3-00.txt`): the real Nordschleife ribbon (14,322 samples) baked into 343,728 triangles in Godot axes (road with its cross-section profile at w/8 spacing plus verges, ~1.5 m along), extents ±3,088 m. 20,000 wheel-style rays (0.6 m above a random road point, tilted ≤ 10°, 1.2 m). Headless; all queries run inside `_physics_process`. Stderr empty.
+
+| Backend | µs/query | Notes |
+|---|---|---|
+| A: PhysicsServer3D ray, GodotPhysics3D (the project default) | 3.6–4.7 | deterministic on repeat; heights within **0.019 mm** of 64-bit |
+| A: PhysicsServer3D ray, Jolt | 3.0–5.0 | deterministic; heights within 0.66 mm of 64-bit |
+| B: our own xz grid + Möller–Trumbore, 64-bit GDScript | 18.8–20.2 | exact reference; 0 hit/miss disagreements with A |
+| C: parametric ribbon (track3d `elev_at`) | 18.3–20.3 hinted, 92–106 cold | smooth, but ties queries to the spline representation |
+| D: tyre cylinder cast + rest info (r 0.345, 0.30 wide) | 44–46 GodotPhysics3D, **23–26 Jolt** | 99.7–99.9 % contacts; a tyre envelope for free |
+
+Run-to-run timing varies ±30 %; ranges are over 3 runs.
+
+Why A over B/C: 4–5× cheaper than either GDScript option, deterministic, works headless, precision is fine at Nordschleife extents (the 64-bit concern from P2-02 applies to accumulated state, not to a 0.02 mm query), and meshes admit hand-modelled pieces (pit lane, junctions) that a spline parameterisation cannot. Faceting is not a reason to prefer C: over 3 km at 5 cm steps the mesh's largest normal step was 0.401° (993 steps > 0.05°) against 0.359° (907) for the "smooth" ribbon, whose normals are themselves interpolated per sample.
+Why GodotPhysics3D over Jolt: 35× better query precision for similar ray cost. Jolt only wins on shape casts.
+
+Consequences for later tasks:
+- **P3-01:** queries must run in a physics frame. The game already steps the car in `_physics_process`; TrackSurface tests must too (as this spike does), unlike TestSurface tests. Map surface type from the collider (one StaticBody3D per surface type with metadata, per §5.3) or from `face_index`.
+- **P3-02 road tool:** tessellate at ≤ 1.5 m along and ≤ w/8 across (what was measured here).
+- **P2-06 tyre envelope:** per-wheel budget. Multi-ray footprint: ~4 µs × rays × 4 wheels (5 rays ≈ 80 µs/tick). A cylinder cast gives true tread-curve contact on kerbs but costs 23–46 µs per wheel (92–184 µs/tick). If P2-06 picks the cylinder cast, revisit the engine choice (Jolt halves it).
+- Keep backend B as a 64-bit test oracle for TrackSurface.
+- Test bug found and fixed: a mirrored (left-handed) query basis is silently accepted by GodotPhysics3D but makes Jolt miss 99 % of cylinder contacts. Build query transforms with right-handed bases.
+
+## 2026-09-22  DONE P3-01  (Claude Opus 5.5) — branch `rb/P3-01-track-asset` (from P3-00)
+New files (no existing file changed except the plan/log):
+- `scripts/track/track_asset.gd`: TrackAsset root. `validate()` (structural, no physics frame needed), `prepare()` (bakes the lap line), `record_key()`, `station(s)`, deck-aware `project(pos, hint)`, `gates()` + static `crossed(gate, p0, p1)`, `sector_offsets()`, `checkpoint_offsets()`, `grid_slots()`, `minimap(count)`, `surface()`.
+- `scripts/track/track_loader.gd`: `list(root)` and `load_asset(path)` → {asset, errors}. Read-only, so it works in an export.
+- `scripts/surface/track_surface.gd`: §5.2 contract on physics-server rays (P3-00), layer 1 only, normal always faces back along the ray, errors once if called outside a physics frame.
+- `scripts/track/ribbon.gd`: minimal centreline → road/verge triangles + visual mesh (flat cross-section at w/8). Seed for P3-02.
+- `tests/v2/track_asset.gd`: 23 checks, all pass, stderr empty; output in `docs/rebuild/track-asset-P3-01.txt`.
+
+Fixture: a figure-eight (x = 240 sin t, z = 120 sin t cos t, y = 4(1 − cos t)); the second pass crosses 8 m above the first. Built in code, packed and saved under `user://native-tests/v2/tracks3d/`, and loaded back through the loader.
+- Validation accepts the fixture and rejects 8 broken variants with the right message: missing grid, non-int surface id, surface off layer 1, open lap line, moved root, line beyond 5 km, decreasing sector offsets, empty id. Save/load round trip preserves record key and lap length.
+- Lap line 1141.09 m matches the analytic arc length to 0.000 %. Projection resolves the crossing by deck (lower s = 0.0, upper s = 570.5 = L/2).
+- Driving the analytic curve for one lap crosses each of 15 gates exactly once, in list order. The start gate ignores the upper-deck pass 8 m above it; the upper-deck sector gate ignores the lower pass.
+- TrackSurface: tarmac and grass ids correct, upward normals, road height exact; at the crossing each deck's wheel finds its own deck (y 8.00 / 0.00); all 4 grid slots sit on tarmac.
+- **Integration:** the 296 GT3 (CarBody) drives from pole on TrackSurface, steered along the lap line at 70 km/h, and completes a lap through all 15 gates in order: 57.64 s (one lap at 70 km/h ≈ 58.7 s; the controller clips corners), 4 wheels in contact throughout, never off tarmac. Car step with 4 rays: 68 µs/tick.
+- Spike (23/23), surfaces (34/34) and parse check still clean.
+
+Bug found and fixed during the task: `gates()` first returned start, sectors, checkpoints as separate groups rather than sorted by lap offset. Timing that walks the list in order then needed two laps, and the first lap check passed with a 115 s "lap". Gates are now sorted, and the lap check bounds the time against one lap at the held speed.
+
+## 2026-09-22  CONTRACT §5.3 track asset  (Claude Opus 5.5)
+§5.3 rewritten to match the implementation: root at the origin; Surfaces on layer 1 and Walls on layer 2; TimingLine closed implicitly (don't repeat the first point); Grid markers face −Z down the track; `record_key()` = `id@vN`; metadata defaults; gate bounds ±15 m lateral / ±3 m vertical, `gates()` sorted by lap offset; 3D lap length; minimap computed on demand rather than stored; ±5 km validation; surface queries only in a physics frame.
+
+## 2026-09-22  NOTE P2-01 review (Claude Opus 5.5)
+Independent review of `rb/P2-01-extract-vehicle-modules` at `7428ae6`, in a clean detached worktree. **Verdict: APPROVE, merge into main.** No correctness findings.
+
+Code: `tyre.gd`, `aids.gd` and `drivetrain.gd` reproduce the original expressions in the original order, need clamps included. The main risk in an extraction like this is stale locals: `drivetrain.step()` copies fields into locals at the top, but `request_shift()` changes `shift_timer` mid-step and the original re-reads it. That is handled correctly: everything that changes during the step (`shift_timer`, `gear`, `engine_w`, `brake_hold`, `blip_pending`) is read live through `car.*`; only step-invariant values (`speed`, `input`, `asm_cut`, `asm_brakes`) are copied. CarBody passes its 3D body velocities to the shared steering exactly as its old `steering()` read them.
+
+Gates re-run independently (not taken from the DONE entry):
+- All 10 legacy suites: stdout **byte-identical** to `docs/rebuild/baseline/*.txt` (CR/LF normalised), stderr empty; dynamics-simcade exits 1 with the known roadster braking failure, reproduced exactly.
+- Spike: identical to main's `spike-P2-00.txt` with only the cost lines masked; stderr empty.
+- Source `--features`: 260 checks, 0 failures on both main and P2-01. The stderr warning ("input event parsed more than once", `scripts/showcase_benchmark.gd:135`) is **pre-existing**: identical 644 bytes on main. Sol's claim confirmed.
+- Trial merge with `rb/P3-01-track-asset` (which carries P2-02 and P3-00): only `REBUILD-LOG.md` conflicts (both appended; keep both entries). On the merged code: parse clean, spike 23/23 and identical to the P2-02 reference (masked), surfaces 34/34, track_asset 23/23, stderr empty.
+
+Findings (non-blocking):
+1. **Performance, medium.** The extraction costs **+13 µs per car tick**: 4 interleaved A/B runs of the spike on flat, main median 55.6 µs vs P2-01 68.8 µs (+24 %); crest 190 → 205 µs. Likely cause: the drivetrain and aids now read dozens of fields per tick through `car.*` on another object instead of direct member access, and `tyre.gd` calls back through the car's wrappers. About 0.3 % of a core for one car, so not blocking, but it adds up with AI cars later. Suggested fix (a later, identity-checked task): have `tyre.gd` call its own static `pacejka`/`simcade_curve`/`peak_*` and a local `sg`, and re-measure.
+2. **Design, low.** `tyre.gd` is not self-contained: it calls `car.pacejka`, `car.simcade_curve`, `car.peak_slip_ratio()`, `car.peak_slip_angle()`, `car.sg` and reads `car.LAT_B`, so an override on a car class would silently change the shared tyre maths. Same fix as 1.
+3. **Cleanup, low.** `finish_contact()` still computes an unused `heat` (it was unused in the original; kept for identity). Remove when identity no longer binds.
+4. **Pre-existing, low.** `showcase_benchmark.gd:135` reuses one InputEvent within a frame; the feature suite's source run prints a warning to stderr every time. One-line fix (`duplicate()` the event), separate task.
+
+Merge order: P2-01 into main first; then my stack (P2-02 → P3-00 → P3-01) on top, resolving the log by keeping both sides.

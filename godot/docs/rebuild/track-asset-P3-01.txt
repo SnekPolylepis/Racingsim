@@ -1,0 +1,26 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  fixture validates cleanly []
+PASS  rejects a missing grid ("Grid/ has no Marker3D slots")
+PASS  rejects a non-integer surface id ("Surfaces/Grass: metadata 'surface' must be an int SURF index")
+PASS  rejects a surface off layer 1 ("Surfaces/Tarmac: must be on collision layer 1")
+PASS  rejects an open timing line ("TimingLine is not closed: 166.4 m from last point back to first")
+PASS  rejects a moved root ("TrackAsset root must sit at the origin with no rotation or scale")
+PASS  rejects a line beyond 5 km ("TimingLine leaves the ±5000 m precision box (5.1)")
+PASS  rejects decreasing sector offsets ("sector_offsets must increase strictly inside (0, lap length)")
+PASS  rejects an empty id ("id is empty")
+PASS  fixture packs and saves to user://native-tests/v2/tracks3d/figure8/figure8.scn
+PASS  loader lists exactly the saved track (["figure8"])
+PASS  loaded asset validates, record key figure8@v1
+PASS  lap length survives the save/load round trip
+PASS  lap line 1141.09 m vs analytic figure-eight 1141.09 m (-0.000%)
+PASS  projection resolves the crossing by deck: lower deck s = 0.0 (0 / 1141.1), upper deck s = 570.5 (570.5)
+PASS  one lap crosses each of 15 gates exactly once, in list order, and the list is sorted by lap offset (start 0, checkpoint 90, checkpoint 180, checkpoint 270, checkpoint 360, checkpoint 450, checkpoint 540, sector 571, checkpoint 630, checkpoint 720, checkpoint 810, sector 856, checkpoint 900, checkpoint 990, checkpoint 1080)
+PASS  the start gate ignores the upper-deck pass 8 m above it, and the upper-deck sector gate ignores the lower pass
+PASS  minimap: 512 points spanning ±240.0 by ±60.0 m (analytic ±240 by ±60)
+PASS  TrackSurface: road hits are tarmac (0), verge hits grass (2), normals face up; road height within 0.000 m of the line
+PASS  at the crossing a wheel on each deck finds its own deck (upper y 8.00, lower y 0.00)
+PASS  all 4 grid slots sit on tarmac
+PASS  296 GT3 laps the figure-eight on TrackSurface through all 15 gates in order: 57.64 s (one lap at 70 km/h ≈ 58.7 s), min contacts 4, wheel-ticks off tarmac 0
+PASS  car step with 4 physics-server rays: 65.1 µs per tick (P3-00 budget ~150 µs)
+TRACK ASSET RESULTS {"checks":23,"failures":[],"results":{"car_step_us":65.1351032038363,"lap_m":1141.08936959505,"lap_s":57.6416666666874}}

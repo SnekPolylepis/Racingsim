@@ -19,8 +19,8 @@ PASS  f296gt3 on a 20° bank at design speed 68.0 km/h: sum of |tyre lateral| 4.
 PASS  roadster dropped 1 m at 50 km/h: peak tyre load 8.6 x static, settled 1.31 s after touchdown (limit 2 s)
 PASS  gt dropped 1 m at 50 km/h: peak tyre load 10.2 x static, settled 0.42 s after touchdown (limit 2 s)
 PASS  f296gt3 dropped 1 m at 50 km/h: peak tyre load 12.9 x static, settled 0.40 s after touchdown (limit 2 s)
-PASS  two identical 60 s runs end in the same full-state hash (85089df13e6e)
+PASS  two identical 60 s runs end in the same full-state hash (d4d0d712c338)
 PASS  ray across a hump with both ends above it hits the first crossing (0.3675 m, want 0.3675 m)
-PASS  cost 57.0 µs per tick on flat (budget 300 µs)
-PASS  cost 193.0 µs per tick on crest (budget 300 µs)
-SPIKE RESULTS {"checks":23,"failures":[],"results":{"bowl_lateral_share":0.0401102856779487,"crest_takeoff_ratio":1.00703125,"flat":{"f296gt3":{"accel":4.11666666666675,"brake":28.45458984375,"lat_g":1.96679626181859,"pitch":0.553003379446782,"roll":0.814256820654858},"gt":{"accel":4.46250000000007,"brake":29.4034423828125,"lat_g":1.73995043753854,"pitch":0.594695665490544,"roll":0.9297701045699},"roadster":{"accel":8.23749999999985,"brake":42.2908935546875,"lat_g":0.71559755813342,"pitch":2.66704222254299,"roll":2.4051717542761}},"flight_dL":0.000247358422845243,"us_per_tick_crest":192.998125,"us_per_tick_flat":56.9685416666667}}
+PASS  cost 60.0 µs per tick on flat (budget 300 µs)
+PASS  cost 217.2 µs per tick on crest (budget 300 µs)
+SPIKE RESULTS {"checks":23,"failures":[],"results":{"bowl_lateral_share":0.040110311408044,"crest_takeoff_ratio":1.00703125,"flat":{"f296gt3":{"accel":4.11666666666675,"brake":28.45458984375,"lat_g":1.96679626181859,"pitch":0.553003379446782,"roll":0.814256820654858},"gt":{"accel":4.46250000000007,"brake":29.4034423828125,"lat_g":1.73995043753854,"pitch":0.594695665490544,"roll":0.9297701045699},"roadster":{"accel":8.23749999999985,"brake":42.2908935546875,"lat_g":0.71559755813342,"pitch":2.66704222254299,"roll":2.4051717542761}},"flight_dL":0.000247358422845243,"us_per_tick_crest":217.239166666667,"us_per_tick_flat":59.9747916666667}}

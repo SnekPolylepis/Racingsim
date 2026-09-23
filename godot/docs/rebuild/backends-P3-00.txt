@@ -1,0 +1,20 @@
+﻿=== physics/3d/physics_engine = DEFAULT  (exit 0, stderr 0 bytes)
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+Nordschleife: 14322 samples, 343728 triangles, |x|,|z| up to 3088 m, 69713 grid cells, setup 1841 ms, physics PhysicsServer3D (setting DEFAULT)
+A  physics server   3.63 µs/query, 20000/20000 hits, repeat identical: true
+B  own grid, 64-bit 18.92 µs/query, 20000/20000 hits
+D  physics server, tyre cylinder cast + rest info 44.12 µs/query, 19989/20000 contacts
+C  parametric       18.27 µs/query warm (hinted), 96.73 µs cold
+A vs B: 0 disagree on hit/miss; max |Δheight| 0.000019 m overall, 0.000011 m beyond 2 km
+Facets over 60013 5-cm steps: mesh normal jumps up to 0.401° (993 steps > 0.05°); smooth surface max 0.359° (907 steps > 0.05°)
+BACKENDS RESULTS {"A_deterministic":true,"A_vs_B_max_height_diff_beyond_2km_m":0.0000113769467731117,"A_vs_B_max_height_diff_m":0.0000193593589443708,"facets":{"mesh_max_normal_step_deg":0.400940508614079,"mesh_steps_over_0.05deg":993,"smooth_max_normal_step_deg":0.358707928191583,"smooth_steps_over_0.05deg":907,"steps_5cm":60013},"grid_cells":69713,"hits":{"A":20000,"B":20000,"disagree":0},"max_abs_xz_m":3087.84936523438,"physics_server":"PhysicsServer3D (setting DEFAULT)","samples":14322,"setup_ms":1841,"triangles":343728,"us_per_query":{"A_physics_server":3.63015,"B_own_grid_64bit":18.91945,"C_parametric_cold":96.7264,"C_parametric_warm":18.2715,"D_cylinder_cast":44.1162}}
+=== physics/3d/physics_engine = Jolt Physics  (exit 0, stderr 0 bytes)
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+Nordschleife: 14322 samples, 343728 triangles, |x|,|z| up to 3088 m, 69713 grid cells, setup 1426 ms, physics PhysicsServer3D (setting Jolt Physics)
+A  physics server   3.04 µs/query, 20000/20000 hits, repeat identical: true
+B  own grid, 64-bit 18.81 µs/query, 20000/20000 hits
+D  physics server, tyre cylinder cast + rest info 23.29 µs/query, 19935/20000 contacts
+C  parametric       19.84 µs/query warm (hinted), 104.97 µs cold
+A vs B: 0 disagree on hit/miss; max |Δheight| 0.000655 m overall, 0.000259 m beyond 2 km
+Facets over 60013 5-cm steps: mesh normal jumps up to 0.401° (993 steps > 0.05°); smooth surface max 0.359° (907 steps > 0.05°)
+BACKENDS RESULTS {"A_deterministic":true,"A_vs_B_max_height_diff_beyond_2km_m":0.000259195354857411,"A_vs_B_max_height_diff_m":0.000654552457660884,"facets":{"mesh_max_normal_step_deg":0.400940508614079,"mesh_steps_over_0.05deg":993,"smooth_max_normal_step_deg":0.358707928191583,"smooth_steps_over_0.05deg":907,"steps_5cm":60013},"grid_cells":69713,"hits":{"A":20000,"B":20000,"disagree":0},"max_abs_xz_m":3087.84936523438,"physics_server":"PhysicsServer3D (setting Jolt Physics)","samples":14322,"setup_ms":1426,"triangles":343728,"us_per_query":{"A_physics_server":3.0423,"B_own_grid_64bit":18.8145,"C_parametric_cold":104.9748,"C_parametric_warm":19.83815,"D_cylinder_cast":23.2854}}
