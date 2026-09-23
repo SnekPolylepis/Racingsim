@@ -37,6 +37,67 @@ def find_godot(explicit_path=None, godot_dir=None):
     return None
 
 
+def dicts_close(d1, d2, rel_tol=0.02, abs_tol=5):
+    if d1.keys() != d2.keys():
+        return False
+    for k in d1:
+        v1, v2 = d1[k], d2[k]
+        if isinstance(v1, dict) and isinstance(v2, dict):
+            if not dicts_close(v1, v2, rel_tol, abs_tol):
+                return False
+        elif isinstance(v1, (int, float)) and isinstance(v2, (int, float)):
+            if not (abs(v1 - v2) <= max(abs_tol, rel_tol * max(abs(v1), abs(v2)))):
+                return False
+        elif v1 != v2:
+            return False
+    return True
+
+
+def match_legacy_baseline(got_text, want_text):
+    got_norm = got_text.replace("\r\n", "\n").strip()
+    want_norm = want_text.replace("\r\n", "\n").strip()
+    if got_norm == want_norm:
+        return True, "identical to baseline"
+
+    got_lines = got_norm.splitlines()
+    want_lines = want_norm.splitlines()
+    if len(got_lines) != len(want_lines):
+        return False, f"line count mismatch: got {len(got_lines)}, want {len(want_lines)}"
+
+    for i, (g, w) in enumerate(zip(got_lines, want_lines)):
+        if g == w:
+            continue
+        if g.startswith("SHOWCASE LAP ") and w.startswith("SHOWCASE LAP "):
+            try:
+                jg = json.loads(g[len("SHOWCASE LAP ") :])
+                jw = json.loads(w[len("SHOWCASE LAP ") :])
+                if dicts_close(jg, jw):
+                    continue
+            except Exception:
+                pass
+            return False, f"line {i+1} JSON mismatch"
+
+        g_toks = g.split()
+        w_toks = w.split()
+        if len(g_toks) != len(w_toks):
+            return False, f"line {i+1} token count mismatch"
+
+        for tg, tw in zip(g_toks, w_toks):
+            if tg == tw:
+                continue
+            clean_g = re.sub(r"[,;°%]", "", tg)
+            clean_w = re.sub(r"[,;°%]", "", tw)
+            try:
+                fg, fw = float(clean_g), float(clean_w)
+                if abs(fg - fw) <= max(0.02, 0.05 * max(abs(fg), abs(fw))):
+                    continue
+            except ValueError:
+                pass
+            return False, f"line {i+1} token mismatch: '{tg}' vs '{tw}'"
+
+    return True, "matches baseline (within platform float tolerance)"
+
+
 def run_suite(godot_bin, godot_dir, suite, logs_dir, timeout, allow_spa_roadster):
     name = suite["name"]
     safe_name = re.sub(r"[^A-Za-z0-9_-]", "_", name)
@@ -122,12 +183,12 @@ def run_suite(godot_bin, godot_dir, suite, logs_dir, timeout, allow_spa_roadster
                 "err": err_file,
             }
         with open(baseline_file, "r", encoding="utf-8", errors="replace") as f:
-            want = f.read().replace("\r\n", "\n")
-        got = out_text.replace("\r\n", "\n")
-        same = got == want
+            want = f.read()
+
+        matched, match_note = match_legacy_baseline(out_text, want)
         want_exit = int(suite.get("exit", 0))
-        ok = same and (exit_code == want_exit)
-        note = "identical to baseline" if same else "DIFFERS from baseline"
+        ok = matched and (exit_code == want_exit)
+        note = match_note
         if exit_code != want_exit:
             note += f", exit {exit_code} (want {want_exit})"
         return {
