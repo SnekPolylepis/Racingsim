@@ -225,3 +225,17 @@ Findings (non-blocking):
 4. **Pre-existing, low.** `showcase_benchmark.gd:135` reuses one InputEvent within a frame; the feature suite's source run prints a warning to stderr every time. One-line fix (`duplicate()` the event), separate task.
 
 Merge order: P2-01 into main first; then my stack (P2-02 → P3-00 → P3-01) on top, resolving the log by keeping both sides.
+
+## 2026-09-22  NOTE merge P2-01 + P2-02/P3-00/P3-01 (GPT-6 Sol)
+
+Fast-forwarded the isolated `merge/p2-p3` branch from `origin/main` to P2-01 tip `7428ae6` (extraction `0832b84`), then merged Claude's stack tip `1fbb924` with no fast-forward as merge commit `f813a89` (parents `7428ae6` and `1fbb924`). The stack includes P2-02 `2cedfb8`, P3-00 `174842a` and P3-01 `40aa485`. Pushed `f813a89` to GitHub `main` by fast-forward, with no force push. P1 was not merged.
+
+Only `docs/REBUILD-LOG.md` conflicted. Resolved it by keeping the two P2-01 claim/done entries before Claude's six P2/P3 completion, contract and review entries; no entry was lost or duplicated. No source file conflicted.
+
+Verification from the fresh `RacingSim-merge/godot` worktree using `C:\Users\Zain's PC\Desktop\RacingSim\godot\tools\Godot.exe` through PowerShell `Start-Process -Wait -PassThru -NoNewWindow`, with stdout/stderr redirected for every run:
+- `--headless --path . --import`: exit 0, stderr empty.
+- `--headless --path . --script scripts/game.gd --check-only`: exit 0, stderr empty.
+- `tests/v2/chassis_spike.gd`: 23 checks, 0 failures, exit 0, stderr empty. Stdout matches `docs/rebuild/spike-P2-00.txt` except the two `cost … µs per tick` lines and the `us_per_tick_flat`/`us_per_tick_crest` values in final JSON.
+- `tests/v2/surfaces.gd`: 34 checks, 0 failures, exit 0, stderr empty.
+- `tests/v2/track_asset.gd`: 23 checks, 0 failures, exit 0, stderr empty.
+- Legacy `tests/dynamics.gd` Simulation and `-- --simcade`, `tests/handling.gd`, `tests/laps.gd` Simulation and `-- --simcade`, `tests/showcase_laps.gd`, `tests/airborne.gd`, `tests/karussell.gd`, `tests/track3d.gd`, and `tests/validation.gd`: each stdout identical to its `docs/rebuild/baseline/*.txt` reference after CR/LF normalization; every stderr empty. Nine exit 0; dynamics Simcade exits 1 with its identical, known roadster 100-0 failure.
