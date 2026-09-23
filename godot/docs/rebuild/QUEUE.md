@@ -29,6 +29,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | F-P2-08 | Log a `CONTRACT §5.4` note: CarBody.snapshot() gained "comp" (per-wheel compression) in P2-08; add it to §5.4's snapshot list | Gemini | | open | one-line doc fix |
 | F-P3-03 | Fix P3-03 terrain per Claude's review: REBUILD-LOG conflict marker; terrain.gd drive test never updates prev_pos; drop the unused track.gd preload; runoff via RoadBuilder.side()/profile() | Gemini | | review: Claude | rb/P3-03-terrain |
 | R-P3-03 | Review merged P3-03 terrain | Claude | F-P3-03 | open | |
+| F-P6-01 | Spa v0 fixes per Claude's review: BotLine with smooth handles (not a polyline); spread the 2.69 deg/m bank twist at 2398 m over >= 20 m; get the committed scene under 5 MB; check width at s 6125 m | Astra or Gemini | | open | read "REVIEW P6-01"; land the BotLine change with P4-07b |
+| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | open | read "REVIEW P6-01" |
 
 ## Build
 
@@ -38,7 +40,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | review: done (Claude approve + F-P3-02c), waits for M-GEM | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
 | scenery-kit | Trackside scenery kit (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding) and proving ground placement | Gemini | | done | rb/scenery-kit; 34/34 gates pass (147 s), 11/11 scenery checks |
 | P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | M-WF | claimed: Sol | rb/P4-01-game-port; one task: these share the game loop (§9 rule 11) |
-| P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | open | headless, independent of the game loop |
+| P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | review: Sol | rb/P4-07-bot-laps; read DONE P4-07 |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Gemini | P2-08, P4-core | open | P2-08's pose adapter is the start |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Sol | | open | saves reviewers re-running gates |
