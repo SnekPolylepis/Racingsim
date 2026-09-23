@@ -5,6 +5,10 @@ extends RefCounted
 const LAT_B = 1.4
 
 
+static func sg(v):
+	return -1.0 if v < 0 else 1.0
+
+
 static func peak_slip_ratio(car):
 	return 1.75 / maxf(car.setup.tireBlong, 1)
 
@@ -72,21 +76,22 @@ static func contact_forces(car, w, i, sf, vwx, vwy, dt, stf, strr):
 	var fy
 	# Native curves peak where real tyres do (slip ratio ~0.12-0.15, slip angle ~7-8 deg for the
 	# presets) and fall away beyond to ~70-80 % of peak when locked, spinning or fully sideways.
-	fx = car.pacejka(kappa, s.tireBlong, 1.5, peak, 0.0)
-	fy = -car.pacejka(w.alphaRelax, s.tireBlat * car.LAT_B, 1.5, peak, .2)
+	fx = pacejka(kappa, s.tireBlong, 1.5, peak, 0.0)
+	fy = -pacejka(w.alphaRelax, s.tireBlat * LAT_B, 1.5, peak, .2)
 	if simcade_enabled:
 		fx = (
 			peak
-			* car.simcade_curve(
+			* simcade_curve(
+				car,
 				kappa,
-				car.peak_slip_ratio() * simcade.ratio_start_scale,
-				car.peak_slip_ratio() * simcade.ratio_end_scale
+				peak_slip_ratio(car) * simcade.ratio_start_scale,
+				peak_slip_ratio(car) * simcade.ratio_end_scale
 			)
 		)
 		fy = (
 			-peak
-			* car.simcade_curve(
-				w.alphaRelax, deg_to_rad(simcade.peak_start_deg), deg_to_rad(simcade.peak_end_deg)
+			* simcade_curve(
+				car, w.alphaRelax, deg_to_rad(simcade.peak_start_deg), deg_to_rad(simcade.peak_end_deg)
 			)
 		)
 	if peak > 0:
@@ -103,18 +108,18 @@ static func contact_forces(car, w, i, sf, vwx, vwy, dt, stf, strr):
 	var locked = sv * m / 4 / dt
 	if absf(w.omega) < .5 and w.brakeT >= absf(locked) * radius:
 		need = locked
-	if car.sg(fx) == car.sg(need) and absf(fx) > absf(need):
+	if sg(fx) == sg(need) and absf(fx) > absf(need):
 		fx = need
 	var fy_need = -vwy * m / 4 / dt
-	if car.sg(fy) == car.sg(fy_need) and absf(fy) > absf(fy_need):
+	if sg(fy) == sg(fy_need) and absf(fy) > absf(fy_need):
 		fy = fy_need
 	w.fx = fx
 	w.fy = fy
 	if i < 2:
 		# Pneumatic trail collapses toward the slip-angle peak, so aligning torque drops as the front lets go.
-		var apeak = car.peak_slip_angle()
+		var apeak = peak_slip_angle(car)
 		w.mz = -fy * (.045 * maxf(0, 1 - absf(w.alphaRelax) / apeak) + .012)
-	var fxr = -car.sg(vwx) * sf.rr * w.load * minf(1, vabs / .5) if vabs > .05 else 0.0
+	var fxr = -sg(vwx) * sf.rr * w.load * minf(1, vabs / .5) if vabs > .05 else 0.0
 	fxr -= sf.drag * w.load * vwx
 	var fyr = -sf.drag * w.load * vwy * .5
 	if simcade_enabled and sf.id == 3:
@@ -127,7 +132,6 @@ static func finish_contact(car, w, fx, fy, sv, vwy, nominal, dt, sf):
 	var s = car.setup
 	var speed = car.speed
 	var power = absf(fx * sv) + absf(fy * vwy)
-	var heat = power * .0006 * s.pressureHeat + .02 * speed * w.load / nominal
 	# Two nodes: a fast surface (slip heat in, air cooling out) coupled to a slow carcass core.
 	var ts = w.temp - 25
 	var xfer = .12 * (w.temp - w.core)

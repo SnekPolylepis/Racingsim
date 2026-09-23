@@ -470,3 +470,51 @@ Verification from the fresh `RacingSim-merge4/godot` worktree with `C:\Users\Zai
 - Windowed `--path . -- --features`: **212 checks, 0 failures**, exit 0, empty stderr, **69.17 s** wall time.
 
 The generated `tests/v2/suspension.gd.uid` was untracked and removed; no generated test file was committed. P5-02's worktree and P5-03 remain untouched.
+## 2026-09-22  CLAIM tyre-self-contained  (Gemini 3.8 Flash)
+Making `godot/scripts/vehicle/tyre.gd` self-contained with zero change in physics results.
+- Replace calls in `tyre.gd::contact_forces()` to `car.pacejka(...)`, `car.simcade_curve(...)`, `car.peak_slip_ratio()`, `car.peak_slip_angle()`, `car.sg(...)` and `car.LAT_B` with module statics/constants.
+- Delete unused `heat` local in `tyre.gd::finish_contact()`.
+- Route pure-maths calls through modules' own statics in `aids.gd` and `drivetrain.gd`.
+- Run full verification gates and interleaved A/B timing benchmark against `origin/main`.
+
+## 2026-09-22  DONE tyre-self-contained  (Gemini 3.8 Flash) — branch `rb/tyre-self-contained`
+Made `godot/scripts/vehicle/tyre.gd`, `godot/scripts/vehicle/aids.gd`, and `godot/scripts/vehicle/drivetrain.gd` self-contained with character-for-character arithmetic equivalence and zero physics drift.
+- `tyre.gd`:
+  - Added local static `sg(v)` matching `car.gd:sg`.
+  - In `contact_forces()`, replaced callbacks through `car.*` (`car.pacejka`, `car.LAT_B`, `car.simcade_curve`, `car.peak_slip_ratio()`, `car.peak_slip_angle()`, `car.sg()`) with module statics and constants (`pacejka`, `LAT_B`, `simcade_curve`, `peak_slip_ratio`, `peak_slip_angle`, `sg`).
+  - In `finish_contact()`, deleted the unused `heat` local calculation (Finding 3).
+- `aids.gd`:
+  - Preloaded `VehicleTyre = preload("res://scripts/vehicle/tyre.gd")`.
+  - Replaced `car.asm_level()` with `asm_level(car)`.
+  - In `traction_control()`, replaced `car.tcs_level()` with `tcs_level(car)`, `car.peak_slip_ratio()` with `VehicleTyre.peak_slip_ratio(car)`, and `car.peak_slip_angle()` with `VehicleTyre.peak_slip_angle(car)`.
+  - In `abs_brake()`, replaced `car.peak_slip_ratio()` with `VehicleTyre.peak_slip_ratio(car)`.
+- `drivetrain.gd`:
+  - Added local static `sg(v)`.
+  - In `step()`, replaced `car.request_shift(1)` / `car.request_shift(-1)` with `request_shift(car, 1)` / `request_shift(car, -1)`.
+  - Replaced `car.axle_split(...)` with module static `axle_split(car, ...)`.
+  - Replaced `car.sg(w.omega)` with local static `sg(w.omega)`.
+- `car.gd`: Left all public wrappers untouched for compatibility with callers outside `scripts/vehicle/`.
+- `car_body.gd`: Untouched. Automatically benefits from the eliminated dispatch overhead.
+- Formatted modified files with `tools/python-packages/bin/gdformat.exe -l 110`. `git diff --check` passed clean.
+
+Verification gates:
+- `--headless --path . --script scripts/game.gd --check-only`: exit 0, stderr empty (0 bytes).
+- All 10 legacy suites: stdout bit-for-bit identical to `docs/rebuild/baseline/*.txt` (CR/LF normalized), stderr empty (0 bytes). Nine exit 0; `dynamics-simcade` exits 1 with the known roadster 100-0 braking failure.
+- `tests/v2/chassis_spike.gd`: exit 0, stderr empty (0 bytes), 23 checks / 0 failures. Identical to `spike-P2-00.txt` masking only cost lines; hash `d4d0d712c338` identical.
+- `tests/v2/surfaces.gd`: exit 0, stderr empty (0 bytes), 34 checks / 0 failures.
+- `tests/v2/track_asset.gd`: exit 0, stderr empty (0 bytes), 23 checks / 0 failures.
+- `tests/v2/suspension.gd`: exit 0, stderr empty (0 bytes), 11 checks / 0 failures.
+- Windowed `--path . -- --features`: exit 0, stderr empty (0 bytes), 212 checks / 0 failures, 69.48 s wall time.
+
+Performance benchmark:
+4 interleaved A/B runs of `tests/v2/chassis_spike.gd` (A = `origin/main` worktree at `2f2883d`, B = `rb/tyre-self-contained`):
+- Run 1: A flat 79.9 µs, crest 246.4 µs | B flat 67.4 µs, crest 225.8 µs
+- Run 2: A flat 76.4 µs, crest 242.4 µs | B flat 69.2 µs, crest 240.7 µs
+- Run 3: A flat 77.9 µs, crest 252.0 µs | B flat 71.6 µs, crest 254.9 µs
+- Run 4: A flat 77.7 µs, crest 257.1 µs | B flat 68.9 µs, crest 235.9 µs
+Medians:
+- A (origin/main): flat median 77.8 µs (spread 76.4–79.9 µs), crest median 249.2 µs (spread 242.4–257.1 µs)
+- B (tyre-self-contained): flat median 69.1 µs (spread 67.4–71.6 µs), crest median 238.3 µs (spread 225.8–254.9 µs)
+- Delta (B − A): flat −8.8 µs (−11.2 %), crest −10.9 µs (−4.4 %)
+Recovers ~8.8 µs per tick on flat ground, eliminating over half of the +13 µs vehicle module extraction overhead.
+
