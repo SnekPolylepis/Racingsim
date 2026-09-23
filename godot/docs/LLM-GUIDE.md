@@ -60,6 +60,43 @@ All paths below are relative to `godot/`.
 | `.github/workflows/native-tests.yml` | CI: formatting, headless suites and the rendered feature suite on Linux | Test automation |
 | `export_presets.cfg`, `tools/`, `packaging/` | Windows/macOS templates, local engines and reproducible Mac packaging | Packaging |
 | `build/` | Executable, play instructions, engine notices | Generated deliverable plus notices |
+| | | |
+| **Rebuild: vehicle** | | |
+| `scripts/vehicle/car_body.gd` | 6-DOF rigid-body chassis (CarBody): quaternion orientation, body-frame ω, semi-implicit Euler at 240 Hz, ray suspension, tyre compliance and unsprung mass, chassis-to-ground contact, 64-bit world position | Do not remove the `compliance` switch or the need clamps; do not store world position in a Vector3 (float32 precision loss at > 2 km) |
+| `scripts/vehicle/tyre.gd` | Shared tyre model: Pacejka, combined slip, temps, wear, need clamps, static friction | Moved from `car.gd` in P2-01; both CarModel and CarBody call it. Do not change the clamp logic without re-running flat equivalence |
+| `scripts/vehicle/drivetrain.gd` | Shared drivetrain: engine, clutch, gearbox, diffs | Moved from `car.gd` in P2-01; both chassis paths call it |
+| `scripts/vehicle/aids.gd` | Shared aids: TC, ABS, ASM, steering assist, Simcade layer | Moved from `car.gd` in P2-01; ASM uses body-frame yaw rate on CarBody |
+| `scripts/vehicle/tyre_footprint.gd` | Rigid-tyre envelope: 9 fixed samples per wheel (5 on smooth ground) plus edge bisection; returns the centre ray bit-for-bit on smooth surfaces | Do not change `SMOOTH_TOL` or `FACE_COS` without re-running `footprint.gd` on real kerbs |
+| `scripts/vehicle/wall_contact.gd` | WallContact: swept hull box on layer 2, 3D impulses with friction, Simcade arcade response | Call after `car.step()` inside the physics frame; the planar `collisions.gd` is kept for CarModel until P7 |
+| `scripts/vehicle/bot_driver.gd` | BotDriver: drives CarBody along a TrackAsset's BotLine at a fraction of grip with a banked-turn speed plan, pure-pursuit steering and cross-track correction | Do not change the `pace` constant (0.85) without re-recording `laps-v2-baseline.json`; see REBUILD-LOG P4-07 |
+| | | |
+| **Rebuild: surface** | | |
+| `scripts/surface/track_surface.gd` | TrackSurface: §5.2 contract on PhysicsServer3D rays (layer 1, GodotPhysics3D), normal always faces back along the ray | Must run inside a physics frame; errors once if called outside one |
+| `scripts/surface/wall_query.gd` | WallQuery: hull sweep (`cast_motion`) then `intersect_shape`/`collide_shape` on layer 2 for wall contacts | One instance per car; used by `wall_contact.gd` |
+| `scripts/surface/test_surface.gd` | TestSurface: analytic heightfields (flat, ramp, bowl, crest, ditch, step, block) implementing §5.2 contact; no physics frame needed | Do not change surface maths without re-running `surfaces.gd` (34 checks against analytic ground truth) |
+| | | |
+| **Rebuild: track** | | |
+| `scripts/track/track_asset.gd` | TrackAsset root (§5.3): validation, timing line, gates, sectors, grid, minimap, record identity, `surface()` → TrackSurface | Do not change `record_key()` without understanding ghost/record compatibility; see REBUILD-PLAN §5.3 |
+| `scripts/track/road_path.gd` | RoadPath (@tool Path3D): cross-section keys (RoadSection), elevation spline, `@export_tool_button` bake; bakes road/kerb/verge meshes and collision via RoadBuilder | Re-bake replaces only its own tagged output; do not delete foreign Grid children. See REBUILD-LOG P3-02 |
+| `scripts/track/terrain.gd` | TerrainPatch (@tool Node3D): heightmap import (GeoTIFF/raw), chunked mesh with collision on layer 1 (surface = grass), road-stitch blending | Terrain vertices under the road are dropped 0.3 m; do not raise them above the road surface |
+| `scripts/track/road_builder.gd` | Pure baking code for RoadPath: tessellation, strip winding, UV, kerb types (ramp/sausage/ribbed), ditch profile, dense ranges | See REBUILD-LOG P3-02 for tessellation limits (≤ 1.5 m along, w/8 across) |
+| `scripts/track/road_section.gd` | RoadSection resource: one cross-section key (width, bank, crown, kerbs, verge, runoff, ditch, surface ids) | |
+| `scripts/track/wall_builder.gd` | Builds wall geometry for WallPath | |
+| `scripts/track/wall_path.gd` | WallPath (@tool): armco/tyre/concrete walls, road-following or freehand, layer 2 collision with `wall_kind` metadata | |
+| `scripts/track/scenery_builder.gd` | SceneryBuilder: procedural box/quad mesh builders, MultiMesh helpers, layer-2 collision generator | Shared by all scenery-kit components |
+| `scripts/track/catch_fence.gd` | CatchFence: steel posts + mesh panels, road-following or along a WallPath; optional layer-2 armco collision | |
+| `scripts/track/grandstand.gd` | Grandstand: stepped seating block with canopy, optional front concrete barrier on layer 2 | |
+| `scripts/track/gantry.gd` | Gantry: start/finish gantry spanning the road (towers + beam + start lights), no road collision | |
+| `scripts/track/billboards.gd` | Billboards: advertising boards on posts, seeded placement, single MultiMesh, no collision | |
+| `scripts/track/marshal_post.gd` | MarshalPost: small cabins spaced behind barriers, single MultiMesh, no collision | |
+| `scripts/track/pit_building.gd` | PitBuilding: garage block with recessed bays, front concrete pit wall on layer 2 | |
+| `scripts/track/road_scatter.gd` | RoadScatter: seeded MultiMesh instances (default: conifers) in a band beyond the verge, no collision | |
+| | | |
+| **Rebuild: generators and scenes** | | |
+| `trackgen/proving_ground.gd` | Deterministic generator for the ~2.5 km invented proving ground (bowl, crest, compression, ditch, kerbs, scenery); saves `tracks3d/proving_ground/proving_ground.scn` | Scene is > 5 MB so not committed; baked on demand. Do not change without re-running `proving_ground.gd` (25 checks) |
+| `trackgen/spa.gd` | Spa-Francorchamps generator from OSM/LiDAR data: road, terrain, barriers, scenery, BotLine; saves `tracks3d/spa/spa.scn` | The bank-twist warning at s 2398 m is a known issue (F-P6-01). See REBUILD-LOG P6-01 for data sources |
+| `scenes/proving/test_surfaces.tscn` | Drive scene: CarBody on all 8 analytic TestSurface shapes with chase camera, car cycling, teleport, HUD telemetry | Launch with `Godot.exe --path . res://scenes/proving/test_surfaces.tscn` or from the main menu |
+| `scenes/proving/track_drive.tscn` | Drive scene: CarBody on any TrackAsset (proving ground or Spa) with lap/sector HUD and free-fly camera | Launch with `Godot.exe --path . res://scenes/proving/track_drive.tscn` or from the main menu |
 
 ## Change recipes
 

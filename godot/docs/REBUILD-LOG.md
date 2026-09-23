@@ -1191,6 +1191,12 @@ Results (`tests/v2/footprint.gd` 10/10, parked on a pad edge settles in 4 mm wit
 
 Gates: `run_gates.ps1 -All` passes, except the known Spa bank warning in the laps stderr (F-P6-01). `--features` 212/0, stderr empty.
 
+## 2026-09-23  DONE docs-v2  (Claude Opus 4.6) — branch `rb/docs-v2`
+Docs-only task: no code, tests or data changed.
+
+1. **`godot/docs/TESTING.md`:** added a "Rebuild (v2) suites" section between the legacy test descriptions and the CI section. Documents `tools/run_gates.ps1` (affected-only by default; `-All`, `-Features`, `-Perf`; the `RACINGSIM_PERF_GATES=0` timing switch) and `tools/gates.json`. Lists every `tests/v2/*.gd` suite (one line each: what it checks and how to run it), including `laps.gd`'s `--car`/`--record`/`--diag` arguments and the baseline file `docs/rebuild/laps-v2-baseline.json`. Records the known acceptable failure: laps rows' stderr carries Spa's "bank changes 2.69 deg/m" warning (F-P6-01). Existing legacy-suite content is preserved unchanged.
+
+2. **`godot/docs/LLM-GUIDE.md`:** added source-map entries for `scripts/vehicle/` (car_body.gd incl. compliance/unsprung mass, tyre_footprint.gd, wall_contact.gd, bot_driver.gd, plus tyre.gd, drivetrain.gd, aids.gd), `scripts/surface/` (track_surface.gd, wall_query.gd, test_surface.gd), `scripts/track/` (track_asset.gd, road_path.gd, terrain.gd, road_builder.gd, road_section.gd, wall_builder.gd, wall_path.gd, the scenery kit: scenery_builder, catch_fence, grandstand, gantry, billboards, marshal_post, pit_building, road_scatter), `trackgen/` (proving_ground.gd, spa.gd), and `scenes/proving/` (test_surfaces.tscn, track_drive.tscn). One or two lines each: what it is, and the one thing an editor must not break. All claims from code or the log; unclear items reference their REBUILD-LOG entry.
 ## 2026-09-23  CONTRACT §5.3 Props/  (Claude Opus 5.5) — branch `claude/racing-sim-props-cones-v69o5c`
 Additive: a TrackAsset may have an optional `Props/` node. Any node below it with metadata `"prop"` naming a kind in `data/props.json` is one knock-over prop resting at that node's pose (origin at the base centre on the ground, +Y up). `validate()` rejects unknown kinds and props outside the ±5 km box. Tracks without `Props/` are unchanged. `PropSet.from_asset(asset)` reads them; the prop node then follows the prop (`sync_nodes()`). New data file `data/props.json` (documented in DATA-CONTRACTS "Trackside props").
 
