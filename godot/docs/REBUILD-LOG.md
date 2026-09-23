@@ -290,3 +290,17 @@ Resolved regression and review findings on `rb/P1-remove-editor`:
    - Windowed features: `.\tools\Godot.exe --path . -- --features` (exit 0, 212 checks, 0 failures, stderr contains ONLY the 644-byte input event duplicate warning from `showcase_benchmark.gd:134`, zero RID or ObjectDB leak lines).
    - Re-exported executable: `cmd /c "tools\Godot.exe --headless --path . --export-release ""Windows Desktop"" build\RacingSim.exe"` (clean export).
    - Exported features: `.\build\RacingSim.exe -- --features` (exit 0, 212 checks, 0 failures, stderr 0 bytes / empty).
+
+## 2026-09-22  DONE feature-suite speed-up  (Claude Opus 5.5) — branch `rb/fast-features` (from main `9774d1f`)
+Owner request: the windowed `-- --features` run was slow, mostly the two input-driven 296 laps of Spa. Measured on this PC, source run.
+- **Before:** ~157 s total; the flow section took 73 s, of which the two laps were ~51 s each (3,042 rendered frames per lap).
+- **Profile of one lap** (per physics tick): test driver 220 µs (44 %; its speed plan called `track.pos_at()` 34 times per tick), car step 184 µs (36 %, the legacy car), collisions 35 µs, race 23 µs, the rest < 20 µs each. Rendering was not the main cost.
+- **Changes** (behaviour-preserving for everything that already had a baseline):
+  1. `showcase_benchmark.gd`: flow laps render one frame per simulated second (`FLOW_TICKS_PER_FRAME = 240`, was 24); every tick still feeds input and steps physics. The performance benchmark keeps 4 ticks per frame.
+  2. `track3d.gd`: new `curv_at(s)` = `pos_at(s).curv` computed identically (same search, same interpolation) without building the pose; the showcase driver uses it.
+  3. `showcase_driver.gd`: the speed-plan limits are fields (`top_speed`, `corner_accel`, `brake_gain`, `plan_distance`, `plan_step`, `plan_every`) whose **defaults are the old constants**. The feature flow alone uses braver limits (`FLOW_DRIVER`: 75 m/s, ~1 g corners, ~0.8 g braking, 450 m scan at 10 m, re-planned every 4th tick). Swept headless on the exact mirror of the flow laps: 75 m/s / 1 g and 85 m/s / 1.3 g both clean on pad and keyboard; 90 m/s / 1.6 g ran wide at the first corner, so 75 m/s keeps a margin.
+  4. The stderr warning on every feature run ("input event parsed more than once") is fixed: `lap()` re-sent the same Escape event object within one frame; the release is now a duplicate.
+- **After:** 88–90 s total (−44 %). Each flow lap takes 16–18 s wall (189.4 s / 191.0 s simulated, valid, 0 off-track, 0 contacts). 260 checks, 0 failures. **Stderr empty** (was 644 bytes).
+- **Identity:** with defaults, the driver reproduces the old laps exactly: `tests/showcase_laps.gd` stdout is byte-identical to `docs/rebuild/baseline/showcase-laps.txt` (and now runs in 103 s, was 126 s). At the intermediate step (frames only), the flow laps were bit-identical to before (302.070833333141 s / 303.666666666473 s).
+- **Not changed:** the feature flow still drives Spa in the 296 through the real input bus on both controller and keyboard, then pause/results/menus; only its lap is faster. The flow's lap times in feature output are now ~189/191 s, not 302/304 s. `docs/TESTING.md` is untouched here because P1 edits it; its "complete valid laps" description remains true.
+- When P4 moves the game onto CarBody, re-check `FLOW_DRIVER` still gives clean laps (it was tuned on the legacy car).

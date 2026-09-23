@@ -531,6 +531,27 @@ func pos_at(s):
 	}
 
 
+## Lateral curvature at arc distance `s`: exactly pos_at(s).curv (same search, same interpolation),
+## without building the pose. The showcase driver samples it 34 times per tick for its speed plan.
+func curv_at(s):
+	var N = samples.size()
+	if N == 0 or length <= 0:
+		return 0.0
+	var d = fposmod(s, length)
+	var lo = 0
+	var hi = N - 1
+	while lo < hi:
+		var mid = (lo + hi + 1) / 2
+		if samples[mid].s <= d:
+			lo = mid
+		else:
+			hi = mid - 1
+	var a = samples[lo]
+	var b = samples[(lo + 1) % N]
+	var t = clampf((d - a.s) / maxf(a.len, 1e-6), 0, 1)
+	return lerpf(a.curv, b.curv, t)
+
+
 ## Bank recovered from a frame: the roll of `right` out of the ground plane. Signed so that a
 ## positive value raises the left edge, matching the control-point convention.
 static func bank_of(pose):
