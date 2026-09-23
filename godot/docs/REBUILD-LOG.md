@@ -907,3 +907,53 @@ Controls & Features:
 ## 2026-09-23  CONTRACT §5.4 pose snapshot comp key  (Gemini 3.8 Flash) — branch `rb/F-P2-08`
 In P2-08, `CarBody.snapshot()` gained `"comp": [float, ×4]` (per-wheel suspension compression in metres). Updated §5.4 pose snapshot description in `REBUILD-PLAN.md` to document the `"comp"` key.
 
+## 2026-09-23  DONE P3-02c  (Gemini 3.8 Flash) — branch `rb/P3-02c-road-density`
+Implemented variable lateral road station density along authored roads (`RoadPath.dense_ranges`), allowing high-density tessellation (e.g. 57 stations across 14 m for the concrete ditch) to be localized to specific track segments rather than spanning the entire circuit.
+
+**Changes:**
+1. `scripts/track/road_path.gd`: Added `@export var dense_ranges: Array = []` storing dictionaries `{from_m, to_m, road_stations}`. Forwarded `dense_ranges` to `RoadBuilder.bake()`.
+2. `scripts/track/road_builder.gd`:
+   - Added `road_stations_at(s, dense_ranges, base_n)` supporting closed-loop wrapping across `s = total_length`.
+   - Validated that fine station counts satisfy `(fine - 1) % (coarse - 1) == 0`. Emits a bake warning and ignores the range if incompatible.
+   - Evaluated ditch-resolution warning per-station based on the active station count at each station rather than assuming constant topology.
+   - Implemented bidirectional zipper fan stitching between coarse ($n_0$) and fine ($n_1$) road stations: fine segments are grouped in blocks of $M = (n_{fine} - 1) / (n_{coarse} - 1)$ and fanned to coarse vertices split symmetrically at $mid = M / 2$, maintaining exact 2-manifold continuity and upward normal winding.
+   - Updated `ribbed_strip()` to handle right-side kerb index offsets when `right_edge0 != right_edge1`.
+3. `trackgen/proving_ground.gd`:
+   - Configured `road.road_stations = 9` (coarse 1.75 m spacing) and `road.dense_ranges = [{"from_m": 1350.0, "to_m": 1620.0, "road_stations": 57}]` (fine 0.25 m ditch resolution).
+   - Generated proving ground: zero bake warnings, zero validation errors.
+4. `tests/v2/road_density.gd`: 6 gating checks (100% pass, 0 failures, empty stderr):
+   - Incompatible dense count 50 warns and falls back to coarse 9.
+   - Analytic cross-section matches within 2 mm across transitions and in ditch (worst 1.2 mm).
+   - Watertight collision mesh: 21,749 interior edges all shared by exactly 2 triangles (0 boundary cracks, 0 non-manifold edges).
+   - 5 cm ray grid across both seams: all hit, max height step jump 0.0467 mm (< 1.0 mm limit).
+   - UV continuity across seams: max discrepancy 0.000000 m (< 1e-4 m limit).
+   - Proving ground compressed scene < 5 MB and road collision tris < 50,000.
+
+**Size reduction measurements (Proving Ground):**
+- Compressed scene (`.scn`): **8,954,818 bytes (8.54 MB) → 3,872,082 bytes (3.69 MB) [−56.8%]** (well under the 5 MB budget).
+- Uncompressed scene (`.tscn`): **32,754,545 bytes (31.24 MB) → 15,405,506 bytes (14.69 MB) [−53.0%]**.
+- Road collision triangles: **189,056 → 44,480 [−76.5%]**.
+- Total collision triangles: **265,120 → 120,544 [−54.5%]**.
+
+**Commit proposal:**
+Since the compressed `.scn` size is 3.87 MB (well below the 5 MB threshold and git commit limit), we propose committing `tracks3d/proving_ground/proving_ground.scn` in the follow-up or merge step (per Sol/owner decision).
+
+**Gate results (all executed with Start-Process, WaitForExit(240000), empty stderr):**
+- `scripts/game.gd --check-only`: exit 0, empty stderr.
+- `--editor --quit`: exit 0, empty stderr.
+- `tests/v2/road_density.gd`: 6 checks, 0 failures.
+- `tests/v2/road_tool.gd`: 16 checks, 0 failures.
+- `tests/v2/road_tool_v2.gd`: 11 checks, 0 failures.
+- `tests/v2/walls.gd`: 8 checks, 0 failures.
+- `tests/v2/track_asset.gd`: 23 checks, 0 failures.
+- `tests/v2/proving_ground.gd`: 25 checks, 0 failures.
+  (All key metrics unchanged: bevel 60/120, ribbed 60/120, sausage 60/120, crest takeoff 145.8 km/h, bowl |Fy| 3.5% of mg, compression 2.69 x mg with 0 body contacts, ditch challenge -1.16 m ride with 0 light and 0 off-tarmac wheel ticks, simulation & simcade 296 BotLine laps 143.80 s with 0 off-wheel ticks).
+- `gdformat --check -l 110`: 4 files unchanged.
+- `git diff --check`: 0 errors.
+
+## 2026-09-23  DONE F-P3-02c proving ground size check in memory  (Gemini 3.8 Flash) — branch `rb/F-P3-02c`
+Updated `tests/v2/road_density.gd` check 5 to build the proving ground in memory (`trackgen/proving_ground.gd` -> `PGGenerator.build_asset()`), pack it into a `PackedScene`, and save it with `FLAG_COMPRESS` under `user://native-tests/v2/road_density/pg.scn`.
+- Measures the generated binary compressed size directly (3,872,088 bytes = 3.69 MB) instead of relying on a git-ignored file.
+- Total collision triangles: 120,544; road collision triangles: 44,480.
+- All 6 checks in `tests/v2/road_density.gd` pass with empty stderr.
+- All 23 affected gates pass via `run_gates.ps1` (60 s wall clock).
