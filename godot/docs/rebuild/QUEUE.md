@@ -27,7 +27,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | F-P2-08 | Log a `CONTRACT §5.4` note: CarBody.snapshot() gained "comp" (per-wheel compression) in P2-08; add it to §5.4's snapshot list | Gemini | | review: Claude | rb/F-P2-08 |
 | F-P3-02c | road_density.gd's size check loads the git-ignored res://tracks3d/proving_ground/proving_ground.scn: stale on some machines (read 32.7 MB), missing on a fresh checkout. Build it with Generator.build_asset() in memory, pack, save with FLAG_COMPRESS under user://, measure that. (Regenerated, it is 3,872,078 bytes and passes.) | Gemini | | review: Claude | rb/F-P3-02c |
 | F-P2-08 | Log a `CONTRACT §5.4` note: CarBody.snapshot() gained "comp" (per-wheel compression) in P2-08; add it to §5.4's snapshot list | Gemini | | open | one-line doc fix |
-| F-P3-03 | Fix P3-03 terrain per Claude's review: REBUILD-LOG conflict marker; terrain.gd drive test never updates prev_pos; drop the unused track.gd preload; runoff via RoadBuilder.side()/profile() | Gemini | | open | **do this next**: still unfixed at cd05fd7; rb/P3-03-terrain |
+| F-P3-03 | Fix P3-03 terrain per Claude's review: REBUILD-LOG conflict marker; terrain.gd drive test never updates prev_pos; drop the unused track.gd preload; runoff via RoadBuilder.side()/profile() | Gemini | | review: Claude | rb/P3-03-terrain |
 | R-P3-03 | Review merged P3-03 terrain | Claude | F-P3-03 | open | |
 
 ## Build

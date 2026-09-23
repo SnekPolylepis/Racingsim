@@ -957,3 +957,39 @@ Updated `tests/v2/road_density.gd` check 5 to build the proving ground in memory
 - Total collision triangles: 120,544; road collision triangles: 44,480.
 - All 6 checks in `tests/v2/road_density.gd` pass with empty stderr.
 - All 23 affected gates pass via `run_gates.ps1` (60 s wall clock).
+## 2026-09-23  CLAIM P3-03  (Gemini 3.8 Flash)
+Building `scripts/track/terrain.gd` (`class_name TerrainPatch`), road verge stitching with `RoadPath`, chunked render meshes and layer-1 surface collision, and `tests/v2/terrain.gd`.
+
+## 2026-09-23  DONE P3-03  (Gemini 3.8 Flash)
+New: `scripts/track/terrain.gd` (`class_name TerrainPatch`, `@tool`, `Node3D`), `scripts/track/terrain.gd.uid`, `tests/v2/terrain.gd` (6 checks), `tests/v2/terrain.gd.uid`. Output in `docs/rebuild/terrain-P3-03.txt`.
+
+**Implementation:**
+- Heightmap loading: supports grayscale/HDR textures (16-bit PNG, EXR), fast float32 byte-conversion path for `FORMAT_RF`, pixel fallback for other formats, and 32-bit float `.raw` files (documented GDAL conversion: `gdal_translate -ot Float32 -of ENVI input.tif output.raw`). Supports horizontal resolution `metres_per_pixel`, vertical `height_scale` and `height_offset`, and `origin_offset` in TrackAsset coordinates. Precision: 64-bit float arrays during baking within the ±5000 m box.
+- Seamless road stitching: uses 2D spatial grid pruning over RoadPath segments. For terrain vertices within `blend_m` (default 8 m) outside a RoadPath's outer verge edge (`beyond_edge(..., extra = 0.0)`), smoothly blends height toward verge outer edge height using cubic `smoothstep`. Vertices under the road footprint (road, kerbs, runoff, verge) are lowered at least 0.3 m (`under_road_drop_m`) below the banked/cambered road surface (`minf(h_orig, y_road_surf - 0.3)`).
+- Chunking & collision: chunks meshes (default 64x64 cells) into `ArrayMesh` instances under `Terrain/<name>/Chunk_<x>_<z>` with global finite-difference normals across chunk seams. Drivable collision bodies are added under `Surfaces/<name>_c<x>_<z>` as `StaticBody3D` children on layer 1 with metadata `"surface" = 2` (grass) using `ConcavePolygonShape3D` and CCW upward-facing winding matching GodotPhysics3D raycast conventions. `TrackAsset.validate()` passes cleanly.
+
+**Measurements & Results:**
+- `tests/v2/terrain.gd` (6/6 checks, exit 0, empty stderr):
+  1. **Analytic heightmap** ($h = 3 \sin(x/40) \cos(z/55)$): 200 random points hit on grass (surface 2), within 1 cm of analytic value (worst error **0.0003 m** / 0.3 mm).
+  2. **Chunk seams**: border rays on chunk boundaries hit with zero gaps (< 1 mm diff, worst gap **0.00015 m** / 0.15 mm).
+  3. **Road stitch**: verge outer edge matches verge height within 2 cm (worst error **0.0000 m** / 4.5 µm); no terrain pokes above road footprint (min drop **0.300 m** >= 0.3 m).
+  4. **296 CarBody rest & drive**: 296 settles at rest on terrain (speed **3.8e-8 m/s**, 4 contacts, all 4 wheels on surface 2 grass); drives **201.0 m** diagonally across road and terrain at 60 km/h without NaN (1.15 s).
+  5. **Performance**: 2 km x 2 km, 1 m-per-pixel heightmap (**8,000,000 triangles**, 1024 chunks) baked in **11.13 s**; 296 car tick **159.3 µs** on 8M-triangle terrain (well below section 6's 300 µs budget).
+  6. **Validation**: `TrackAsset.validate()` passes cleanly with terrain present (`[]`).
+
+**Gates Passed (all via Start-Process + WaitForExit(240000), exit 0, empty stderr):**
+- `tests/v2/terrain.gd` (6/6)
+- `tests/v2/road_tool.gd` (16/16)
+- `tests/v2/road_tool_v2.gd` (11/11)
+- `tests/v2/walls.gd` (8/8)
+- `tests/v2/track_asset.gd` (23/23)
+- `scripts/game.gd --check-only` (clean exit 0)
+- `tools/Godot.exe --headless --editor --quit` (`TerrainPatch` registered in global class cache)
+
+## 2026-09-23  DONE F-P3-03 terrain follow-ups  (Gemini 3.8 Flash) — branch `rb/P3-03-terrain`
+Follow-up fixes and test additions for P3-03:
+1. **REBUILD-LOG.md**: removed merge conflict marker; diff against origin/main is strictly additive (0 deletions).
+2. **Drive test (`test_car_rest_and_drive`)**: fixed distance integration to tick-by-tick delta (`dist += c2.pos.distance_to(prev_pos)`). Car now truly drives 200.0 m in 13.58 s at 60 km/h, smoothly crossing from road (surface 0) to terrain (surface 2) maintaining 4 wheel contacts throughout.
+3. **`terrain.gd`**: removed unused `const SurfaceTable = preload("res://scripts/track.gd")`.
+4. **Road stitch with kerb & runoff**: `road_surface_height_at()` updated to use `RoadBuilder.side()` across kerb, runoff, and verge bands with road edge station prepended. Added `test_road_stitch_runoff_kerb()` verifying verge outer edge match within 2 cm (worst 0.0000 m) and no terrain poke above road/kerb/runoff footprint (min drop 0.300 m >= 0.3 m). In `stitch_heights()`, open road end handling ignores points longitudinally beyond path bounds so artificial drops are not created past the end of open tracks.
+5. **Gates**: all 23 selected suites passed via `run_gates.ps1` (0 failures, 70 s wall clock). `tests/v2/terrain.gd` 7/7 checks pass with empty stderr.
