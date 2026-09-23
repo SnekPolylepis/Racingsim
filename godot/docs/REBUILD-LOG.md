@@ -1204,5 +1204,5 @@ Built GitHub Actions workflow (`.github/workflows/gates.yml`) and cross-platform
 - Runs all 39 headless suites in `tools/gates.json` concurrently using `ci_gates.py` with `RACINGSIM_PERF_GATES=0`.
 - Treats `laps.gd` "spa roadster simulation" failure as an allowed failure (P4-07b) rather than failing the run.
 - Uploads all stdout/stderr logs from `godot/tests/logs/ci/` as an artifact (`gate-logs`) on pass and failure.
-- Local verification: 39/39 run in 183.0 s wall clock (38 PASS, 1 ALLOW for spa roadster simulation, 0 failed, exit 0).
+- Local verification: 39/39 run in 183.8 s wall clock (39 PASS, 0 failed, exit 0).
 
