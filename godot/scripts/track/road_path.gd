@@ -23,6 +23,9 @@ const GRID_SOURCE_META = "_road_path_source"
 ## Stations across the road (odd; 9 gives the P3-00 w/8). An inset ditch needs <= 0.25 m spacing,
 ## e.g. 57 for a 14 m road; bake warns if it is coarser.
 @export_range(3, 201, 2) var road_stations = 9
+## Optional dense station ranges: Array of {from_m, to_m, road_stations} for sections requiring
+## finer lateral sampling (e.g. an inset ditch). Wraps on a closed road.
+@export var dense_ranges: Array = []
 ## Elevation keys (x = metres along the road, y = height), smooth through each key. When set they
 ## replace the curve's own heights: draw the plan flat and key the profile by station.
 @export var elevation_keys = PackedVector2Array()
@@ -56,7 +59,7 @@ func bake():
 		push_error("RoadPath %s: draw a curve with at least two points first" % name)
 		return
 	var result = RoadBuilder.bake(
-		working_curve(), sections, closed, along_step, road_stations, elevation_keys
+		working_curve(), sections, closed, along_step, road_stations, elevation_keys, dense_ranges
 	)
 	last_bake = result
 	for warning in result.warnings:
