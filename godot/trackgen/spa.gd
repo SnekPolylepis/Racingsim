@@ -120,7 +120,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		"verge_surface_left": -1,
 		"verge_surface_right": -1,
 	}
-	var strongest = 0.0
+	var total_bank = 0.0
+	var total_bank_weight = 0.0
 	for corner in corners:
 		var delta = circular_delta(s, corner[1], length)
 		var weight = smoothstep(-130.0, -45.0, delta) * (1.0 - smoothstep(35.0, 145.0, delta))
@@ -128,9 +129,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 			continue
 		values.width_left = maxf(values.width_left, lerpf(6.2, corner[3], weight))
 		values.width_right = maxf(values.width_right, lerpf(6.2, corner[3], weight))
-		if weight > strongest:
-			values.bank_deg = corner[2] * weight
-			strongest = weight
+		total_bank += corner[2] * weight
+		total_bank_weight += weight
 		var inside = "right" if corner[4] > 0 else "left"
 		var outside = "left" if corner[4] > 0 else "right"
 		values["runoff_" + outside] = maxf(values["runoff_" + outside], 4.0 + 20.0 * weight)
@@ -143,6 +143,7 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		if corner[0] in ["Les Combes", "Pouhon", "Stavelot"] and weight > .1:
 			values["verge_surface_" + outside] = 3
 			values["verge_" + outside] = 8.0 + 12.0 * weight
+	values.bank_deg = total_bank / maxf(total_bank_weight, 1.0)
 	return values
 
 
@@ -193,7 +194,7 @@ static func add_wall(
 
 
 ## Licensed DEM samples supply the road profile. The broad surrounding terrain is resampled to
-## approximately 10 m so baking/caching remains practical on a developer machine.
+## 20 m (matching the raw DEM resolution) so baking/caching remains fast and scene size stays compact.
 static func add_terrain(asset: Node3D) -> Dictionary:
 	if not FileAccess.file_exists(DATA + "terrain.json"):
 		push_warning("Spa terrain unavailable; broad authored verges remain driveable")
@@ -209,7 +210,7 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 		push_warning("Spa DEM dimensions do not match its float32 payload; skipping terrain")
 		return {}
 	var pixel = float(header.metres_per_pixel)
-	var mesh_spacing = 10.0
+	var mesh_spacing = 20.0
 	var w = int((width - 1) * pixel / mesh_spacing) + 1
 	var h = int((height - 1) * pixel / mesh_spacing) + 1
 	var reduced = PackedFloat32Array()
@@ -233,7 +234,7 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 	terrain.height_offset = float(header.get("height_offset", 0.0))
 	terrain.road_paths.append(NodePath("../Main"))
 	terrain.blend_m = 30.0
-	terrain.under_road_drop_m = 2.0
+	terrain.under_road_drop_m = 10.0
 	terrain.chunk_size = 64
 	asset.add_child(terrain)
 	terrain.owner = asset
@@ -464,7 +465,7 @@ static func build_asset() -> Node3D:
 		"ArdennesNear",
 		positions["Raidillon"] + 180.0,
 		positions["Blanchimont"] + 120.0,
-		32.0,
+		18.0,
 		12.0,
 		65.0,
 		601
@@ -475,7 +476,7 @@ static func build_asset() -> Node3D:
 		"ArdennesDeep",
 		positions["Raidillon"] + 200.0,
 		positions["Blanchimont"] + 100.0,
-		42.0,
+		24.0,
 		70.0,
 		180.0,
 		602

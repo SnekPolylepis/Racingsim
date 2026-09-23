@@ -17,40 +17,38 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 
 | ID | Task | Who | Needs | Status | Branch / notes |
 |---|---|---|---|---|---|
-| R-P2-05 | Review P2-05 gates (tests only) | Sol | | done | NOTE P2-05/P2-07 review (Sol), merged d225af2 |
-| R-P2-07 | Review P2-07 aids/Simcade in 3D and the CarBody-only Simcade retune | Sol | | done | same |
-| M-WF | Merge rb/workflow-gates into main (contains P4-03 + the workflow change); Claude's gates: 36/36 in 138 s, features 212/0 | Sol | | open | the automated reviewer blocks Claude pushing main, so Sol merges |
-| R-P4-03 | Review P4-03 car-vs-wall contact (WallQuery, WallContact) | Sol | M-WF | open | read "DONE P4-03" |
-| R-WF | Review the workflow change: tools/run_gates.ps1, tools/gates.json, §9 rules 2/5/6/10/11, suite cuts | Sol | M-WF | open | read "NOTE workflow" |
-| M-GEM | Merge rb/P2-08-test-surfaces and rb/P3-02c-road-density (Claude reviewed: approve; merged on top of rb/workflow-gates, run_gates -All -Features 36/36 with road_density passing once the proving ground is regenerated, see F-P3-02c) | Sol | M-WF | open | |
-| F-P3-02c | road_density.gd's size check loads the git-ignored res://tracks3d/proving_ground/proving_ground.scn: stale on some machines (read 32.7 MB), missing on a fresh checkout. Build it with Generator.build_asset() in memory, pack, save with FLAG_COMPRESS under user://, measure that. (Regenerated, it is 3,872,078 bytes and passes.) | Gemini | | open | small; branch from main after M-GEM |
-| F-P2-08 | Log a `CONTRACT §5.4` note: CarBody.snapshot() gained "comp" (per-wheel compression) in P2-08; add it to §5.4's snapshot list | Gemini | | open | one-line doc fix |
-| F-P3-03 | Fix P3-03 terrain per Claude's review: REBUILD-LOG conflict marker; terrain.gd drive test never updates prev_pos; drop the unused track.gd preload; runoff via RoadBuilder.side()/profile() | Gemini | | open | **do this next**: still unfixed at cd05fd7; rb/P3-03-terrain |
-| R-P3-03 | Review merged P3-03 terrain | Claude | F-P3-03 | open | |
-| F-P6-01 | Spa v0 fixes per Claude's review: BotLine with smooth handles (not a polyline); spread the 2.69 deg/m bank twist at 2398 m over >= 20 m; get the committed scene under 5 MB; check width at s 6125 m | Gemini | | claimed: Gemini | rb/F-P6-01 |
-| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | open | read "REVIEW P6-01" |
+| M-TRAIN | Merge train into main: workflow-gates (P4-03 + workflow), F-P2-08 (P2-08), F-P3-02c (P3-02c), P3-03-terrain (F-P3-03), scenery-kit, P4-07-bot-laps, P6-01-spa, P4-01-game-port | owner (GitHub PR) | | review: owner | rb/merge-train; Claude reviewed all but its own; read "MERGE train" |
+| R-P4-03 | Review P4-03 car-vs-wall contact (WallQuery, WallContact) | Sol | M-TRAIN | open | read "DONE P4-03"; merged before review (Sol out of usage) |
+| R-WF | Review the workflow change: tools/run_gates.ps1, tools/gates.json, §9 rules 2/5/6/10/11, suite cuts | Sol | M-TRAIN | open | read "NOTE workflow" |
+| R-P4-07 | Review P4-07 bot driver and laps gate | Sol | M-TRAIN | open | read "DONE P4-07" and "REVIEW P6-01" |
+| F-P4-01 | P4-01 follow-ups (Claude's review): Esc on the v2 path quits the app instead of returning to the front end; WallContact not yet called after car.step(); game.gd and track_drive.gd preload trackgen/*.gd but export_presets.cfg excludes trackgen/* so an exported exe breaks | Sol | M-TRAIN | open | fold into P4-core |
+| F-P6-01 | Spa v0 fixes per Claude's review: spread the 2.69 deg/m bank twist at 2398 m; get the committed scene under 5 MB; check width at s 6125 m (BotLine smoothing done in P4-07b: regenerate the committed spa.scn after merging it) | Gemini | | review: Claude | rb/F-P6-01 |
+| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking, smooth Spa BotLine; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | review: Sol | rb/P4-07b; read "DONE P4-07b" |
+| F-terrain-perf | tests/v2/terrain.gd's "car step" timing check (300 µs budget) ignores GatesEnv.perf(): under the parallel runner it read 671 µs and failed (168 µs alone). Route it through GatesEnv.perf()/perf_note() like the other timing gates | Claude | | review: Sol | small |
 
 ## Build
 
 | ID | Task | Who | Needs | Status | Branch / notes |
 |---|---|---|---|---|---|
-| P2-08 | Debug scene to drive CarBody on the analytic test surfaces | Gemini | | review: done (Claude approve), waits for M-GEM | rb/P2-08-test-surfaces 3b0143c |
-| P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | review: done (Claude approve + F-P3-02c), waits for M-GEM | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
-| P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | M-WF | claimed: Sol | rb/P4-01-game-port; one task: these share the game loop (§9 rule 11) |
-| P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | review: Sol | rb/P4-07-bot-laps; read DONE P4-07 |
+| P2-08 | Debug scene to drive CarBody on the analytic test surfaces | Gemini | | done | rb/P2-08-test-surfaces 3b0143c |
+| P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | done | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
+| scenery-kit | Trackside scenery kit (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding) and proving ground placement | Gemini | | done | rb/scenery-kit; 34/34 gates pass (147 s), 11/11 scenery checks |
+| P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | | claimed: Sol (P4-01 merged in M-TRAIN; P4-02, P4-06 remain) | rb/P4-01-game-port; one task: these share the game loop (§9 rule 11) |
+| P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | done (review R-P4-07) | merged in M-TRAIN |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Gemini | P2-08, P4-core | open | P2-08's pose adapter is the start |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
-| CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Sol | | open | saves reviewers re-running gates |
+| CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | open | saves reviewers re-running gates |
 
 ## Decisions and later
 
 | ID | Task | Who | Needs | Status | Notes |
 |---|---|---|---|---|---|
-| D-kerb | Should Simcade kerbs feel softer than Simulation (car.gd's curb_scale 0.55 has no direct 3D equivalent)? | owner | | needs owner | see DONE P2-07 |
-| D-compliance | Add tyre radial stiffness + unsprung mass so kerb strikes are realistic (changes ride height baselines) | owner | | needs owner | proposed in DONE P2-06; DeepSeek design notes pending |
-| P2-comp | Tyre compliance / unsprung mass model | Claude | D-compliance | blocked: owner decision | |
+| D-kerb | Should Simcade kerbs feel softer than Simulation (car.gd's curb_scale 0.55 has no direct 3D equivalent)? | owner | | done: no (2026-09-23) | same kerbs in both handling models |
+| D-compliance | Add tyre radial stiffness + unsprung mass so kerb strikes are realistic (changes ride height baselines) | owner | | done: yes (2026-09-23) | P2-comp |
+| P2-comp | Tyre compliance / unsprung mass model | Claude | | review: Sol | rb/P2-comp; read "DONE P2-comp" |
+| P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | review: Sol | rb/P2-comp-b (on rb/P2-comp); read "DONE P2-comp-b" |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-02 | Nordschleife in sections | Gemini, Claude review | P6-01 | open | |
 | P6-03 | Monza (if still wanted) | owner | | needs owner | |
-| props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | open | |
+| props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | review: Sol | claude/racing-sim-props-cones-v69o5c (on rb/P2-comp-b); read "DONE props". For P4-core: PropSet in the game loop |
 | P7 | Delete the legacy model and tracks, rewrite docs, Windows + macOS export | Sol, Gemini | P5-04, P6-01 | open | split when it's reached |
