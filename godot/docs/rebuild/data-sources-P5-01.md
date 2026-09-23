@@ -1,6 +1,6 @@
 # P5-01: elevation and imagery sources for the real circuits
 
-Checked 2026-09-22 against the publishers' own pages (links below). **Nothing has been downloaded or committed yet.** Re-check the licence page on the day data is actually fetched, and record the access date in the attribution.
+Spa and Nordschleife checked 2026-09-22 against the publishers' own pages (links below). Monza is an optional, unverified candidate. **Nothing has been downloaded or committed yet.** Re-check the licence page on the day data is actually fetched, and record the access date in the attribution.
 
 ## Summary
 
@@ -8,9 +8,9 @@ Checked 2026-09-22 against the publishers' own pages (links below). **Nothing ha
 |---|---|---|---|---|---|
 | Nürburgring Nordschleife | LVermGeo RLP **DGM1** (also DOM1, laser point clouds LPG/LPO) | LVermGeo RLP **DOP20** (20 cm) | dl-de/by-2.0 | Yes, with attribution | Free direct download, Geoshop RLP |
 | Spa-Francorchamps | SPW Wallonie **MNT 1 m 2021–2022** (LiDAR) | SPW **Orthophotos 2023 Été** (25 cm, RGB + NIR) | CC BY 4.0 | Yes, with attribution | Free direct download by province (Liège), or custom extract by email |
-| Monza (optional) | Regione Lombardia / MiTE **DTM LiDAR 1 m** | not checked | CC BY 4.0 (per catalogue listing) | Yes, with attribution | Tiles requested by certified email (PEC) to the province; **coverage of the Monza park not confirmed** |
+| Monza (optional) | Regione Lombardia / MiTE **DTM LiDAR 1 m** | not checked | **Unverified** (search listing says CC BY 4.0) | **Unverified** | Catalogue describes a certified-email (PEC) request; **coverage of the Monza park not confirmed** |
 
-All three licences permit derived works in a distributed, commercial game, provided the attribution is shown (credits screen and `THIRD-PARTY.md`). They sit alongside the existing ODbL obligation for the OpenStreetMap-derived centrelines.
+The verified Nordschleife and Spa licences permit derived works in a distributed, commercial game with attribution. Monza remains a candidate until its licence and circuit coverage are confirmed from a primary record. These licences sit alongside the existing ODbL obligation for the OpenStreetMap-derived centrelines.
 
 ## Nordschleife: Rhineland-Palatinate (LVermGeo RLP)
 
@@ -31,7 +31,7 @@ All three licences permit derived works in a distributed, commercial game, provi
 
 - 1 m terrain resolves the road-scale shape that 25–30 m EU-DEM/SRTM could not. ±0.3 m absolute is still too noisy to drive on raw: fit the road surface to the point cloud / DGM along the centreline with cross-section smoothing, rather than sampling the grid directly.
 - Keep coordinates local: reproject from UTM/Lambert to a track origin within ±5 km (§5.1).
-- Store raw downloads outside git (they are gigabytes). Commit only the derived track and the licence notes. Add the attributions to `godot/THIRD-PARTY.md` and the in-game credits in the same change that first ships derived data.
+- Store raw downloads outside git (they are gigabytes). Commit only the derived track and its licence notes. Update the verified entries in `godot/THIRD-PARTY.md` with acquisition details, and add in-game credits in the same change that first ships derived data.
 
 ## Sources
 

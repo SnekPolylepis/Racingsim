@@ -45,3 +45,9 @@ Edits: mono conversion, removal of DC/wind rumble, selected excerpts, pitch stab
   - Elevation: EU-DEM v1.1 (Copernicus Land Monitoring Service) and SRTM 30m (NASA, public domain), accessed via OpenTopoData.
   - Derived documents in `tracks/` and `trackgen/` are made available under the ODbL.
 
+## Verified P5-01 sources for future circuits (not downloaded)
+
+Checked 2026-09-22; no data from these sources has been downloaded, committed or shipped. See [P5-01 source notes](docs/rebuild/data-sources-P5-01.md) for access, resolution and survey caveats. Recheck each licence when fetching data, and record the access date, exact files and any modifications before using derived data.
+
+- **Nordschleife:** [LVermGeo Rheinland-Pfalz open data](https://lvermgeo.rlp.de/geodaten-geoshop/open-data): DGM1 terrain, DOM1 surface model, laser point clouds and DOP20 orthophotos. Licence: Datenlizenz Deutschland – Namensnennung – Version 2.0 (dl-de/by-2-0). Attribution for modified data: `©GeoBasis-DE / LVermGeoRP<year>, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`; replace `<year>` with the year of data access.
+- **Spa-Francorchamps:** Service public de Wallonie [MNT 1 m 2021–2022](https://geoportail.wallonie.be/catalogue/fe13bc84-e371-46ca-9632-8ad4139f1ee5.html) terrain and [Orthophotos 2023 Été](https://geoportail.wallonie.be/catalogue/ad55c2ce-62ad-4c3c-b3cf-8fbc270a6b6e.html). Both are CC BY 4.0. Attribute SPW, each dataset's catalogue title and source URL, and indicate modifications. Record the final attribution in the game's credits when derived data first ships.

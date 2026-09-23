@@ -211,3 +211,6 @@ Licences and access checked on the publishers' own pages; details and links in `
 - **Monza (optional):** Lombardy/MiTE DTM LiDAR 1 m listed as CC BY 4.0, but tiles are requested by certified email (PEC) and coverage of the park is unconfirmed.
 - Both terrain models **exclude bridges**; Nordschleife bridge crossings need the point cloud, DOM1 or hand modelling. ±0.3 m absolute accuracy means the road surface must be fitted and smoothed, not sampled raw.
 - Plan D10 and P5-01 updated.
+
+## 2026-09-22  NOTE P5-01 review fixes  (GPT-6 Sol)
+Recorded the verified Spa and Nordschleife sources, licence terms and future attribution requirements in `THIRD-PARTY.md`, as P5-01 originally required. Updated the plan and source notes to reflect that the ledger is now populated. Marked optional Monza's licence and commercial use as unverified until a primary licence record and circuit coverage are confirmed; the linked catalogue page was unavailable during review. Documentation only; no data downloaded or committed. `git diff --check` passed. Feature suite not run at the owner's request.
