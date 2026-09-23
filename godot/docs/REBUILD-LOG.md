@@ -404,3 +404,10 @@ The preceding `NOTE merge P2-03` lists downward P3-02 road-mesh winding as a rea
 ## 2026-09-22  CLAIM P2-03 review follow-ups (GPT-6 Sol)
 Check and address the independent P2-03 review's precision and contact concerns in this isolated branch, with targeted regression evidence before any merge.
 
+
+## 2026-09-22  DONE P2-03 review follow-ups (GPT-6 Sol)
+Branch `rb/P2-03-review-fixes` from main `2f2883d`, code commit `f3fee4c`. The lifted suspension ray now checks from the mount only when its first hit is above the mount; a reachable lower deck wins, while raised ground with no lower hit retains the lifted-ray bump-stop behavior. The standstill hold updates `vel_x/y/z` scalars directly rather than round-tripping the velocity through a float32 Vector3. `tests/v2/suspension.gd` adds a close two-deck regression and checks the ditch's body-point penetration along the contact normal. The ditch reaches 0.142 m along the normal (0.177 m vertical on the sloped wall), below its 0.15 m contact-depth bound.
+
+Reconsidered the review's body-contact torque-arm suggestion: this penalty model applies force at the penetrating chassis vertex, so `arm.cross(f)` is the correct lever for that force. No torque-arm change was made. The `pos`/`vel` Vector3 view precision caveat remains an API consideration; current solver accumulation uses scalars.
+
+From this worktree's `godot/`, Godot 4.6.2 via `Start-Process -Wait -PassThru -NoNewWindow` with redirected stdout/stderr: `--headless --path . --import`, `scripts/game.gd --check-only`, `tests/v2/suspension.gd` **12/0**, `chassis_spike.gd` **23/0**, `surfaces.gd` **34/0**, `track_asset.gd` **23/0**. All exit 0 and stderr is empty. Spike stdout matches `docs/rebuild/spike-P2-00.txt` except cost lines and JSON timing fields. A first diagnostic ditch assertion used vertical depth and failed at 0.177 m; it was corrected to the normal depth used by the penalty contact, then passed at 0.142 m. Touched GDScript files formatted with `gdformat -l 110`; `git diff --check` passed.
