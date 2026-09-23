@@ -239,3 +239,26 @@ Verification from the fresh `RacingSim-merge/godot` worktree using `C:\Users\Zai
 - `tests/v2/surfaces.gd`: 34 checks, 0 failures, exit 0, stderr empty.
 - `tests/v2/track_asset.gd`: 23 checks, 0 failures, exit 0, stderr empty.
 - Legacy `tests/dynamics.gd` Simulation and `-- --simcade`, `tests/handling.gd`, `tests/laps.gd` Simulation and `-- --simcade`, `tests/showcase_laps.gd`, `tests/airborne.gd`, `tests/karussell.gd`, `tests/track3d.gd`, and `tests/validation.gd`: each stdout identical to its `docs/rebuild/baseline/*.txt` reference after CR/LF normalization; every stderr empty. Nine exit 0; dynamics Simcade exits 1 with its identical, known roadster 100-0 failure.
+
+## 2026-09-22  DONE P3-02 road tool  (Claude Opus 5.5) — branch `rb/P3-02-road-tool` (from main `9774d1f`)
+New files only: `scripts/track/road_section.gd` (RoadSection resource: one cross-section key), `scripts/track/road_path.gd` (RoadPath, @tool Path3D), `scripts/track/road_builder.gd` (pure baking code, headless-safe), `tests/v2/road_tool.gd` (15 checks), output `docs/rebuild/road-tool-P3-02.txt`.
+
+How it works (for track authors):
+- Add a **RoadPath** under a TrackAsset root, draw its curve, add **RoadSection** keys in the Inspector (`at` metres along; left/right width, bank (+ raises the left edge), crown, RAMP kerbs per side with width/height, verge width and slope, road and verge surface ids), press **Bake road**.
+- The bake fills `Road/<name>` (render mesh, one surface per surface type, UVs in metres), `Surfaces/<name>_s<id>` (collision per surface, layer 1, metadata), and, if `drives_timing`, `TimingLine` (road centre) and `Grid/Slot1..n` (staggered behind s = 0). Re-baking replaces only its own output.
+- Numeric values ease between keys with a smoothstep; kerb types and surfaces switch at keys. Constant topology per station (verge | 3-station kerb band | 9 road stations | kerb band | verge), so strips never need degenerate triangles; a side with no kerb keeps the band as verge.
+- Tessellation (P3-00): stations ≤ 1.5 m along (1 % margin for cubic sampling), w/8 across the road.
+- **Twist warning:** bake reports the steepest bank change per metre and warns above 0.2°/m. At 0.4°/m a 2.65 m-wheelbase stiff car sees ~3 cm of axle warp, enough to lift a wheel (found while testing, below).
+
+Deviations from the plan text: no `addons/road_tool/` EditorPlugin. Godot 4.6's `@export_tool_button` puts Bake on the node itself, with nothing to enable. `RoadPath` and `RoadSection` use `class_name` (the project otherwise preloads), so they appear in Add Node and as Inspector array element types; confirmed registered by an editor load (`--editor --quit`, stderr empty). Viewport gizmo handles for keys are not built (keys are edited in the Inspector).
+
+Results (15/15, stderr empty):
+- **Analytic straight** (at z = −500, crowned then banked 10°), probed through TrackSurface: crown/half-width/edge/ramp-kerb/verge heights exact (0.0000 m); surface ids as keyed; banked section on the 10° plane (0.0000 m) with normals at exactly 10.000°; eased bank 0 / 1.56 / 5.0 / 8.44 / 10.0° at s 60/80/100/120/140 (smoothstep).
+- **Proving loop built only with the tool** (891.7 m rounded rectangle, 40 m corners banked 6° with RAMP kerbs and gravel outside, 6 m hill, start mid-straight): validates; re-bake is idempotent; tessellation 1.493 m / 1.250 m; twist ≤ 0.150°/m; tarmac/kerb/grass/gravel all baked; saved and reloaded through the loader; timing line within 0.5 % of the centreline; apex banked 6.00°, kerb and gravel where keyed; crest 6.059 m; grid slots on tarmac.
+- **Lap:** the 296 GT3 (CarBody on TrackSurface) from pole at 60 km/h through all 12 gates in 52.12 s (centreline nominal 53.5 s; the controller cuts the 40 m corners), 4 wheels in contact throughout, never on grass or gravel. Parse clean; track_asset 23/23; spike 23/23.
+
+Found while testing (all in my fixture, then fixed; the physics was right each time):
+- The analytic road and the loop first shared the physics world at the same place, so probes hit whichever deck was higher. Separated.
+- The first loop started at the end of a banked corner, so the grid slots sat on 6° banking. **Note for P4:** spawning must use a grid slot's full orientation. `CarBody.place()` takes a heading only, so a car placed level on a banked or cambered slot drops in crooked. Not changed here (car_body.gd is in P2-03 review).
+- 15 m bank transitions (0.6°/m peak) lifted single wheels of the stiff 296 on every corner entry: diagonal wheel pairs loaded, the signature of a twisted road. Consistent with P2-03's warp test. 60 m transitions fixed it, and prompted the twist warning.
+- Probes placed exactly on strip seams can legitimately hit either strip. Probes now sit just inside boundaries.
