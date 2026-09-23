@@ -8,6 +8,12 @@ const RoadSection = preload("res://scripts/track/road_section.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
+const CatchFence = preload("res://scripts/track/catch_fence.gd")
+const Grandstand = preload("res://scripts/track/grandstand.gd")
+const Gantry = preload("res://scripts/track/gantry.gd")
+const Billboards = preload("res://scripts/track/billboards.gd")
+const PitBuilding = preload("res://scripts/track/pit_building.gd")
+const MarshalPost = preload("res://scripts/track/marshal_post.gd")
 const OUTPUT = "res://tracks3d/proving_ground/proving_ground.scn"
 const ARC = PI / 2.0
 const QUARTER = PI / 4.0
@@ -355,7 +361,8 @@ static func build_asset() -> Node3D:
 	road.name = "Main"
 	road.closed = true
 	road.along_step = 1.5
-	road.road_stations = 57  # 14 m / 56 = 0.25 m, enough for the ditch fillets.
+	road.road_stations = 9
+	road.dense_ranges = [{"from_m": 1350.0, "to_m": 1620.0, "road_stations": 57}]
 	road.grid_slots = 4
 	road.grid_first_m = 35.0
 	road.grid_spacing_m = 40.0
@@ -390,7 +397,89 @@ static func build_asset() -> Node3D:
 	trees.owner = asset
 	trees.bake()
 	add_lighting(asset, road)
+	add_scenery_kit(asset, road)
 	return asset
+
+
+static func add_scenery_kit(asset: Node3D, _road: RoadPath) -> void:
+	# 1. Gantry at start line
+	var gantry = Gantry.new()
+	gantry.name = "StartGantry"
+	gantry.follow_road = NodePath("../Main")
+	gantry.station = 0.0
+	gantry.clearance_height = 6.0
+	gantry.extra_width = 3.0
+	gantry.light_panel = true
+	asset.add_child(gantry)
+	gantry.owner = asset
+	gantry.bake()
+
+	# 2. Grandstand at bowl
+	var grandstand = Grandstand.new()
+	grandstand.name = "BowlGrandstand"
+	grandstand.follow_road = NodePath("../Main")
+	grandstand.station = 250.0
+	grandstand.side = Grandstand.Side.RIGHT
+	grandstand.offset = 7.0
+	grandstand.length_m = 50.0
+	grandstand.rows = 8
+	grandstand.has_roof = true
+	grandstand.solid_front = true
+	asset.add_child(grandstand)
+	grandstand.owner = asset
+	grandstand.bake()
+
+	# 3. Catch fences on crest landing
+	var fence = CatchFence.new()
+	fence.name = "CrestCatchFence"
+	fence.follow_road = NodePath("../Main")
+	fence.side = CatchFence.Side.RIGHT
+	fence.from_m = 1130.0
+	fence.to_m = 1250.0
+	fence.offset = 5.0
+	fence.fence_height = 3.5
+	fence.solid = true
+	asset.add_child(fence)
+	fence.owner = asset
+	fence.bake()
+
+	# 4. Billboards on main straight
+	var boards = Billboards.new()
+	boards.name = "MainBillboards"
+	boards.follow_road = NodePath("../Main")
+	boards.side = Billboards.Side.RIGHT
+	boards.from_m = 40.0
+	boards.to_m = 130.0
+	boards.offset = 7.0
+	boards.spacing = 30.0
+	asset.add_child(boards)
+	boards.owner = asset
+	boards.bake()
+
+	# 5. Pit building by grid
+	var pits = PitBuilding.new()
+	pits.name = "Pits"
+	pits.follow_road = NodePath("../Main")
+	pits.side = PitBuilding.Side.LEFT
+	pits.station = 75.0
+	pits.length_m = 70.0
+	pits.offset = 12.0
+	pits.has_pit_wall = true
+	pits.pit_wall_offset = 4.5
+	asset.add_child(pits)
+	pits.owner = asset
+	pits.bake()
+
+	# 6. Marshal posts around circuit
+	var marshals = MarshalPost.new()
+	marshals.name = "MarshalPosts"
+	marshals.follow_road = NodePath("../Main")
+	marshals.side = MarshalPost.Side.RIGHT
+	marshals.offset = 6.0
+	marshals.spacing = 300.0
+	asset.add_child(marshals)
+	marshals.owner = asset
+	marshals.bake()
 
 
 func _initialize() -> void:

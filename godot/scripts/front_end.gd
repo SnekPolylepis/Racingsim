@@ -165,6 +165,21 @@ func show_page(next):
 			add_option("Circuits", func(): show_page("circuits"), 2)
 			add_option("Settings", func(): open_panel("settings"), 3)
 			add_option("Help", func(): open_panel("help"), 4)
+			add_option(
+				"Test surfaces (dev)",
+				func(): app.get_tree().change_scene_to_file("res://scenes/proving/test_surfaces.tscn"),
+				0,
+				Vector2(322, 154),
+				290
+			)
+			add_option("Drive Spa (dev)", func(): drive_track_asset("spa"), 1, Vector2(322, 154), 290)
+			add_option(
+				"Drive proving ground (dev)",
+				func(): drive_track_asset("proving_ground"),
+				2,
+				Vector2(322, 154),
+				290
+			)
 			add_option("Quit", app.request_quit, 5)
 			add_option("Back", back, 0, Vector2(500, 370), 112)
 		"race":
@@ -776,3 +791,9 @@ func _process(dt):
 		app.visuals.pose_car(app.model, pose, app.track)
 		app.update_camera(dt, true)
 	queue_redraw()
+
+
+## Pass the requested TrackAsset to the standalone 6-DOF scene without changing saved track choice.
+func drive_track_asset(id: String) -> void:
+	app.get_tree().set_meta("dev_track_id", id)
+	app.get_tree().change_scene_to_file("res://scenes/proving/track_drive.tscn")

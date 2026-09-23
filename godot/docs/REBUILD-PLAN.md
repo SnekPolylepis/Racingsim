@@ -120,7 +120,7 @@ TrackAsset (Node3D, track_asset.gd) at the origin, identity transform
 
 ### 5.4 Pose snapshot (for interpolation, ghosts, replays)
 
-`{ "xform": Transform3D, "wheels": [ {steer, phase, comp, contact_point}, ×4 ], "steer": float }`. Interpolation uses position lerp and basis slerp. Ghost files store position (3 floats), rotation (quaternion, 4 floats) and lap distance, at ~30 Hz. Old ghosts are dropped (D4).
+`{ "xform": Transform3D, "steer": float, "phase": [float, ×4], "comp": [float, ×4] }` (`comp`: per-wheel suspension compression, metres). Interpolation uses position lerp and basis slerp. Ghost files store position (3 floats), rotation (quaternion, 4 floats) and lap distance, at ~30 Hz. Old ghosts are dropped (D4).
 
 ## 6. Test strategy
 
@@ -195,7 +195,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 - **P4-01 [ARCH]** `game.gd`: load a TrackAsset; `CarBody` replaces `CarModel`; delete the coordinate remap; interpolation from the §5.4 snapshot.
 - **P4-02 [MECH]** `race.gd`: 3D gates; ghosts in the new format; sectors unchanged.
-- **P4-03 [DEEP]** `collisions.gd`: chassis box/hull against the `Walls/` geometry, 3D impulses with friction, no tunnelling at 300 km/h (use swept tests or substeps). Cones become simple dynamic props.
+- **P4-03 [DEEP]** `collisions.gd`: chassis box/hull against the `Walls/` geometry, 3D impulses with friction, no tunnelling at 300 km/h (use swept tests or substeps). Cones become simple dynamic props. **Done 2026-09-23 except cones** (`scripts/surface/wall_query.gd`, `scripts/vehicle/wall_contact.gd`, `tests/v2/barrier.gd`): swept hull box, 3D impulses with friction; the planar `collisions.gd` stays for CarModel until P7.
 - **P4-04 [MECH]** `visuals.gd`/`ferrari_296.gd`: pose from `Transform3D` plus per-wheel data; free attitude in flight. Scenery building moves out to the track asset.
 - **P4-05 [MECH]** Cameras, `instruments.gd` (minimap from the baked polyline, telemetry graph), audio (surface ids from contact), skids (contact points), `night_style.gd` (lamps from `Lights/`).
 - **P4-06 [MECH]** `front_end.gd`: the circuit picker lists TrackAssets; loading screen; record identity per §5.3.
@@ -237,18 +237,22 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 ## 9. Working protocol (every model, every task)
 
 1. Read this plan, the latest entries in [REBUILD-LOG.md](REBUILD-LOG.md), and the old docs the task touches.
-2. **Claim** the task: add a log entry `CLAIM <task-id> <model> <date>`. Don't start a task someone else has claimed and not released.
+2. **Take work from [QUEUE.md](rebuild/QUEUE.md)** (workflow change 2026-09-23): when idle, pull `origin/main`, take the first `open` task your model may do whose dependencies are `done`, set it to `claimed: <model>` in QUEUE.md, commit that one-line change straight to `main` and push (tiny commit, no branch), and log `CLAIM <task-id> <model> <date>`. Don't start a task someone else has claimed and not released. When done, go back to the queue; ask the owner only for `owner` tasks and decisions.
 3. Work on branch `rb/<task-id>-<slug>`. Small commits. Edit only the files the task names, plus the docs describing them. If you need to go outside that scope, stop and log it.
 4. Don't rewrite whole files from memory; edit specific functions. Don't change §5 contracts inside a feature task.
-5. Before declaring done, from `godot/` on Windows:
+5. Before declaring done, from `godot/` on Windows, run the gates with **`tools/run_gates.ps1`** (workflow change 2026-09-23): it runs every suite in `tools/gates.json` in parallel with timeouts, reads stderr and each suite's RESULTS line or baseline, and prints one summary; exit 0 only if all pass.
    ```
-   ./tools/Godot.exe --headless --path . --import            # after fresh checkout / asset changes
-   ./tools/Godot.exe --headless --path . --script scripts/game.gd --check-only
-   ./tools/Godot.exe --headless --path . --script <each suite the task affects>
-   gdformat -l 110 scripts tests
+   ./tools/run_gates.ps1            # suites affected by the branch's changes (while working)
+   ./tools/run_gates.ps1 -All       # everything: required on the tree you are about to merge
+   ./tools/run_gates.ps1 -All -Perf # plus the µs budgets, run alone (when vehicle/surface/track code changed)
+   ./tools/run_gates.ps1 -All -Features   # plus the windowed feature suite (when game/UI code changed)
+   gdformat -l 110 <the .gd files you touched>
    ```
-   Godot.exe is a GUI-subsystem binary: run it via `Start-Process -Wait -PassThru` with redirected stdout/stderr, and **read stderr**. Exit code 0 with script errors in stderr is a failure.
-6. **Log the result:** `DONE <task-id>` with the commands run, pass/fail counts, measurements and anything left undone. Report failures as failures.
+   Parallel runs set `RACINGSIM_PERF_GATES=0`, so timing budgets print but don't gate; `-Perf` gates them in a serial pass. A new suite goes into `tools/gates.json` with its dependency paths (split anything over ~60 s with `--car`/`--part` args, see `tests/v2/gates_env.gd`). Godot.exe is a GUI-subsystem binary: never trust its exit code alone; the runner reads stderr for you.
+6. **Log the result:** `DONE <task-id>` with the gate summary, measurements and anything left undone. Report failures as failures.
+   **Merge first, review after** (workflow change 2026-09-23): once `run_gates.ps1 -All` passes on the tree merged with current `origin/main` (plus `-Perf` / `-Features` when your change touches them), merge your own branch into `main` (fast-forward or a merge commit; REBUILD-LOG keeps both sides) and push. Never force-push; never merge with a failing or skipped gate. Then set the task to `review` in QUEUE.md with the reviewer's model. The reviewer reviews what landed and files anything wrong as new `fix` tasks in QUEUE.md (or reverts with a logged reason if it is broken).
 7. Hand-off: if you stop midway, log `PAUSED <task-id>` with the exact state and next step.
 8. Run every Godot invocation with a timeout (`Start-Process` + `WaitForExit`, kill on timeout), and treat a timeout as a failure, not a pass.
 9. Commit generated `.uid` sidecars with their scripts, and never delete a tracked one to resolve a merge.
+10. Read your own diff before calling a task done (`git diff origin/main...HEAD`): no conflict markers, no stray files, only the files the task names.
+11. Size tasks by coupling: work that shares files (e.g. the P4 game-loop tasks) goes to one model as one task; split only where the work truly separates.

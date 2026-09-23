@@ -1,0 +1,10 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  analytic heightmap: 200 random points hit, surface == 2 (grass), within 1 cm of analytic (worst 0.0003 m)
+PASS  chunk seams: border rays hit with no gaps (< 1 mm diff across seam, worst 0.00015 m)
+PASS  road stitch: verge outer edge matches within 2 cm (worst 0.0000 m); no terrain above road footprint (min drop 0.300 m >= 0.3 m)
+PASS  road stitch with runoff and kerb: verge outer edge matches within 2 cm (worst 0.0000 m); no terrain above footprint (min drop 0.300 m >= 0.3 m)
+PASS  296 CarBody rest check on terrain (settled 0.0000 m/s, 4 contacts, surface 2) and drives 200.0 m in 13.58 s crossing road (surface 0) to terrain (surface 2) on 4 wheels
+PASS  performance: 2 km x 2 km bake 10.53 s, 8000000 triangles (8M); car step 191.3 µs (budget 300 µs)
+PASS  TrackAsset.validate() passes with terrain present: []
+TERRAIN RESULTS {"checks":7,"failures":[],"results":{"analytic_worst_err_m":0.000324744631043483,"car_drive_dist_m":200.046922507012,"car_drive_min_contacts":4,"car_drive_time_s":13.5833333333329,"car_rest_contacts":4,"car_rest_speed":0.0000000832788742367029,"perf_bake_s":10.529,"perf_car_step_us":191.26,"perf_triangles":8000000,"seam_worst_gap_m":0.000148773193359375,"stitch_min_drop_m":0.29999527141764,"stitch_rk_min_drop_m":0.299983978271484,"stitch_rk_worst_edge_err_m":0.00000411272048950195,"stitch_worst_edge_err_m":0.00000455975532531738}}

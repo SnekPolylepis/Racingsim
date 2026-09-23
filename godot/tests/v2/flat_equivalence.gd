@@ -13,6 +13,7 @@ extends SceneTree
 ## straight-line and steady-state figures already match, and P2-07 must keep them matching.
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/flat_equivalence.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const CarModel = preload("res://scripts/car.gd")
 const TrackModel = preload("res://scripts/track3d.gd")
 const TestSurface = preload("res://scripts/surface/test_surface.gd")
@@ -192,7 +193,8 @@ func base(suite, prefix):
 
 
 func _initialize():
-	presets = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
+	# `-- --car key` runs one car, so tools/run_gates.ps1 can run the three in parallel.
+	presets = GatesEnv.only_car(JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json")))
 	baseline = JSON.parse_string(FileAccess.get_file_as_string("res://docs/rebuild/baseline.json"))
 	var names = {"accel": "0-100 s", "brake": "100-0 m", "skidpad": "skidpad g", "top": "top speed m/s"}
 	for simcade in [false, true]:

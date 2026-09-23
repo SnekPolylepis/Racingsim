@@ -1,13 +1,13 @@
 extends SceneTree
 ## P2-00 spike: 6-DOF CarBody on analytic TestSurfaces (REBUILD-PLAN.md P2-00, section 6).
-## Measures rest, flat equivalence against docs/rebuild/baseline.json, crest takeoff speed, free-flight
-## angular momentum, a banked bowl at design speed, determinism and cost per tick.
+## Measures rest, crest takeoff speed, free-flight angular momentum, a banked bowl at design speed,
+## landings, determinism and cost per tick. (Flat equivalence moved to flat_equivalence.gd, P2-05.)
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/chassis_spike.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const TestSurface = preload("res://scripts/surface/test_surface.gd")
+const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const DT = 1.0 / 240
 var presets
-var baseline
 var failures = []
 var checks = 0
 var results = {}
@@ -33,14 +33,6 @@ func make(key):
 
 func inp(th, br, st):
 	return {"throttle": th, "brake": br, "steer": st, "clutch": 0.0, "handbrake": 0.0}
-
-
-## Last number of the Simulation dynamics check whose text starts with `prefix`.
-func base(prefix):
-	for c in baseline.suites["dynamics-simulation"].checks:
-		if c.text.begins_with(prefix):
-			return c.values
-	return []
 
 
 func finite(c):
@@ -75,54 +67,6 @@ func settle(key):
 			% [key, c.pos.y, c.setup.cgHeight, load / (c.p.mass * CarBody.G), tilt, peak]
 		)
 	)
-
-
-func accel_brake(key):
-	var surf = TestSurface.flat()
-	var c = make(key)
-	c.place(Vector3(-2000, 0, 0), 0.0, 0.0)
-	var time = 0.0
-	while c.speed < 100 / 3.6 and time < 30:
-		c.input = inp(1, 0, 0)
-		c.step(DT, surf, true)
-		time += DT
-	var x0 = c.pos.x
-	var stop = 0.0
-	var pitch_peak = 0.0
-	while c.speed > .3 and stop < 20:
-		c.input = inp(0, 1, 0)
-		c.step(DT, surf, true)
-		stop += DT
-		pitch_peak = maxf(pitch_peak, rad_to_deg(asin(clampf(-c.basis().x.y, -1, 1))))
-	return [time, c.pos.x - x0, pitch_peak, finite(c)]
-
-
-## Same controller and limit search as tests/dynamics.gd skidpad(), on an analytic circle.
-func skidpad(key, radius):
-	var surf = TestSurface.flat()
-	var c = make(key)
-	c.place(Vector3(radius, 0, 0), PI / 2, 0.0)
-	var target = 8.0
-	var best = 0.0
-	var time = 0.0
-	var roll_peak = 0.0
-	while time < 150:
-		var phi = atan2(c.pos.z, c.pos.x)
-		var lat = Vector2(c.pos.x, c.pos.z).length() - radius
-		var ahead_phi = phi + (6 + c.speed * .35) / radius
-		var ahead = Vector2(cos(ahead_phi), sin(ahead_phi)) * radius
-		var st = clampf(wrapf(atan2(ahead.y - c.pos.z, ahead.x - c.pos.x) - c.h, -PI, PI) * 2.0, -1, 1)
-		var e = target - c.speed
-		c.input = inp(clampf(e * .6 + .3, 0, 1), clampf(-e * .3, 0, 1), st)
-		c.step(DT, surf, true)
-		time += DT
-		if absf(lat) < 2.0 and absf(e) < .6:
-			best = maxf(best, c.speed)
-			roll_peak = maxf(roll_peak, absf(rad_to_deg(asin(clampf(c.basis().z.y, -1, 1)))))
-		if absf(lat) > 4:
-			break
-		target += .6 / 240
-	return [best * best / radius / 9.81, roll_peak, finite(c)]
 
 
 ## Drive over a crest at a held speed; returns true if all four tyres leave the ground.
@@ -373,15 +317,14 @@ func ray_over_hump():
 	)
 
 
-## Cost per tick. Flat uses a closed-form ray hit, so it is close to the chassis cost alone; the crest
-## adds 40-step bisection ray casts, standing in for a heavier real track query.
+## Cost per tick on flat, where the analytic ray hit is closed-form, so it is close to the chassis cost
+## alone. The real per-tick budget on track queries is gated in footprint.gd and track_asset.gd
+## (TrackSurface). A crest run used to be here too; its analytic rays march and bisect, so it measured
+## the test surface rather than the car, and it was dropped (workflow audit 2026-09-23).
 func cost():
-	for which in ["flat", "crest"]:
-		var surf = TestSurface.flat() if which == "flat" else TestSurface.crest(0.0, 200.0, 20.0, 40.0)
+	for which in ["flat"]:
+		var surf = TestSurface.flat()
 		var c = make("f296gt3")
-		# The crest's analytic rays march and bisect (~10 µs each), standing in for a heavy query, so
-		# it runs the centre rays only; tests/v2/footprint.gd budgets the footprint on a TrackSurface.
-		c.footprint = which == "flat"
 		c.place_on(surf, -300.0, 0.0, 0.0)
 		var n = 240 * 20
 		var t0 = Time.get_ticks_usec()
@@ -390,46 +333,25 @@ func cost():
 			c.step(DT, surf, true)
 		var us = float(Time.get_ticks_usec() - t0) / n
 		results["us_per_tick_" + which] = us
-		var rays = "footprint" if c.footprint else "centre rays only"
-		check(us < 300, "cost %.1f µs per tick on %s, %s (budget 300 µs)" % [us, which, rays])
+		check(
+			us < 300 or not GatesEnv.perf(),
+			"cost %.1f µs per tick on %s, footprint (budget 300 µs)%s" % [us, which, GatesEnv.perf_note()]
+		)
 
 
 func _initialize():
 	presets = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
-	baseline = JSON.parse_string(FileAccess.get_file_as_string("res://docs/rebuild/baseline.json"))
+	# `-- --part cost`: only the timing check, for tools/run_gates.ps1's -Perf pass.
+	if GatesEnv.part() == "cost":
+		cost()
+		print("SPIKE RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
+		quit(0 if failures.is_empty() else 1)
+		return
 	for key in presets:
 		settle(key)
-	var flat = {}
-	for key in presets:
-		var ab = accel_brake(key)
-		var sk = skidpad(key, 150)
-		var b_acc = base("%s 0-100" % key)
-		var b_brk = base("%s 100-0" % key)
-		var b_lat = base("%s holds" % key)
-		var r_acc = ab[0] / b_acc[-1]
-		var r_brk = ab[1] / b_brk[-1]
-		b_lat = [b_lat[-2]]  # "<car> holds X g on a 150 m skidpad": X is second to last
-		var r_lat = sk[0] / b_lat[0]
-		flat[key] = {"accel": ab[0], "brake": ab[1], "lat_g": sk[0], "pitch": ab[2], "roll": sk[1]}
-		check(
-			ab[3] and absf(r_acc - 1) < .03,
-			"%s 0-100 km/h %.2f s (baseline %.2f, %+.1f%%)" % [key, ab[0], b_acc[-1], (r_acc - 1) * 100]
-		)
-		check(
-			ab[3] and absf(r_brk - 1) < .03,
-			(
-				"%s 100-0 km/h %.1f m (baseline %.1f, %+.1f%%), peak dive %.2f°"
-				% [key, ab[1], b_brk[-1], (r_brk - 1) * 100, ab[2]]
-			)
-		)
-		check(
-			sk[2] and absf(r_lat - 1) < .03,
-			(
-				"%s skidpad %.2f g (baseline %.2f, %+.1f%%), body roll %.2f°"
-				% [key, sk[0], b_lat[0], (r_lat - 1) * 100, sk[1]]
-			)
-		)
-	results["flat"] = flat
+	# Flat equivalence (0-100, 100-0, skidpad against the baseline) moved to tests/v2/flat_equivalence.gd
+	# (P2-05), which runs the same procedures against the live CarModel, adds top speed and Simcade, and is
+	# stricter; running both doubled the spike's time for no extra coverage (workflow audit 2026-09-23).
 	crest_threshold("gt")
 	flight("f296gt3")
 	bowl("f296gt3")

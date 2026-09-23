@@ -368,15 +368,63 @@ static func profile(sec: Dictionary, road_n: int) -> Array:
 ## "length", "max_along", "max_across_road", "max_twist_deg_per_m", "max_twist_at_m", "warnings"}.
 ## max_along is the largest spacing between consecutive stations on the path; max_across_road the
 ## largest road strip width.
+## Road station count at arc distance s: checks active dense ranges (wrapped on a closed road).
+static func road_stations_at(s: float, length: float, closed: bool, default_n: int, ranges: Array) -> int:
+	var chosen = default_n
+	for r in ranges:
+		var from_m = r.from_m
+		var to_m = r.to_m
+		var inside = false
+		if closed:
+			if absf(to_m - from_m) >= length - 1e-4:
+				inside = true
+			else:
+				var sm = fposmod(s, length)
+				var f = fposmod(from_m, length)
+				var t = fposmod(to_m, length)
+				if f <= t:
+					inside = sm >= f - 1e-4 and sm <= t + 1e-4
+				else:
+					inside = sm >= f - 1e-4 or sm <= t + 1e-4
+		else:
+			inside = s >= from_m - 1e-4 and s <= to_m + 1e-4
+		if inside:
+			chosen = maxi(chosen, r.road_stations)
+	return chosen
+
+
+## Bake. Returns {"faces": {surface: PackedVector3Array}, "center": PackedVector3Array, "stations",
+## "length", "max_along", "max_across_road", "max_twist_deg_per_m", "max_twist_at_m", "warnings"}.
+## max_along is the largest spacing between consecutive stations on the path; max_across_road the
+## largest road strip width.
 static func bake(
 	curve: Curve3D,
 	keys: Array,
 	closed: bool,
 	step = MAX_STEP,
 	road_n = DEFAULT_ROAD_STATIONS,
-	elev = PackedVector2Array()
+	elev = PackedVector2Array(),
+	dense_ranges: Array = []
 ) -> Dictionary:
 	road_n = maxi(3, road_n | 1)
+	var warnings = []
+	var valid_ranges = []
+	for rng in dense_ranges:
+		var fine = int(rng.get("road_stations", road_n))
+		var from_m = float(rng.get("from_m", 0.0))
+		var to_m = float(rng.get("to_m", 0.0))
+		if fine <= road_n or (fine - 1) % (road_n - 1) != 0:
+			(
+				warnings
+				. append(
+					(
+						"dense range [%.1f, %.1f] road_stations %d incompatible with coarse %d: (%d - 1) %% (%d - 1) != 0; ignoring range."
+						% [from_m, to_m, fine, road_n, fine, road_n]
+					)
+				)
+			)
+			continue
+		valid_ranges.append({"from_m": from_m, "to_m": to_m, "road_stations": fine})
 	var sorted = keys.duplicate()
 	sorted.sort_custom(func(a, b): return a.at < b.at)
 	var length = curve.get_baked_length()
@@ -390,31 +438,32 @@ static func bake(
 	var center = PackedVector3Array()
 	var max_across = 0.0
 	var ditch_spacing = 0.0
+	var station_counts = []
 	for station in st:
 		var sec = section_at(sorted, station.s, length, closed)
 		secs.append(sec)
 		var fr = frame(station.tangent, sec.bank_deg)
 		ups.append(fr[1])
+		var cur_road_n = road_stations_at(station.s, length, closed, road_n, valid_ranges)
+		station_counts.append(cur_road_n)
 		var row = PackedVector3Array()
 		var lats = PackedFloat64Array()
 		var band = []
-		for p in profile(sec, road_n):
+		for p in profile(sec, cur_road_n):
 			row.append(station.pos + fr[0] * p[0] + fr[1] * p[1])
 			lats.append(p[0])
 			band.append(p[2])
 		rows.append(row)
 		lat_rows.append(lats)
 		bands.append(band)
-		center.append(row[first_road + (road_n - 1) / 2])
-		for k in range(first_road, first_road + road_n - 1):
+		center.append(row[first_road + (cur_road_n - 1) / 2])
+		for k in range(first_road, first_road + cur_road_n - 1):
 			max_across = maxf(max_across, row[k].distance_to(row[k + 1]))
 		if sec.ditch > 0:
 			# Lateral station spacing (on a 37 degree wall the 3D edge is 1/cos 37 longer).
-			ditch_spacing = maxf(ditch_spacing, maxf(sec.width_left, sec.width_right) * 2.0 / (road_n - 1))
-	# Kerb band vertex indices, inner (road edge) to outer, with their width fractions.
-	var left_kerb = [first_road, first_road - 1, first_road - 2, first_road - 3, first_road - 4]
-	var right_edge = first_road + road_n - 1
-	var right_kerb = [right_edge, right_edge + 1, right_edge + 2, right_edge + 3, right_edge + 4]
+			ditch_spacing = maxf(
+				ditch_spacing, maxf(sec.width_left, sec.width_right) * 2.0 / (cur_road_n - 1)
+			)
 	var faces = {}
 	var uvs = {}
 	var max_along = 0.0
@@ -427,6 +476,10 @@ static func bake(
 		var r1 = rows[j]
 		var l0 = lat_rows[i]
 		var l1 = lat_rows[j]
+		var n0 = station_counts[i]
+		var n1 = station_counts[j]
+		var right_edge0 = first_road + n0 - 1
+		var right_edge1 = first_road + n1 - 1
 		# UVs in metres: U across the section, V along the road; the closing strip unwraps to `length`.
 		var s0 = st[i].s
 		var s1 = length if closed and j == 0 else st[j].s
@@ -437,24 +490,18 @@ static func bake(
 		if twist > max_twist:
 			max_twist = twist
 			twist_at = st[i].s
-		var ribbed = {}
-		if secs[i].kerb_left == RoadSection.Kerb.RIBBED:
-			for k in range(first_road - 4, first_road):
-				ribbed[k] = left_kerb
-		if secs[i].kerb_right == RoadSection.Kerb.RIBBED:
-			for k in range(right_edge, right_edge + 4):
-				ribbed[k] = right_kerb
-		for k in r0.size() - 1:
+
+		var left_kerb = [first_road, first_road - 1, first_road - 2, first_road - 3, first_road - 4]
+		for k in first_road:
 			var sid = bands[i][k]
 			if not faces.has(sid):
 				faces[sid] = PackedVector3Array()
 				uvs[sid] = PackedVector2Array()
-			if ribbed.has(k):
-				var strip = ribbed_strip(r0, r1, l0, l1, ups[i], ups[j], k, ribbed[k], s0, s1, gap, secs[i])
+			if secs[i].kerb_left == RoadSection.Kerb.RIBBED and k >= first_road - 4:
+				var strip = ribbed_strip(r0, r1, l0, l1, ups[i], ups[j], k, left_kerb, s0, s1, gap, secs[i])
 				faces[sid].append_array(strip[0])
 				uvs[sid].append_array(strip[1])
 				continue
-			# Winding as ribbon.gd: (a, c, b), (b, c, d) with a/b on this station and c/d on the next.
 			faces[sid].append_array(
 				PackedVector3Array([r0[k], r1[k], r0[k + 1], r0[k + 1], r1[k], r1[k + 1]])
 			)
@@ -463,7 +510,101 @@ static func bake(
 			var c = Vector2(l1[k], s1)
 			var d = Vector2(l1[k + 1], s1)
 			uvs[sid].append_array(PackedVector2Array([a, c, b, b, c, d]))
-	var warnings = []
+
+		var road_sid = secs[i].road_surface
+		if not faces.has(road_sid):
+			faces[road_sid] = PackedVector3Array()
+			uvs[road_sid] = PackedVector2Array()
+
+		if n0 == n1:
+			for k in n0 - 1:
+				var v0 = first_road + k
+				var v1 = first_road + k + 1
+				faces[road_sid].append_array(
+					PackedVector3Array([r0[v0], r1[v0], r0[v1], r0[v1], r1[v0], r1[v1]])
+				)
+				var a = Vector2(l0[v0], s0)
+				var b = Vector2(l0[v1], s0)
+				var c = Vector2(l1[v0], s1)
+				var d = Vector2(l1[v1], s1)
+				uvs[road_sid].append_array(PackedVector2Array([a, c, b, b, c, d]))
+		elif n0 < n1:
+			var M = (n1 - 1) / (n0 - 1)
+			var mid = M / 2
+			for k in n0 - 1:
+				var ca = first_road + k
+				var cb = first_road + k + 1
+				var f_base = first_road + k * M
+				for m in mid:
+					var fa = f_base + m
+					var fb = fa + 1
+					faces[road_sid].append_array(PackedVector3Array([r0[ca], r1[fa], r1[fb]]))
+					uvs[road_sid].append_array(
+						PackedVector2Array([Vector2(l0[ca], s0), Vector2(l1[fa], s1), Vector2(l1[fb], s1)])
+					)
+				var f_mid = f_base + mid
+				faces[road_sid].append_array(PackedVector3Array([r0[ca], r1[f_mid], r0[cb]]))
+				uvs[road_sid].append_array(
+					PackedVector2Array([Vector2(l0[ca], s0), Vector2(l1[f_mid], s1), Vector2(l0[cb], s0)])
+				)
+				for m in range(mid, M):
+					var fa = f_base + m
+					var fb = fa + 1
+					faces[road_sid].append_array(PackedVector3Array([r0[cb], r1[fa], r1[fb]]))
+					uvs[road_sid].append_array(
+						PackedVector2Array([Vector2(l0[cb], s0), Vector2(l1[fa], s1), Vector2(l1[fb], s1)])
+					)
+		else:
+			var M = (n0 - 1) / (n1 - 1)
+			var mid = M / 2
+			for k in n1 - 1:
+				var ca = first_road + k
+				var cb = first_road + k + 1
+				var f_base = first_road + k * M
+				for m in mid:
+					var fa = f_base + m
+					var fb = fa + 1
+					faces[road_sid].append_array(PackedVector3Array([r0[fa], r1[ca], r0[fb]]))
+					uvs[road_sid].append_array(
+						PackedVector2Array([Vector2(l0[fa], s0), Vector2(l1[ca], s1), Vector2(l0[fb], s0)])
+					)
+				var f_mid = f_base + mid
+				faces[road_sid].append_array(PackedVector3Array([r0[f_mid], r1[ca], r1[cb]]))
+				uvs[road_sid].append_array(
+					PackedVector2Array([Vector2(l0[f_mid], s0), Vector2(l1[ca], s1), Vector2(l1[cb], s1)])
+				)
+				for m in range(mid, M):
+					var fa = f_base + m
+					var fb = fa + 1
+					faces[road_sid].append_array(PackedVector3Array([r0[fa], r1[cb], r0[fb]]))
+					uvs[road_sid].append_array(
+						PackedVector2Array([Vector2(l0[fa], s0), Vector2(l1[cb], s1), Vector2(l0[fb], s0)])
+					)
+
+		var right_kerb0 = [right_edge0, right_edge0 + 1, right_edge0 + 2, right_edge0 + 3, right_edge0 + 4]
+		var right_kerb1 = [right_edge1, right_edge1 + 1, right_edge1 + 2, right_edge1 + 3, right_edge1 + 4]
+		for d in 6:
+			var k0 = right_edge0 + d
+			var k1 = right_edge1 + d
+			var sid = bands[i][k0]
+			if not faces.has(sid):
+				faces[sid] = PackedVector3Array()
+				uvs[sid] = PackedVector2Array()
+			if secs[i].kerb_right == RoadSection.Kerb.RIBBED and d < 4:
+				var strip = ribbed_strip(
+					r0, r1, l0, l1, ups[i], ups[j], k0, right_kerb0, s0, s1, gap, secs[i], k1, right_kerb1
+				)
+				faces[sid].append_array(strip[0])
+				uvs[sid].append_array(strip[1])
+				continue
+			faces[sid].append_array(
+				PackedVector3Array([r0[k0], r1[k1], r0[k0 + 1], r0[k0 + 1], r1[k1], r1[k1 + 1]])
+			)
+			var a = Vector2(l0[k0], s0)
+			var b = Vector2(l0[k0 + 1], s0)
+			var c = Vector2(l1[k1], s1)
+			var d_uv = Vector2(l1[k1 + 1], s1)
+			uvs[sid].append_array(PackedVector2Array([a, c, b, b, c, d_uv]))
 	if max_twist > TWIST_WARN_DEG_PER_M:
 		(
 			warnings
@@ -498,11 +639,18 @@ static func bake(
 	}
 
 
-## [triangles, UVs] for one band (lateral vertices k, k+1) of a RIBBED kerb between two stations,
-## subdivided every quarter rib pitch along the road. Ridge height rib_height * (1 - cos(2 pi s / pitch)) / 2,
-## shaped across the band by sin(pi f) so it is zero on the road edge and the kerb's outer edge.
-static func ribbed_strip(r0, r1, l0, l1, up0, up1, k, kerb_idx, s0, s1, gap, sec) -> Array:
-	var f_of = {kerb_idx[0]: 0.0, kerb_idx[1]: .25, kerb_idx[2]: .5, kerb_idx[3]: .75, kerb_idx[4]: 1.0}
+## [triangles, UVs] for one band (lateral vertices k0, k0+1 in r0 and k1, k1+1 in r1) of a RIBBED kerb
+## between two stations, subdivided every quarter rib pitch along the road. Ridge height
+## rib_height * (1 - cos(2 pi s / pitch)) / 2, shaped across the band by sin(pi f) so it is zero on the
+## road edge and the kerb's outer edge.
+static func ribbed_strip(
+	r0, r1, l0, l1, up0, up1, k0, kerb_idx0, s0, s1, gap, sec, k1 = -1, kerb_idx1 = []
+) -> Array:
+	if k1 < 0:
+		k1 = k0
+	if kerb_idx1.is_empty():
+		kerb_idx1 = kerb_idx0
+	var f0_of = {kerb_idx0[0]: 0.0, kerb_idx0[1]: .25, kerb_idx0[2]: .5, kerb_idx0[3]: .75, kerb_idx0[4]: 1.0}
 	var pitch = maxf(sec.rib_pitch, .05)
 	var m = maxi(1, int(ceil(gap / (pitch * .25))))
 	var out = PackedVector3Array()
@@ -515,10 +663,12 @@ static func ribbed_strip(r0, r1, l0, l1, up0, up1, k, kerb_idx, s0, s1, gap, sec
 		var wave = .5 - .5 * cos(TAU * (s0 + t * gap) / pitch)
 		var row = []
 		var row_uv = []
-		for v in [k, k + 1]:
-			var bump = sec.rib_height * wave * sin(PI * f_of[v])
-			row.append(r0[v].lerp(r1[v], t) + up * bump)
-			row_uv.append(Vector2(lerpf(l0[v], l1[v], t), lerpf(s0, s1, t)))
+		for v_off in [0, 1]:
+			var v0 = k0 + v_off
+			var v1 = k1 + v_off
+			var bump = sec.rib_height * wave * sin(PI * f0_of[v0])
+			row.append(r0[v0].lerp(r1[v1], t) + up * bump)
+			row_uv.append(Vector2(lerpf(l0[v0], l1[v1], t), lerpf(s0, s1, t)))
 		if q > 0:
 			out.append_array(PackedVector3Array([prev[0], row[0], prev[1], prev[1], row[0], row[1]]))
 			out_uv.append_array(
@@ -527,6 +677,18 @@ static func ribbed_strip(r0, r1, l0, l1, up0, up1, k, kerb_idx, s0, s1, gap, sec
 		prev = row
 		prev_uv = row_uv
 	return [out, out_uv]
+
+
+static var _kerb_texture: ImageTexture = null
+
+
+static func kerb_texture() -> ImageTexture:
+	if _kerb_texture == null:
+		var img = Image.create(1, 2, false, Image.FORMAT_RGB8)
+		img.set_pixel(0, 0, Color(.85, .15, .12))
+		img.set_pixel(0, 1, Color(.95, .95, .95))
+		_kerb_texture = ImageTexture.create_from_image(img)
+	return _kerb_texture
 
 
 ## Render mesh: one surface per surface type, UVs in metres (u across, v along) for tiling textures.
@@ -547,7 +709,12 @@ static func mesh(faces: Dictionary, uvs: Dictionary) -> ArrayMesh:
 			st.add_vertex(faces[sid][i])
 		st.generate_normals()
 		var mat = StandardMaterial3D.new()
-		mat.albedo_color = colors.get(sid, Color.MAGENTA)
+		if sid == 1:
+			mat.albedo_texture = kerb_texture()
+			mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+			mat.uv1_scale = Vector3(1.0, 1.0, 1.0)
+		else:
+			mat.albedo_color = colors.get(sid, Color.MAGENTA)
 		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		st.set_material(mat)
 		st.commit(out)

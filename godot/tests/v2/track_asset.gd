@@ -11,6 +11,7 @@ const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const TrackLoader = preload("res://scripts/track/track_loader.gd")
 const Ribbon = preload("res://scripts/track/ribbon.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const A = 240.0
 const B = 120.0
 const H = 8.0
@@ -383,9 +384,9 @@ func lap():
 	# P3-00 estimated ~150 µs for 4 rays per tick; since P2-06 the tyre footprint casts at least 20, and
 	# the gate is section 6's 0.3 ms per car tick.
 	check(
-		results.car_step_us < 300,
+		results.car_step_us < 300 or not GatesEnv.perf(),
 		(
-			"car step with the tyre footprint on physics-server rays: %.1f µs per tick (section 6 budget 300 µs)"
-			% results.car_step_us
+			"car step with the tyre footprint on physics-server rays: %.1f µs per tick (section 6 budget 300 µs)%s"
+			% [results.car_step_us, GatesEnv.perf_note()]
 		)
 	)

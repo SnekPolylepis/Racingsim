@@ -823,3 +823,300 @@ The aids_simcade harness inherits tests/dynamics.gd. After stripping comments, i
 The 296 Simcade power-on retune reproduces independently with the same skidpad limit and inherited transient procedure: asm_slip_cut_gain 8 peaks at 8.711 degrees; gain 16 peaks at 7.860 degrees. This supports the recorded before/after measurement. The log's explanation that lower early slip led to less cut, faster acceleration and earlier grass contact is a plausible interpretation of Claude's trace; this probe did not independently reconstruct the per-tick grass transition. The roadster Simcade 100-0 is 39.392 m against Simulation 42.260 m, inside the 8% gate, while the legacy CarModel baseline remains unchanged.
 
 Final integrated-tree gates, each through Start-Process and WaitForExit(240000) with kill on timeout: aids_simcade 114/0, flat_equivalence 7/0, energy_wall 4/0, static_friction 6/0, footprint 10/0, chassis_spike 23/0, suspension 12/0, surfaces 34/0, track_asset 23/0, road_tool 16/0, road_tool_v2 11/0, walls 8/0, surface_backends complete, proving_ground 25/0. All ten legacy suites matched docs/rebuild/baseline after CR/LF normalization; nine exited 0 and dynamics Simcade retained its known exit 1. Import and game --check-only exited 0; windowed --features passed 212/0. Every final gate's stderr was empty, gdformat --check -l 110 and git diff --check passed. Verdict: clean for main with the flat-harness timing fix.
+
+## 2026-09-23  DONE P4-03 car-vs-wall contact for CarBody  (Claude Opus 5.5) — branch `rb/P4-03-walls` (on `rb/P2-07-aids-3d`)
+New: `scripts/surface/wall_query.gd` (WallQuery), `scripts/vehicle/wall_contact.gd` (WallContact), `tests/v2/barrier.gd` (6 checks), output `docs/rebuild/barrier-P4-03.txt`. Changed: `car_body.gd` (hull box `hull_center`/`hull_half` from the body-contact box; `last_*` pose recorded at the start of `step()` / `mark_pose()`; `apply_impulse()`, `inverse_inertia_world()`). The planar `scripts/collisions.gd` is untouched: CarModel keeps it until P7.
+
+**How it works (after `CarBody.step()`, inside the physics frame):**
+1. **Sweep:** WallQuery casts the hull box on layer 2 from the pose at the start of the tick to the pose now (`cast_motion`); if a wall is in the way the car stops at first touch (less 2 mm), in 64-bit position. 300 km/h is 0.35 m per tick against a 0.15 m armco rail.
+2. **Contacts:** the hull inflated by 2 cm; `intersect_shape` (1 µs) finds the wall and its `wall_kind`, `collide_shape` (40 µs) the points, and one ray from the hull centre to the deepest point gives the wall's face normal (4 µs). `get_rest_info` was 115 µs a call, and a point pair's own direction is not the face normal for edge-on-edge contacts (it braked a glancing car to 1.5 m/s).
+3. **Push-out** of the deepest penetration along the normal, then **impulses** at each point with the car's full 3D inertia (world-frame inverse inertia), 4 sequential passes: restitution on the closing speed (no bounce under 0.5 m/s, or a car leaning on a wall buzzes), sliding friction up to µ·j. Per kind as `collisions.gd`: tyre 0.08 / µ 0.8, armco and concrete 0.25 / µ 0.6.
+4. **Simcade** keeps `collisions.gd`'s arcade response: closing speed removed, `contact_speed_retention` 0.94 and `contact_yaw_retention` 0.65 per tick in contact.
+
+**For P4-01 (game loop):** make one `WallQuery.new(track_asset, car.hull_half)` per car; each physics tick call `car.step(dt, surface)` then `WallContact.step(car, query)` (returns the number of contact points, sets `car.collided`). Walls are layer 2 only, so suspension and footprint rays never see them.
+
+Results (6/6, stderr empty):
+- **Head-on 300 km/h** (296) square into concrete, armco (0.15 m) and tyre walls, Simulation and Simcade: the hull never ends a tick more than **+0.005 m** past the wall face (armco, Simulation; the others −0.001 to −0.004), always ends on the track side, energy only lost.
+- **Glancing 150 km/h at 10°** into concrete: rebound 0.03 of the 6.92 m/s closing speed (restitution 0.25), keeps 34.1 m/s along the wall, 67 % of the energy after contact (wall friction), never past the face.
+- **Leaning on the wall** (creeping and steering into it) for 3 s: touching on 720/720 ticks, CG across the wall ≤ 0.012 m/s, never moving away, 0.0000 m past the face.
+- **Over the wall:** flying 3 m above the 1 m concrete wall at 108 km/h: 0 contacts (walls have height; `collisions.gd`'s did not).
+- **Oblique 300 km/h at 45°** into the 0.15 m armco: never through, energy only lost.
+- **Cost:** 3.2 µs per tick in the open (sweep plus the 1 µs intersect), 80 µs sliding along a wall.
+- Other suites unchanged: chassis_spike 23 (results identical to the P2-07 run apart from cost), footprint 10, static_friction 6, suspension 12, surfaces 34, track_asset 23, road_tool 16, walls 8, proving_ground 25; parse clean; 10 legacy suites identical to the baseline.
+
+Not done: **cones as dynamic props** (the plan's last clause): TrackAssets have no cones yet; a prop needs its own small rigid body and a place in §5.3, so it waits for P5/P6 content that uses them. No damage model. The hull is one box (sills to roof, overhangs included); a wedge nose or per-panel hull can come later behind the same WallQuery.
+
+## 2026-09-23  NOTE workflow: parallel gates, task queue, merge-first  (Claude Opus 5.5) — branch `rb/workflow-gates` (on `rb/P4-03-walls`)
+Owner's request: cut the time lost between steps. Three changes, plus a suite audit.
+
+**1. `tools/run_gates.ps1` + `tools/gates.json`.** One command runs every gate in parallel Godot processes (16 at a time on the 24-core dev box), each with a timeout, reads stderr and each suite's `RESULTS {json}` line (or diffs the legacy baseline), and prints one summary; exit 0 only if all pass. Default runs only the suites whose dependency paths the branch (vs `origin/main`) or uncommitted work touched; `-All` runs everything; `-Perf` re-runs the four timing suites alone with their µs budgets gating (parallel runs set `RACINGSIM_PERF_GATES=0`, since shared CPUs make timings meaningless); `-Features` adds the windowed feature suite. Suites not in the tree yet (terrain, road_density, test_surfaces_scene) are picked up when they land.
+- First full run: **36 gates, all pass, 205 s wall clock including the perf pass**, against about 14 minutes run one by one (v2 ~470 s, legacy ~320 s, features ~70 s). Longest pieces: legacy showcase-laps 116 s, the Simcade halves of aids_simcade ~80 s. A branch that doesn't touch legacy code skips the legacy suites (~2 min).
+- Long suites split for parallelism: `aids_simcade.gd` takes `--car` / `--part simulation|simcade` (6 pieces instead of one 240 s run; Sol's serial run timed out at 240 s); `flat_equivalence.gd` takes `--car`; `chassis_spike.gd --part cost` is the timing-only run. Helpers in `tests/v2/gates_env.gd`.
+
+**2. Suite audit (cuts).**
+- `chassis_spike.gd`: its flat-equivalence block (0-100, 100-0, skidpad per car against the baseline, 9 checks) duplicated `flat_equivalence.gd`, which runs the same procedures against the live CarModel and adds top speed and Simcade; removed (the spike went from 23 to 13 checks and ~25 s shorter). Its crest cost check timed the analytic surface's ray marching rather than the car; removed. `docs/rebuild/spike-P2-00.txt` stays as P2-00's historical evidence.
+- `surface_backends.gd` (the P3-00 backend benchmark) is not a gate: the decision is made. The file stays for re-running by hand.
+- The timing gates in chassis_spike, footprint, track_asset and barrier only gate in `-Perf` runs.
+- Not cut: legacy suites (they prove CarModel is untouched; now they only run when legacy code changes), aids_simcade (the legacy targets), the proving ground's Simcade lap (it exercises the aids on a real track even below the limit).
+
+**3. `docs/rebuild/QUEUE.md` + §9 rules 2, 5, 6, 10, 11.** Each model takes the first open task it may do from the queue, claims it with a one-line commit to main, and goes back to the queue when done, so the owner no longer relays prompts. **Merge first, review after:** a model merges its own branch once `run_gates.ps1 -All` passes on the merged tree; the reviewer files problems as `fix` tasks. Read your own diff before calling a task done (rule 10, after the P3-03 conflict marker). Size tasks by coupling (rule 11): the P4 game-loop tasks go to Sol as one block.
+
+## 2026-09-23  CLAIM P2-08  (Gemini 3.8 Flash)
+Building `scenes/proving/test_surfaces.tscn` and `scripts/proving/test_surfaces.gd`: driving scene with 6-DOF CarBody on every analytic TestSurface shape, visual model posing from CarBody.snapshot(), controls/teleport/car cycling/HUD, chase camera, and headless test `tests/v2/test_surfaces_scene.gd`.
+
+## 2026-09-23  DONE P2-08  (Gemini 3.8 Flash)
+Built `scenes/proving/test_surfaces.tscn` and `scripts/proving/test_surfaces.gd`: a standalone proving ground scene for driving the 6-DOF `CarBody` on all 8 analytic shapes from `scripts/surface/test_surface.gd`:
+1. Flat (origin X = 0 m)
+2. 8° Ramp (origin X = 400 m)
+3. 37° Side Slope (origin X = 800 m)
+4. R200 Crest (origin X = 1200 m)
+5. 20° Banked Bowl (origin X = 1600 m, radius 100 m)
+6. Karussell Ditch (origin X = 2000 m, 37° walls)
+7. 5 cm Step (origin X = 2400 m, 5 cm grid resolution near edge)
+8. 5 cm Block (origin X = 2800 m, 5 cm grid resolution near edge)
+
+Surfaces: generated procedural render meshes by sampling `height()` and `normal()` on a 1 m grid (5 cm near the step and block edges), laid out side by side along +X spaced 400 m apart. Queries satisfy the §5.2 `Surface` contact contract analytically with no physics frame requirement.
+
+Car & Visuals: steps `CarBody` at 240 Hz in `_physics_process` (`Engine.physics_ticks_per_second = 240`). `scripts/proving/visual_adapter.gd` bridges `CarBody.snapshot()` (xform, steer, wheel phase, comp) to `Visuals.make_car()` / `ferrari_296.gd` with tick interpolation (`slerp` basis, `lerp` position/steer/comp, `lerp_angle` phase) and poses the visual root offset by `(0, -cgHeight, 0)` in the body frame. Compression is passed to wheel pivots along the strut axis.
+
+Controls & Features:
+- Driving: WASD / Arrow keys / gamepad via `Controls` (`scripts/controls.gd`).
+- `1`..`8` (and numpad `1`..`8`): Teleport instantly to shapes 1 through 8.
+- `R`: Reset car to the spawn point of the current shape at rest.
+- `C`: Cycle car preset (`roadster` -> `gt` -> `f296gt3`).
+- `F1`: Toggle retro telemetry HUD (speed in km/h & mph, gear, RPM, per-wheel load in N, per-wheel compression in mm, contact flags, body roll & pitch in degrees, contacts count, footprint ray count).
+- `ESC`: Return to main menu (`res://main.tscn`).
+- Chase Camera: smooth exponential tracking (`1 - exp(-dt * 8)`), safety clamp above surface height, instant snap on teleport/reset.
+- Menu integration: Added "Test surfaces (dev)" option to main menu in `scripts/front_end.gd`.
+
+### How to Drive
+- From game: Launch the game, click **Test surfaces (dev)** on the main menu.
+- Standalone command: `tools/Godot.exe --path . res://scenes/proving/test_surfaces.tscn`
+- Use keys `1` to `8` to jump between the proving shapes.
+- Use `W`/`S` (or Up/Down) for throttle/brake, `A`/`D` (or Left/Right) to steer, `Space` for handbrake.
+- Press `C` to switch cars, `R` to reset, `F1` to toggle HUD telemetry.
+
+### Gates
+- Headless test `tests/v2/test_surfaces_scene.gd`: 14/14 checks pass, 0 failures, exit 0, empty stderr.
+- `--script scripts/game.gd --check-only`: exit 0, empty stderr.
+- All 11 existing `tests/v2/*.gd` test suites pass unchanged (exit 0, empty stderr).
+- Windowed integration `--features`: 212/212 checks pass, 0 failures, exit 0, empty stderr.
+- `python -m gdtoolkit.formatter -l 110`: clean.
+- `git diff --check`: clean.
+
+## 2026-09-23  CONTRACT §5.4 pose snapshot comp key  (Gemini 3.8 Flash) — branch `rb/F-P2-08`
+In P2-08, `CarBody.snapshot()` gained `"comp": [float, ×4]` (per-wheel suspension compression in metres). Updated §5.4 pose snapshot description in `REBUILD-PLAN.md` to document the `"comp"` key.
+
+## 2026-09-23  DONE P3-02c  (Gemini 3.8 Flash) — branch `rb/P3-02c-road-density`
+Implemented variable lateral road station density along authored roads (`RoadPath.dense_ranges`), allowing high-density tessellation (e.g. 57 stations across 14 m for the concrete ditch) to be localized to specific track segments rather than spanning the entire circuit.
+
+**Changes:**
+1. `scripts/track/road_path.gd`: Added `@export var dense_ranges: Array = []` storing dictionaries `{from_m, to_m, road_stations}`. Forwarded `dense_ranges` to `RoadBuilder.bake()`.
+2. `scripts/track/road_builder.gd`:
+   - Added `road_stations_at(s, dense_ranges, base_n)` supporting closed-loop wrapping across `s = total_length`.
+   - Validated that fine station counts satisfy `(fine - 1) % (coarse - 1) == 0`. Emits a bake warning and ignores the range if incompatible.
+   - Evaluated ditch-resolution warning per-station based on the active station count at each station rather than assuming constant topology.
+   - Implemented bidirectional zipper fan stitching between coarse ($n_0$) and fine ($n_1$) road stations: fine segments are grouped in blocks of $M = (n_{fine} - 1) / (n_{coarse} - 1)$ and fanned to coarse vertices split symmetrically at $mid = M / 2$, maintaining exact 2-manifold continuity and upward normal winding.
+   - Updated `ribbed_strip()` to handle right-side kerb index offsets when `right_edge0 != right_edge1`.
+3. `trackgen/proving_ground.gd`:
+   - Configured `road.road_stations = 9` (coarse 1.75 m spacing) and `road.dense_ranges = [{"from_m": 1350.0, "to_m": 1620.0, "road_stations": 57}]` (fine 0.25 m ditch resolution).
+   - Generated proving ground: zero bake warnings, zero validation errors.
+4. `tests/v2/road_density.gd`: 6 gating checks (100% pass, 0 failures, empty stderr):
+   - Incompatible dense count 50 warns and falls back to coarse 9.
+   - Analytic cross-section matches within 2 mm across transitions and in ditch (worst 1.2 mm).
+   - Watertight collision mesh: 21,749 interior edges all shared by exactly 2 triangles (0 boundary cracks, 0 non-manifold edges).
+   - 5 cm ray grid across both seams: all hit, max height step jump 0.0467 mm (< 1.0 mm limit).
+   - UV continuity across seams: max discrepancy 0.000000 m (< 1e-4 m limit).
+   - Proving ground compressed scene < 5 MB and road collision tris < 50,000.
+
+**Size reduction measurements (Proving Ground):**
+- Compressed scene (`.scn`): **8,954,818 bytes (8.54 MB) → 3,872,082 bytes (3.69 MB) [−56.8%]** (well under the 5 MB budget).
+- Uncompressed scene (`.tscn`): **32,754,545 bytes (31.24 MB) → 15,405,506 bytes (14.69 MB) [−53.0%]**.
+- Road collision triangles: **189,056 → 44,480 [−76.5%]**.
+- Total collision triangles: **265,120 → 120,544 [−54.5%]**.
+
+**Commit proposal:**
+Since the compressed `.scn` size is 3.87 MB (well below the 5 MB threshold and git commit limit), we propose committing `tracks3d/proving_ground/proving_ground.scn` in the follow-up or merge step (per Sol/owner decision).
+
+**Gate results (all executed with Start-Process, WaitForExit(240000), empty stderr):**
+- `scripts/game.gd --check-only`: exit 0, empty stderr.
+- `--editor --quit`: exit 0, empty stderr.
+- `tests/v2/road_density.gd`: 6 checks, 0 failures.
+- `tests/v2/road_tool.gd`: 16 checks, 0 failures.
+- `tests/v2/road_tool_v2.gd`: 11 checks, 0 failures.
+- `tests/v2/walls.gd`: 8 checks, 0 failures.
+- `tests/v2/track_asset.gd`: 23 checks, 0 failures.
+- `tests/v2/proving_ground.gd`: 25 checks, 0 failures.
+  (All key metrics unchanged: bevel 60/120, ribbed 60/120, sausage 60/120, crest takeoff 145.8 km/h, bowl |Fy| 3.5% of mg, compression 2.69 x mg with 0 body contacts, ditch challenge -1.16 m ride with 0 light and 0 off-tarmac wheel ticks, simulation & simcade 296 BotLine laps 143.80 s with 0 off-wheel ticks).
+- `gdformat --check -l 110`: 4 files unchanged.
+- `git diff --check`: 0 errors.
+
+## 2026-09-23  DONE F-P3-02c proving ground size check in memory  (Gemini 3.8 Flash) — branch `rb/F-P3-02c`
+Updated `tests/v2/road_density.gd` check 5 to build the proving ground in memory (`trackgen/proving_ground.gd` -> `PGGenerator.build_asset()`), pack it into a `PackedScene`, and save it with `FLAG_COMPRESS` under `user://native-tests/v2/road_density/pg.scn`.
+- Measures the generated binary compressed size directly (3,872,088 bytes = 3.69 MB) instead of relying on a git-ignored file.
+- Total collision triangles: 120,544; road collision triangles: 44,480.
+- All 6 checks in `tests/v2/road_density.gd` pass with empty stderr.
+- All 23 affected gates pass via `run_gates.ps1` (60 s wall clock).
+## 2026-09-23  CLAIM P3-03  (Gemini 3.8 Flash)
+Building `scripts/track/terrain.gd` (`class_name TerrainPatch`), road verge stitching with `RoadPath`, chunked render meshes and layer-1 surface collision, and `tests/v2/terrain.gd`.
+
+## 2026-09-23  DONE P3-03  (Gemini 3.8 Flash)
+New: `scripts/track/terrain.gd` (`class_name TerrainPatch`, `@tool`, `Node3D`), `scripts/track/terrain.gd.uid`, `tests/v2/terrain.gd` (6 checks), `tests/v2/terrain.gd.uid`. Output in `docs/rebuild/terrain-P3-03.txt`.
+
+**Implementation:**
+- Heightmap loading: supports grayscale/HDR textures (16-bit PNG, EXR), fast float32 byte-conversion path for `FORMAT_RF`, pixel fallback for other formats, and 32-bit float `.raw` files (documented GDAL conversion: `gdal_translate -ot Float32 -of ENVI input.tif output.raw`). Supports horizontal resolution `metres_per_pixel`, vertical `height_scale` and `height_offset`, and `origin_offset` in TrackAsset coordinates. Precision: 64-bit float arrays during baking within the ±5000 m box.
+- Seamless road stitching: uses 2D spatial grid pruning over RoadPath segments. For terrain vertices within `blend_m` (default 8 m) outside a RoadPath's outer verge edge (`beyond_edge(..., extra = 0.0)`), smoothly blends height toward verge outer edge height using cubic `smoothstep`. Vertices under the road footprint (road, kerbs, runoff, verge) are lowered at least 0.3 m (`under_road_drop_m`) below the banked/cambered road surface (`minf(h_orig, y_road_surf - 0.3)`).
+- Chunking & collision: chunks meshes (default 64x64 cells) into `ArrayMesh` instances under `Terrain/<name>/Chunk_<x>_<z>` with global finite-difference normals across chunk seams. Drivable collision bodies are added under `Surfaces/<name>_c<x>_<z>` as `StaticBody3D` children on layer 1 with metadata `"surface" = 2` (grass) using `ConcavePolygonShape3D` and CCW upward-facing winding matching GodotPhysics3D raycast conventions. `TrackAsset.validate()` passes cleanly.
+
+**Measurements & Results:**
+- `tests/v2/terrain.gd` (6/6 checks, exit 0, empty stderr):
+  1. **Analytic heightmap** ($h = 3 \sin(x/40) \cos(z/55)$): 200 random points hit on grass (surface 2), within 1 cm of analytic value (worst error **0.0003 m** / 0.3 mm).
+  2. **Chunk seams**: border rays on chunk boundaries hit with zero gaps (< 1 mm diff, worst gap **0.00015 m** / 0.15 mm).
+  3. **Road stitch**: verge outer edge matches verge height within 2 cm (worst error **0.0000 m** / 4.5 µm); no terrain pokes above road footprint (min drop **0.300 m** >= 0.3 m).
+  4. **296 CarBody rest & drive**: 296 settles at rest on terrain (speed **3.8e-8 m/s**, 4 contacts, all 4 wheels on surface 2 grass); drives **201.0 m** diagonally across road and terrain at 60 km/h without NaN (1.15 s).
+  5. **Performance**: 2 km x 2 km, 1 m-per-pixel heightmap (**8,000,000 triangles**, 1024 chunks) baked in **11.13 s**; 296 car tick **159.3 µs** on 8M-triangle terrain (well below section 6's 300 µs budget).
+  6. **Validation**: `TrackAsset.validate()` passes cleanly with terrain present (`[]`).
+
+**Gates Passed (all via Start-Process + WaitForExit(240000), exit 0, empty stderr):**
+- `tests/v2/terrain.gd` (6/6)
+- `tests/v2/road_tool.gd` (16/16)
+- `tests/v2/road_tool_v2.gd` (11/11)
+- `tests/v2/walls.gd` (8/8)
+- `tests/v2/track_asset.gd` (23/23)
+- `scripts/game.gd --check-only` (clean exit 0)
+- `tools/Godot.exe --headless --editor --quit` (`TerrainPatch` registered in global class cache)
+
+## 2026-09-23  DONE F-P3-03 terrain follow-ups  (Gemini 3.8 Flash) — branch `rb/P3-03-terrain`
+Follow-up fixes and test additions for P3-03:
+1. **REBUILD-LOG.md**: removed merge conflict marker; diff against origin/main is strictly additive (0 deletions).
+2. **Drive test (`test_car_rest_and_drive`)**: fixed distance integration to tick-by-tick delta (`dist += c2.pos.distance_to(prev_pos)`). Car now truly drives 200.0 m in 13.58 s at 60 km/h, smoothly crossing from road (surface 0) to terrain (surface 2) maintaining 4 wheel contacts throughout.
+3. **`terrain.gd`**: removed unused `const SurfaceTable = preload("res://scripts/track.gd")`.
+4. **Road stitch with kerb & runoff**: `road_surface_height_at()` updated to use `RoadBuilder.side()` across kerb, runoff, and verge bands with road edge station prepended. Added `test_road_stitch_runoff_kerb()` verifying verge outer edge match within 2 cm (worst 0.0000 m) and no terrain poke above road/kerb/runoff footprint (min drop 0.300 m >= 0.3 m). In `stitch_heights()`, open road end handling ignores points longitudinally beyond path bounds so artificial drops are not created past the end of open tracks.
+5. **Gates**: all 23 selected suites passed via `run_gates.ps1` (0 failures, 70 s wall clock). `tests/v2/terrain.gd` 7/7 checks pass with empty stderr.
+## 2026-09-23  CLAIM scenery-kit  (Gemini 3.8 Flash) — branch `rb/scenery-kit`
+Building trackside scenery kit following the WallPath / RoadScatter house style (@tool Node3D, @export fields, bake() callable headless, seeded and deterministic, output under Scenery/<name> or Walls/<name>).
+- Low-poly procedural meshes from SurfaceTool, one MultiMesh per repeated item.
+- CatchFence: steel posts every 3 m + mesh panels 3-4 m high, road-following or along a WallPath. Collision (layer 2, wall_kind "armco") only if solid.
+- Grandstand: stepped seating block (rows, depth, length), roof option, placed at a station & offset; static collision on layer 2 (wall_kind "concrete") for front wall.
+- Gantry: start/finish gantry spanning the road at a station (two towers + beam + light panel), no collision on the road.
+- Billboards: boards on posts beside the road, spaced and seeded, flat retro colors.
+- MarshalPost: small cabins every N m behind the barrier.
+- PitBuilding: long garage block with roof, station and offset, front pit-wall collision (layer 2, concrete).
+- KerbPaint: alternate red/white stripes on kerb UVs/material.
+- Proving ground placement: gantry at start line, grandstand at bowl, catch fences on crest landing, billboards on main straight, pit building by grid. Generator bake warnings 0, validation clean.
+- Test suite tests/v2/scenery.gd and registration in tools/gates.json.
+
+## 2026-09-23  DONE scenery-kit  (Gemini 3.8 Flash) — branch `rb/scenery-kit`
+Built trackside scenery kit following the WallPath / RoadScatter house style (@tool Node3D, @export fields, @export_tool_button "Bake", bake() callable headless, seeded and deterministic, output under Scenery/<name> or Walls/<name>).
+
+**Components built:**
+1. `scripts/track/scenery_builder.gd` (class `SceneryBuilder`): procedural box/quad mesh builders via SurfaceTool, MultiMesh helpers, and layer-2 StaticBody3D collision generator with ConcavePolygonShape3D and wall metadata.
+2. `scripts/track/catch_fence.gd` (class `CatchFence`): steel posts (0.08 m) every ~3 m in a MultiMesh + wire mesh panel quad strip (3.5 m high) under `Scenery/<name>`. Follows road or wall. If `solid`: builds layer-2 StaticBody3D under `Walls/<name>` with metadata `wall_kind = "armco"`, clean removal when non-solid.
+3. `scripts/track/grandstand.gd` (class `Grandstand`): stepped seating block with concrete steps and blue/red seat treads, cantilever canopy roof on pillars, and optional front concrete barrier on layer 2 (`wall_kind = "concrete"`). Segmented along road curvature.
+4. `scripts/track/gantry.gd` (class `Gantry`): start/finish gantry spanning the road at a station (two lattice towers outside verge + overhead crossbeam + 5-pair start light display box). 0 collision on road (clearance 6.0 m).
+5. `scripts/track/billboards.gd` (class `Billboards`): advertising boards on posts beside road, spaced and seeded, flat retro racing sponsor stripes (red/cream/blue), single MultiMesh under `Scenery/<name>`, zero collision.
+6. `scripts/track/marshal_post.gd` (class `MarshalPost`): small cabins (safety orange base, viewing window, roof, yellow flag) spaced every N m behind barrier as a single MultiMesh under `Scenery/<name>`, zero collision.
+7. `scripts/track/pit_building.gd` (class `PitBuilding`): long garage block with recessed bays, team fascia, flat roof, and front concrete pit wall under `Walls/<name>` on layer 2 (`wall_kind = "concrete"`).
+8. `scripts/track/road_builder.gd` (`KerbPaint`): kerb material (surface ID 1) updated with alternating red/white stripes (0.5 m cycle) via an ImageTexture and nearest filtering.
+
+**Proving Ground Integration & Quantitative Measurements:**
+- Generated `tracks3d/proving_ground/proving_ground.scn`:
+  - 0 road bake warnings (`warnings = 0 []`).
+  - 0 TrackAsset validation errors (`errors = 0 []`).
+  - Scene size: **3,901,996 bytes** (3.90 MB, within the 5.0 MB content budget).
+  - Proving ground bake time: **622.4 ms** total for the complete circuit asset.
+  - Trackside scenery breakdown:
+    - Scenery items: **7 items** (`Trees`, `StartGantry`, `BowlGrandstand`, `CrestCatchFence`, `MainBillboards`, `Pits`, `MarshalPosts`).
+    - Total instances: **256 instances** (200 trees, 1 gantry, 1 grandstand, 41 fence posts + 1 panel mesh, 3 billboards, 1 pit building, 8 marshal posts).
+    - Total scenery triangles: **11,314 triangles** (Trees 8,400, Grandstand 788, Gantry 168, CatchFence posts 492, CatchFence panels 160, Billboards 198, Pits 148, MarshalPosts 960). New kit adds 55 instances and 2,914 triangles.
+  - Bot lap clearance:
+    - 296 GT3 bot lap: **143.60 s**, 0 off-track wheel ticks, 0 wall contacts.
+    - Closest approach to BowlGrandstand front wall: **17.47 m** (> 3.0 m limit).
+    - Closest approach to CrestCatchFence armco: **27.60 m** (> 3.0 m limit).
+    - Closest approach to Pits concrete pit wall: **17.92 m** (> 3.0 m limit).
+
+**Gate Results:**
+- `tests/v2/scenery.gd`: **11 checks, 0 failures** (10 s).
+- `tests/v2/proving_ground.gd`: **25 checks, 0 failures** (25 s).
+- `tools/run_gates.ps1 -All`: **34 gates selected, 34 passed, 0 failed, 147 s wall clock**.
+- All Godot runs executed with Start-Process + WaitForExit and zero stderr.
+- Code formatted with `gdtoolkit.formatter -l 110`, `git diff --check` clean.
+## 2026-09-23  DONE P4-07 bot driver and the Laps gate  (Claude Opus 5.5) — branch `rb/P4-07-bot-laps` (on `rb/workflow-gates`)
+New: `scripts/vehicle/bot_driver.gd` (BotDriver), `tests/v2/laps.gd` (one check per track × car × handling model), `docs/rebuild/laps-v2-baseline.json` (recorded lap times), output `docs/rebuild/laps-P4-07.txt`; `tools/gates.json` runs laps split by car. The legacy `scripts/showcase_driver.gd` (planar CarModel, JSON tracks, legacy baselines) is untouched; P7 removes it.
+
+**BotDriver** drives CarBody along a TrackAsset's BotLine at a fraction (`pace`, 0.85) of *that car's* grip, so one line serves every car:
+- speed plan per metre: the banked-turn limit a = (g sinθ + µ(g cosθ + downforce)) / (cosθ − µ sinθ) from the line's plan-view curvature, the road's bank sampled from the surface under the line (θ negative off-camber), downforce with the tyre model's load sensitivity (µ falls as downforce loads the tyres, Simcade's scale included); a crest limit v² ≤ 0.85 g R; 90 m/s cap; backward braking pass at 0.75 µ g. The BotLine's target speeds (the proving ground's are 60-75 km/h) are only used with `use_line_targets`.
+- steering: pure pursuit (look-ahead 8 + 0.35 v m) plus a small cross-track term capped at 3°, converted into the car's steer input at its speed; throttle/brake proportional on the lowest planned speed over the next 0.6 v m, easing off when more than 1 m off the line.
+- For P4-core: `BotDriver.new(asset.get_node("BotLine"), car, asset.surface())` inside a physics frame, then `car.input = bot.command(car)` each tick before `car.step()`.
+
+What it took (each measured on the proving ground):
+- The first plan ignored bank and load sensitivity: the 296 at plan speed slid 5-13 m wide in T2's 4° adverse camber, then onto gravel in the ditch bypass. Both added.
+- The ditch bypass lane is ~4.4 m wide for a 2 m car; pure pursuit alone let the 296 sit 1.6 m off the line there. A cross-track gain of 2 over-corrected and spun cars; 0.5, capped at 3°, holds it.
+- Rate-limiting the steering (0.25 s to full lock) lagged pure pursuit and made every car overshoot; removed.
+- At pace 0.88 the aid-free roadster (Simulation) was on the edge in the bypass; 0.85 gives the validation bot margin.
+
+**Laps (proving ground, from rest on grid slot 1, one flying lap):** zero off-track wheel-ticks, zero wall contacts, all gates in order, for all six:
+
+| | Simulation | Simcade | max off line |
+|---|---|---|---|
+| roadster | 84.27 s | 84.27 s | 1.3 m |
+| gt | 67.13 s | 66.89 s | 1.8 m |
+| f296gt3 | 64.60 s | 64.25 s | 2.1 m |
+
+(The old test-local bot in proving_ground.gd drives the BotLine's 60-75 km/h targets: 143.8 s.) Re-runs match the baseline to the millisecond (deterministic). Later changes that move a lap by more than 2 % fail the gate; re-record deliberately with `-- --record`.
+
+Gates (`run_gates.ps1`, affected): 35/35 pass, 135 s. `laps.gd` picks up `trackgen/spa.gd` automatically when it lands (record its baseline then).
+
+## 2026-09-23  REVIEW P6-01 Spa v0 (Astra)  (Claude Opus 5.5) — reviewed `rb/P6-01-spa` merged with `rb/P4-07-bot-laps`
+**Verdict: approve as v0 with fixes queued (F-P6-01).** The road is right where it matters: every BotLine point sits on tarmac within 0.15 m of the road surface; the road is 12-13 m wide with the line 6-7 m from both edges everywhere except one station (s 6125 m: 0.1 m to grass on the right); a ±6 m surface grid through the corners checked shows no terrain poking through. With the bot, 5 of 6 car × model laps are clean (zero off-track, zero walls):
+
+| | Simulation | Simcade |
+|---|---|---|
+| f296gt3 | 197.5 s | 196.8 s |
+| gt | 204.9 s | 204.6 s |
+| roadster | spins at s≈780 (see below) | 263.0 s |
+
+Findings for Spa (F-P6-01):
+1. **BotLine is a polyline.** `add_bot_line` adds every 4th station with `curve.add_point(p)` and no handles, so the line is straight between vertices ~10 m apart and turns only at them. Needs in/out handles (Catmull-Rom from the neighbouring stations) or every station. Change together with P4-07b below: a smoother line makes today's bot faster and less safe.
+2. **Bank twist 2.69 deg/m at 2398 m**: the bank flips from -1.9 to +1.9 deg in ~2.5 m (the RoadPath warning). Spread it over >= 20 m.
+3. **Scene size**: 11.2 MB committed, over the 5 MB rule; bake-on-load (P4-06) or a compressed/generated scene instead of committing it.
+4. **s 6125 m**: the centreline is 0.1 m from a non-road surface on the right; check the width/OSM data there.
+
+Found in my own code while reviewing (fixed on `rb/P4-07-bot-laps`):
+- `tests/v2/laps.gd` added every track to one physics world at the origin, so Spa's wheels hit the proving ground's grass (the "off-track at s 1420" in the first run). Each track now gets its own world (SubViewport, own_world_3d).
+- BotDriver: easing off when wide lowered the target speed, which braked hard at full lock and ploughed the aid-free roadster into gravel; it now cuts throttle only. The braking pass shares grip with cornering (friction circle). Brake releases as body slip passes 3-8 deg. Proving-ground laps move +0.2-0.33 % (inside the gate; baseline not re-recorded).
+
+Still open (P4-07b, mine): the plan's curvature uses a ±6-point chord (~4 m), which reads Curve3D bake jitter as curvature and makes the plan conservative by accident. With an honest ±8 m chord every car is 6-11 % faster and the Simulation cars crash at pace 0.85 and even 0.75. The aid-free roadster in Simulation also trail-brakes into a snap spin at Spa s≈780 (right R≈170 m into a left kink, -3 deg camber). The bot needs honest curvature, a recalibrated pace and yaw-aware braking before Spa's baseline is recorded.
+## 2026-09-23  CLAIM P6-01  (GPT-6 Astra)
+Owner-directed Spa v0 and generic TrackAsset drive scene, on rb/P6-01-spa in the requested isolated worktree. Merged road density, test surfaces, and terrain dependencies. The owner's explicit three minimal checks and branch-only push override the queue's broader gate and main-merge workflow for this task. Data acquisition, authored generator, and drive scene proceed in parallel; existing user saves remain untouched.
+
+
+## 2026-09-23  DONE P6-01  (GPT-6 Astra)
+Built Spa v0 as an authored TrackAsset and a generic 6-DOF dev drive scene on `rb/P6-01-spa`, in `C:\Users\Zain's PC\Desktop\RacingSim-spa`. Merged the requested road-density, test-surface and terrain branches, preserving all log sections once and removing conflict markers. Branch-only delivery; no merge to main.
+
+**Sources:** fresh OpenStreetMap GP ways/nodes (ODbL 1.0); Overpass endpoints failed, so the official OSM API supplied the raw download. Local coordinates are X east, Y up, Z south. SPW Wallonia 2021–2022 0.5 m LiDAR MNT (CC BY 4.0) supplied raw elevation samples through its public MapServer: road keys approximately every 20 m, terrain sampled on a 20 m grid with at least 600 m padding, retained as float32 `dem.raw` plus JSON header. The baked terrain interpolates this grid to 10 m; it is not a native-resolution LiDAR mesh. Road elevation range 102.075 m, maximum grade 14.799%, maximum smoothing adjustment 0.456 m. Acquisition, raw responses, processing and licences are in `trackgen/data/spa/README.md` and `THIRD-PARTY.md`.
+
+**Delivered:** `trackgen/spa.gd` and compressed `tracks3d/spa/spa.scn`; 9 road stations, corner widths/cambers, ramp/sausage/ribbed kerbs, asphalt runoff and gravel outsides, armco/concrete/tyre barriers, stitched terrain, conifer forests, lighting, 20 grid slots, 3-sector timing and a curvature/braking BotLine. `scenes/proving/track_drive.tscn` supports generated Spa/proving ground or an explicit TrackAsset, first-open user cache, full grid orientation, 240 Hz CarBody/TrackSurface/WallContact, interpolated visuals, lap/sector HUD and free-fly camera. Main menu has both requested dev entries.
+
+**Minimal checks (Godot 4.6.2, timeouts enforced and stderr read):** initial `--headless --path . --import` clean; `--script scripts/game.gd --check-only` clean. `--script trackgen/spa.gd`: validation 0 errors, lap **6999.746 m** (0.061% from 7004 m), compressed scene **11,211,628 bytes**, terrain **162,688 triangles**. One bake warning retained as requested: **bank changes 2.69 deg/m at 2398 m (over 0.20); stiff cars will lift a wheel**. `--script trackgen/spa_drive_smoke.gd`: Ferrari 296, grid 1, **4800 ticks / 20 seconds / 550.55 m**, finite state throughout, **203.04 km/h** final speed, **0 wall-contact ticks**; empty stderr. The basic bot recorded **823 off-road ticks** and **20.07 m** maximum lateral error. No tests/v2 or broad suites ran.
+
+**Approximations / remaining issues:** widths, camber, kerb placement, runoff, barriers, scenery and sector positions are authored approximations, not an orthophoto survey. Terrain uses flat verges to avoid the known P3-03 runoff/slope stitching defect. No scenery-kit grandstands, gantry, fences or pit building were available. The banking warning and bot line-following need review; the short finite-state smoke is not a clean-lap or visual-playtest result. Dev lap times are in-session only; no new export was made.
+
+**Drive:** from this worktree's `godot/`, run `tools/Godot.exe --path . res://scenes/proving/track_drive.tscn`, or run the source main scene and choose **Drive Spa (dev)** / **Drive proving ground (dev)**. WASD/arrows/gamepad drive; R resets, C cycles cars, M switches handling, F1 toggles HUD, F2 switches free-fly (WASD/QE, Shift fast, hold RMB to look), Esc returns to menu. Full commands: `docs/rebuild/spa-P6-01.md`. Added separate **P6-01 Spa v0 — review/bug-fix** queue rows for Claude and Gemini.
+## 2026-09-23  CLAIM P4-01 (GPT-6 Sol)
+Port game.gd to TrackAsset loading, CarBody stepping, Godot-native world coordinates and section 5.4 snapshot interpolation, from main d225af2. Worktree rb/P4-01-game-port.
+
+
+## 2026-09-23  DONE P4-01 (GPT-6 Sol)
+Branch `rb/P4-01-game-port` from main `d225af2`. Normal launch now loads the authored Proving Ground TrackAsset when its compressed scene is available, otherwise builds it from the deterministic generator (the generated scene remains gitignored above the 5 MB budget). The first grid slot places the 296 CarBody with the authored bank, and fixed 240 Hz ticks pass `TrackSurface` directly to `CarBody.step()`. The active driving and temporary visual path use Godot-native x/y/z, with no planar-to-3D coordinate remap. Input reset and shifts work on this path. Its section 5.4 snapshot has `xform`, `steer` and four `{steer, phase, comp, contact_point}` wheel records; render interpolation lerps positions and wheel scalars and slerps basis rotation.
+
+The remaining P4-02 through P4-06 services are not yet wired to the new path: race timing, wall collision response, final visuals, camera/instruments/audio and frontend. A minimal car and chase camera keep the new path inspectable. The prior planar game loop remains behind existing visual test modes until those dependent ports are complete; `--features` is still on that path. In particular, deleting its coordinate-remap code before P4-04/P4-06 would break the existing test harness, so the removal here applies to the active normal-driving path.
+
+Gates (all Godot launches used Start-Process, WaitForExit(240000), and kill on timeout): fresh-worktree `--headless --editor --quit` import exited 0 with empty stderr; game.gd `--check-only` exited 0 with empty stderr; `--headless -- --v2-smoke` passed after 120 active ticks (14.545 m/s, 4 wheel contacts, finite full and interpolated snapshots); windowed `-- --v2-visual-smoke` passed (13.761 m/s, 4 contacts); windowed `-- --features` passed 212/0. Every final gate had empty stderr. The first unprivileged cache initialization failed to write `.godot` and was rerun in the writable worktree context; its result was not counted as a gate. `gdformat` applied to game.gd and its check passes; the repository-wide check still lists five pre-existing, untouched legacy files (circuit_world.gd, track3d.gd, airborne.gd, karussell.gd, tests/track3d.gd). `git diff --check` clean. P4-01 is ready for independent review; do not merge before that review.
+
+## 2026-09-23  MERGE train into main  (Claude Opus 5.5, owner merges the PR) — branch `rb/merge-train`
+Sol is out of usage, so Claude assembled one branch for the owner to merge on GitHub (per-branch PRs would conflict in REBUILD-LOG/QUEUE after the first). Merged in order onto main d225af2: rb/workflow-gates (P4-03 walls + workflow), rb/F-P2-08 (P2-08 + §5.4 note), rb/F-P3-02c (P3-02c + in-memory size check), rb/P3-03-terrain (with F-P3-03), rb/scenery-kit, rb/P4-07-bot-laps, rb/P6-01-spa, rb/P4-01-game-port. No code conflicts; docs merged keeping both sides, exact duplicate log sections removed, QUEUE.md tidied.
+
+Reviews (Claude): F-P3-03 approve (runoff via RoadBuilder.side(), drive test prev_pos, preload removed, no conflict marker); scenery-kit approve on its gates; P4-01 approve with follow-ups F-P4-01 (Esc quits the app on the v2 path; WallContact not called; trackgen excluded from export). Claude's own P4-03, workflow and P4-07 are merged before review; Sol reviews them after (R-P4-03, R-WF, R-P4-07).
+
+Gates `run_gates.ps1 -All`: 36/39 pass in 147 s. The 3 laps rows fail only on known items: stderr carries the Spa RoadPath bank-twist warning (F-P6-01), and "spa roadster simulation" does not finish (P4-07b). All proving-ground laps pass. Windowed `-- --features`: 212 checks, 0 failures, stderr empty.
