@@ -11,7 +11,7 @@ The shared work list for the Racing Sim rebuild (REBUILD-PLAN.md §9, rule 2). E
 
 Statuses: `open`, `claimed: <model>`, `review: <model>`, `done`, `blocked: <reason>`, `needs owner`.
 Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: architecture, game integration, GitHub, reviews),
-**Gemini** (3.8 Flash: tools, mechanical ports, content, docs), **owner** (decisions, playtests, downloads).
+**Astra** (GPT-6 Astra: owner-assigned content/integration), **Gemini** (3.8 Flash: tools, mechanical ports, content, docs), **owner** (decisions, playtests, downloads).
 
 ## Review and fixes (take these first)
 
@@ -31,6 +31,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | R-P3-03 | Review merged P3-03 terrain | Claude | F-P3-03 | open | |
 | F-P6-01 | Spa v0 fixes per Claude's review: BotLine with smooth handles (not a polyline); spread the 2.69 deg/m bank twist at 2398 m over >= 20 m; get the committed scene under 5 MB; check width at s 6125 m | Astra or Gemini | | open | read "REVIEW P6-01"; land the BotLine change with P4-07b |
 | P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | open | read "REVIEW P6-01" |
+| R-P6-01-C | P6-01 Spa v0 — review/bug-fix | Claude | P6-01 | open | rb/P6-01-spa; review 2.69 deg/m bank warning, bot off-road ticks, 6-DOF driving and timing; owner requested minimal checks only |
+| R-P6-01-G | P6-01 Spa v0 — review/bug-fix | Gemini | P6-01 | open | rb/P6-01-spa; review track geometry, terrain, scenery and dev scene/menu |
 
 ## Build
 
@@ -52,7 +54,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | D-kerb | Should Simcade kerbs feel softer than Simulation (car.gd's curb_scale 0.55 has no direct 3D equivalent)? | owner | | needs owner | see DONE P2-07 |
 | D-compliance | Add tyre radial stiffness + unsprung mass so kerb strikes are realistic (changes ride height baselines) | owner | | needs owner | proposed in DONE P2-06; DeepSeek design notes pending |
 | P2-comp | Tyre compliance / unsprung mass model | Claude | D-compliance | blocked: owner decision | |
-| P6-01 | Spa on 1 m DEM (widths, cambers, kerbs from orthophotos) | Gemini, Claude review | P3-02c, P3-03, P4-core | open | data sources in docs/rebuild/data-sources-P5-01.md; downloads need the owner's OK |
+| P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-02 | Nordschleife in sections | Gemini, Claude review | P6-01 | open | |
 | P6-03 | Monza (if still wanted) | owner | | needs owner | |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | open | |

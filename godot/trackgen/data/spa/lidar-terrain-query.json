@@ -1,0 +1,19 @@
+{
+  "service": "https://geoservices.wallonie.be/arcgis/rest/services/RELIEF/WALLONIE_MNT_2021_2022/MapServer/identify",
+  "width": 125,
+  "height": 165,
+  "origin_offset": [
+    -1240.0,
+    -1640.0
+  ],
+  "metres_per_pixel": 20.0,
+  "origin": {
+    "lat": 50.43696855,
+    "lon": 5.968565,
+    "elevation_m": 418.5620761280099,
+    "projection": "equirectangular, Earth mean radius 6371008.8m, X east, Z south"
+  },
+  "batch_size": 400,
+  "coordinate_order": "rows north to south; each row west to east; inverse equirectangular to lon,lat, rounded8 decimal places",
+  "imageDisplay": "100000,100000,96"
+}

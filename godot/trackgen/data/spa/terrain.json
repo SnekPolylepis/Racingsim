@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "file": "dem.raw",
+  "width": 125,
+  "height": 165,
+  "metres_per_pixel": 20.0,
+  "origin_offset": [
+    -1240.0,
+    -1640.0
+  ],
+  "height_scale": 1.0,
+  "height_offset": 0.0,
+  "dtype": "little-endian IEEE754 float32",
+  "layout": "row-major, x east then z south",
+  "vertical_reference": "relative to smoothed road at start/finish",
+  "absolute_height_offset_m": 418.5620761280099,
+  "source_resolution_m": 0.5,
+  "source": "SPW MNT 2021–2022, updated2024-01-23, sampled via identify layer0",
+  "source_catalogue": "https://geoportail.wallonie.be/catalogue/a004e570-99d6-4fe5-b83d-49b774409278.html",
+  "licence": "CC BY 4.0",
+  "raw_response_directory": "raw-lidar",
+  "sample_count": 20625,
+  "absolute_min_m": 338.866241,
+  "absolute_max_m": 537.76001
+}
