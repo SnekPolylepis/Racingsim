@@ -91,24 +91,32 @@ func contact(origin: Vector3, direction: Vector3, max_dist: float, hint: int) ->
 - **Kerb/edge smoothing:** the tyre is not a point. P2-06 adds a footprint filter, e.g. 3–5 rays across the contact patch, normals averaged and height taken as the max. Single-ray contact makes kerbs and seams harsh.
 - `TestSurface` is analytic and needs no scene tree. `TrackSurface` may use `PhysicsServer3D` space queries or its own BVH (decided in P3-00).
 
-### 5.3 Track asset (a Godot scene, `godot/tracks3d/<id>/<id>.tscn`)
+### 5.3 Track asset (a Godot scene, `godot/tracks3d/<id>/<id>.tscn` or `.scn`)
+
+Implemented in P3-01 (`scripts/track/track_asset.gd`, `track_loader.gd`, `scripts/surface/track_surface.gd`).
 
 ```
-TrackAsset (Node3D, track_asset.gd)
-  exports: id, display_name, version:int, length_m, default_time_of_day, lighting presets
+TrackAsset (Node3D, track_asset.gd) at the origin, identity transform
+  exports: id, display_name, version:int, default_time_of_day, lighting (Dictionary)
   Road/        visual meshes (baked by the road tool)
-  Surfaces/    StaticBody3D per surface type, metadata "surface" = SURF index; collision only
-  Walls/       StaticBody3D barrier/wall collision, metadata "wall_kind"
-  TimingLine   Path3D, closed; metadata start_offset_m, sector offsets, checkpoint offsets
-  Grid/        Marker3D slots, in order (pole first)
+  Surfaces/    StaticBody3D per surface type, metadata "surface" = int SURF index, collision layer 1
+  Walls/       StaticBody3D barrier/wall collision, metadata "wall_kind", collision layer 2
+  TimingLine   Path3D; its baked curve is the lap line, closed implicitly from the last point back to the
+               first (don't repeat the first point). Metadata: start_offset_m, sector_offsets and
+               checkpoint_offsets (metres after the start line, strictly increasing)
+  Grid/        Marker3D slots in order (pole first); each marker's -Z points down the track
   BotLine      Path3D racing line with target speeds (for tests/bot)
   Scenery/     trees, stands, buildings, landmarks
   Lights/      night-style lamp placements
-  Minimap      baked 2D polyline resource
 ```
 
-- **Record identity** = `id + version` + car/setup/handling (setup and handling as today). Bump `version` whenever the drivable surface or timing changes.
-- **Timing gates** are 3D planes perpendicular to `TimingLine`, so overpasses are no longer ambiguous.
+- **Record identity** = `record_key()` = `"<id>@v<version>"` + car/setup/handling (setup and handling as today). Bump `version` whenever the drivable surface or timing changes.
+- **Defaults** when metadata is missing: start offset 0, sectors at thirds, a checkpoint every 90 m.
+- **Timing gates** are vertical planes perpendicular to the lap line, bounded ±15 m laterally and ±3 m vertically, so a car on another deck does not trigger them. `gates()` returns start first, then all others sorted by lap offset.
+- **Lap length** is measured along the lap line in 3D (including elevation). `project(pos, hint)` resolves the nearest point in true 3D distance, so stacked decks resolve by height.
+- **Minimap** is computed on demand from the lap line (`minimap(count)`), not stored as a separate resource.
+- **Precision:** `validate()` rejects lap lines or grid slots beyond ±5 km (§5.1).
+- **Surface queries** go through `asset.surface()` (TrackSurface) and must run inside a physics frame (P3-00).
 
 ### 5.4 Pose snapshot (for interpolation, ghosts, replays)
 
@@ -173,7 +181,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 ### P3: Track asset format and road tool
 
 - **P3-00 [ARCH]** Decide the `TrackSurface` query backend (PhysicsServer3D direct space state vs our own BVH over baked triangles). Check determinism, headless use and cost against the §6 performance gate. **Done 2026-09-22: recommends PhysicsServer3D rays against a baked triangle mesh, engine pinned to GodotPhysics3D** (see the log). Consequences: surface queries run inside a physics frame (`_physics_process`), including in headless tests; tessellate roads at ≤ 1.5 m along and ≤ w/8 across; keep track coordinates within ±5 km of the origin (§5.1).
-- **P3-01 [ARCH]** `track_asset.gd` + loader: timing line, gates, sectors, grid, minimap bake, record identity.
+- **P3-01 [ARCH]** `track_asset.gd` + loader: timing line, gates, sectors, grid, minimap bake, record identity. **Done 2026-09-22** (`tests/v2/track_asset.gd`).
 - **P3-02 [TOOL]** Road plugin (`addons/road_tool/`, editor-only, excluded from export).
   - A `RoadPath` (Path3D) with cross-section keys along its length: left/right width, camber, crown, left/right kerb type and width, verge width and slope, surface type.
   - It bakes the road, kerbs and verges into render meshes plus per-surface collision.
