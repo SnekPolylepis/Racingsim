@@ -355,7 +355,8 @@ static func build_asset() -> Node3D:
 	road.name = "Main"
 	road.closed = true
 	road.along_step = 1.5
-	road.road_stations = 57  # 14 m / 56 = 0.25 m, enough for the ditch fillets.
+	road.road_stations = 9
+	road.dense_ranges = [{"from_m": 1350.0, "to_m": 1620.0, "road_stations": 57}]
 	road.grid_slots = 4
 	road.grid_first_m = 35.0
 	road.grid_spacing_m = 40.0
