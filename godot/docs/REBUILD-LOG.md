@@ -1174,3 +1174,17 @@ The compression dip at 100 km/h drops from 2.69 to 2.39 mg. On the analytic 5 cm
 - Lap times move -0.1 to -0.3 %. Baseline re-recorded.
 
 **Gates:** `run_gates.ps1 -All` passes, except that laps stderr carries the known Spa bank warning (F-P6-01). Windowed `--features` 212/0, stderr empty. `--v2-smoke` passes. Car step cost is unchanged (the chassis spike reads ~158 µs).
+
+## 2026-09-23  DONE P2-comp-b kerb edges push the tyre back  (Claude Opus 5.5) — branch `rb/P2-comp-b` (on `rb/P2-comp`)
+With compliance on, a tyre resting on a sharp edge's corner takes the rigid tread's own contact normal along the wheel instead of the high side's ground normal (`TyreFootprint.contact(..., lean)`, `tread_normal()`). The corner pushes the wheel back as well as up. Before, a car rose onto a step with no horizontal cost, which was quietly non-conservative.
+- **The lean starts from the ground normal and tilts it along the wheel by the circle's slope at the corner.** So no lean means exactly the old normal. A first version leaned the tyre's own up, which tilts with the body: a parked car with a shoulder on a pad edge crept at 2 mm/s.
+- **Along the wheel only.** Across the tread, the crown and shoulder are stand-ins for sidewall compliance, not a real surface. Leaning across made the parked car slide off the pad edge.
+- **Scaled by how squarely the bisection pair crossed the edge along the wheel.** An edge running alongside the tyre (found by pairs across the tread) cannot push it forward or back.
+- The massless wheel (compliance off) keeps ground normals: its damper would take the climb rate whole (9-28x static on 5 cm, DONE P2-06).
+
+Results (`tests/v2/footprint.gd` 10/10, parked on a pad edge settles in 4 mm with no creep):
+- Climbing a 5 cm step costs a little speed: 50 km/h lost 5.58 → 5.83 km/h (lifting the car 5 cm alone costs ~0.13), 150 km/h 1.77 → 1.93.
+- Peak tyre load +7-10 % on the square step.
+- The proving ground's shaped kerbs (bevel, ribbed, sausage) are unchanged to the hundredth: the footprint follows a shaped kerb's surface, and only sharp corners (steps, pad edges, a road-to-verge drop) are edges. Laps, crest and compression results are unchanged.
+
+Gates: `run_gates.ps1 -All` passes, except the known Spa bank warning in the laps stderr (F-P6-01). `--features` 212/0, stderr empty.

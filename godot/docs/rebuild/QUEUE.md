@@ -46,7 +46,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | D-kerb | Should Simcade kerbs feel softer than Simulation (car.gd's curb_scale 0.55 has no direct 3D equivalent)? | owner | | done: no (2026-09-23) | same kerbs in both handling models |
 | D-compliance | Add tyre radial stiffness + unsprung mass so kerb strikes are realistic (changes ride height baselines) | owner | | done: yes (2026-09-23) | P2-comp |
 | P2-comp | Tyre compliance / unsprung mass model | Claude | | review: Sol | rb/P2-comp; read "DONE P2-comp" |
-| P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate; measure speed lost and loads on the proving-ground kerbs | Claude | P2-comp | open | read "DONE P2-comp" |
+| P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | review: Sol | rb/P2-comp-b (on rb/P2-comp); read "DONE P2-comp-b" |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-02 | Nordschleife in sections | Gemini, Claude review | P6-01 | open | |
 | P6-03 | Monza (if still wanted) | owner | | needs owner | |

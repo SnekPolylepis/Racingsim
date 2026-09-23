@@ -313,7 +313,8 @@ func step(dt, surface, automatic = true):
 				wheels[i].sIdx,
 				p.wheelR,
 				tread,
-				hit
+				hit,
+				compliance
 			)
 			if not hit.is_empty():
 				footprint_rays += hit.rays
