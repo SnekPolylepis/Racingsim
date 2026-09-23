@@ -195,7 +195,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 - **P4-01 [ARCH]** `game.gd`: load a TrackAsset; `CarBody` replaces `CarModel`; delete the coordinate remap; interpolation from the §5.4 snapshot.
 - **P4-02 [MECH]** `race.gd`: 3D gates; ghosts in the new format; sectors unchanged.
-- **P4-03 [DEEP]** `collisions.gd`: chassis box/hull against the `Walls/` geometry, 3D impulses with friction, no tunnelling at 300 km/h (use swept tests or substeps). Cones become simple dynamic props.
+- **P4-03 [DEEP]** `collisions.gd`: chassis box/hull against the `Walls/` geometry, 3D impulses with friction, no tunnelling at 300 km/h (use swept tests or substeps). Cones become simple dynamic props. **Done 2026-09-23 except cones** (`scripts/surface/wall_query.gd`, `scripts/vehicle/wall_contact.gd`, `tests/v2/barrier.gd`): swept hull box, 3D impulses with friction; the planar `collisions.gd` stays for CarModel until P7.
 - **P4-04 [MECH]** `visuals.gd`/`ferrari_296.gd`: pose from `Transform3D` plus per-wheel data; free attitude in flight. Scenery building moves out to the track asset.
 - **P4-05 [MECH]** Cameras, `instruments.gd` (minimap from the baked polyline, telemetry graph), audio (surface ids from contact), skids (contact points), `night_style.gd` (lamps from `Lights/`).
 - **P4-06 [MECH]** `front_end.gd`: the circuit picker lists TrackAssets; loading screen; record identity per §5.3.

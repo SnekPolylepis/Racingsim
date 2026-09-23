@@ -813,3 +813,25 @@ Results (stderr empty):
 - `aids_simcade.gd` **114/114**: all 30 Simulation car checks and all 84 Simcade checks, including the roadster Simcade 100-0 that fails in the legacy baseline. Selected: full lock 80/120/160 km/h 4.11 / 6.52 / 7.33° (roadster), keyboard 160 km/h ASM 1 8.92° (roadster), trail-braking yaw 0.51-0.53 rad/s, heat soak 69.8 / 103.2 / 99.0 °C with grip floor ≥ 0.990, grass and gravel coasts, differential split, roll balance.
 - `flat_equivalence.gd` 7/7: its Simcade rows now carry the retune; roadster Simcade 100-0 **+2.66 %** from legacy Simcade (moved toward Simulation on purpose), everything else within 0.8 %. Evidence file regenerated.
 - All other v2 suites pass: static_friction 6, energy_wall 4, chassis_spike 23, footprint 10, suspension 12, surfaces 34, track_asset 23, road_tool 16, road_tool_v2 11, walls 8, proving_ground 25; parse clean; 10 legacy suites byte-identical to the baseline (CarModel unchanged).
+
+## 2026-09-23  DONE P4-03 car-vs-wall contact for CarBody  (Claude Opus 5.5) — branch `rb/P4-03-walls` (on `rb/P2-07-aids-3d`)
+New: `scripts/surface/wall_query.gd` (WallQuery), `scripts/vehicle/wall_contact.gd` (WallContact), `tests/v2/barrier.gd` (6 checks), output `docs/rebuild/barrier-P4-03.txt`. Changed: `car_body.gd` (hull box `hull_center`/`hull_half` from the body-contact box; `last_*` pose recorded at the start of `step()` / `mark_pose()`; `apply_impulse()`, `inverse_inertia_world()`). The planar `scripts/collisions.gd` is untouched: CarModel keeps it until P7.
+
+**How it works (after `CarBody.step()`, inside the physics frame):**
+1. **Sweep:** WallQuery casts the hull box on layer 2 from the pose at the start of the tick to the pose now (`cast_motion`); if a wall is in the way the car stops at first touch (less 2 mm), in 64-bit position. 300 km/h is 0.35 m per tick against a 0.15 m armco rail.
+2. **Contacts:** the hull inflated by 2 cm; `intersect_shape` (1 µs) finds the wall and its `wall_kind`, `collide_shape` (40 µs) the points, and one ray from the hull centre to the deepest point gives the wall's face normal (4 µs). `get_rest_info` was 115 µs a call, and a point pair's own direction is not the face normal for edge-on-edge contacts (it braked a glancing car to 1.5 m/s).
+3. **Push-out** of the deepest penetration along the normal, then **impulses** at each point with the car's full 3D inertia (world-frame inverse inertia), 4 sequential passes: restitution on the closing speed (no bounce under 0.5 m/s, or a car leaning on a wall buzzes), sliding friction up to µ·j. Per kind as `collisions.gd`: tyre 0.08 / µ 0.8, armco and concrete 0.25 / µ 0.6.
+4. **Simcade** keeps `collisions.gd`'s arcade response: closing speed removed, `contact_speed_retention` 0.94 and `contact_yaw_retention` 0.65 per tick in contact.
+
+**For P4-01 (game loop):** make one `WallQuery.new(track_asset, car.hull_half)` per car; each physics tick call `car.step(dt, surface)` then `WallContact.step(car, query)` (returns the number of contact points, sets `car.collided`). Walls are layer 2 only, so suspension and footprint rays never see them.
+
+Results (6/6, stderr empty):
+- **Head-on 300 km/h** (296) square into concrete, armco (0.15 m) and tyre walls, Simulation and Simcade: the hull never ends a tick more than **+0.005 m** past the wall face (armco, Simulation; the others −0.001 to −0.004), always ends on the track side, energy only lost.
+- **Glancing 150 km/h at 10°** into concrete: rebound 0.03 of the 6.92 m/s closing speed (restitution 0.25), keeps 34.1 m/s along the wall, 67 % of the energy after contact (wall friction), never past the face.
+- **Leaning on the wall** (creeping and steering into it) for 3 s: touching on 720/720 ticks, CG across the wall ≤ 0.012 m/s, never moving away, 0.0000 m past the face.
+- **Over the wall:** flying 3 m above the 1 m concrete wall at 108 km/h: 0 contacts (walls have height; `collisions.gd`'s did not).
+- **Oblique 300 km/h at 45°** into the 0.15 m armco: never through, energy only lost.
+- **Cost:** 3.2 µs per tick in the open (sweep plus the 1 µs intersect), 80 µs sliding along a wall.
+- Other suites unchanged: chassis_spike 23 (results identical to the P2-07 run apart from cost), footprint 10, static_friction 6, suspension 12, surfaces 34, track_asset 23, road_tool 16, walls 8, proving_ground 25; parse clean; 10 legacy suites identical to the baseline.
+
+Not done: **cones as dynamic props** (the plan's last clause): TrackAssets have no cones yet; a prop needs its own small rigid body and a place in §5.3, so it waits for P5/P6 content that uses them. No damage model. The hull is one box (sills to roof, overhangs included); a wedge nose or per-panel hull can come later behind the same WallQuery.
