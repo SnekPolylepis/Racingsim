@@ -14,6 +14,9 @@ var failures = []
 var results = {}
 var frames = 0
 var ran = false
+var kerb_curve
+var kerb_spline
+var kerb_sections
 
 
 func check(ok: bool, label: String) -> void:
@@ -47,6 +50,10 @@ func _initialize() -> void:
 		"18 night lamps and deterministic roadside trees are baked"
 	)
 	surf = asset.surface()
+	kerb_curve = road.working_curve()
+	kerb_spline = RoadBuilder.elevation_spline(road.elevation_keys, road.last_bake.length, true)
+	kerb_sections = road.sections.duplicate()
+	kerb_sections.sort_custom(func(a, b): return a.at < b.at)
 
 
 func _physics_process(_delta):
@@ -60,6 +67,7 @@ func _physics_process(_delta):
 	ran = true
 	grid_and_geometry()
 	kerbs()
+	driven_kerbs()
 	crest()
 	crest_landing()
 	bowl()
@@ -140,6 +148,154 @@ func line_speed(path: Path3D, s: float) -> float:
 		else:
 			hi = mid - 1
 	return speeds[lo]
+
+
+## Road frame for a driven kerb crossing; right is positive, matching the road tool.
+func driven_kerb_point(s: float, lateral: float) -> Dictionary:
+	var length = road.last_bake.length
+	var st = RoadBuilder.station_at(kerb_curve, true, length, kerb_spline, s)
+	var sec = RoadBuilder.section_at(kerb_sections, s, length, true)
+	var frame = RoadBuilder.frame(st.tangent, sec.bank_deg)
+	return {"pos": st.pos + frame[0] * lateral, "tangent": st.tangent, "sec": sec}
+
+
+## Drive the 296 from the lane centre over one kerb at approximately 11 degrees.
+## The load and compression measurements are probes until P2-06 is accepted.
+func drive_kerb(name: String, station: float, side: int, kmh: int) -> void:
+	var start = driven_kerb_point(station - 45.0, 0.0)
+	var hit = surf.contact(start.pos + Vector3.UP * 3.0, Vector3.DOWN, 6.0, -1)
+	if hit.is_empty():
+		check(false, "%s %d km/h: no starting road contact" % [name, kmh])
+		return
+	var c = CarBody.new()
+	c.configure(presets.f296gt3)
+	c.wear_enabled = false
+	c.steer_falloff = 0.0
+	c.place(hit.point, atan2(start.tangent.z, start.tangent.x), hit.point.y)
+	var up = hit.normal
+	var fwd = (start.tangent - up * start.tangent.dot(up)).normalized()
+	c.rot = Basis(fwd, up, fwd.cross(up)).orthonormalized().get_rotation_quaternion()
+	c.pos = hit.point + up * c.setup.cgHeight
+	c.launch(kmh / 3.6)
+	var sec = driven_kerb_point(station, 0.0).sec
+	var width = sec.width_left if side < 0 else sec.width_right
+	var beyond = side * (width + sec.kerb_width + 1.5)
+	var static_load = c.p.mass * 9.81 / 4.0
+	var peak = 0.0
+	var jump = 0.0
+	var roll = 0.0
+	var yaw = 0.0
+	var min_contacts = 4
+	var min_up = 1.0
+	var kerb_ticks = 0
+	var cross_angle = 0.0
+	var crossing_measured = false
+	var prev = [0.0, 0.0, 0.0, 0.0]
+	var travelled = 0.0
+	var finite = true
+	var ticks = 0
+	var loose_since = -1.0
+	var longest_recovery = 0.0
+	var last_kerb_tick = -1
+	while travelled < 120.0 and ticks < 240 * 10:
+		var s_car = station - 45.0 + travelled
+		var ramp = clampf((s_car - (station - 40.0)) / 35.0, 0.0, 1.0)
+		var target = driven_kerb_point(s_car + 15.0, beyond * smoothstep(0.0, 1.0, ramp)).pos
+		driver(c, target, float(kmh))
+		c.step(DT, surf, true)
+		travelled += c.speed * DT
+		ticks += 1
+		finite = finite and is_finite(c.pos_x + c.pos_y + c.pos_z)
+		finite = finite and is_finite(c.vel.length()) and is_finite(c.ang.length())
+		if not finite:
+			break
+		var on_kerb = false
+		for k in 4:
+			var w = c.wheels[k]
+			peak = maxf(peak, w.load / static_load)
+			if ticks > 1:
+				jump = maxf(jump, absf(w.comp - prev[k]))
+			prev[k] = w.comp
+			if w.surf.id == 1 and w.load > 0.0:
+				kerb_ticks += 1
+				on_kerb = true
+		if on_kerb:
+			last_kerb_tick = ticks
+		if on_kerb and not crossing_measured:
+			var tangent = driven_kerb_point(s_car, 0.0).tangent
+			cross_angle = absf(rad_to_deg(wrapf(c.h - atan2(tangent.z, tangent.x), -PI, PI)))
+			crossing_measured = true
+		roll = maxf(roll, absf(c.ang.x))
+		yaw = maxf(yaw, absf(c.ang.y))
+		min_contacts = mini(min_contacts, c.contacts)
+		min_up = minf(min_up, c.basis().y.dot(Vector3.UP))
+		if kerb_ticks > 0:
+			if c.contacts < 4 and loose_since < 0.0:
+				loose_since = ticks * DT
+			elif c.contacts == 4 and loose_since >= 0.0:
+				longest_recovery = maxf(longest_recovery, ticks * DT - loose_since)
+				loose_since = -1.0
+		# Stop after the crossing and a quarter-second of stable four-wheel contact. Continuing onto
+		# the verge tests a different route and can reach the next terrain feature.
+		if (
+			last_kerb_tick >= 0
+			and c.contacts == 4
+			and loose_since < 0.0
+			and (ticks - last_kerb_tick) * DT >= .25
+		):
+			break
+		if loose_since >= 0.0 and ticks * DT - loose_since >= 2.0:
+			break
+	var recovered = (
+		last_kerb_tick >= 0
+		and loose_since < 0.0
+		and c.contacts == 4
+		and longest_recovery <= 2.0
+		and (ticks - last_kerb_tick) * DT >= .25
+	)
+	var key = "%s_%d" % [name, kmh]
+	results["driven_kerb_" + key] = {
+		"peak_load_static": peak,
+		"compression_jump_mm": jump * 1000.0,
+		"roll_rate_rad_s": roll,
+		"yaw_rate_rad_s": yaw,
+		"min_wheels_down": min_contacts,
+		"kerb_wheel_ticks": kerb_ticks,
+		"cross_angle_deg": cross_angle,
+		"longest_recovery_s": longest_recovery,
+		"up_dot_min": min_up,
+		"back_on_four": recovered
+	}
+	print(
+		(
+			"PROBE %s %d km/h: peak %.2fx static, jump %.1f mm, roll %.2f rad/s, yaw %.2f rad/s, min wheels %d, kerb wheel-ticks %d, crossing %.1f deg, recovery %.2f s"
+			% [
+				name,
+				kmh,
+				peak,
+				jump * 1000.0,
+				roll,
+				yaw,
+				min_contacts,
+				kerb_ticks,
+				cross_angle,
+				longest_recovery
+			]
+		)
+	)
+	check(
+		finite and kerb_ticks > 0 and min_up > 0.0 and recovered,
+		(
+			"%s %d km/h kerb drive: finite, never inverted, back on four wheels within 2 s (up dot %.2f, four %s)"
+			% [name, kmh, min_up, recovered]
+		)
+	)
+
+
+func driven_kerbs() -> void:
+	for kerb in [["bevel", 990.0, -1], ["ribbed", 1750.0, 1], ["sausage", 2150.0, -1]]:
+		for kmh in [60, 120]:
+			drive_kerb(kerb[0], kerb[1], kerb[2], kmh)
 
 
 func grid_and_geometry() -> void:

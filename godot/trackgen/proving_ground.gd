@@ -417,7 +417,7 @@ func _initialize() -> void:
 		asset.free()
 		quit(1)
 		return
-	var save_error = ResourceSaver.save(packed, OUTPUT)
+	var save_error = ResourceSaver.save(packed, OUTPUT, ResourceSaver.FLAG_COMPRESS)
 	if save_error != OK:
 		print("SAVE ERROR %d" % save_error)
 		asset.free()
