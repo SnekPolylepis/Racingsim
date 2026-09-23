@@ -22,9 +22,9 @@ PASS  crest: apex curvature -0.005000 1/m vs -1/200 = -0.005000
 PASS  bowl: bank 20° at any radius (to 0.001°), height 0 at R
 PASS  ditch: wall 36.999999° (37), depth 1.2057 m (analytic 1.2057), road at 0, uniform along x, symmetric
 PASS  step: sharp rise of exactly 5 cm at x = 0; eased step at half height mid-way
-PASS  roadster coasting in neutral down a 3° grade: 0.3816 m/s² vs analytic 0.3815 (+0.03%; rolling resistance and wheel inertia included)
-PASS  gt coasting in neutral down a 3° grade: 0.3812 m/s² vs analytic 0.3812 (-0.01%; rolling resistance and wheel inertia included)
-PASS  f296gt3 coasting in neutral down a 3° grade: 0.3825 m/s² vs analytic 0.3825 (+0.01%; rolling resistance and wheel inertia included)
+PASS  roadster coasting in neutral down a 3° grade: 0.3815 m/s² vs analytic 0.3815 (-0.00%; rolling resistance and wheel inertia included)
+PASS  gt coasting in neutral down a 3° grade: 0.3812 m/s² vs analytic 0.3812 (-0.00%; rolling resistance and wheel inertia included)
+PASS  f296gt3 coasting in neutral down a 3° grade: 0.3825 m/s² vs analytic 0.3825 (-0.00%; rolling resistance and wheel inertia included)
 PROBE roadster parked on an 8° ramp (brakes on): creeps 7.6 mm/s over 5 s after 3 s settling; body 8.31° from vertical
 PASS  roadster parked on an 8° ramp stays finite
 PROBE roadster parked on a 37° side slope (brakes on): creeps 34.9 mm/s over 5 s after 3 s settling; body 39.11° from vertical
@@ -34,7 +34,7 @@ PASS  f296gt3 parked on an 8° ramp stays finite
 PROBE f296gt3 parked on a 37° side slope (brakes on): creeps 25.7 mm/s over 5 s after 3 s settling; body 37.28° from vertical
 PASS  f296gt3 parked on a 37° side slope stays finite
 PASS  f296gt3 driving onto the 37° ditch wall at 80 km/h stays finite
-PROBE f296gt3 on the 37° ditch wall at 80 km/h: body 36.6° from vertical while holding, lateral error 0.11 m, min contacts 2, peak tyre load 2.8 x static, wheel-ticks with the ray starting inside the ground 0
+PROBE f296gt3 on the 37° ditch wall at 80 km/h: body 36.6° from vertical while holding, lateral error 0.11 m, min contacts 2, peak tyre load 2.5 x static, wheel-ticks with the ray starting inside the ground 0
 PASS  f296gt3 over a sharp 5 cm step at 50 km/h stays finite
 PROBE f296gt3 sharp 5 cm step at 50 km/h: peak tyre load 3.0 x static, airborne 0.000 s
 PASS  f296gt3 over a sharp 5 cm step at 120 km/h stays finite
@@ -43,5 +43,5 @@ PASS  f296gt3 over a eased 5 cm step at 50 km/h stays finite
 PROBE f296gt3 eased 5 cm step at 50 km/h: peak tyre load 12.3 x static, airborne 0.000 s
 PASS  f296gt3 over a eased 5 cm step at 120 km/h stays finite
 PROBE f296gt3 eased 5 cm step at 120 km/h: peak tyre load 3.3 x static, airborne 0.000 s
-PROBE 1 cm/s for 1 s moves the car 0.010002 m at x = 0 and 0.000000 m at x = 5 km (expect 0.010000; Vector3 is float32)
-SURFACES RESULTS {"checks":34,"failures":[],"probes":{"f296gt3 a 37° side slope creep_mm_s":25.7228016853333,"f296gt3 an 8° ramp creep_mm_s":5.68325482308865,"f296gt3 ditch wall":{"buried_wheel_ticks":0,"hold_lateral_error_m":0.114163684844971,"hold_tilt_deg":36.5513142359883,"min_contacts":2,"peak_load_x_static":2.78215442649078},"f296gt3 step eased 120":{"airtime_s":0.0,"peak_load_x_static":3.26245842272892},"f296gt3 step eased 50":{"airtime_s":0.0,"peak_load_x_static":12.2597966975237},"f296gt3 step sharp 120":{"airtime_s":0.0,"peak_load_x_static":3.26245842272892},"f296gt3 step sharp 50":{"airtime_s":0.0,"peak_load_x_static":3.01402659892051},"position_precision":{"moved_at_0m":0.0100024212151766,"moved_at_5km":0.0},"roadster a 37° side slope creep_mm_s":34.9400490522385,"roadster an 8° ramp creep_mm_s":7.58335441350937}}
+PROBE 1 cm/s for 1 s moves the car 0.010002 m at x = 0 and 0.010002 m at x = 5 km (expect 0.010000; read from the 64-bit state since P2-03)
+SURFACES RESULTS {"checks":34,"failures":[],"probes":{"f296gt3 a 37° side slope creep_mm_s":25.7219076156616,"f296gt3 an 8° ramp creep_mm_s":5.68386353552341,"f296gt3 ditch wall":{"buried_wheel_ticks":0,"hold_lateral_error_m":0.114167737960815,"hold_tilt_deg":36.5512995829051,"min_contacts":2,"peak_load_x_static":2.53457961281909},"f296gt3 step eased 120":{"airtime_s":0.0,"peak_load_x_static":3.26245948841976},"f296gt3 step eased 50":{"airtime_s":0.0,"peak_load_x_static":12.2666491015945},"f296gt3 step sharp 120":{"airtime_s":0.0,"peak_load_x_static":3.26245948841976},"f296gt3 step sharp 50":{"airtime_s":0.0,"peak_load_x_static":3.01402634952869},"position_precision":{"moved_at_0m":0.0100024210145693,"moved_at_5km":0.0100024210105403},"roadster a 37° side slope creep_mm_s":34.9393278360367,"roadster an 8° ramp creep_mm_s":7.5829803943634}}

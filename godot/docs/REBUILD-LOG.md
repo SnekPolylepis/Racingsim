@@ -239,3 +239,27 @@ Verification from the fresh `RacingSim-merge/godot` worktree using `C:\Users\Zai
 - `tests/v2/surfaces.gd`: 34 checks, 0 failures, exit 0, stderr empty.
 - `tests/v2/track_asset.gd`: 23 checks, 0 failures, exit 0, stderr empty.
 - Legacy `tests/dynamics.gd` Simulation and `-- --simcade`, `tests/handling.gd`, `tests/laps.gd` Simulation and `-- --simcade`, `tests/showcase_laps.gd`, `tests/airborne.gd`, `tests/karussell.gd`, `tests/track3d.gd`, and `tests/validation.gd`: each stdout identical to its `docs/rebuild/baseline/*.txt` reference after CR/LF normalization; every stderr empty. Nine exit 0; dynamics Simcade exits 1 with its identical, known roadster 100-0 failure.
+
+## 2026-09-22  DONE P2-03  (Claude Opus 5.5) — branch `rb/P2-03-suspension-rig` (from main `9774d1f`)
+Changed: `scripts/vehicle/car_body.gd` (chassis), `scripts/surface/test_surface.gd` (BLOCK shape), `tests/v2/surfaces.gd` (precision probe reads the 64-bit state). New: `tests/v2/suspension.gd` (11 checks), output `docs/rebuild/suspension-P2-03.txt`. `car.gd` and the shared vehicle modules are untouched.
+
+What changed in CarBody:
+1. **64-bit world state (§5.1).** `pos_x/y/z` and `vel_x/y/z` are 64-bit scalars and integrate in 64-bit; `pos`/`vel` remain as Vector3 properties for relative and presentation use (setters write the scalars). A car drifting 1 cm/s for 1 s now moves 0.010000000 m at x = 0 and at x = 5 km; before, it did not move at 5 km.
+2. **Suspension rays start 0.5 m above the mount.** Ground rising past the mount now yields a continuous, monotonic bump-stop force from the real penetration (pressed 0 to 0.69 m into flat ground in 1 cm steps, past the mount at 0.50 m: monotonic, largest step 30.1 kN against a bump-stop scale of 28 kN).
+3. **Anti-roll bars act through a lifted wheel.** A lifted (massless) wheel rises until its own spring balances the bar, so the grounded wheel sees the bar in series with that spring (extra rate arb·k/(k+arb)) and the body gets nothing at the lifted corner. Previously the bar switched off. `CarBody.arb_pair()` is static and unit-tested against the closed form and the lifted wheel's force balance.
+4. **Chassis-to-ground contact.** 10 body-box points (6 sill, 4 roof), each a penalty spring (200 kN/m) plus a closing-only damper (12 kN·s/m) plus sliding friction µ 0.6, clamped like the tyre need clamps. Probed only when a wheel is off the ground, the car is tilted past ~25°, a corner is near its bump stop, or it is falling faster than 3 m/s. Roof points only past ~60° of tilt. Ordinary driving never probes (0 point-ticks through hard acceleration and braking on flat for all 3 cars).
+
+Suspension suite, 11/11, stderr empty:
+- **Warp / cross-weight vs rigid-body statics** (FL wheel jacked 3 cm; axle twist rate K = spring + 2·ARB; expected axle load split δ·Kf·Kr/(Kf+Kr)): mean axle ΔL within −1.9 % (roadster, ARBs on), −0.7 % (roadster, off), −0.1 % (296, on), +0.1 % (296, off). **Load centroid 0.0 mm from directly under the CG in all four cases** (exact equilibrium). The roadster's front/rear asymmetry (489 / 575 N) is its body roll moving the CG sideways, which the small-angle formula leaves out; the centroid check covers it.
+- Roof drop from 0.8 m: rests on the roof, CG 0.905 m up (roof plane 0.920 m), 1.6 cm resting penetration, 7.2 cm peak during impact. Side drop: tips back onto its wheels (a physical outcome), no penetration at rest.
+- P2-02's runaway ditch weave: max tilt 43° (it no longer rolls over), CG below the surface on 0 ticks, peak tyre load 20× static (was 319× and a fall-through).
+
+Other suites on this branch: parse clean; spike 23/23 (flat equivalence unchanged, crest ratio 1.007; roadster 1 m drop now settles in 0.95 s with peak 5.6× static, down from 1.31 s / 8.6×, because the sills now touch when it bottoms; GT 1.15× crest airtime 2.44 s, down from 2.83 s); surfaces 34/34; track_asset 23/23; legacy dynamics and handling byte-identical to the baseline. `docs/rebuild/spike-P2-00.txt` and `surfaces-P2-02.txt` regenerated (new determinism hash; the precision probe now reads the 64-bit state).
+
+Cost: spike on flat 75.6 µs/tick (P2-01 main median 68.8 µs; about +7 µs from the property views, bar logic and contact gating). Crest 240 µs (the TestSurface bisection rays dominate; body probes fire while airborne).
+
+Not done / carried forward:
+- Unsprung mass, roll centres and anti-dive/squat geometry; load still applied along the contact normal rather than the strut axis.
+- Heightfield test surfaces report an upward normal even on a sharp step's vertical face, so body contact there pushes up, not back. Real meshes (TrackSurface) give face normals; walls and barriers are P4-03.
+- Body box is 10 points: coarse, with no edges between them. Enough for resting and landing, not for detailed scraping.
+- Braked cars still creep on slopes (P2-04); single-ray kerb response (P2-06); aids yaw-rate frame (P2-07).

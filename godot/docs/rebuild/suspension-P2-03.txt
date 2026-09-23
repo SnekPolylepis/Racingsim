@@ -1,0 +1,14 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS  1 cm/s for 1 s moves 0.010000000 m at x = 0 and 0.010000000 m at x = 5 km (64-bit state; expect 0.010000000)
+PASS  roadster FL jacked 3 cm, ARBs on: axle ΔL front 489.3 / rear 574.5 N, mean 531.9 vs statics 542.3 N (-1.9%); load centroid 0.0 mm from under the CG; loads sum 1.0000 mg
+PASS  roadster FL jacked 3 cm, ARBs off: axle ΔL front 295.5 / rear 371.5 N, mean 333.5 vs statics 336.0 N (-0.7%); load centroid 0.0 mm from under the CG; loads sum 1.0000 mg
+PASS  f296gt3 FL jacked 3 cm, ARBs on: axle ΔL front 2774.8 / rear 2822.4 N, mean 2798.6 vs statics 2800.0 N (-0.1%); load centroid 0.0 mm from under the CG; loads sum 1.0000 mg
+PASS  f296gt3 FL jacked 3 cm, ARBs off: axle ΔL front 1585.2 / rear 1627.2 N, mean 1606.2 vs statics 1604.7 N (+0.1%); load centroid 0.0 mm from under the CG; loads sum 1.0000 mg
+PASS  ARB through a lifted wheel: grounded wheel +400.0 N (series rate arb·k/(k+arb) = 8000 N/m), lifted corner 0 N, lifted wheel in balance (residual 0.000000000000 N)
+PASS  pressing the chassis 0..0.69 m into the ground (70 steps, past the mount at 0.50 m): wheel load rises monotonically, largest 1 cm step 30100 N (bump-stop scale 28000 N)
+PASS  dropped onto its roof: comes to rest on its roof, CG 0.905 m up (roof plane 0.920 m); resting body penetration 0.016 m, deepest during impact 0.072 m
+PASS  dropped onto its side: comes to rest back on its wheels; resting body penetration -0.000 m, deepest during impact 0.114 m
+PASS  P2-02's runaway ditch weave: max tilt 43°, CG below the surface on 0 ticks, peak tyre load 20.0 x static (was 319x and a fall-through)
+PASS  hard acceleration and braking on flat never touches the body box (0 point-ticks)
+SUSPENSION RESULTS {"checks":11,"failures":[],"results":{"warp f296gt3 arb":{"centroid_offset_m":0.000000863343529999838,"front":2774.76861763485,"rear":-2822.39577878347,"want":2800.0},"warp f296gt3 no arb":{"centroid_offset_m":0.000000963418074206857,"front":1585.21824587056,"rear":-1627.16708506674,"want":1604.6511627907},"warp roadster arb":{"centroid_offset_m":0.000000108577680180133,"front":489.349234732253,"rear":-574.456158544916,"want":542.337662337662},"warp roadster no arb":{"centroid_offset_m":0.0000000205955927867763,"front":295.463345459718,"rear":-371.531539859318,"want":336.0}}}

@@ -11,11 +11,13 @@ extends RefCounted
 ##   DITCH  along x (Karussell-like trough across z): flat floor at -depth, walls at exactly the wall
 ##          angle over their straight part, smoothstep-filleted into floor and road, road at y = 0.
 ##   STEP   along x: a kerb-like rise of step_height at step_x, sharp or eased over step_width.
+##   BLOCK  a flat-topped rectangular pad of block_height on flat ground (sharp edges), for jacking
+##          one wheel: the warp / cross-weight test of the suspension (P2-03).
 ##   VOID   nothing to hit.
 ## CREST and DITCH share one symmetric profile table: slope is integrated from an analytic
 ## curvature (CREST) or slope (DITCH) function, and evaluated by cubic Hermite interpolation.
 
-enum Shape { FLAT, CREST, BOWL, VOID, PLANE, DITCH, STEP }
+enum Shape { FLAT, CREST, BOWL, VOID, PLANE, DITCH, STEP, BLOCK }
 
 const PROFILE_STEP = .05
 ## Ray-march samples before bisection in contact().
@@ -50,10 +52,23 @@ var ditch_fillet = .5
 var step_x = 0.0
 var step_height = .05
 var step_width = 0.0
+## BLOCK: centre, half extents in x and z, and height.
+var block_center = Vector2.ZERO
+var block_half = Vector2(.3, .3)
+var block_height = .03
 
 
 static func flat():
 	return new()
+
+
+static func block(cx, cz, half_x, half_z, rise):
+	var s = new()
+	s.shape = Shape.BLOCK
+	s.block_center = Vector2(cx, cz)
+	s.block_half = Vector2(half_x, half_z)
+	s.block_height = rise
+	return s
 
 
 static func crest(apex_x, radius, plateau, ramp):
@@ -219,6 +234,9 @@ func height(x, z):
 			if step_width <= 0:
 				return step_height if x >= step_x else 0.0
 			return step_height * smoothstep(step_x, step_x + step_width, x)
+		Shape.BLOCK:
+			var inside = absf(x - block_center.x) <= block_half.x and absf(z - block_center.y) <= block_half.y
+			return block_height if inside else 0.0
 		Shape.VOID:
 			return -1e6
 	return 0.0

@@ -10,17 +10,17 @@ PASS  gt 0-100 km/h 4.46 s (baseline 4.48, -0.4%)
 PASS  gt 100-0 km/h 29.4 m (baseline 29.5, -0.3%), peak dive 0.59°
 PASS  gt skidpad 1.74 g (baseline 1.75, -0.6%), body roll 0.93°
 PASS  f296gt3 0-100 km/h 4.12 s (baseline 4.12, -0.1%)
-PASS  f296gt3 100-0 km/h 28.5 m (baseline 28.7, -0.9%), peak dive 0.55°
+PASS  f296gt3 100-0 km/h 28.5 m (baseline 28.7, -0.8%), peak dive 0.55°
 PASS  f296gt3 skidpad 1.97 g (baseline 1.99, -1.2%), body roll 0.81°
 PASS  gt leaves a R=200 m crest at 160.6 km/h; theory sqrt(gR) = 159.5 km/h (ratio 1.007)
-PASS  gt at 1.15x: airborne 2.83 s, lands and settles (contacts 4, |ω| 0.000 rad/s after landing)
+PASS  gt at 1.15x: airborne 2.44 s, lands and settles (contacts 4, |ω| 0.000 rad/s after landing)
 PASS  f296gt3 tumbling 3 s in free flight: |ΔL|/|L| 0.0002, ΔE -0.0000 (gyroscopic term)
 PASS  f296gt3 on a 20° bank at design speed 68.0 km/h: sum of |tyre lateral| 4.0% of mg, path error 0.52 m, body 20.0° from vertical (0.06° from road normal)
-PASS  roadster dropped 1 m at 50 km/h: peak tyre load 8.6 x static, settled 1.31 s after touchdown (limit 2 s)
+PASS  roadster dropped 1 m at 50 km/h: peak tyre load 5.6 x static, settled 0.95 s after touchdown (limit 2 s)
 PASS  gt dropped 1 m at 50 km/h: peak tyre load 10.2 x static, settled 0.42 s after touchdown (limit 2 s)
-PASS  f296gt3 dropped 1 m at 50 km/h: peak tyre load 12.9 x static, settled 0.40 s after touchdown (limit 2 s)
-PASS  two identical 60 s runs end in the same full-state hash (d4d0d712c338)
+PASS  f296gt3 dropped 1 m at 50 km/h: peak tyre load 12.0 x static, settled 0.40 s after touchdown (limit 2 s)
+PASS  two identical 60 s runs end in the same full-state hash (d9145e94a943)
 PASS  ray across a hump with both ends above it hits the first crossing (0.3675 m, want 0.3675 m)
-PASS  cost 60.0 µs per tick on flat (budget 300 µs)
-PASS  cost 217.2 µs per tick on crest (budget 300 µs)
-SPIKE RESULTS {"checks":23,"failures":[],"results":{"bowl_lateral_share":0.040110311408044,"crest_takeoff_ratio":1.00703125,"flat":{"f296gt3":{"accel":4.11666666666675,"brake":28.45458984375,"lat_g":1.96679626181859,"pitch":0.553003379446782,"roll":0.814256820654858},"gt":{"accel":4.46250000000007,"brake":29.4034423828125,"lat_g":1.73995043753854,"pitch":0.594695665490544,"roll":0.9297701045699},"roadster":{"accel":8.23749999999985,"brake":42.2908935546875,"lat_g":0.71559755813342,"pitch":2.66704222254299,"roll":2.4051717542761}},"flight_dL":0.000247358422845243,"us_per_tick_crest":217.239166666667,"us_per_tick_flat":59.9747916666667}}
+PASS  cost 82.4 µs per tick on flat (budget 300 µs)
+PASS  cost 254.4 µs per tick on crest (budget 300 µs)
+SPIKE RESULTS {"checks":23,"failures":[],"results":{"bowl_lateral_share":0.0401102153269694,"crest_takeoff_ratio":1.00703125,"flat":{"f296gt3":{"accel":4.11666666666675,"brake":28.4705810546875,"lat_g":1.96679618554539,"pitch":0.553007595150519,"roll":0.814256553823649},"gt":{"accel":4.46250000000007,"brake":29.403076171875,"lat_g":1.73995101606193,"pitch":0.594700254771098,"roll":0.929770531512936},"roadster":{"accel":8.23749999999985,"brake":42.2906494140625,"lat_g":0.715597452103256,"pitch":2.6670381627206,"roll":2.4051125783211}},"flight_dL":0.000247358422845243,"us_per_tick_crest":254.434166666667,"us_per_tick_flat":82.3614583333333}}
