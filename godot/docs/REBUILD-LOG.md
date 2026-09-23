@@ -108,6 +108,3 @@ Resolved regression and review findings on `rb/P1-remove-editor`:
    - Windowed features: `.\tools\Godot.exe --path . -- --features` (exit 0, 212 checks, 0 failures, stderr contains ONLY the 644-byte input event duplicate warning from `showcase_benchmark.gd:134`, zero RID or ObjectDB leak lines).
    - Re-exported executable: `cmd /c "tools\Godot.exe --headless --path . --export-release ""Windows Desktop"" build\RacingSim.exe"` (clean export).
    - Exported features: `.\build\RacingSim.exe -- --features` (exit 0, 212 checks, 0 failures, stderr 0 bytes / empty).
-
-
-
