@@ -1120,3 +1120,23 @@ Sol is out of usage, so Claude assembled one branch for the owner to merge on Gi
 Reviews (Claude): F-P3-03 approve (runoff via RoadBuilder.side(), drive test prev_pos, preload removed, no conflict marker); scenery-kit approve on its gates; P4-01 approve with follow-ups F-P4-01 (Esc quits the app on the v2 path; WallContact not called; trackgen excluded from export). Claude's own P4-03, workflow and P4-07 are merged before review; Sol reviews them after (R-P4-03, R-WF, R-P4-07).
 
 Gates `run_gates.ps1 -All`: 36/39 pass in 147 s. The 3 laps rows fail only on known items: stderr carries the Spa RoadPath bank-twist warning (F-P6-01), and "spa roadster simulation" does not finish (P4-07b). All proving-ground laps pass. Windowed `-- --features`: 212 checks, 0 failures, stderr empty.
+
+## 2026-09-23  DONE P4-07b bot robustness  (Claude Opus 5.5) — branch `rb/P4-07b` (on `rb/merge-train`)
+All 12 laps (proving ground and Spa × 3 cars × Simulation/Simcade) are clean: zero off-track wheel-ticks, zero wall contacts, at most 2.1 m off the line (proving ground now 1.1-1.2 m, was 1.3-2.1). New baseline in `docs/rebuild/laps-v2-baseline.json`, including Spa:
+
+| | proving ground sim / simcade | Spa sim / simcade |
+|---|---|---|
+| f296gt3 | 60.52 / 58.82 s | 190.32 / 185.31 s |
+| gt | 61.79 / 60.55 s | 190.93 / 187.75 s |
+| roadster | 79.13 / 77.58 s | 245.23 / 240.70 s |
+
+Proving-ground laps are 6-9 % faster than the P4-07 baseline, because the old plan was slow by accident. What changed, and why (`scripts/vehicle/bot_driver.gd`):
+- **Curvature over ±8 m of line** (was ±6 baked points, ~4 m). The short chord read Curve3D's centimetre bake jitter as curvature, making the plan conservative at random, and on Spa's polyline line it read zero between vertices and spikes at them.
+- **Grip measured, not assumed: `grip_curve()`.** Honest curvature exposed that the plan's grip model (tireMu with downforce and load sensitivity) overstates what the cars reach. A steady-state skidpad on flat tarmac gives roadster 0.84-0.87 of the model, GT 0.81-0.86, 296 0.77-0.81, which is why "pace 0.85" put the GT and 296 at or past their limit. Tyre temperature was ruled out (near optimum, >= 0.97). The front axle saturates first, and lateral load transfer with load sensitivity and drive both cost grip. The bot now runs a copy of the car (same preset, setup, handling model and aids) round a virtual skidpad at 15/30/45 m/s when it is built. The plan scales its grip by measured/model by speed. Results are cached per configuration (static), about 1 s of simulation per car the first time. `pace` (0.85) is now a fraction of the car's real limit.
+- **Yaw damping** (0.15 rad of steer per rad/s over the pursuit arc's yaw rate). Pure pursuit sees only heading, so the aid-free GT pendulumed out of a direction change on the proving ground.
+- **Throttle released with body slip, like the brake (3-8 deg).** The aid-free GT spun on full throttle out of a corner.
+- Kept from the review: friction-circle braking, lifting (not braking) when wide, the brake slip release.
+
+`trackgen/spa.gd` `add_bot_line`: Catmull-Rom handles (P6-01 review item 1). The line is now a smooth curve, not a polyline. Laps are 1-2 s faster and still clean. **The committed `tracks3d/spa/spa.scn` still has the old line.** Anything that loads the generator (laps, the dev drive scene's bake-on-load cache) gets the new one. F-P6-01 regenerates the scene.
+
+Gates (`run_gates.ps1`, affected): all pass except known items. The laps stderr is the Spa bank-twist warning (F-P6-01). The terrain timing check read 671 µs under parallel load and passes alone at 168 µs (queued as F-terrain-perf).

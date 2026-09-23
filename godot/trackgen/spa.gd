@@ -347,7 +347,16 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 			speeds[i] = minf(speeds[i], sqrt(speeds[previous] * speeds[previous] + 8.0 * ds))
 	for i in speeds.size():
 		speeds[i] *= 3.6
-	curve.add_point(curve.get_point_position(0))
+	# Catmull-Rom handles so the line is smooth through each point rather than a polyline that turns
+	# only at points ~10 m apart (Claude's P6-01 review).
+	var count = curve.point_count
+	for k in count:
+		var tangent = (
+			(curve.get_point_position((k + 1) % count) - curve.get_point_position(posmod(k - 1, count))) / 6.0
+		)
+		curve.set_point_in(k, -tangent)
+		curve.set_point_out(k, tangent)
+	curve.add_point(curve.get_point_position(0), curve.get_point_in(0))
 	timing.append(asset.length)
 	speeds.append(speeds[0])
 	path.curve = curve
