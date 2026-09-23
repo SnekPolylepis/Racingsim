@@ -31,8 +31,7 @@ All paths below are relative to `godot/`.
 | `scripts/collisions.gd` | Planar contact response and moving cones | Barrier/cone physics |
 | `scripts/race.gd` | Start/checkpoints, validity, time, ghost recording/playback/delta | Timing and ghost logic |
 | `scripts/controls.gd` | Bindings, held inputs, ramps, controller polling | Input behavior/remapping |
-| `scripts/editor.gd` | 2D canvas, tools, properties, undo/redo, dirty state | Editor interaction |
-| `scripts/interface.gd` | CanvasLayer, toolbar, modal screens, dialogs, Help | Menus/layout and player-facing actions |
+| `scripts/interface.gd` | Modal screens, dialogs, Help | Menus/layout and player-facing actions |
 | `scripts/instruments.gd` | HUD, minimap, debug, 600-sample graph | Instrument presentation |
 | `scripts/visuals.gd` | Procedural meshes/materials/scenery and model poses | 3D appearance without changing physics |
 | `scripts/ferrari_296.gd` | Dedicated 296 GT3 body, aero, glazing, livery and racing wheels | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
@@ -44,12 +43,11 @@ All paths below are relative to `godot/`.
 | `tracks/*.json` | Three bundled circuit documents | Shipped circuit geometry |
 | `tests/laps.gd` | Roadster bot laps on Monza and Spa | Track/physics regression |
 | `tests/handling.gd` | Native-only handling layer, interpolation blend, checkpoint reasons, auto barriers, sectors | Curb/tire-temp/aligning-torque/steering/barrier/timing changes |
-| `tests/import.gd` | GPX/GeoJSON/OSM outline import on synthetic files | Importer changes |
 | `tests/track3d.gd` | Ribbon frames, rotational banking, curvature split, overpass decks, cross-section profiles and plan-view parity | Ribbon geometry changes |
 | `tests/airborne.gd` | Takeoff, zero tyre load in flight and landing compression over a synthetic crest; reports Nordschleife crest sharpness | Airborne state, vertical curvature or normal-force changes |
 | `tests/karussell.gd` | Drives the Caracciola-Karussell against a flat control: road deviation, chassis roll and corner unloading | Suspension travel, cross-section or profile changes |
 | `tests/validation.gd`, `tests/showcase_laps.gd` | Spatial validation equivalence and 296/Spa laps, including digital intervention | Track validation and showcase regression |
-| `scripts/retro_renderer.gd` | World/UI, glow, GPU history and field-composition viewports | Authentic UI shares output filtering; Sharp UI optional; editor stays native |
+| `scripts/retro_renderer.gd` | World/UI, glow, GPU history and field-composition viewports | Authentic UI shares output filtering; Sharp UI optional |
 | `scripts/front_end.gd` | Boot/title/attract, race/car/circuit/loading/grid, pause/results/replay | Console screen flow and input focus |
 | `scripts/showcase_driver.gd`, `scripts/showcase_benchmark.gd`, `scripts/showcase_review.gd` | Input-only driving, full flow/performance and repeatable comparison captures | Isolated source/export acceptance |
 | `scripts/record_writer.gd` | Serial background atomic record/sector saves | Flush before read/import/delete/shutdown; immutable completed samples |
@@ -57,7 +55,6 @@ All paths below are relative to `godot/`.
 | `data/simcade.json` | Shared Simcade and ASM constants; optional per-car `simcade` overrides | Handling tuning; dynamics targets required |
 | `scripts/night_style.gd` | After-dark floodlights, depth-tested halos/streaks and pit accents | PS2-inspired circuit presentation only |
 | `scripts/circuit_world.gd` | Heightfield terrain, textured road/verge/curb meshes, gravel mask, barriers, furniture and named landmarks | Circuit look |
-| `scripts/outline_import.gd` | Real-circuit outline import (GPX, GeoJSON, OSM) to a track document | Importer |
 | `shaders/*.gdshader`, `assets/textures/` | Road, ground and painted-concrete shaders; CC0 texture sets | Surface look |
 | `.github/workflows/macos-native.yml` | CI: macOS universal export, headless regressions and ZIP artifact | Mac packaging/test automation |
 | `.github/workflows/native-tests.yml` | CI: formatting, headless suites and the rendered feature suite on Linux | Test automation |
@@ -70,9 +67,7 @@ All paths below are relative to `godot/`.
 
 **New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; connect it in `interface.gd`; apply it in `apply_settings()` or the relevant consumer. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
 
-**New editor tool:** extend `TOOLS`, `press`, `motion`, and `finish_gesture`; wrap document mutations in `begin_change()` / `commit_change()`. Update drawing, hit testing, properties and keyboard access as appropriate. New object types also need storage validation, visuals and collision behavior. Test undo, redo, release outside the canvas, save/load and test-drive return.
-
-**New geometry rule:** edit `track.gd` and rebuild all derived samples after relevant mutations. Rendering, surface queries, lap checkpoints and editor hit testing depend on these samples. Reset cached wheel sample hints through a car reset when changing live circuits.
+**New geometry rule:** edit `track3d.gd` and rebuild all derived samples after relevant mutations. Rendering, surface queries and lap checkpoints depend on these samples. Reset cached wheel sample hints through a car reset when changing live circuits.
 
 **New graphics:** ground, road, verges, curbs, barriers and trackside furniture are built by `circuit_world.gd`; cars, trees, labels and user objects by `visuals.gd`. Place anything on the ground with `world.ground_height(x,y)` (road plane on the road, verge blend, then terrain). Camera/environment and lighting presets live in `game.gd`; world rendering and glow/dither/history live in `retro_renderer.gd`. The same screen shaders run under OpenGL. Medium and High quality enable directional shadows; Native alone can opt into MSAA. SSAO/SSR/FXAA are disabled. Textures live in `assets/textures` (CC0, see its README) and are sampled by the shaders in `shaders/`. Use MultiMesh for anything repeated per metre of track. In a rotated `Basis`, scale with `basis*Basis.from_scale(v)`; `Basis.scaled(v)` scales in the parent frame and shears rotated shapes. Keep asset generation outside the physics step.
 
@@ -102,6 +97,6 @@ Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac
 
 ## PS2-era art direction (2026-09-21)
 
-Start with [ART-DIRECTION.md](ART-DIRECTION.md) for the shared world/UI output chain and editor exemption, resolution modes, palettes, materials, body winding and screenshot/timing matrix. Startup defaults are Spa-Francorchamps and f296gt3; maintain UI picker consistency if changing them. `--compare --round=N` captures the full matrix; `--features` includes both input-driven full laps; `--performance` measures all six lighting/resolution cases for the selected backend.
+Start with [ART-DIRECTION.md](ART-DIRECTION.md) for the shared world/UI output chain, resolution modes, palettes, materials, body winding and screenshot/timing matrix. Startup defaults are Spa-Francorchamps and f296gt3; maintain UI picker consistency if changing them. `--compare --round=N` captures the full matrix; `--features` includes both input-driven full laps; `--performance` measures all six lighting/resolution cases for the selected backend.
 
 `car.simcade_enabled` selects the handling model. Models instantiated by historical headless tests default to Simulation; game settings default to Simcade. Always set the intended model explicitly in new harnesses. Handling enters record identity; time of day and renderer settings do not.
