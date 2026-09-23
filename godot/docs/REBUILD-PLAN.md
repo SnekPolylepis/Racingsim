@@ -37,6 +37,7 @@ A racing sim where the car is a real body in 3D space driving on real 3D surface
   - (A) keeps determinism, lets headless tests step manually at full speed, and keeps the semi-implicit "need" clamps exact.
   - (B) gets wall/object collision for free but gives up manual stepping and adds a tick of force lag.
   - Spike task P2-00 confirms (A) before P2-03 commits to it.
+  - **P2-00 done 2026-09-22: recommends (A)** (22/22 checks; see the log). Awaiting owner sign-off and cross-model review.
 - **D7. First track.** **A short proving-ground circuit (invented, ~2–3 km, with a bowl, crest, compression, off-camber and a ditch) → Spa → Nordschleife.** Monza is optional later.
 - **D8. Handling models.** **Keep both Simulation and Simcade.** Simcade gets retuned after P2 because its targets were tuned on the old solver.
 - **D9. Coordinates.** **Switch the simulation to Godot-native world space** (see §5.1). Rendering stops doing the `(x,y,h)→(x,h,y)` remap.
@@ -121,10 +122,10 @@ TrackAsset (Node3D, track_asset.gd)
 | Flat equivalence | `tests/v2/flat_equivalence.gd` on `TestSurface.flat` | Tyre peaks exact. 0–100, 100–0, 60 m skidpad and top speed within ±3% of baseline, per car, per handling model |
 | Determinism | same 60 s scripted input, twice | bit-identical final state hash |
 | Energy | flat, no aero, no rolling resistance, free-rolling coast 10 s | \|ΔKE\| < 0.5% |
-| Banked bowl | radius R, bank θ, at v = √(gR·tanθ), zero steer | holds the line within 1 m over one lap; tyre lateral force < 5% of mg |
+| Banked bowl | radius R, bank θ, at v = √(gR·tanθ), steering to follow the circle (a turning car needs its kinematic steer angle even with zero lateral force) | path error < 1.5 m; tyre lateral force < 5% of mg; body roll = bank ± 1.5° |
 | Crest | circular crest of radius R, no downforce | leaves the ground at v = √(gR) ± 3%; stays down at 0.9× that speed |
 | Flight | airborne with initial spin, no contact | angular momentum conserved within 1% (tests the gyroscopic term) |
-| Landing | 1 m drop at 50 km/h | no NaN; suspension bottoms into the bump stop; settles within 2 s |
+| Landing | 1 m drop at 50 km/h, in neutral (an automatic downshift while coasting would add an engine-braking pitch) | no NaN; settles within 2 s (heave within 1 cm, vertical speed and pitch/roll rates near zero) |
 | Wall/ditch | 37° concrete wall, 150 km/h | the car rides it stably; roll follows the surface; no tunnelling |
 | Barrier | 300 km/h head-on into a wall | no pass-through (port of the existing handling test) |
 | Performance | car step on a TrackSurface | ≤ 0.3 ms mean per tick on the dev PC (RTX 4080 box) |
