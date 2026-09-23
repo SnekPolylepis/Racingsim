@@ -14,6 +14,32 @@ extends SceneTree
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const TestSurface = preload("res://scripts/surface/test_surface.gd")
 const DT = 1.0 / 240
+
+
+## Two horizontal drivable decks close enough for the lifted ray to see both.
+class NearDeckSurface:
+	extends RefCounted
+	var upper_y: float
+
+	func _init(height: float):
+		upper_y = height
+
+	func contact(origin: Vector3, direction: Vector3, max_dist: float, hint: int = -1) -> Dictionary:
+		if direction.y >= 0:
+			return {}
+		for y in [upper_y, 0.0]:
+			var d = (origin.y - y) / -direction.y
+			if d >= 0 and d <= max_dist:
+				return {
+					"point": origin + direction * d,
+					"normal": Vector3.UP,
+					"distance": d,
+					"surface": 0,
+					"hint": hint
+				}
+		return {}
+
+
 var presets
 var failures = []
 var checks = 0
@@ -198,6 +224,30 @@ func ray_lift():
 	)
 
 
+## A nearby upper deck must not be selected as the wheel road when a lower deck is in reach.
+func close_decks():
+	var flat = make("f296gt3")
+	flat.place(Vector3.ZERO, 0.0, 0.0)
+	var under = make("f296gt3")
+	under.place(Vector3.ZERO, 0.0, 0.0)
+	var mount_y = under.pos_y + under.mount[0].y
+	var decks = NearDeckSurface.new(mount_y + .2)
+	flat.input = inp(0, 0, 0)
+	under.input = inp(0, 0, 0)
+	flat.step(DT, TestSurface.flat(), true)
+	under.step(DT, decks, true)
+	var worst = 0.0
+	for i in 4:
+		worst = maxf(worst, absf(under.wheels[i].load - flat.wheels[i].load))
+	check(
+		under.contacts == 4 and worst < 1.0,
+		(
+			"a deck 0.2 m above the mount does not replace the lower road: 4 contacts, max load delta %.3f N"
+			% worst
+		)
+	)
+
+
 ## Drop the car 0.8 m onto flat ground inverted, and 0.3 m onto its left side, and let it settle.
 func body_drops():
 	for case in ["roof", "side"]:
@@ -247,6 +297,8 @@ func ditch_rollover():
 	c.place_on(s, 0.0, 0.0, 0.0)
 	c.launch(80 / 3.6)
 	var sunk = 0
+	var deepest_body = 0.0
+	var deepest_vertical = 0.0
 	var peak = 0.0
 	var tilt = 0.0
 	var ok = true
@@ -258,6 +310,11 @@ func ditch_rollover():
 		c.step(DT, s, true)
 		if c.pos_y < s.height(c.pos_x, c.pos_z) - .05:
 			sunk += 1
+		for pt in c.body_points:
+			var world = c.pos + c.basis() * pt
+			var vertical = s.height(world.x, world.z) - world.y
+			deepest_vertical = maxf(deepest_vertical, vertical)
+			deepest_body = maxf(deepest_body, vertical * s.normal(world.x, world.z).y)
 		for w in c.wheels:
 			peak = maxf(peak, w.load / (c.p.mass * 9.81 / 4))
 		tilt = maxf(tilt, rad_to_deg(Vector3.UP.angle_to(c.basis().y)))
@@ -265,10 +322,10 @@ func ditch_rollover():
 			ok = false
 			break
 	check(
-		ok and sunk == 0 and peak < 30,
+		ok and sunk == 0 and deepest_body < .15 and peak < 30,
 		(
-			"P2-02's runaway ditch weave: max tilt %.0f°, CG below the surface on %d ticks, peak tyre load %.1f x static (was 319x and a fall-through)"
-			% [tilt, sunk, peak]
+			"P2-02's runaway ditch weave: max tilt %.0f°, CG below surface on %d ticks, deepest body point %.3f m normal / %.3f m vertical, peak tyre load %.1f x static (was 319x)"
+			% [tilt, sunk, deepest_body, deepest_vertical, peak]
 		)
 	)
 
@@ -297,6 +354,7 @@ func _initialize():
 		warp(key, false)
 	arb_through_lifted_wheel()
 	ray_lift()
+	close_decks()
 	body_drops()
 	ditch_rollover()
 	no_body_in_normal_driving()

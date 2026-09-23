@@ -191,6 +191,14 @@ func step(dt, surface, automatic = true):
 		var hit = surface.contact(
 			top + up * RAY_LIFT, -up, RAY_LIFT + free_length[i] + p.wheelR, wheels[i].sIdx
 		)
+		var ray_offset = RAY_LIFT
+		# If the first hit is above the mount, check for a lower deck inside wheel reach. A raised
+		# road still needs the lifted ray, but a close overhead deck must not replace the road below.
+		if not hit.is_empty() and hit.distance < RAY_LIFT:
+			var lower = surface.contact(top, -up, free_length[i] + p.wheelR, wheels[i].sIdx)
+			if not lower.is_empty() and lower.distance > 1e-4:
+				hit = lower
+				ray_offset = 0.0
 		hits.append(hit)
 		if hit.is_empty():
 			continue
@@ -198,7 +206,7 @@ func step(dt, surface, automatic = true):
 		var top_vel = v + w_world.cross(top - here)
 		# Beyond free_length + wheel radius of compression the ground is above the mount; the bump
 		# stop then answers the real penetration, continuously.
-		comp[i] = free_length[i] - (hit.distance - RAY_LIFT - p.wheelR)
+		comp[i] = free_length[i] - (hit.distance - ray_offset - p.wheelR)
 		# Compression rate from the mount's velocity into the local tangent plane (first order: ignores
 		# the ray direction's own rotation and surface steps, which P2-06's footprint filter handles).
 		rate[i] = -n.dot(top_vel) / maxf(n.dot(up), .05)
@@ -309,8 +317,11 @@ func step(dt, surface, automatic = true):
 		n_avg = n_avg.normalized()
 		var g_tan = Vector3(0, -G, 0) - n_avg * n_avg.dot(Vector3(0, -G, 0))
 		if g_tan.length() < .02 * G:
-			var normal_v = n_avg * vel.dot(n_avg)
-			vel = normal_v + (vel - normal_v) * .96
+			var normal_speed = n_avg.x * vel_x + n_avg.y * vel_y + n_avg.z * vel_z
+			var normal_v = n_avg * normal_speed
+			vel_x = normal_v.x + (vel_x - normal_v.x) * .96
+			vel_y = normal_v.y + (vel_y - normal_v.y) * .96
+			vel_z = normal_v.z + (vel_z - normal_v.z) * .96
 			ang.y *= .96
 	pos_x += vel_x * dt
 	pos_y += vel_y * dt
