@@ -60,3 +60,25 @@ Pushed `main` and tag `pre-rebuild` to [https://github.com/SnekPolylepis/Racings
 ## 2026-09-22  CLAIM P1  (Gemini 3.8 Flash)
 Claiming Phase P1: remove the in-game circuit editor (tasks P1-01, P1-02, P1-03).
 
+## 2026-09-22  DONE P1  (Gemini 3.8 Flash)
+Removed the in-game circuit editor, outline importer, and editor workflows/bindings/UI (tasks P1-01, P1-02, P1-03).
+- Deleted files: `scripts/editor.gd`, `editor.gd.uid`, `scripts/outline_import.gd`, `outline_import.gd.uid`, `tests/import.gd`, `import.gd.uid`.
+- Scope expanded per review to include `retro_renderer.gd`, `retro_flare.gd`, `showcase_review.gd`, and `showcase_benchmark.gd` to remove live editor references.
+- In `game.gd`: removed `editing`, `editor`, `test_from_editor` variables; removed `set_editor`, `new_track`, `save_track`, `save_track_as`, `write_track_named`, `import_track_data`, `choose_outline`, `import_outline`, `start_editor`, and `rename_file`. Cleaned `choose_file` to support only setups and ghosts. Cleaned `delete_file`. Removed saved 2D track read path in `game.gd::refresh_tracks()` so user tracks are no longer listed or loaded, leaving user files untouched on disk.
+- Preserved `storage.validate_track()` in `storage.gd` to validate bundled circuits at runtime and in tests.
+- In `interface.gd`: removed top toolbar, mode button, pause menu editor entry, outline/JSON import/export/rename/delete/folder buttons. Retained dummy `track_picker` and `car_picker` properties for caller compatibility.
+- In `front_end.gd`: removed Circuit editor option from circuits page, removed editor branches in `back()`, `_draw()`, and `_process()`.
+- In `instruments.gd`: removed `app.editing` check in `_draw()`.
+- In `verification.gd`: removed editor interaction helpers (`click_editor`, `drag_editor`), removed editor test block (retaining track validation and safe name checks), updated bundled circuits check to >= 3, updated handbook chapters check to >= 7.
+- Updated documentation and play guides: `docs/PLAYER-GUIDE.md` (removed 3 editor chapters and stray mentions), `build/PLAY.txt`, `packaging/PLAY-MACOS.txt`, `docs/LLM-GUIDE.md`.
+- Formatted all modified files with `tools/python-packages/bin/gdformat.exe -l 110`.
+- All checks pass:
+  - `.\tools\Godot.exe --headless --path . --script scripts/game.gd --check-only` (exit 0, empty stderr)
+  - `tests/laps.gd`: Simulation Monza best=261.504 s (0 offSteps, 0 contacts), Spa best=325.175 s (0 offSteps, 0 contacts) (exit 0, empty stderr)
+  - `tests/handling.gd`: 23 checks, 0 failures (exit 0, empty stderr)
+  - `tests/dynamics.gd`: 36 checks, 0 failures (exit 0, empty stderr)
+  - `.\tools\Godot.exe -- --features`: 211 checks, 0 failures (exit 0)
+  - Re-exported `build/RacingSim.exe` via `Godot.exe --headless --path . --export-release "Windows Desktop" build/RacingSim.exe`
+  - Exported `./build/RacingSim.exe -- --features`: 211 checks, 0 failures (exit 0)
+- Ready for owner review and merge to main.
+
