@@ -593,3 +593,54 @@ Hardening test suites and working protocol:
 - Add timeout requirement and `.uid` sidecar commit rule to `docs/REBUILD-PLAN.md` §9.
 - Run all verification gates.
 
+## 2026-09-23  DONE test-hardening  (Gemini 3.8 Flash)
+Hardened test suites against headless `_physics_process` hangs, restored missing `.uid` sidecars, and recorded protocol rules in `REBUILD-PLAN.md` §9.
+
+1. **Hang Guard:**
+   - Copied the `tests/v2/walls.gd` guard pattern (`var ran = false`; frame wait; `if ran: print("<SUITE> RESULTS aborted by a script error (see stderr)"), quit(1), return true; ran = true`) to all other tests running in `_physics_process`:
+     - `tests/v2/road_tool.gd` ("ROAD TOOL")
+     - `tests/v2/road_tool_v2.gd` ("ROAD TOOL V2")
+     - `tests/v2/surface_backends.gd` ("BACKENDS")
+     - `tests/v2/track_asset.gd` ("TRACK ASSET")
+   - Injected-error proof (on `tests/v2/track_asset.gd` with temporary `var x = null; x.foo()` right after `ran = true`, run via `Start-Process` with 60 s timeout):
+     - Exit code: 1
+     - Duration: 0.67 s (wall time)
+     - Output line: `TRACK ASSET RESULTS aborted by a script error (see stderr)`
+     - Reverted cleanly before commit.
+
+2. **UID Sidecars:**
+   - Ran `tools/Godot.exe --headless --path . --import` with timeout.
+   - Identified and added untracked `tests/v2/suspension.gd.uid` (`uid://bx30kurm60n02`). All other scripts under `scripts/`, `tests/`, and `trackgen/` already had tracked sidecars; no existing `.uid` modified.
+
+3. **Protocol Rules in `REBUILD-PLAN.md` §9:**
+   - Rule 8: Run every Godot invocation with a timeout (`Start-Process` + `WaitForExit`, kill on timeout), and treat a timeout as a failure, not a pass.
+   - Rule 9: Commit generated `.uid` sidecars with their scripts, and never delete a tracked one to resolve a merge.
+
+4. **Verification Gates** (from `godot/` via `Start-Process` with timeouts, redirected stdout/stderr):
+   - `gdformat --check -l 110`: 4 touched files left unchanged.
+   - `--headless --path . --script scripts/game.gd --check-only`: exit 0, empty stderr.
+   - Touched suites (before / after checks, exit 0, empty stderr):
+     - `tests/v2/road_tool.gd`: 16/0 before → 16/0 after
+     - `tests/v2/road_tool_v2.gd`: 11/0 before → 11/0 after
+     - `tests/v2/surface_backends.gd`: 20,000 queries / 60,013 facets before and after
+     - `tests/v2/track_asset.gd`: 23/0 before → 23/0 after
+   - Other v2 suites (exit 0, empty stderr):
+     - `tests/v2/chassis_spike.gd`: 23/0
+     - `tests/v2/surfaces.gd`: 34/0
+     - `tests/v2/suspension.gd`: 12/0
+     - `tests/v2/walls.gd`: 8/0
+   - All 10 legacy suites (all stderr empty, stdout identical to `docs/rebuild/baseline/*.txt` after CR/LF normalization):
+     - `dynamics-simulation`: identical, exit 0, empty stderr
+     - `dynamics-simcade`: identical, exit 1 (known roadster 100-0 failure), empty stderr
+     - `handling`: identical, exit 0, empty stderr
+     - `laps-simulation`: identical, exit 0, empty stderr
+     - `laps-simcade`: identical, exit 0, empty stderr
+     - `showcase-laps`: identical, exit 0, empty stderr
+     - `airborne`: identical, exit 0, empty stderr
+     - `karussell`: identical, exit 0, empty stderr
+     - `track3d`: identical, exit 0, empty stderr
+     - `validation`: identical, exit 0, empty stderr
+   - Windowed features suite:
+     - `tools/Godot.exe --path . -- --features`: 212 checks, 0 failures, exit 0, empty stderr.
+
+
