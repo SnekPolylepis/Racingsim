@@ -770,3 +770,27 @@ Independent deep review of 72c599f after merging it with main ccb9c9c. CarModel 
 Below 0.3 m/s the static target holds laterally and holds longitudinally only when the brake locks the wheel; it fades to the slip curves by 0.6 m/s and remains inside the combined friction limit. I corrected one expression in the integration merge: the proposed code used max(abs(vwx), abs(vwy)) as speed, which kept static grip active above 0.6 m/s on a diagonal. It now uses the magnitude of the contact velocity. When unbraked, the static target leaves Fx at its slip-curve value; the friction ellipse can still reduce it when lateral hold consumes grip. No CarModel branch was changed.
 
 Final-tree gates: static_friction 6/0; the other ten v2 suites and proving_ground 25/0 as recorded above; ten legacy stdout files identical to baseline, all stderr empty; game --check-only exit 0; windowed --features 212/0. The spike's three 100-0 distances differ by -0.1835%, -0.1557% and -0.0733% (296, GT, roadster), within the requested range. Acceleration, pitch, crest and flight results remain equal; maximum absolute roll change is 9.61e-7, lateral g 2.04e-8 and bowl share 4.01e-8. Thus the DONE entry's phrase "9th-digit roll/lat g" is too narrow, but the deviations are negligible and determinism still passes. gdformat --check -l 110 and git diff --check pass. Verdict: clean with the one-line speed correction; merge P2-04, which includes revised P2-06.
+
+## 2026-09-23  DONE P2-05 section 6 gates  (Claude Opus 5.5) — branch `rb/P2-05-gates` (on `rb/P2-04-static-friction`)
+New: `tests/v2/flat_equivalence.gd` (7 checks), `tests/v2/energy_wall.gd` (4 checks), outputs `docs/rebuild/flat-equivalence-P2-05.txt`, `docs/rebuild/energy-wall-P2-05.txt`. **No source change and no tuning**: every gate passes on P2-04's CarBody as it is.
+
+Coverage of the section 6 table: **flat equivalence**, **energy** and **wall** are new here; **determinism, bowl, crest, flight and landing** were already gates in `chassis_spike.gd` (P2-00) and still pass; **barrier** (300 km/h head-on) needs car-vs-wall collision, which is P4-03.
+
+**Flat equivalence** (CarBody on `TestSurface.flat` vs the planar CarModel on a flat TrackModel, same controllers, measured live; the live CarModel's Simulation 0-100 / 100-0 / skidpad match `baseline.json` to its printed precision, so this is the baseline). Gate ±3 %; worst per row:
+
+| | 0-100 | 100-0 | skidpad | top speed |
+|---|---|---|---|---|
+| Simulation roadster | −0.05 % | −0.05 % | −0.14 % | +0.05 % |
+| Simulation gt | −0.28 % | −0.49 % | −0.52 % | +0.68 % |
+| Simulation 296 | −0.10 % | −0.86 % | −0.96 % | +0.00 % |
+| Simcade roadster | −0.15 % | −0.09 % | −0.06 % | +0.06 % |
+| Simcade gt | −0.19 % | −0.14 % | −0.00 % | +0.68 % |
+| Simcade 296 | −0.10 % | −0.75 % | +0.68 % | +0.01 % |
+
+Tyre peaks exactly equal (shared module). Both handling models gate: Simcade's steady-state and straight-line figures already match; its aids and transients (ASM, recovery) remain P2-07's, which must keep these rows green. Notes: the plan's "60 m skidpad" is not what `tests/dynamics.gd` or the baseline measure (150 m), so 150 m is used; the baseline has no top speed, so top speed (full throttle until < 0.02 m/s gain over 2 s) is compared with CarModel live.
+
+**Energy:** free-rolling coast in neutral, 10 s from 30 m/s, aero off: kinetic energy (translation, body rotation, wheel spin) plus the accounted rolling-resistance work (about 7.4 %) is conserved to **0.00006 %** for all three cars (limit 0.5 %). The surface table is read-only, so rolling resistance could not be switched off as the plan words it; accounting its work is the stricter test.
+
+**Wall:** a 37° concrete side slope at 150 km/h, steered along a line for 5 s: all four tyres down throughout, no body contact, never below the surface, off line 0.93 / 0.34 / 0.30 m (roadster / gt / 296; limit 1 m: the roadster uses 0.6 g of its 0.72 g). Body roll off the surface normal **2.15 / 0.34 / 0.27°** against the car's own skidpad roll gradient × g·sin 37° = **2.02 / 0.32 / 0.24°** (limit ±1°): the only roll is the one the tyres' lateral load explains.
+
+Gates: the new suites 7/7 and 4/4, stderr empty. No source changed, so the P2-04 gates stand (all v2 suites, the 10 legacy suites identical).
