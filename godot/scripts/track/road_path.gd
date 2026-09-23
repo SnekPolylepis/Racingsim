@@ -20,8 +20,21 @@ const GRID_SOURCE_META = "_road_path_source"
 @export var closed = true
 ## Station spacing along the road, metres (never more than 1.5, P3-00).
 @export_range(.25, 1.5, .05) var along_step = 1.5
+## Stations across the road (odd; 9 gives the P3-00 w/8). An inset ditch needs <= 0.25 m spacing,
+## e.g. 57 for a 14 m road; bake warns if it is coarser.
+@export_range(3, 201, 2) var road_stations = 9
+## Elevation keys (x = metres along the road, y = height), smooth through each key. When set they
+## replace the curve's own heights: draw the plan flat and key the profile by station.
+@export var elevation_keys = PackedVector2Array()
 @export var drives_timing = true
+@export_group("Grid")
 @export_range(0, 40) var grid_slots = 4
+## Distance of the pole slot behind the start line, spacing between slots, and their stagger either
+## side of the centreline, metres.
+@export var grid_first_m = 12.0
+@export var grid_spacing_m = 9.0
+@export var grid_offset_m = 2.0
+@export_group("")
 @export_tool_button("Bake road", "Callable") var bake_button = bake
 
 var last_bake = {}
@@ -42,15 +55,12 @@ func bake():
 	if curve == null or curve.point_count < 2:
 		push_error("RoadPath %s: draw a curve with at least two points first" % name)
 		return
-	var result = RoadBuilder.bake(working_curve(), sections, closed, along_step)
+	var result = RoadBuilder.bake(
+		working_curve(), sections, closed, along_step, road_stations, elevation_keys
+	)
 	last_bake = result
-	if result.max_twist_deg_per_m > RoadBuilder.TWIST_WARN_DEG_PER_M:
-		push_warning(
-			(
-				"RoadPath %s: bank changes %.2f deg/m at %.0f m (over %.2f). Stiff cars will lift a wheel; spread the bank change over more distance."
-				% [name, result.max_twist_deg_per_m, result.max_twist_at_m, RoadBuilder.TWIST_WARN_DEG_PER_M]
-			)
-		)
+	for warning in result.warnings:
+		push_warning("RoadPath %s: %s" % [name, warning])
 	var host = get_parent() if get_parent() != null and get_parent().has_method("record_key") else self
 	var owner_node = host.owner if host.owner != null else host
 	if Engine.is_editor_hint() and is_inside_tree() and get_tree().edited_scene_root != null:
@@ -123,7 +133,8 @@ func timing(host, result, owner_node):
 		path.set_meta("start_offset_m", 0.0)
 
 
-## Grid slots behind the start line, staggered 2 m either side of the centre, 9 m apart, 12 m back.
+## Grid slots behind the start line: pole grid_first_m back, then every grid_spacing_m, staggered
+## grid_offset_m either side of the centre, each on the road surface (crown and any ditch included).
 func slots(host, result, owner_node):
 	var grid = group(host, "Grid", owner_node)
 	# Keep authored slots and output from other roads. Only markers tagged by this path are ours.
@@ -132,11 +143,11 @@ func slots(host, result, owner_node):
 			grid.remove_child(child)
 			child.free()
 	var st = result.stations
-	var spacing = result.length / st.size()
+	var spacing = result.length / (st.size() if closed else st.size() - 1)
 	var keys = sections.duplicate()
 	keys.sort_custom(func(a, b): return a.at < b.at)
 	for k in grid_slots:
-		var back = 12.0 + 9.0 * k
+		var back = grid_first_m + grid_spacing_m * k
 		var i = (
 			posmod(-int(round(back / spacing)), st.size())
 			if closed
@@ -145,9 +156,8 @@ func slots(host, result, owner_node):
 		var station = st[i]
 		var sec = RoadBuilder.section_at(keys, station.s, result.length, closed)
 		var fr = RoadBuilder.frame(station.tangent, sec.bank_deg)
-		var lat = 2.0 if k % 2 else -2.0
-		var u = lat / (sec.width_right if lat > 0 else sec.width_left)
-		var ground = station.pos + fr[0] * lat + fr[1] * (sec.crown * (1 - u * u))
+		var lat = grid_offset_m if k % 2 else -grid_offset_m
+		var ground = station.pos + fr[0] * lat + fr[1] * RoadBuilder.road_height(sec, lat)
 		var m = Marker3D.new()
 		m.name = "Slot%d" % (k + 1)
 		m.set_meta(GRID_SOURCE_META, str(name))

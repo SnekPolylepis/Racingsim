@@ -18,6 +18,7 @@ var tris = PackedInt32Array()
 var grid = {}
 var queries = []
 var frames = 0
+var ran = false
 var results = {}
 var rng = RandomNumberGenerator.new()
 
@@ -340,6 +341,12 @@ func _physics_process(_delta):
 	frames += 1
 	if frames < 3:
 		return false
+	# If a script error aborted the previous run part-way, fail instead of retrying every frame forever.
+	if ran:
+		print("BACKENDS RESULTS aborted by a script error (see stderr)")
+		quit(1)
+		return true
+	ran = true
 	var a = bench_a()
 	var a2 = bench_a()
 	var b = bench_b()

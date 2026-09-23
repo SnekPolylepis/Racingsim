@@ -185,10 +185,10 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 - **P3-02 [TOOL]** Road plugin (`addons/road_tool/`, editor-only, excluded from export).
   - A `RoadPath` (Path3D) with cross-section keys along its length: left/right width, camber, crown, left/right kerb type and width, verge width and slope, surface type.
   - It bakes the road, kerbs and verges into render meshes plus per-surface collision.
-  - **Done 2026-09-22** (`tests/v2/road_tool.gd`): `RoadPath` (@tool Path3D with an Inspector **Bake road** button via `@export_tool_button`; no separate plugin needed), `RoadSection` keys, `scripts/track/road_builder.gd`. Bake warns when bank changes faster than 0.2°/m.
+  - **Done 2026-09-22** (`tests/v2/road_tool.gd`): `RoadPath` (@tool Path3D with an Inspector **Bake road** button via `@export_tool_button`; no separate plugin needed), `RoadSection` keys, `scripts/track/road_builder.gd`. Bake warns when bank changes faster than 0.2°/m. **v2 2026-09-22** (`tests/v2/road_tool_v2.gd`, for P5-02): SAUSAGE and RIBBED kerbs, per-side verges and a runoff band, an inset ditch (the TestSurface.ditch profile), elevation keys by station (C2 cubic spline), configurable grid slots, and a ditch-resolution warning.
   - Junctions/pit lane: out of scope for v1. Hand-model them.
 - **P3-03 [TOOL]** Terrain: import a DEM GeoTIFF/heightmap into chunked mesh terrain with collision, stitched to the verge edges of the road. No third-party GDExtension unless the owner approves it.
-- **P3-04 [TOOL]** Wall/barrier tool (armco, tyre wall, concrete) along paths with collision; scenery scatter brush (trees, fences) with MultiMesh.
+- **P3-04 [TOOL]** Wall/barrier tool (armco, tyre wall, concrete) along paths with collision; scenery scatter brush (trees, fences) with MultiMesh. **Done 2026-09-22** (`tests/v2/walls.gd`): `WallPath` (road-following or freehand; layer 2 only; wall line/height/kind metadata for P4-03), `RoadScatter` (seeded MultiMesh band beyond the verge), and `TrackAsset.validate()` now enforces the Walls contract.
 - **Gate:** a tiny test loop built entirely with the tools loads in game, times a lap and passes the Laps/Barrier/Performance rows.
 
 ### P4: Port the game to the new model
@@ -250,3 +250,5 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
    Godot.exe is a GUI-subsystem binary: run it via `Start-Process -Wait -PassThru` with redirected stdout/stderr, and **read stderr**. Exit code 0 with script errors in stderr is a failure.
 6. **Log the result:** `DONE <task-id>` with the commands run, pass/fail counts, measurements and anything left undone. Report failures as failures.
 7. Hand-off: if you stop midway, log `PAUSED <task-id>` with the exact state and next step.
+8. Run every Godot invocation with a timeout (`Start-Process` + `WaitForExit`, kill on timeout), and treat a timeout as a failure, not a pass.
+9. Commit generated `.uid` sidecars with their scripts, and never delete a tracked one to resolve a merge.

@@ -1,5 +1,6 @@
 extends RefCounted
 ## Shared steering, stability, traction control, and ABS logic.
+const VehicleTyre = preload("res://scripts/vehicle/tyre.gd")
 
 
 static func tcs_level(car):
@@ -74,7 +75,7 @@ static func stability_request(car):
 	car.asm_brakes = [0.0, 0.0, 0.0, 0.0]
 	car.asm_cut = 0.0
 	car.asm_active = false
-	var level = car.asm_level()
+	var level = asm_level(car)
 	if level <= 0 or speed < 5:
 		return
 	var forward = vx * cos(h) + vy * sin(h)
@@ -112,20 +113,20 @@ static func traction_control(car, driven, dt):
 	var tc_on = s.tcOn
 	var tc_intensity = s.tcIntensity
 	if simcade_enabled or setup.has("tcsLevel"):
-		tc_on = 1.0 if car.tcs_level() > 0 else 0.0
-		tc_intensity = car.tcs_level() / 10.0
+		tc_on = 1.0 if tcs_level(car) > 0 else 0.0
+		tc_intensity = tcs_level(car) / 10.0
 	if tc_on > .5 and speed > 1.5:
 		var max_k = 0.0
 		for i in driven:
 			max_k = maxf(max_k, wheels[i].slipRatio)
 		# Integral control toward just past the tyre's peak slip: trims harder the further over the
 		# target the driven wheels are, and hands throttle back gently once they are below it.
-		var limit = car.peak_slip_ratio() * (1.0 + .6 * (1 - tc_intensity))
+		var limit = VehicleTyre.peak_slip_ratio(car) * (1.0 + .6 * (1 - tc_intensity))
 		# Combined slip: the more the driven tyres are already working sideways, the less wheelspin
 		# they can take before the friction ellipse steals lateral grip (power oversteer).
 		var lat_use = 0.0
 		for i in driven:
-			lat_use = maxf(lat_use, absf(wheels[i].slipAngle) / car.peak_slip_angle())
+			lat_use = maxf(lat_use, absf(wheels[i].slipAngle) / VehicleTyre.peak_slip_angle(car))
 		if lat_use > .3:
 			limit *= (
 				sqrt(maxf(.04, 1 - minf(lat_use, 1) * minf(lat_use, 1))) * (.5 + .5 * (1 - tc_intensity))
@@ -148,7 +149,7 @@ static func abs_brake(car, w, i, cap, dt):
 	var asm_brakes = car.asm_brakes
 	var speed = car.speed
 	if s.absOn > .5 and (input.brake > .05 or asm_brakes[i] > 1) and speed > 2 and input.handbrake < .5:
-		var abs_limit = car.peak_slip_ratio() * (1.0 + .6 * (1 - s.absIntensity))
+		var abs_limit = VehicleTyre.peak_slip_ratio(car) * (1.0 + .6 * (1 - s.absIntensity))
 		if w.slipRatio < -abs_limit:
 			w.abs = maxf(.15, w.abs - 25 * dt)
 			car.abs_active = true

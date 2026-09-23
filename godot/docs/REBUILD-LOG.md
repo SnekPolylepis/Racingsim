@@ -470,6 +470,182 @@ Verification from the fresh `RacingSim-merge4/godot` worktree with `C:\Users\Zai
 - Windowed `--path . -- --features`: **212 checks, 0 failures**, exit 0, empty stderr, **69.17 s** wall time.
 
 The generated `tests/v2/suspension.gd.uid` was untracked and removed; no generated test file was committed. P5-02's worktree and P5-03 remain untouched.
+## 2026-09-22  CLAIM tyre-self-contained  (Gemini 3.8 Flash)
+Making `godot/scripts/vehicle/tyre.gd` self-contained with zero change in physics results.
+- Replace calls in `tyre.gd::contact_forces()` to `car.pacejka(...)`, `car.simcade_curve(...)`, `car.peak_slip_ratio()`, `car.peak_slip_angle()`, `car.sg(...)` and `car.LAT_B` with module statics/constants.
+- Delete unused `heat` local in `tyre.gd::finish_contact()`.
+- Route pure-maths calls through modules' own statics in `aids.gd` and `drivetrain.gd`.
+- Run full verification gates and interleaved A/B timing benchmark against `origin/main`.
+
+## 2026-09-22  DONE tyre-self-contained  (Gemini 3.8 Flash) — branch `rb/tyre-self-contained`
+Made `godot/scripts/vehicle/tyre.gd`, `godot/scripts/vehicle/aids.gd`, and `godot/scripts/vehicle/drivetrain.gd` self-contained with character-for-character arithmetic equivalence and zero physics drift.
+- `tyre.gd`:
+  - Added local static `sg(v)` matching `car.gd:sg`.
+  - In `contact_forces()`, replaced callbacks through `car.*` (`car.pacejka`, `car.LAT_B`, `car.simcade_curve`, `car.peak_slip_ratio()`, `car.peak_slip_angle()`, `car.sg()`) with module statics and constants (`pacejka`, `LAT_B`, `simcade_curve`, `peak_slip_ratio`, `peak_slip_angle`, `sg`).
+  - In `finish_contact()`, deleted the unused `heat` local calculation (Finding 3).
+- `aids.gd`:
+  - Preloaded `VehicleTyre = preload("res://scripts/vehicle/tyre.gd")`.
+  - Replaced `car.asm_level()` with `asm_level(car)`.
+  - In `traction_control()`, replaced `car.tcs_level()` with `tcs_level(car)`, `car.peak_slip_ratio()` with `VehicleTyre.peak_slip_ratio(car)`, and `car.peak_slip_angle()` with `VehicleTyre.peak_slip_angle(car)`.
+  - In `abs_brake()`, replaced `car.peak_slip_ratio()` with `VehicleTyre.peak_slip_ratio(car)`.
+- `drivetrain.gd`:
+  - Added local static `sg(v)`.
+  - In `step()`, replaced `car.request_shift(1)` / `car.request_shift(-1)` with `request_shift(car, 1)` / `request_shift(car, -1)`.
+  - Replaced `car.axle_split(...)` with module static `axle_split(car, ...)`.
+  - Replaced `car.sg(w.omega)` with local static `sg(w.omega)`.
+- `car.gd`: Left all public wrappers untouched for compatibility with callers outside `scripts/vehicle/`.
+- `car_body.gd`: Untouched. Automatically benefits from the eliminated dispatch overhead.
+- Formatted modified files with `tools/python-packages/bin/gdformat.exe -l 110`. `git diff --check` passed clean.
+
+Verification gates:
+- `--headless --path . --script scripts/game.gd --check-only`: exit 0, stderr empty (0 bytes).
+- All 10 legacy suites: stdout bit-for-bit identical to `docs/rebuild/baseline/*.txt` (CR/LF normalized), stderr empty (0 bytes). Nine exit 0; `dynamics-simcade` exits 1 with the known roadster 100-0 braking failure.
+- `tests/v2/chassis_spike.gd`: exit 0, stderr empty (0 bytes), 23 checks / 0 failures. Identical to `spike-P2-00.txt` masking only cost lines; hash `d4d0d712c338` identical.
+- `tests/v2/surfaces.gd`: exit 0, stderr empty (0 bytes), 34 checks / 0 failures.
+- `tests/v2/track_asset.gd`: exit 0, stderr empty (0 bytes), 23 checks / 0 failures.
+- `tests/v2/suspension.gd`: exit 0, stderr empty (0 bytes), 11 checks / 0 failures.
+- Windowed `--path . -- --features`: exit 0, stderr empty (0 bytes), 212 checks / 0 failures, 69.48 s wall time.
+
+Performance benchmark:
+4 interleaved A/B runs of `tests/v2/chassis_spike.gd` (A = `origin/main` worktree at `2f2883d`, B = `rb/tyre-self-contained`):
+- Run 1: A flat 79.9 µs, crest 246.4 µs | B flat 67.4 µs, crest 225.8 µs
+- Run 2: A flat 76.4 µs, crest 242.4 µs | B flat 69.2 µs, crest 240.7 µs
+- Run 3: A flat 77.9 µs, crest 252.0 µs | B flat 71.6 µs, crest 254.9 µs
+- Run 4: A flat 77.7 µs, crest 257.1 µs | B flat 68.9 µs, crest 235.9 µs
+Medians:
+- A (origin/main): flat median 77.8 µs (spread 76.4–79.9 µs), crest median 249.2 µs (spread 242.4–257.1 µs)
+- B (tyre-self-contained): flat median 69.1 µs (spread 67.4–71.6 µs), crest median 238.3 µs (spread 225.8–254.9 µs)
+- Delta (B − A): flat −8.8 µs (−11.2 %), crest −10.9 µs (−4.4 %)
+Recovers ~8.8 µs per tick on flat ground, eliminating over half of the +13 µs vehicle module extraction overhead.
+
+## 2026-09-22  DONE P3-02b road tool v2  (Claude Opus 5.5) — branch `rb/P3-02b-road-tool-v2` (on `rb/P3-02-road-tool`)
+Built for Sol's P5-02 proving-ground design, whose cross-sections the v1 tool could not express. Changed: `road_section.gd`, `road_builder.gd`, `road_path.gd`. New: `tests/v2/road_tool_v2.gd` (12 checks), output `docs/rebuild/road-tool-v2-P3-02b.txt`. The v1 suite (`road_tool.gd`) still passes 15/15 unchanged: the new fields default to v1 behaviour.
+
+New in the tool:
+- **Kerbs:** `SAUSAGE` (rounded hump, h·sin(πf)) and `RIBBED` (rises to kerb_height in its first quarter, then transverse ridges of `rib_height` every `rib_pitch`, built as geometry by subdividing the kerb band along the road at a quarter pitch; the ridges vanish at both band edges, so the extra vertices lie on the neighbouring strips' edges). The kerb band now has 4 stations.
+- **Verges:** `verge_surface_left/right` (−1 = shared `verge_surface`) and a `runoff_left/right` band of `runoff_surface` (default 4, tarmac runoff) between kerb and verge.
+- **Inset ditch:** `ditch` (0..1 depth factor, eased, so keys taper it), `ditch_offset`, `ditch_floor`, `ditch_wall`, `ditch_angle_deg`, `ditch_fillet`. The same profile as `TestSurface.ditch()`, in closed form. Needs fine road stations: `RoadPath.road_stations` (odd; 9 = v1's w/8). Bake warns when the ditch is sampled coarser than 0.25 m laterally.
+- **Elevation keys:** `RoadPath.elevation_keys` (station, height) replace the curve's own heights with an interpolating **cubic spline** (natural ends when open, periodic when closed), so the plan is drawn flat and the profile keyed by station. C2, so vertical curvature never steps at a key.
+- **Grid:** `grid_first_m`, `grid_spacing_m`, `grid_offset_m`; slot heights now include any ditch.
+- Warnings are returned in `bake().warnings` (RoadPath pushes them), so tests can check them without writing to stderr.
+
+Results (12/12, stderr empty):
+- SAUSAGE hump within 0.4 mm of 9 cm·sin(πf); RIBBED base 9 cm, ridges 7.9 mm (8 mm keyed), 4 per 2 m (0.5 m pitch); runoff 4 for 10 m then gravel on the right, grass on the left.
+- **Ditch within 2.2 mm of `TestSurface.ditch()` across the whole road** (57 stations over 14 m), walls 37.00°, depth 1.2057 m (analytic 1.2057), 15 m taper at 0 / half / full depth. Warning fires with 9 stations and not with 57.
+- The **296 drives into the ditch, 150 m along its floor and out**: lowest ride −1.215 m (floor −1.206 m), stays on tarmac.
+- Elevation: passes through all 8 P5-02 keys within 3.2 mm; curvature jump at keys ≤ 0.00001 1/m (C2); keys sampled every 20 m from a true R 130 m crest give **R 129.5 m** at the apex.
+- Grid slots at 35.6 / 75.7 / 114.3 / 154.4 m behind the start (35/75/115/155; within station spacing), staggered ±3.0 m.
+- Also: parse clean; track_asset 23/23; spike 23/23; editor load clean.
+
+**For P5-03 (Sol), from building P5-02's own numbers:**
+1. **The crest keys as written give apex R ≈ 86 m, not 130 m** (≈ 102 m averaged over ±10 m). The approach keys (18 m at s 1006 to 25.46 m at s 1095) average an 8.4 % grade, but an R 130 m arc is at 15.4 % 20 m before its apex, so no smooth profile can honour both, and every interpolant tightens the crest. With P5-02's own formula, v² (1/R − ρ(clAF + clAR)/(2m)) = g, the 296 would unload at roughly **115–127 km/h instead of ~148**. Re-key the approach (steeper final grade, or more keys along the arc) and measure on the built mesh.
+2. **The 15 m ditch taper is abrupt:** 1.2 m over 15 m has a ~31 m lip radius, and the 296's front wheels went light for 0.15 s entering and leaving at 50 km/h. Consider 25–30 m tapers, or keep the challenge line slow.
+3. Tool usage for P5-02's cross-sections: ditch → `ditch`, `ditch_offset` ≈ −2 toward the corner's inside, `road_stations` ≥ 49 for a 12 m road (0.25 m); bevel kerb → RAMP 0.04 × 0.6; ribbed → RIBBED 0.045 × 0.8, rib 0.008; high sausage → SAUSAGE 0.09 × 0.6; crest/compression runoff → `runoff_*` 10 with `runoff_surface` 4; grid → `grid_first_m` 35, `grid_spacing_m` 40.
+
+Not done: walls (P3-04), terrain (P3-03), tyre footprint for kerb contact (P2-06); BotLine authoring is still manual (a Path3D named BotLine).
+
+
+
+## 2026-09-22  DONE P3-04 walls and scenery  (Claude Opus 5.5) — branch `rb/P3-04-walls` (on `rb/P3-02b-road-tool-v2`)
+New: `scripts/track/wall_builder.gd`, `scripts/track/wall_path.gd` (class `WallPath`), `scripts/track/road_scatter.gd` (class `RoadScatter`), `tests/v2/walls.gd` (8 checks), output `docs/rebuild/walls-P3-04.txt`. Changed: `road_builder.gd` (refactor: `point_at`, `station_at`, new `beyond_edge`; road suites unchanged), `track_asset.gd` (`validate()` now checks Walls/).
+
+- **WallPath:** armco (0.75 × 0.15 m), tyre wall (1.0 × 0.9), concrete (1.0 × 0.4), or custom height/thickness. **Road-following:** `follow_road`, `side`, `offset` beyond the verge's outer edge, `from_m`..`to_m` (wraps on a closed road; a whole-loop wall closes on itself). It follows the road's plan, bank and elevation, with its inner face on the road side. **Freehand:** its own curve, with the track on `track_side`. Walls stand vertical with a 0.3 m footing below their base, so there's no gap on slopes. Bakes to `Walls/<name>`: StaticBody3D on **layer 2 only**, a concave collision shape named "Collision", a visual mesh, and metadata `wall_kind`, `wall_line` (inner-face base points), `wall_outward`, `wall_height`, `wall_thickness` for P4-03.
+- **RoadScatter:** `per_100m` instances per side in a band `offset_min`..`offset_max` beyond the verge, random yaw and scale, deterministic from `random_seed`, one MultiMeshInstance3D in `Scenery/<name>` (default mesh: a low-poly conifer). No collision. Ground height beyond the verge continues the verge's fall until P3-03 terrain.
+- **TrackAsset.validate():** every `Walls/` body must be on layer 2 only and carry a known `wall_kind` (armco / tyre / concrete).
+- Nodes outside a TrackAsset bake into their own `Walls/` or `Scenery/` child, as RoadPath does.
+- Exports use `@export_enum` ints rather than enum-typed exports: a new class_name script's own enum type failed to resolve before the editor had registered the class.
+
+Results (8/8, stderr empty):
+- Freehand concrete wall: suspension rays (layer 1) pass through it; a layer-2 ray meets its face at z 50.0000 facing the track; hit at 0.95 m, clear at 1.05 m (height 1.0); end cap at x 0.0000.
+- Road-following walls: base line within **0.07 mm** of width + kerb + runoff + verge + offset on a flat analytic road (both sides, following the 3° verge) and within **0.15 mm** on a 10° banked road (raised 1.973 m on the high side).
+- Whole-loop concrete wall round the P3-02 proving loop: closes (3568 triangles for 446 points, 8 per point, no caps); validates; validation rejects a wall on layer 1 and a `wall_kind` of "hay"; the 296 laps in 52.13 s and never comes within 9.05 m of the wall line.
+- Scatter: 48 trees (24 per side per 200 m at 12/100 m), all 4–30 m beyond the verge and on the ground (height error 0.00000 m), one MultiMesh; the same seed gives the same layout, a new seed a new one.
+- Also: parse clean; track_asset 23/23; road_tool 15/15; road_tool_v2 11/11; spike 23/23; editor load registers RoadPath, RoadSection, WallPath, RoadScatter.
+
+Found and fixed while testing: an unnamed CollisionShape3D gets an auto name (`@CollisionShape3D@n`), so it is now named "Collision". The first test run **hung**: a script error inside `_physics_process` aborts before `quit()`, and Godot calls it again every frame (5 MB of stderr in 90 s). `walls.gd` now fails instead of looping if a previous run aborted. **Other v2 suites have the same exposure; worth the same guard.**
+
+**Correction to "DONE P3-02b":** road_tool_v2 has **11** gating checks, not 12 (the twelfth line is the non-gating crest PROBE). The P3-02b commit message says 12/12; the suite passes 11/11.
+
+Not done: car-vs-wall collision response (P4-03, where the §6 Barrier row's "300 km/h head-on, no pass-through" gets tested); fences as a dedicated kind (scatter any mesh meanwhile); terrain (P3-03).
+
+## 2026-09-22  NOTE P3-02b + P3-04 rebased onto Sol's fixed P3-02  (Claude Opus 5.5)
+Sol's P3-02 review fix (`b712e9d`: RoadPath re-bake replaces only its own Grid markers, tagged `_road_path_source`; road UVs in metres across (U) and along (V) the road, unwrapped at the closing seam) touched the same files that v2 rewrote. Both of my commits were replayed on `origin/rb/P3-02-road-tool` (`17245d6`), and the branches now point at the replayed commits (never pushed before, so nothing shared was rewritten):
+- `rb/P3-02b-road-tool-v2` = P3-02 fixed + v2. `road_path.gd` auto-merged (grid tagging kept alongside configurable grid spacing and ditch-aware slot height). `road_builder.gd` is the v2 builder with Sol's UV scheme ported in, including the RIBBED kerb sub-strips (U/V interpolated along each sub-row); `mesh(faces, uvs)` has Sol's signature.
+- `rb/P3-04-walls` = the above + P3-04 (applied cleanly).
+Gates on the rebased stack, stderr empty for all: `road_tool.gd` **16/16** (Sol's version, including foreign-slot preservation and UV unwrap at 891.7 m), `road_tool_v2.gd` 11/11, `walls.gd` 8/8, `track_asset.gd` 23/23, `chassis_spike.gd` 23/23, `surfaces.gd` 34/34, `--check-only` and `--editor --quit` clean, gdformat clean. Merge order for main: P3-02 (Sol's branch), then P3-02b, then P3-04.
+
+## 2026-09-23  NOTE tyre-self-contained review (GPT-6 Sol)
+Reviewed `8445c43` against `fc6bebc`. **Verdict: approve.** Every changed call passes the same arguments in the same order to the static function that its `car.gd` wrapper already forwarded to; `sg` and `LAT_B` copies are character-identical to the original definitions. The only removed arithmetic is the unused `heat` local in `finish_contact()`, with no side effect. `car.gd` has no diff, so all public wrappers remain available. No wrapper behavior beyond forwarding is bypassed. The reported −8.8 µs/tick flat improvement is Gemini's interleaved benchmark; this review did not independently re-benchmark it.
+
+## 2026-09-23  NOTE P3-02b/P3-04 review (GPT-6 Sol)
+Reviewed the rebased `c0ef2e2` and `4879f25`/`0c18864` stack on fixed P3-02 `17245d6`. **Verdict: approve.** The v2 builder keeps metre-based across/along UVs, including interpolated UVs on ribbed kerb sub-strips; RoadPath still removes only its tagged Grid slots. WallPath puts known wall kinds on layer 2 outside the road verge and records the line/height/thickness used by P4-03; RoadScatter uses seeded layout and one MultiMesh. No blocking source conflict or whitespace issue. The merged-tree road suites passed 16/0, 11/0 and 8/0 with empty stderr. Wall collision response remains P4-03; kerb heights remain provisional pending P2-06.
+
+## 2026-09-23  NOTE merge tyre-self-contained + P3-02b + P3-04 (GPT-6 Sol)
+From fresh `origin/main` `c8d610f` in an isolated worktree, merged in order `origin/rb/tyre-self-contained`, `origin/rb/P3-02b-road-tool-v2`, then `origin/rb/P3-04-walls`. The only conflicts were in `docs/REBUILD-LOG.md`; all sections were kept once in branch order. No other file conflicted. `git diff origin/main HEAD --check` passed after removing a merge-resolution blank line at EOF.
+
+Every Godot invocation used `Start-Process`, redirected stdout/stderr, and `WaitForExit(240000)` with kill on timeout, from this worktree's `godot/`. All stderr files were empty. `--headless --path . --import` and `scripts/game.gd --check-only` exited 0. V2: `road_tool.gd` 16/0, `road_tool_v2.gd` 11/0, `walls.gd` 8/0, `suspension.gd` 12/0, `chassis_spike.gd` 23/0, `surfaces.gd` 34/0, `track_asset.gd` 23/0; spike stdout matches `docs/rebuild/spike-P2-00.txt` except cost/timing. All ten legacy stdout files match `docs/rebuild/baseline/*.txt` after CR/LF normalization; nine exit 0 and dynamics Simcade exits 1 with the identical known braking failure. `--headless --editor --quit` exited 0 and the class cache lists RoadPath, RoadSection, WallPath, RoadScatter. Windowed `-- --features`: 212 checks, 0 failures, exit 0, empty stderr. Outputs are under ignored `tests/logs/merge-tyre-road-walls/`.
+
+## 2026-09-23  CLAIM test-hardening  (Gemini 3.8 Flash)
+Hardening test suites and working protocol:
+- Add physics-process hang guard pattern from `tests/v2/walls.gd` to every test suite doing work in `_physics_process`.
+- Verify the guard with temporary injected script error proof (exit 1, aborted message, no hang).
+- Add missing `.uid` sidecars under `scripts/`, `tests/`, and `trackgen/`.
+- Add timeout requirement and `.uid` sidecar commit rule to `docs/REBUILD-PLAN.md` §9.
+- Run all verification gates.
+
+## 2026-09-23  DONE test-hardening  (Gemini 3.8 Flash)
+Hardened test suites against headless `_physics_process` hangs, restored missing `.uid` sidecars, and recorded protocol rules in `REBUILD-PLAN.md` §9.
+
+1. **Hang Guard:**
+   - Copied the `tests/v2/walls.gd` guard pattern (`var ran = false`; frame wait; `if ran: print("<SUITE> RESULTS aborted by a script error (see stderr)"), quit(1), return true; ran = true`) to all other tests running in `_physics_process`:
+     - `tests/v2/road_tool.gd` ("ROAD TOOL")
+     - `tests/v2/road_tool_v2.gd` ("ROAD TOOL V2")
+     - `tests/v2/surface_backends.gd` ("BACKENDS")
+     - `tests/v2/track_asset.gd` ("TRACK ASSET")
+   - Injected-error proof (on `tests/v2/track_asset.gd` with temporary `var x = null; x.foo()` right after `ran = true`, run via `Start-Process` with 60 s timeout):
+     - Exit code: 1
+     - Duration: 0.67 s (wall time)
+     - Output line: `TRACK ASSET RESULTS aborted by a script error (see stderr)`
+     - Reverted cleanly before commit.
+
+2. **UID Sidecars:**
+   - Ran `tools/Godot.exe --headless --path . --import` with timeout.
+   - Identified and added untracked `tests/v2/suspension.gd.uid` (`uid://bx30kurm60n02`). All other scripts under `scripts/`, `tests/`, and `trackgen/` already had tracked sidecars; no existing `.uid` modified.
+
+3. **Protocol Rules in `REBUILD-PLAN.md` §9:**
+   - Rule 8: Run every Godot invocation with a timeout (`Start-Process` + `WaitForExit`, kill on timeout), and treat a timeout as a failure, not a pass.
+   - Rule 9: Commit generated `.uid` sidecars with their scripts, and never delete a tracked one to resolve a merge.
+
+4. **Verification Gates** (from `godot/` via `Start-Process` with timeouts, redirected stdout/stderr):
+   - `gdformat --check -l 110`: 4 touched files left unchanged.
+   - `--headless --path . --script scripts/game.gd --check-only`: exit 0, empty stderr.
+   - Touched suites (before / after checks, exit 0, empty stderr):
+     - `tests/v2/road_tool.gd`: 16/0 before → 16/0 after
+     - `tests/v2/road_tool_v2.gd`: 11/0 before → 11/0 after
+     - `tests/v2/surface_backends.gd`: 20,000 queries / 60,013 facets before and after
+     - `tests/v2/track_asset.gd`: 23/0 before → 23/0 after
+   - Other v2 suites (exit 0, empty stderr):
+     - `tests/v2/chassis_spike.gd`: 23/0
+     - `tests/v2/surfaces.gd`: 34/0
+     - `tests/v2/suspension.gd`: 12/0
+     - `tests/v2/walls.gd`: 8/0
+   - All 10 legacy suites (all stderr empty, stdout identical to `docs/rebuild/baseline/*.txt` after CR/LF normalization):
+     - `dynamics-simulation`: identical, exit 0, empty stderr
+     - `dynamics-simcade`: identical, exit 1 (known roadster 100-0 failure), empty stderr
+     - `handling`: identical, exit 0, empty stderr
+     - `laps-simulation`: identical, exit 0, empty stderr
+     - `laps-simcade`: identical, exit 0, empty stderr
+     - `showcase-laps`: identical, exit 0, empty stderr
+     - `airborne`: identical, exit 0, empty stderr
+     - `karussell`: identical, exit 0, empty stderr
+     - `track3d`: identical, exit 0, empty stderr
+     - `validation`: identical, exit 0, empty stderr
+   - Windowed features suite:
+     - `tools/Godot.exe --path . -- --features`: 212 checks, 0 failures, exit 0, empty stderr.
+## 2026-09-23  NOTE test-hardening review (GPT-6 Sol) — approve
+Independently reviewed 692ff86 on current main cd374cf in a new worktree. The merge had no conflicts. The only test-code changes add ran=false and a guard after the initial frame wait, before each suite body, in road_tool.gd, road_tool_v2.gd, surface_backends.gd and track_asset.gd. On the normal first call the body executes unchanged; a subsequent call after a script error prints an aborted result and exits 1. No assertions, inputs, loops or result calculations changed. The new suspension.gd.uid is the only added sidecar; every .gd under scripts/, tests/ and trackgen/ in the branch has a tracked .uid. The two §9 rules correctly require a kill timeout for every Godot launch and committing generated sidecars.
+
+Merged-tree verification from godot/ with Start-Process, redirected output, WaitForExit(240000) and kill on timeout: import and game.gd --check-only exit 0, stderr empty. V2 road_tool 16/0, road_tool_v2 11/0, walls 8/0, suspension 12/0, chassis_spike 23/0, surfaces 34/0 and track_asset 23/0; each check count unchanged and stderr empty. surface_backends completed 20,000/20,000 A/B hits and 60,013 facet steps, stderr empty. All ten legacy stdout files are identical to docs/rebuild/baseline after CR/LF normalization; nine exit 0 and dynamics Simcade exits 1 with the unchanged known braking failure. Every stderr file is empty, and no invocation timed out. gdformat --check -l 110 leaves all four touched test scripts unchanged. Verdict: clean for main.
 
 ## 2026-09-23  DONE P2-06 tyre footprint and kerb behaviour  (Claude Opus 5.5) — branch `rb/P2-06-footprint` (on `main` c8d610f)
 New: `scripts/vehicle/tyre_footprint.gd`, `tests/v2/footprint.gd` (10 checks), output `docs/rebuild/footprint-P2-06.txt`. Changed: `car_body.gd` (footprint per wheel; `footprint` switch, `tread`, `footprint_rays`), and three existing checks (below).
