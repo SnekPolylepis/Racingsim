@@ -1,0 +1,15 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+      simulation concrete: hull at most -0.004 m past the face, CG ends 9.89 m short
+      simulation armco: hull at most +0.005 m past the face, CG ends 9.24 m short
+      simulation tyre: hull at most -0.001 m past the face, CG ends 7.88 m short
+      simcade concrete: hull at most -0.002 m past the face, CG ends 2.34 m short
+      simcade armco: hull at most -0.002 m past the face, CG ends 2.34 m short
+      simcade tyre: hull at most -0.002 m past the face, CG ends 2.34 m short
+PASS  296 at 300 km/h square into concrete, armco (0.15 m) and tyre walls, both handling models: never through, energy only lost
+PASS  150 km/h at 10° into concrete: rebounds at 0.03 of the 6.92 m/s closing speed (restitution 0.25), still 34.1 m/s along the wall, hull at most +0.000 m past the face, energy 67.4% after contact
+PASS  creeping and steering into the concrete wall for 3 s: CG across the wall at most 0.012 m/s (away 0.000), hull at most +0.0000 m past the face, touching on 720 of 720 ticks
+PASS  flying 3 m over the 1 m concrete wall at 108 km/h: 0 wall contacts, crossed to z 120.0
+PASS  300 km/h at 45° into the 0.15 m armco: hull at most -0.010 m past the face, CG ends 11.72 m short, energy only lost
+PASS  wall contact costs 3.3 µs per tick clear of walls, 78.4 µs touching one
+BARRIER RESULTS {"checks":6,"failures":[],"results":{"cost_us":{"clear":3.2625,"touching":78.3729166666667},"glancing":{"along":34.1411028209635,"past":0.00017547607421875,"rebound":0.19138836665824,"rebound_ratio":0.0276698049903824,"vn_before":6.91686720324785},"head-on simcade armco":{"contact_tick":168,"end_z":97.6571360069787,"past_m":-0.00203704833984375},"head-on simcade concrete":{"contact_tick":168,"end_z":97.6571360089392,"past_m":-0.00203704833984375},"head-on simcade tyre":{"contact_tick":168,"end_z":97.6571360105946,"past_m":-0.00203704833984375},"head-on simulation armco":{"contact_tick":168,"end_z":90.7600048745758,"past_m":0.00507354736328125},"head-on simulation concrete":{"contact_tick":168,"end_z":90.1109074643919,"past_m":-0.003509521484375},"head-on simulation tyre":{"contact_tick":168,"end_z":92.1190411339876,"past_m":-0.00093841552734375},"oblique armco":{"end_z":88.2815768276691,"past":-0.00960540771484375},"resting":{"away_speed":0.0,"lateral_speed":0.0119676006776749,"past":0.000030517578125,"ticks_touching":720}}}
