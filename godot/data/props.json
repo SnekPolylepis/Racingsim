@@ -1,0 +1,39 @@
+{
+  "_doc": "Knock-over trackside props (scripts/props/prop_body.gd). Frame: origin at the centre of the base on the ground, +Y up, +X forward. shape 'frustum': height (m) and radius [bottom, top] (m); 'box': size [x, y, z] (m), base on the ground. mass kg; cg: height of the centre of mass above the base (m); inertia [x, y, z] kg m^2 about the centre of mass, principal (optional: computed for a uniform solid when absent); restitution and friction against the ground, walls and cars; drag_area: drag coefficient x frontal area (m^2); color: presentation only.",
+  "cone": {
+    "name": "Traffic cone, 750 mm",
+    "shape": "frustum",
+    "height": 0.75,
+    "radius": [0.18, 0.025],
+    "mass": 4.0,
+    "cg": 0.11,
+    "inertia": [0.13, 0.064, 0.13],
+    "restitution": 0.3,
+    "friction": 0.6,
+    "drag_area": 0.12,
+    "color": "#ff5a14"
+  },
+  "bollard": {
+    "name": "Delineator post on a rubber base",
+    "shape": "frustum",
+    "height": 1.0,
+    "radius": [0.15, 0.04],
+    "mass": 3.0,
+    "cg": 0.18,
+    "restitution": 0.3,
+    "friction": 0.7,
+    "drag_area": 0.1,
+    "color": "#f2f2f2"
+  },
+  "marker_board": {
+    "name": "Braking marker board",
+    "shape": "box",
+    "size": [0.08, 1.0, 0.7],
+    "mass": 6.0,
+    "cg": 0.5,
+    "restitution": 0.2,
+    "friction": 0.6,
+    "drag_area": 0.6,
+    "color": "#1d4ed8"
+  }
+}

@@ -66,6 +66,10 @@ Chassis keys read only by the 6-DOF `CarBody` (the planar CarModel ignores them)
 
 Setup document: `{"schema":1,"savedAt":"...","car":"roadster","setup":{"tireMu":1.38,...}}`. Import verifies the car and values, starts with that preset's defaults, applies recognized fields within their bounds, switches car, resets and loads its record. Missing fields retain preset defaults. Optional `tcsLevel` and `asmLevel` (0–10) add numbered aids without replacing the legacy fields; old TC intensity maps to its equivalent level (fractional legacy values are preserved), old ABS remains unchanged, and missing ASM imports as off. Exports include effective levels and synchronized tcOn/tcIntensity. Garage changes also reset the run when applied. Native export remains compatible with the browser's schema-1 structure.
 
+## Trackside props
+
+`data/props.json` (read by `scripts/props/prop_body.gd`) defines the knock-over prop kinds a TrackAsset's `Props/` may name (`cone`, `bollard`, `marker_board`); a new kind is a new entry, no code. Frame: origin at the centre of the base on the ground, +Y up, +X forward. Keys: `shape` (`frustum` with `height` m and `radius` `[bottom, top]` m, or `box` with `size` `[x, y, z]` m, base on the ground), `mass` kg, `cg` (height of the centre of mass above the base, m; default half the height), optional `inertia` (`[x, y, z]` kg m² principal, about the centre of mass; default a uniform solid), `restitution` and `friction` (against the ground and walls; car contacts use `PropBody.CAR_FRICTION`), `drag_area` (drag coefficient × frontal area, m²), and presentation-only `name` and `color`. Changing a kind changes how props behave on every track that uses it but not record identity (props are off the racing line).
+
 ## Ghosts and records
 
 Sector file: `records/<record hash>.sectors.json` = `{"schema":1,"savedAt":"...","best":[s1,s2,s3]}` (seconds, 0 = none yet). It is written whenever a new best sector is set and deleted by Clear best lap.

@@ -50,5 +50,5 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-02 | Nordschleife in sections | Gemini, Claude review | P6-01 | open | |
 | P6-03 | Monza (if still wanted) | owner | | needs owner | |
-| props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | open | |
+| props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | review: Sol | claude/racing-sim-props-cones-v69o5c (on rb/P2-comp-b); read "DONE props". For P4-core: PropSet in the game loop |
 | P7 | Delete the legacy model and tracks, rewrite docs, Windows + macOS export | Sol, Gemini | P5-04, P6-01 | open | split when it's reached |

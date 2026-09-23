@@ -9,6 +9,9 @@ extends Node3D
 ##               Metadata: start_offset_m (float), sector_offsets (Array, metres after the start),
 ##               checkpoint_offsets (Array, metres after the start). Missing metadata gets defaults.
 ##   Grid/       Marker3D slots in grid order (pole first); -Z of each marker points down the track.
+##   Props/      optional knock-over props (P4-03): any node below it with metadata "prop" = a kind in
+##               data/props.json is one prop, resting at the node's pose (origin at the base centre on
+##               the ground, +Y up). PropSet.from_asset() (scripts/props/prop_set.gd) reads them.
 ##   Road/, Scenery/, Lights/, BotLine   presentation and bot data; not required by validate().
 ##
 ## Timing gates are vertical planes across the lap line at a station, bounded laterally and in
@@ -16,6 +19,7 @@ extends Node3D
 
 const SurfaceTable = preload("res://scripts/track3d.gd")
 const TrackSurface = preload("res://scripts/surface/track_surface.gd")
+const PropBody = preload("res://scripts/props/prop_body.gd")
 ## 5.1: float32 query precision stays well under a millimetre within this distance of the origin.
 const MAX_EXTENT = 5000.0
 const SURFACE_LAYER = 1
@@ -281,4 +285,21 @@ func validate():
 				errors.append("Walls/%s: must be on collision layer %d only" % [w.name, WALL_LAYER])
 			if not (w.get_meta("wall_kind", "") in WALL_KINDS):
 				errors.append("Walls/%s: metadata 'wall_kind' must be one of %s" % [w.name, WALL_KINDS])
+	# Props (optional): a known kind, within the precision box.
+	var props = get_node_or_null("Props")
+	if props != null:
+		var stack = props.get_children()
+		while not stack.is_empty():
+			var node = stack.pop_back()
+			stack.append_array(node.get_children())
+			if not node.has_meta("prop"):
+				continue
+			if not PropBody.kinds().has(str(node.get_meta("prop"))):
+				errors.append(
+					"Props: %s names an unknown prop kind '%s'" % [node.name, node.get_meta("prop")]
+				)
+			elif (
+				node is Node3D and (node.position.abs().x > MAX_EXTENT or node.position.abs().z > MAX_EXTENT)
+			):
+				errors.append("Props: %s leaves the ±%.0f m precision box (5.1)" % [node.name, MAX_EXTENT])
 	return errors
