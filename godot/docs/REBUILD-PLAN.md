@@ -172,7 +172,7 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
 
 ### P3: Track asset format and road tool
 
-- **P3-00 [ARCH]** Decide the `TrackSurface` query backend (PhysicsServer3D direct space state vs our own BVH over baked triangles). Check determinism, headless use and cost against the §6 performance gate.
+- **P3-00 [ARCH]** Decide the `TrackSurface` query backend (PhysicsServer3D direct space state vs our own BVH over baked triangles). Check determinism, headless use and cost against the §6 performance gate. **Done 2026-09-22: recommends PhysicsServer3D rays against a baked triangle mesh, engine pinned to GodotPhysics3D** (see the log). Consequences: surface queries run inside a physics frame (`_physics_process`), including in headless tests; tessellate roads at ≤ 1.5 m along and ≤ w/8 across; keep track coordinates within ±5 km of the origin (§5.1).
 - **P3-01 [ARCH]** `track_asset.gd` + loader: timing line, gates, sectors, grid, minimap bake, record identity.
 - **P3-02 [TOOL]** Road plugin (`addons/road_tool/`, editor-only, excluded from export).
   - A `RoadPath` (Path3D) with cross-section keys along its length: left/right width, camber, crown, left/right kerb type and width, verge width and slope, surface type.

@@ -127,3 +127,28 @@ PROBES (non-gating evidence for later tasks):
 
 ## 2026-09-22  CONTRACT §5.1 precision  (Claude Opus 5.5)
 Added to §5.1: Godot vectors are 32-bit in standard builds; accumulated world-space solver state (position above all) must be 64-bit scalars; vectors only for relative/local quantities; track query frames must keep coordinates small (P3-00). Motivated by the P2-02 precision probe. Affects P2-03 (CarBody state), P3-00 (TrackSurface backend) and P4 (ghosts/replays storing positions).
+
+## 2026-09-22  DONE P3-00  (Claude Opus 5.5) — branch `rb/P3-00-surface-backend` (from P2-02)
+**Recommendation: `TrackSurface` = Godot PhysicsServer3D rays (`direct_space_state.intersect_ray`) against a baked triangle mesh; pin `physics/3d/physics_engine = "GodotPhysics3D"` in project.godot.** Cheap to revisit: it sits behind the §5.2 contract.
+
+Method (`tests/v2/surface_backends.gd`, output `docs/rebuild/backends-P3-00.txt`): the real Nordschleife ribbon (14,322 samples) baked into 343,728 triangles in Godot axes (road with its cross-section profile at w/8 spacing plus verges, ~1.5 m along), extents ±3,088 m. 20,000 wheel-style rays (0.6 m above a random road point, tilted ≤ 10°, 1.2 m). Headless; all queries run inside `_physics_process`. Stderr empty.
+
+| Backend | µs/query | Notes |
+|---|---|---|
+| A: PhysicsServer3D ray, GodotPhysics3D (the project default) | 3.6–4.7 | deterministic on repeat; heights within **0.019 mm** of 64-bit |
+| A: PhysicsServer3D ray, Jolt | 3.0–5.0 | deterministic; heights within 0.66 mm of 64-bit |
+| B: our own xz grid + Möller–Trumbore, 64-bit GDScript | 18.8–20.2 | exact reference; 0 hit/miss disagreements with A |
+| C: parametric ribbon (track3d `elev_at`) | 18.3–20.3 hinted, 92–106 cold | smooth, but ties queries to the spline representation |
+| D: tyre cylinder cast + rest info (r 0.345, 0.30 wide) | 44–46 GodotPhysics3D, **23–26 Jolt** | 99.7–99.9 % contacts; a tyre envelope for free |
+
+Run-to-run timing varies ±30 %; ranges are over 3 runs.
+
+Why A over B/C: 4–5× cheaper than either GDScript option, deterministic, works headless, precision is fine at Nordschleife extents (the 64-bit concern from P2-02 applies to accumulated state, not to a 0.02 mm query), and meshes admit hand-modelled pieces (pit lane, junctions) that a spline parameterisation cannot. Faceting is not a reason to prefer C: over 3 km at 5 cm steps the mesh's largest normal step was 0.401° (993 steps > 0.05°) against 0.359° (907) for the "smooth" ribbon, whose normals are themselves interpolated per sample.
+Why GodotPhysics3D over Jolt: 35× better query precision for similar ray cost. Jolt only wins on shape casts.
+
+Consequences for later tasks:
+- **P3-01:** queries must run in a physics frame. The game already steps the car in `_physics_process`; TrackSurface tests must too (as this spike does), unlike TestSurface tests. Map surface type from the collider (one StaticBody3D per surface type with metadata, per §5.3) or from `face_index`.
+- **P3-02 road tool:** tessellate at ≤ 1.5 m along and ≤ w/8 across (what was measured here).
+- **P2-06 tyre envelope:** per-wheel budget. Multi-ray footprint: ~4 µs × rays × 4 wheels (5 rays ≈ 80 µs/tick). A cylinder cast gives true tread-curve contact on kerbs but costs 23–46 µs per wheel (92–184 µs/tick). If P2-06 picks the cylinder cast, revisit the engine choice (Jolt halves it).
+- Keep backend B as a 64-bit test oracle for TrackSurface.
+- Test bug found and fixed: a mirrored (left-handed) query basis is silently accepted by GodotPhysics3D but makes Jolt miss 99 % of cylinder contacts. Build query transforms with right-handed bases.
