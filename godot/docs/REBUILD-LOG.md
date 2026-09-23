@@ -993,3 +993,51 @@ Follow-up fixes and test additions for P3-03:
 3. **`terrain.gd`**: removed unused `const SurfaceTable = preload("res://scripts/track.gd")`.
 4. **Road stitch with kerb & runoff**: `road_surface_height_at()` updated to use `RoadBuilder.side()` across kerb, runoff, and verge bands with road edge station prepended. Added `test_road_stitch_runoff_kerb()` verifying verge outer edge match within 2 cm (worst 0.0000 m) and no terrain poke above road/kerb/runoff footprint (min drop 0.300 m >= 0.3 m). In `stitch_heights()`, open road end handling ignores points longitudinally beyond path bounds so artificial drops are not created past the end of open tracks.
 5. **Gates**: all 23 selected suites passed via `run_gates.ps1` (0 failures, 70 s wall clock). `tests/v2/terrain.gd` 7/7 checks pass with empty stderr.
+## 2026-09-23  CLAIM scenery-kit  (Gemini 3.8 Flash) — branch `rb/scenery-kit`
+Building trackside scenery kit following the WallPath / RoadScatter house style (@tool Node3D, @export fields, bake() callable headless, seeded and deterministic, output under Scenery/<name> or Walls/<name>).
+- Low-poly procedural meshes from SurfaceTool, one MultiMesh per repeated item.
+- CatchFence: steel posts every 3 m + mesh panels 3-4 m high, road-following or along a WallPath. Collision (layer 2, wall_kind "armco") only if solid.
+- Grandstand: stepped seating block (rows, depth, length), roof option, placed at a station & offset; static collision on layer 2 (wall_kind "concrete") for front wall.
+- Gantry: start/finish gantry spanning the road at a station (two towers + beam + light panel), no collision on the road.
+- Billboards: boards on posts beside the road, spaced and seeded, flat retro colors.
+- MarshalPost: small cabins every N m behind the barrier.
+- PitBuilding: long garage block with roof, station and offset, front pit-wall collision (layer 2, concrete).
+- KerbPaint: alternate red/white stripes on kerb UVs/material.
+- Proving ground placement: gantry at start line, grandstand at bowl, catch fences on crest landing, billboards on main straight, pit building by grid. Generator bake warnings 0, validation clean.
+- Test suite tests/v2/scenery.gd and registration in tools/gates.json.
+
+## 2026-09-23  DONE scenery-kit  (Gemini 3.8 Flash) — branch `rb/scenery-kit`
+Built trackside scenery kit following the WallPath / RoadScatter house style (@tool Node3D, @export fields, @export_tool_button "Bake", bake() callable headless, seeded and deterministic, output under Scenery/<name> or Walls/<name>).
+
+**Components built:**
+1. `scripts/track/scenery_builder.gd` (class `SceneryBuilder`): procedural box/quad mesh builders via SurfaceTool, MultiMesh helpers, and layer-2 StaticBody3D collision generator with ConcavePolygonShape3D and wall metadata.
+2. `scripts/track/catch_fence.gd` (class `CatchFence`): steel posts (0.08 m) every ~3 m in a MultiMesh + wire mesh panel quad strip (3.5 m high) under `Scenery/<name>`. Follows road or wall. If `solid`: builds layer-2 StaticBody3D under `Walls/<name>` with metadata `wall_kind = "armco"`, clean removal when non-solid.
+3. `scripts/track/grandstand.gd` (class `Grandstand`): stepped seating block with concrete steps and blue/red seat treads, cantilever canopy roof on pillars, and optional front concrete barrier on layer 2 (`wall_kind = "concrete"`). Segmented along road curvature.
+4. `scripts/track/gantry.gd` (class `Gantry`): start/finish gantry spanning the road at a station (two lattice towers outside verge + overhead crossbeam + 5-pair start light display box). 0 collision on road (clearance 6.0 m).
+5. `scripts/track/billboards.gd` (class `Billboards`): advertising boards on posts beside road, spaced and seeded, flat retro racing sponsor stripes (red/cream/blue), single MultiMesh under `Scenery/<name>`, zero collision.
+6. `scripts/track/marshal_post.gd` (class `MarshalPost`): small cabins (safety orange base, viewing window, roof, yellow flag) spaced every N m behind barrier as a single MultiMesh under `Scenery/<name>`, zero collision.
+7. `scripts/track/pit_building.gd` (class `PitBuilding`): long garage block with recessed bays, team fascia, flat roof, and front concrete pit wall under `Walls/<name>` on layer 2 (`wall_kind = "concrete"`).
+8. `scripts/track/road_builder.gd` (`KerbPaint`): kerb material (surface ID 1) updated with alternating red/white stripes (0.5 m cycle) via an ImageTexture and nearest filtering.
+
+**Proving Ground Integration & Quantitative Measurements:**
+- Generated `tracks3d/proving_ground/proving_ground.scn`:
+  - 0 road bake warnings (`warnings = 0 []`).
+  - 0 TrackAsset validation errors (`errors = 0 []`).
+  - Scene size: **3,901,996 bytes** (3.90 MB, within the 5.0 MB content budget).
+  - Proving ground bake time: **622.4 ms** total for the complete circuit asset.
+  - Trackside scenery breakdown:
+    - Scenery items: **7 items** (`Trees`, `StartGantry`, `BowlGrandstand`, `CrestCatchFence`, `MainBillboards`, `Pits`, `MarshalPosts`).
+    - Total instances: **256 instances** (200 trees, 1 gantry, 1 grandstand, 41 fence posts + 1 panel mesh, 3 billboards, 1 pit building, 8 marshal posts).
+    - Total scenery triangles: **11,314 triangles** (Trees 8,400, Grandstand 788, Gantry 168, CatchFence posts 492, CatchFence panels 160, Billboards 198, Pits 148, MarshalPosts 960). New kit adds 55 instances and 2,914 triangles.
+  - Bot lap clearance:
+    - 296 GT3 bot lap: **143.60 s**, 0 off-track wheel ticks, 0 wall contacts.
+    - Closest approach to BowlGrandstand front wall: **17.47 m** (> 3.0 m limit).
+    - Closest approach to CrestCatchFence armco: **27.60 m** (> 3.0 m limit).
+    - Closest approach to Pits concrete pit wall: **17.92 m** (> 3.0 m limit).
+
+**Gate Results:**
+- `tests/v2/scenery.gd`: **11 checks, 0 failures** (10 s).
+- `tests/v2/proving_ground.gd`: **25 checks, 0 failures** (25 s).
+- `tools/run_gates.ps1 -All`: **34 gates selected, 34 passed, 0 failed, 147 s wall clock**.
+- All Godot runs executed with Start-Process + WaitForExit and zero stderr.
+- Code formatted with `gdtoolkit.formatter -l 110`, `git diff --check` clean.

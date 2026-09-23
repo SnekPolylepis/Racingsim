@@ -31,6 +31,7 @@
     {"name": "proving_ground", "script": "tests/v2/proving_ground.gd", "groups": ["vehicle", "track"]},
     {"name": "terrain", "script": "tests/v2/terrain.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "road_density", "script": "tests/v2/road_density.gd", "groups": ["vehicle", "track"]},
+    {"name": "scenery", "script": "tests/v2/scenery.gd", "groups": ["vehicle", "track"]},
     {"name": "test_surfaces_scene", "script": "tests/v2/test_surfaces_scene.gd", "groups": ["vehicle"], "deps": ["scripts/proving/", "scenes/proving/"]},
     {"name": "legacy airborne", "kind": "legacy", "script": "tests/airborne.gd", "baseline": "airborne.txt", "groups": ["legacy"]},
     {"name": "legacy dynamics-simulation", "kind": "legacy", "script": "tests/dynamics.gd", "baseline": "dynamics-simulation.txt", "groups": ["legacy"]},

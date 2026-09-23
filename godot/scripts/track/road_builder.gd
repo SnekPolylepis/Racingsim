@@ -679,6 +679,18 @@ static func ribbed_strip(
 	return [out, out_uv]
 
 
+static var _kerb_texture: ImageTexture = null
+
+
+static func kerb_texture() -> ImageTexture:
+	if _kerb_texture == null:
+		var img = Image.create(1, 2, false, Image.FORMAT_RGB8)
+		img.set_pixel(0, 0, Color(.85, .15, .12))
+		img.set_pixel(0, 1, Color(.95, .95, .95))
+		_kerb_texture = ImageTexture.create_from_image(img)
+	return _kerb_texture
+
+
 ## Render mesh: one surface per surface type, UVs in metres (u across, v along) for tiling textures.
 static func mesh(faces: Dictionary, uvs: Dictionary) -> ArrayMesh:
 	var out = ArrayMesh.new()
@@ -697,7 +709,12 @@ static func mesh(faces: Dictionary, uvs: Dictionary) -> ArrayMesh:
 			st.add_vertex(faces[sid][i])
 		st.generate_normals()
 		var mat = StandardMaterial3D.new()
-		mat.albedo_color = colors.get(sid, Color.MAGENTA)
+		if sid == 1:
+			mat.albedo_texture = kerb_texture()
+			mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+			mat.uv1_scale = Vector3(1.0, 1.0, 1.0)
+		else:
+			mat.albedo_color = colors.get(sid, Color.MAGENTA)
 		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		st.set_material(mat)
 		st.commit(out)
