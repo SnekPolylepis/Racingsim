@@ -250,3 +250,5 @@ Dependency outline: `P0 → (P1 ∥ P2) → P3 (may start after the 5.2/5.3 cont
    Godot.exe is a GUI-subsystem binary: run it via `Start-Process -Wait -PassThru` with redirected stdout/stderr, and **read stderr**. Exit code 0 with script errors in stderr is a failure.
 6. **Log the result:** `DONE <task-id>` with the commands run, pass/fail counts, measurements and anything left undone. Report failures as failures.
 7. Hand-off: if you stop midway, log `PAUSED <task-id>` with the exact state and next step.
+8. Run every Godot invocation with a timeout (`Start-Process` + `WaitForExit`, kill on timeout), and treat a timeout as a failure, not a pass.
+9. Commit generated `.uid` sidecars with their scripts, and never delete a tracked one to resolve a merge.
