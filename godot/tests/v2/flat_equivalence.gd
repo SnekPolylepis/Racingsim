@@ -1,27 +1,26 @@
 extends SceneTree
 ## P2-05 flat equivalence (REBUILD-PLAN.md section 6): the 6-DOF CarBody on TestSurface.flat against the
-## planar CarModel on a flat TrackModel, same controllers and procedures (copied from tests/dynamics.gd and
-## the P2-00 spike), per car and per handling model:
+## planar CarModel's figures on flat roads, per car and per handling model. CarModel (scripts/car.gd) was
+## deleted in P7-01b; its figures, measured with the same controllers and procedures, are recorded in
+## docs/rebuild/carmodel-reference.json:
 ##   tyre peaks     peak slip angle and ratio: exactly equal (shared tyre module)
 ##   0-100, 100-0   full throttle from rest, then full brake to 0.3 m/s
 ##   skidpad        steady-state limit on a 150 m circle (the baseline's radius; the plan's "60 m" is not
-##                  what tests/dynamics.gd or the baseline measure)
+##                  what the pre-rebuild baseline measured)
 ##   top speed      full throttle until the speed gains under 0.02 m/s over 2 s (at most 120 s)
-## Gate: within +/-3 % of CarModel measured live, on CarBody's massless wheel (compliance off): the 6-DOF
-## chassis reproduces the planar model. Tyre compliance and unsprung mass (P2-comp) are a deliberate
-## departure (series tyre rate, softer transient load transfer), gated separately within +/-5 %. CarModel is unchanged since the pre-rebuild baseline;
-## the live Simulation figures are cross-checked against docs/rebuild/baseline.json to prove it.
+## Gate: within +/-3 % of CarModel, on CarBody's massless wheel (compliance off): the 6-DOF chassis
+## reproduces the planar model. Tyre compliance and unsprung mass (P2-comp) are a deliberate departure
+## (series tyre rate, softer transient load transfer), gated separately within +/-5 %.
 ## Both handling models gate. Simcade's aids and transient handling (ASM, recovery) are P2-07's; these
 ## straight-line and steady-state figures already match, and P2-07 must keep them matching.
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/flat_equivalence.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const GatesEnv = preload("res://tests/v2/gates_env.gd")
-const CarModel = preload("res://scripts/car.gd")
-const TrackModel = preload("res://scripts/track3d.gd")
 const TestSurface = preload("res://scripts/surface/test_surface.gd")
 const DT = 1.0 / 240
+const REFERENCE = "res://docs/rebuild/carmodel-reference.json"
 var presets
-var baseline
+var reference
 var failures = []
 var checks = 0
 var results = {}
@@ -49,81 +48,7 @@ func prepare(c, key, simcade):
 	return c
 
 
-# --- Legacy CarModel on flat TrackModels (tests/dynamics.gd procedures) ---
-
-
-func straight(half):
-	var t = TrackModel.new()
-	var pts = []
-	for x in range(-half, half + 1, 500):
-		pts.append({"x": x, "y": 0, "w": 30})
-	for x in range(half, -half - 1, -500):
-		pts.append({"x": x, "y": 800, "w": 30})
-	t.load_data({"name": "s", "points": pts, "startS": 0.0, "curbAuto": false})
-	return t
-
-
-func circle(r):
-	var t = TrackModel.new()
-	var pts = []
-	for i in 32:
-		pts.append({"x": cos(TAU * i / 32) * r, "y": sin(TAU * i / 32) * r, "w": 30})
-	t.load_data({"name": "c", "points": pts, "startS": 0.0, "curbAuto": false})
-	return t
-
-
-func legacy(key, simcade):
-	var out = {}
-	var t = straight(3000)
-	var c = prepare(CarModel.new(), key, simcade)
-	out.peak_angle = c.peak_slip_angle()
-	out.peak_ratio = c.peak_slip_ratio()
-	c.reset_pose({"x": -2000.0, "y": 0.0, "h": 0.0})
-	var time = 0.0
-	while c.speed < 100 / 3.6 and time < 30:
-		c.input = inp(1, 0, 0)
-		c.step(DT, t, true)
-		time += DT
-	out.accel = time
-	var x0 = c.x
-	var stop = 0.0
-	while c.speed > .3 and stop < 20:
-		c.input = inp(0, 1, 0)
-		c.step(DT, t, true)
-		stop += DT
-	out.brake = c.x - x0
-	var r = 150.0
-	var ring = circle(r)
-	c = prepare(CarModel.new(), key, simcade)
-	var p = ring.pos_at(0.0)
-	c.reset_pose({"x": p.x, "y": p.y, "h": p.h})
-	var target = 8.0
-	var best = 0.0
-	time = 0.0
-	while time < 150:
-		var pr = ring.project(c.x, c.y, c.wheels[0].sIdx)
-		var ahead = ring.pos_at(pr.s + 6 + c.speed * .35)
-		var st = clampf(wrapf(atan2(ahead.y - c.y, ahead.x - c.x) - c.h, -PI, PI) * 2.0, -1, 1)
-		var e = target - c.speed
-		c.input = inp(clampf(e * .6 + .3, 0, 1), clampf(-e * .3, 0, 1), st)
-		c.step(DT, ring, true)
-		time += DT
-		if absf(pr.lat) < 2.0 and absf(e) < .6:
-			best = maxf(best, c.speed)
-		if absf(pr.lat) > 4:
-			break
-		target += .6 / 240
-	out.skidpad = best * best / r / 9.81
-	var long = straight(12000)
-	c = prepare(CarModel.new(), key, simcade)
-	c.reset_pose({"x": -11500.0, "y": 0.0, "h": 0.0})
-	out.top = top_speed(c, func(): c.step(DT, long, true))
-	return out
-
-
-# --- CarBody on TestSurface.flat (P2-00 spike procedures) ---
-
-
+## CarBody on TestSurface.flat (P2-00 spike procedures).
 func body(key, simcade, compliant = false):
 	var out = {}
 	var surf = TestSurface.flat()
@@ -187,27 +112,22 @@ func top_speed(c, step):
 	return c.speed
 
 
-## Last number of the baseline check whose text starts with `prefix`, in `suite`.
-func base(suite, prefix):
-	for c in baseline.suites[suite].checks:
-		if c.text.begins_with(prefix):
-			return c.values
-	return []
-
-
 func _initialize():
 	# `-- --car key` runs one car, so tools/run_gates.ps1 can run the three in parallel.
 	presets = GatesEnv.only_car(JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json")))
-	baseline = JSON.parse_string(FileAccess.get_file_as_string("res://docs/rebuild/baseline.json"))
+	reference = JSON.parse_string(FileAccess.get_file_as_string(REFERENCE)).figures
 	var names = {"accel": "0-100 s", "brake": "100-0 m", "skidpad": "skidpad g", "top": "top speed m/s"}
 	for simcade in [false, true]:
 		var model = "simcade" if simcade else "simulation"
 		for key in presets:
-			var old = legacy(key, simcade)
+			var old = reference["%s %s" % [model, key]]
 			var new = body(key, simcade)
 			var soft = body(key, simcade, true)
 			results["%s %s" % [model, key]] = {"carmodel": old, "carbody": new, "carbody_compliant": soft}
-			var peaks_exact = old.peak_angle == new.peak_angle and old.peak_ratio == new.peak_ratio
+			var peaks_exact = (
+				absf(old.peak_angle - new.peak_angle) < 1e-12
+				and absf(old.peak_ratio - new.peak_ratio) < 1e-12
+			)
 			var worst = 0.0
 			var parts = []
 			for k in ["accel", "brake", "skidpad", "top"]:
@@ -228,27 +148,6 @@ func _initialize():
 			check(
 				worst_soft <= .05,
 				"%s %s with compliance, vs CarModel (within 5 %%): %s" % [model, key, ", ".join(soft_parts)]
-			)
-		if not simcade:
-			# The live CarModel is the baseline model: its Simulation figures match the recorded ones.
-			var off = []
-			for key in presets:
-				var old = results["simulation %s" % key].carmodel
-				var b_acc = base("dynamics-simulation", "%s 0-100" % key)[-1]
-				var b_brk = base("dynamics-simulation", "%s 100-0" % key)[-1]
-				var b_lat = base("dynamics-simulation", "%s holds" % key)[-2]
-				if (
-					absf(old.accel - b_acc) > .006
-					or absf(old.brake - b_brk) > .06
-					or absf(old.skidpad - b_lat) > .006
-				):
-					off.append(key)
-			check(
-				off.is_empty(),
-				(
-					"live CarModel Simulation 0-100 / 100-0 / skidpad match docs/rebuild/baseline.json to its printed precision %s"
-					% [off]
-				)
 			)
 	print(
 		"FLAT EQUIVALENCE RESULTS ",

@@ -7,7 +7,7 @@ extends RefCounted
 const ROAD_SHADER = preload("res://shaders/road_v2.gdshader")
 const GROUND_SHADER = preload("res://shaders/ground.gdshader")
 const TEX = "res://assets/textures/"
-## SURF ids (scripts/track3d.gd): 0 tarmac, 1 kerb, 2 grass, 3 gravel, 4 tarmac runoff.
+## SURF ids (scripts/surface/surface_table.gd): 0 tarmac, 1 kerb, 2 grass, 3 gravel, 4 tarmac runoff.
 const TARMAC = 0
 const GRASS = 2
 const GRAVEL = 3

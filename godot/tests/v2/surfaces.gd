@@ -204,7 +204,7 @@ func ramp_coast(key):
 		c.step(DT, s, false)
 	var measured = (c.speed - v0) / 5.0
 	var th = deg_to_rad(-grade)
-	var rr = CarBody.TrackModel.SURF[0].rr
+	var rr = CarBody.SURF[0].rr
 	var m = c.p.mass
 	var want = 9.81 * (sin(th) - rr * cos(th)) * m / (m + 4 * c.p.wheelI / (c.p.wheelR * c.p.wheelR))
 	check(

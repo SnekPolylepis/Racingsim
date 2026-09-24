@@ -1,16 +1,14 @@
 extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
-## P4-01 drives the TrackAsset/CarBody path in native Godot coordinates. Legacy feature harnesses
-## remain on the planar path until their dependent P4 ports are complete.
-const TrackModel = preload("res://scripts/track3d.gd")
+## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
+## deleted in P7-01).
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
 const TrackDrive = preload("res://scripts/proving/track_drive.gd")
 const WallQuery = preload("res://scripts/surface/wall_query.gd")
 const WallContact = preload("res://scripts/vehicle/wall_contact.gd")
 const PropSet = preload("res://scripts/props/prop_set.gd")
-const CarModel = preload("res://scripts/car.gd")
 const RaceModel = preload("res://scripts/race.gd")
 const Visuals = preload("res://scripts/visuals.gd")
 const Storage = preload("res://scripts/storage.gd")
@@ -60,8 +58,8 @@ const DEFAULT_SETTINGS = {
 	"folder": "user://"
 }
 var settings = DEFAULT_SETTINGS.duplicate(true)
-var track = TrackModel.new()
-var car = CarModel.new()
+var track = null
+var car = CarBody.new()
 var race = RaceModel.new()
 var visuals = Visuals.new()
 var storage = Storage.new()

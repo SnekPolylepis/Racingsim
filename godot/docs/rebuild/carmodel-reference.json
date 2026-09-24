@@ -1,0 +1,62 @@
+{
+ "captured": "2026-09-23",
+ "source": "scripts/car.gd (planar CarModel) at 74a66d1 (rb/P7-01-legacy), before its deletion in P7-01b, on flat TrackModel roads with the procedures in tests/v2/flat_equivalence.gd; its Simulation figures matched docs/rebuild/baseline.json (the pre-rebuild capture).",
+ "units": {
+  "accel": "s 0-100 km/h",
+  "brake": "m 100-0 km/h",
+  "skidpad": "g on a 150 m circle",
+  "top": "m/s",
+  "peak_angle": "rad",
+  "peak_ratio": "1"
+ },
+ "figures": {
+  "simcade f296gt3": {
+   "accel": 4.05000000000009,
+   "brake": 28.014818299960325,
+   "peak_angle": 0.11801242236024846,
+   "peak_ratio": 0.1206896551724138,
+   "skidpad": 2.088745566661839,
+   "top": 81.20088026299122
+  },
+  "simcade gt": {
+   "accel": 4.4000000000000705,
+   "brake": 28.844982689478684,
+   "peak_angle": 0.12337662337662338,
+   "peak_ratio": 0.125,
+   "skidpad": 1.806613482218718,
+   "top": 82.21611872821033
+  },
+  "simcade roadster": {
+   "accel": 8.570833333333168,
+   "brake": 38.37234633995922,
+   "peak_angle": 0.15079365079365079,
+   "peak_ratio": 0.1590909090909091,
+   "skidpad": 0.7244431344060597,
+   "top": 58.57572106148478
+  },
+  "simulation f296gt3": {
+   "accel": 4.12083333333342,
+   "brake": 28.665807376478142,
+   "peak_angle": 0.11801242236024846,
+   "peak_ratio": 0.1206896551724138,
+   "skidpad": 1.9858616990084856,
+   "top": 81.20245971250849
+  },
+  "simulation gt": {
+   "accel": 4.475000000000066,
+   "brake": 29.503349359487856,
+   "peak_angle": 0.12337662337662338,
+   "peak_ratio": 0.125,
+   "skidpad": 1.7490887650443059,
+   "top": 82.26117066587862
+  },
+  "simulation roadster": {
+   "accel": 8.24166666666652,
+   "brake": 42.28153207482251,
+   "peak_angle": 0.15079365079365079,
+   "peak_ratio": 0.1590909090909091,
+   "skidpad": 0.7165871844718223,
+   "top": 58.6720309252758
+  }
+ }
+}

@@ -42,7 +42,7 @@ enum Kerb { NONE, RAMP, SAUSAGE, RIBBED }
 @export var verge_left = 6.0
 @export var verge_right = 6.0
 @export_range(0.0, 45.0, .1) var verge_slope_deg = 3.0
-## SURF table indices (scripts/track3d.gd): 0 tarmac, 1 kerb, 2 grass, 3 gravel, 4 tarmac runoff.
+## SURF table indices (scripts/surface/surface_table.gd): 0 tarmac, 1 kerb, 2 grass, 3 gravel, 4 tarmac runoff.
 @export_range(0, 4) var road_surface = 0
 @export_range(0, 4) var verge_surface = 2
 ## Per-side verge surface; -1 uses verge_surface.

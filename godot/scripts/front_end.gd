@@ -206,24 +206,6 @@ func text_at(at, value, font_size = 16, color = Color("edf0e9"), bold = false):
 	draw_string(BOLD if bold else FONT, at, str(value), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
 
 
-func draw_map(rect):
-	var points = app.track.samples
-	if points.is_empty():
-		return
-	var low = Vector2(INF, INF)
-	var high = Vector2(-INF, -INF)
-	for p in points:
-		low = low.min(Vector2(p.x, p.y))
-		high = high.max(Vector2(p.x, p.y))
-	var scale_map = minf(rect.size.x / maxf(1, high.x - low.x), rect.size.y / maxf(1, high.y - low.y))
-	var line = PackedVector2Array()
-	for i in range(0, points.size(), 4):
-		line.append(rect.get_center() + (Vector2(points[i].x, points[i].y) - (low + high) * .5) * scale_map)
-	line.append(line[0])
-	draw_polyline(line, Color("071018"), 5)
-	draw_polyline(line, Color("e7cf77"), 2)
-
-
 func _draw():
 	if app == null:
 		return

@@ -20,7 +20,7 @@ powershell -ExecutionPolicy Bypass -File tools/run_gates.ps1 -All -Features
 
 `--` separates engine options from game arguments. Ordinary launch does not run tests. When scripting Windows GUI executables, use `Start-Process -Wait -PassThru`.
 
-The pre-rebuild game and its suites (`tests/laps.gd`, `handling.gd`, `validation.gd`, `showcase_laps.gd`, `scripts/verification.gd`, the `--art-review`/`--compare` captures) were deleted in P7-01 (2026-09-23); they are in git history only. `tests/dynamics.gd` remains only as the threshold source for `tests/v2/aids_simcade.gd` until P7-01b.
+The pre-rebuild game and its suites (`tests/laps.gd`, `handling.gd`, `validation.gd`, `showcase_laps.gd`, `scripts/verification.gd`, the `--art-review`/`--compare` captures) were deleted in P7-01 (2026-09-23); they are in git history only. P7-01b merged `tests/dynamics.gd` into `tests/v2/aids_simcade.gd` and recorded the planar CarModel's figures for `flat_equivalence.gd`.
 
 ## Which checks to run
 
@@ -59,8 +59,8 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 | `suspension.gd` | Cross-weight / warp vs rigid-body statics, roof drop, side drop, ditch weave max tilt and body penetration, close two-deck regression | 12 checks |
 | `static_friction.gd` | Braked car on 8–37° slopes (creep < 0.004 mm/s), friction-limit slide on grass, unbraked rolling matches analytic rate, hold-release-rebrake cycle | 6 checks |
 | `energy_wall.gd` | Energy conservation (free-rolling coast, ΔKE < 0.5%), 37° concrete wall at 150 km/h (all wheels down, body roll matches skidpad gradient × g sin 37°, path error < 1 m) | 4 checks |
-| `flat_equivalence.gd` | CarBody vs CarModel: tyre peaks exact; 0–100, 100–0, 150 m skidpad and top speed within ±3% on the massless wheel, and within ±5% with tyre compliance, per car and handling model | Split by `--car` |
-| `aids_simcade.gd` | Simulation dynamics bands and the full Simcade suite (ASM, keyboard lock, thermal grip, grass/gravel, differential, ARB) on CarBody, inheriting thresholds from `tests/dynamics.gd` | 114 checks; split by `--car` / `--part simulation\|simcade` |
+| `flat_equivalence.gd` | CarBody vs the recorded CarModel figures (`docs/rebuild/carmodel-reference.json`): tyre peaks exact; 0–100, 100–0, 150 m skidpad and top speed within ±3% on the massless wheel, and within ±5% with tyre compliance, per car and handling model | Split by `--car` |
+| `aids_simcade.gd` | Simulation dynamics bands and the full Simcade suite (ASM, keyboard lock, thermal grip, grass/gravel, differential, ARB) on CarBody over analytic flat roads, with the pre-rebuild `tests/dynamics.gd` thresholds | 114 checks; split by `--car` / `--part simulation\|simcade` |
 | `footprint.gd` | Rigid-tyre envelope over a 5 cm step (within 0.5 mm of analytic), bit-identical to centre ray on smooth ground (1200 poses), TrackSurface kerb road cost < 300 µs | 10 checks; timing gate with `-Perf` |
 | `barrier.gd` | Head-on 300 km/h into concrete/armco/tyre walls (no pass-through), glancing 150 km/h (energy-only loss), leaning on a wall 3 s, flying over a wall (0 contacts), oblique 300 km/h | 6 checks; timing gate with `-Perf` |
 | `props.gd` | Cones, bollards and marker boards: rest on flat and on a ramp, 1 m tumbling drop, hits at 30/100/200 km/h (no pass-through of car or ground, car speed loss), momentum in free fall, wall bounce, determinism, proving-ground placement, cost | 13 checks; timing gate with `-Perf` |

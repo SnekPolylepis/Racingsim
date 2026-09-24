@@ -14,7 +14,7 @@ Hard rules:
 
 - Physics runs at a fixed 240 Hz. Don't remove the semi-implicit "need" clamps in the tyre/clutch/diff code.
 - SI units; wheel order FL, FR, RL, RR; body frame +X forward, +Y up, +Z right; positive bank lowers the right side. Tyre `wear` grows from zero; it is not remaining tread.
-- CarBody world position and velocity are 64-bit scalars (`pos_x/y/z`, `vel_x/y/z`); use `pos_y` and each wheel's `roadZ` for heights (`car.z` is not altitude).
+- CarBody world position and velocity are 64-bit scalars (`pos_x/y/z`, `vel_x/y/z`); use `pos_y` and each wheel's `roadZ` for heights (CarBody has no `car.z`).
 - Surface queries (`TrackSurface.contact`) only work inside a physics frame (`_physics_process`).
 - A track generator must keep the RoadPath bank change under 0.20°/m and the terrain's tapered under-road drop, and every file it reads at runtime must be in the export presets' `include_filter` and `check_exported_v2_assets()`.
 - Format with gdtoolkit after edits: `gdformat -l 110 scripts tests` from `godot/` (CI checks it).

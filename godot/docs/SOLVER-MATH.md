@@ -7,7 +7,8 @@
 > coordinate conventions and the reasoning behind each clamp all still describe the native
 > solver, which is why the document was kept. Its function names (`Car.step()`,
 > `Car.drivetrain()`, `Track.elevAt`) are historical; the native equivalents are in
-> `scripts/car.gd` and `scripts/track.gd`, which are authoritative where the two disagree.
+> `scripts/vehicle/` (`car_body.gd`, `tyre.gd`, `drivetrain.gd`, `aids.gd`), which are authoritative
+> where the two disagree. The planar chassis and road equations no longer have a native counterpart.
 > See [PHYSICS.md](PHYSICS.md) for the Simulation/Simcade handling models layered on top.
 
 Everything here is in `Car.step()` and `Car.drivetrain()`. The step order is fixed and matters:
