@@ -1,5 +1,22 @@
 # Native changelog
 
+## 2026-09-23 — Rebuild Preview 1
+
+The first build of the rebuild (REBUILD-PLAN.md): the game now runs on the 6-DOF car and authored
+3-D TrackAssets. Normal launch opens the new front end; the legacy game remains in the source for the
+automated suites until P7.
+- Car: 6-DOF rigid body on ray suspension, multi-ray tyre footprint, tyre compliance and unsprung mass,
+  static friction, aids and Simcade retuned for it; walls (swept hull, 3-D impulses) and knock-over props.
+- Circuits: the Proving Ground (generated) and Spa-Francorchamps (OSM centreline, SPW LiDAR elevation
+  and banking, widths and kerbs from SPW 2023 orthophotos), baked on first load and cached.
+- Game: front end with car and circuit choice and a loading screen; 3-D timing gates, sectors, delta
+  and schema-2 ghosts; HUD, minimap, telemetry, five cameras, audio, skid marks; records saved under
+  user://v2.
+- Tests: 42 headless suites (tools/run_gates.ps1, and GitHub Actions on Linux), the windowed feature
+  suite (212 checks) and the windowed --v2-present check.
+- Known limits: two circuits; placeholder cars; Simcade handling only (no settings, garage or pause
+  menu on the new front end yet); no night lighting or wall-impact audio on the new path.
+
 ## 2026-09-22 — real 3-D circuits
 
 - Circuits are a ribbon in 3-space (`scripts/track3d.gd`): a centreline with a per-sample frame, banking as a rotation about the tangent, optional road cross-sections, and queries resolved in 3-D, so overpasses are expressible. The game, the car and the gameplay suites run on it; `scripts/track.gd` remains only for `tests/validation.gd`.

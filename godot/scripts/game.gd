@@ -839,6 +839,7 @@ func check_exported_v2_assets() -> void:
 		FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
+		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
 	)
 	var loaded = inputs and load_v2_track("spa")
 	var ok = loaded and track.id == "spa" and track.length > 6000.0
