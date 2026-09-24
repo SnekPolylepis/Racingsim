@@ -5,6 +5,7 @@ extends Node3D
 ## remain on the planar path until their dependent P4 ports are complete.
 const TrackModel = preload("res://scripts/track3d.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
 const ProvingGround = preload("res://trackgen/proving_ground.gd")
 const CarModel = preload("res://scripts/car.gd")
 const RaceModel = preload("res://scripts/race.gd")
@@ -88,6 +89,9 @@ var paused = false
 var in_menu = false
 var menu_time = 0.0
 var elapsed = 0.0
+## v2 path: ground height under the camera, sampled each physics tick (surface queries only work there)
+## for the camera's ground clamp in _process.
+var camera_ground = -INF
 var zoom_user = 1.0
 var quality = 2
 var quality_clock = 0.0
@@ -114,6 +118,11 @@ var v2_smoke = false
 var v2_visual_smoke = false
 var v2_surface
 var v2_tick = 0
+## `-- --v2-present` (windowed, P4-04/P4-05 check): the bot drives two laps at 3x speed while the
+## camera cycles; the run then checks timing, ghost, minimap, skids and audio and saves a screenshot.
+var v2_present = false
+var v2_bot = null
+var v2_seen = {"ghost": false, "cameras": {}, "engine_level": 0.0}
 
 
 func _ready():
@@ -129,6 +138,7 @@ func _ready():
 		or "--audio-review" in OS.get_cmdline_user_args()
 	)
 	v2_visual_smoke = "--v2-visual-smoke" in OS.get_cmdline_user_args()
+	v2_present = "--v2-present" in OS.get_cmdline_user_args()
 	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()
 	v2_mode = v2_smoke or not test_mode
 	if v2_mode:
@@ -755,9 +765,31 @@ func setup_v2():
 		if not v2_visual_smoke:
 			return
 	setup_environment()
+	# Sky, sun, fog and ambient light for the time of day (before the ghost exists: its warm-up needs
+	# the retro renderer, which this path does not build).
+	apply_time_of_day()
 	model = visuals.make_car(car.p)
 	add_child(model.root)
+	# P4-04 / P4-05: the best-lap ghost car, the HUD (timing, sectors, minimap, telemetry), engine and
+	# tyre audio, and skid marks. The front end and its menus arrive with P4-06.
+	ghost_model = visuals.make_car(car.p, true)
+	add_child(ghost_model.root)
+	ghost_model.root.visible = false
+	var hud = CanvasLayer.new()
+	add_child(hud)
+	instruments = Instruments.new()
+	hud.add_child(instruments)
+	instruments.initialize(self)
+	instruments.rebuild_map()
+	sound = Sound.new()
+	add_child(sound)
+	setup_skids()
+	update_camera(1, true)
 	prev_pose = snapshot_v2()
+	if v2_present:
+		settings.ghost = true
+		Engine.time_scale = 3.0
+		Engine.max_physics_steps_per_frame = 32
 
 
 func place_v2_on_grid():
@@ -825,6 +857,11 @@ func physics_v2(dt):
 	if v2_tick < 3:
 		return
 	car.input = controls.update(dt, car.speed)
+	if v2_present:
+		if v2_bot == null:
+			v2_bot = BotDriver.new(track.get_node("BotLine"), car, v2_surface)
+		car.input = v2_bot.command(car)
+		present_tick()
 	for action in controls.events:
 		match action:
 			"reset":
@@ -837,6 +874,17 @@ func physics_v2(dt):
 	prev_pose = snapshot_v2()
 	car.step(dt, v2_surface, settings.automatic)
 	race.update_asset(car, track, dt)
+	elapsed += dt
+	if instruments:
+		instruments.sample(car, dt)
+	if skid_multi:
+		skid_timer += dt
+		if skid_timer >= .035:
+			skid_timer = 0
+			add_skids()
+	if camera:
+		var below = v2_surface.contact(camera.position + Vector3.UP * 2.0, Vector3.DOWN, 60.0, -1)
+		camera_ground = -INF if below.is_empty() else below.point.y
 	if v2_smoke and v2_tick >= 123:
 		var pose = snapshot_v2()
 		var blended = blend_v2(prev_pose, pose, 0.5)
@@ -866,6 +914,51 @@ func physics_v2(dt):
 		get_tree().quit(0 if valid else 1)
 
 
+## --v2-present: cycle the camera every 6 s of sim, note what showed, finish after two laps.
+func present_tick():
+	if v2_tick % (240 * 6) == 0:
+		settings.camera = (int(settings.camera) + 1) % 5
+		v2_seen.cameras[settings.camera] = true
+	v2_seen.ghost = v2_seen.ghost or (ghost_model.has("root") and ghost_model.root.visible)
+	v2_seen.engine_level = maxf(v2_seen.engine_level, sound.engine_level if sound else 0.0)
+	if race.completed < 2 and elapsed < 300.0:
+		return
+	v2_present = false
+	var marks = 0
+	for t in skid_times:
+		if t > -100.0:
+			marks += 1
+	var checks = {
+		"valid first lap": race.completed >= 1 and race.best > 0,
+		"ghost shown on lap 2": v2_seen.ghost,
+		"minimap points": instruments.map_points.size() > 100,
+		"camera modes": v2_seen.cameras.size() >= 5,
+		"engine audio": v2_seen.engine_level > .01,
+	}
+	var ok = not checks.values().has(false)
+	var shot = "user://v2-present.png"
+	settings.camera = 0
+	update_camera(1, true)
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(shot)
+	print(
+		"V2 PRESENT ",
+		"PASS" if ok else "FAIL",
+		" ",
+		JSON.stringify(
+			{
+				"checks": checks,
+				"best": race.best,
+				"last": race.last,
+				"skid_marks": marks,
+				"engine_level_max": v2_seen.engine_level,
+				"screenshot": ProjectSettings.globalize_path(shot)
+			}
+		)
+	)
+	get_tree().quit(0 if ok else 1)
+
+
 func render_v2(dt):
 	if model.is_empty():
 		return
@@ -876,11 +969,16 @@ func render_v2(dt):
 		model.pivots[i].rotation.y = -pose.wheels[i].steer
 		model.pivots[i].position.y = model.wheel_r + pose.wheels[i].comp
 		model.spins[i].rotation.z = -pose.wheels[i].phase
-	var forward = xf.basis.x
-	var target = model.root.position + forward * 7.0 + Vector3.UP * .75
-	var desired = model.root.position - forward * 8.0 + Vector3.UP * 3.2
-	camera.position = camera.position.lerp(desired, 1.0 - exp(-dt * 7.0))
-	camera.look_at(target, Vector3.UP)
+	var braking = car.input.get("brake", 0.0) > .05 or car.input.get("handbrake", 0.0) > .05
+	model.brakes.emission = Color(1, .03, .01) * (1.7 if braking else .55)
+	# The ghost is the 5.4 pose (race.gd update_asset), CG-referenced like the car.
+	var gx = race.ghost_xform()
+	ghost_model.root.visible = settings.ghost and gx != null
+	if ghost_model.root.visible:
+		ghost_model.root.transform = Transform3D(gx.basis, gx.origin - gx.basis.y * car.setup.cgHeight)
+	update_camera(dt)
+	sound.update(car, dt, true, settings)
+	instruments.queue_redraw()
 
 
 ## Fixed 240 Hz simulation only. Preserve controls -> car -> collisions -> race ordering.
@@ -1013,8 +1111,10 @@ func update_camera(dt, snap = false):
 	if settings.camera == 1:
 		desired = pos - forward * 16 * zoom_user + Vector3.UP * 14 * zoom_user
 	elif settings.camera == 2:
-		desired = pos + forward * 1.3 + Vector3.UP * 1.1
-		target = pos + forward * 45 + Vector3.UP
+		# Bonnet: on the 6-DOF car it rides with the body's roll and pitch.
+		var body_up = model.root.basis.y if v2_mode else Vector3.UP
+		desired = pos + forward * 1.3 + body_up * 1.1
+		target = pos + forward * 45 + body_up
 	elif settings.camera >= 3:
 		camera.projection = Camera3D.PROJECTION_ORTHOGONAL
 		camera.size = (42 + car.speed * .45) * zoom_user
@@ -1022,11 +1122,9 @@ func update_camera(dt, snap = false):
 		camera.look_at(pos, Vector3(0, 0, -1) if settings.camera == 3 else forward)
 		return
 	camera.position = desired if snap else camera.position.lerp(desired, 1 - exp(-dt * 7))
-	camera.position.y = maxf(
-		camera.position.y,
-		track.elev_at(camera.position.x, camera.position.z).z + (.6 if settings.camera == 2 else 1.6)
-	)
-	camera.look_at(target, Vector3.UP)
+	var ground = camera_ground if v2_mode else track.elev_at(camera.position.x, camera.position.z).z
+	camera.position.y = maxf(camera.position.y, ground + (.6 if settings.camera == 2 else 1.6))
+	camera.look_at(target, model.root.basis.y if v2_mode and settings.camera == 2 else Vector3.UP)
 	camera.fov = lerpf(camera.fov, 64 + minf(car.speed * .12, 8), minf(dt * 2, 1))
 
 
@@ -1101,8 +1199,18 @@ func _input(event):
 
 func _unhandled_input(event):
 	if v2_mode:
-		if event is InputEventKey and event.pressed and event.physical_keycode == KEY_ESCAPE:
-			get_tree().quit()
+		if event is InputEventKey and event.pressed and not event.echo:
+			# Session only: this path neither loads nor saves settings until P4-06.
+			match event.physical_keycode:
+				KEY_ESCAPE:
+					get_tree().quit()
+				KEY_V:
+					settings.camera = (int(settings.camera) + 1) % 5
+					update_camera(1, true)
+				KEY_Y:
+					settings.telemetry = not settings.telemetry
+				KEY_B:
+					settings.debug = not settings.debug
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.physical_keycode == KEY_ESCAPE:
@@ -1167,20 +1275,34 @@ func add_skids():
 		return
 	for i in 4:
 		var w = car.wheels[i]
-		var pos = Vector3(w.wx, track.elev_at(w.wx, w.wy, w.sIdx).z + .035, w.wy)
-		if w.skidding and skid_last[i] != null:
+		# v2: the wheel's contact point and ground normal (w.roadZ is its height; CarBody sets it).
+		var ground = w.roadZ if v2_mode else track.elev_at(w.wx, w.wy, w.sIdx).z
+		var normal = Vector3.UP
+		if v2_mode and i < car.contact_hits.size() and not car.contact_hits[i].is_empty():
+			normal = car.contact_hits[i].normal
+		var pos = Vector3(w.wx, ground, w.wy) + normal * .035
+		# v2: mark only a tyre past its slip peak (sliding), not one merely near its grip limit: on the
+		# 6-DOF car at a fast pace `skidding` (friction ellipse > 0.92) held through every braking zone
+		# and corner and filled all 1600 marks in two laps.
+		var marking = w.skidding
+		if v2_mode:
+			marking = (
+				w.skidding
+				and (absf(w.slipAngle) > car.peak_slip_angle() or absf(w.slipRatio) > car.peak_slip_ratio())
+			)
+		if marking and skid_last[i] != null:
 			var previous = skid_last[i]
 			var length = pos.distance_to(previous)
 			if length > .02 and length < 5:
 				var direction = (pos - previous).normalized()
-				var side = direction.cross(Vector3.UP).normalized()
+				var side = direction.cross(normal).normalized()
 				var up = side.cross(direction).normalized()
 				skid_multi.set_instance_transform(
 					skid_cursor, Transform3D(Basis(direction * length, up, side), (pos + previous) * .5)
 				)
 				skid_times[skid_cursor] = elapsed
 				skid_cursor = (skid_cursor + 1) % skid_multi.instance_count
-		skid_last[i] = pos if w.skidding else null
+		skid_last[i] = pos if marking else null
 	# Retire a bounded number of old marks each update.
 	for j in 24:
 		var index = skid_retire_cursor

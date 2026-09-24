@@ -29,21 +29,38 @@ func reset():
 	rebuild_map()
 
 
+## True on an authored TrackAsset (P4-05), false on a legacy JSON track. The car's plan-view x, y
+## (CarBody mirrors world x, z into them) map the same way on both.
+func on_asset():
+	return app.track != null and app.track.has_method("gates")
+
+
+## The circuit in plan view, x and world z (or the legacy track's x, y), for the minimap.
+func plan_points():
+	var out = PackedVector2Array()
+	if on_asset():
+		return app.track.minimap(512)
+	for i in range(0, app.track.samples.size(), 4):
+		var sm = app.track.samples[i]
+		out.append(Vector2(sm.x, sm.y))
+	return out
+
+
 ## Cache the minimap polyline after a circuit load/reset rather than projecting it every frame.
 func rebuild_map():
 	map_points.clear()
-	if app.track.samples.is_empty():
+	var plan = plan_points()
+	if plan.is_empty():
 		return
 	var low = Vector2(INF, INF)
 	var high = Vector2(-INF, -INF)
-	for sm in app.track.samples:
-		low = low.min(Vector2(sm.x, sm.y))
-		high = high.max(Vector2(sm.x, sm.y))
+	for p in plan:
+		low = low.min(p)
+		high = high.max(p)
 	map_scale = minf(202 / maxf(1, high.x - low.x), 125 / maxf(1, high.y - low.y))
 	map_offset = Vector2(127, 388) - (low + high) * .5 * map_scale
-	for i in range(0, app.track.samples.size(), 4):
-		var sm = app.track.samples[i]
-		map_points.append(map_offset + Vector2(sm.x, sm.y) * map_scale)
+	for p in plan:
+		map_points.append(map_offset + p * map_scale)
 	if map_points.size() > 1:
 		map_points.append(map_points[0])
 
@@ -80,7 +97,7 @@ func box(rect):
 
 
 func _draw():
-	if app == null or app.track.samples.is_empty():
+	if app == null or app.track == null or (not on_asset() and app.track.samples.is_empty()):
 		return
 	if app.frontend:
 		draw_console()
@@ -111,13 +128,18 @@ func _draw():
 	box(Rect2(16, 328, 238, 157))
 	if map_points.size() > 1:
 		draw_polyline(map_points, Color("9bb4bd"), 2, true)
-	var gp = race.ghost_pose()
-	if app.settings.ghost and not gp.is_empty():
-		draw_circle(map_offset + Vector2(gp[0], gp[1]) * map_scale, 3.5, Color("70cbed"))
+	if on_asset():
+		var gx = race.ghost_xform()
+		if app.settings.ghost and gx != null:
+			draw_circle(map_offset + Vector2(gx.origin.x, gx.origin.z) * map_scale, 3.5, Color("70cbed"))
+	else:
+		var gp = race.ghost_pose()
+		if app.settings.ghost and not gp.is_empty():
+			draw_circle(map_offset + Vector2(gp[0], gp[1]) * map_scale, 3.5, Color("70cbed"))
 	draw_circle(map_offset + Vector2(car.x, car.y) * map_scale, 4.5, GOLD)
 	text(
 		Vector2(32, 473),
-		"%.3f KM  ·  CP %d/%d" % [app.track.length / 1000, race.next_cp, app.track.checkpoints.size()],
+		"%.3f KM  ·  CP %d/%d" % ([app.track.length / 1000] + checkpoint_progress(race)),
 		12,
 		MUTED
 	)
@@ -345,6 +367,15 @@ func draw_telemetry():
 		draw_polyline(pts, cols[k], 1.7, true)
 
 
+## [gates met, gates in the lap] after the start line: TrackAsset gates (race.next_cp counts from 1
+## once a lap starts) or the legacy checkpoints.
+func checkpoint_progress(race):
+	if on_asset():
+		var count = race.asset_gates.size() - 1
+		return [clampi(race.next_cp - 1, 0, count) if race.active else 0, maxi(count, 0)]
+	return [race.next_cp, app.track.checkpoints.size()]
+
+
 func draw_debug():
 	var car = app.car
 	var x = 280.0
@@ -400,8 +431,12 @@ func draw_debug():
 		12,
 		MUTED
 	)
+	# Force arrows project through the retro presentation, which the v2 path does not build yet.
+	if app.retro == null:
+		return
 	for w in car.wheels:
-		var pos = Vector3(w.wx, app.track.elev_at(w.wx, w.wy).z + .15, w.wy)
+		var ground = w.roadZ if on_asset() else app.track.elev_at(w.wx, w.wy).z
+		var pos = Vector3(w.wx, ground + .15, w.wy)
 		var direction = Vector3(cos(car.h), 0, sin(car.h))
 		var right = Vector3(-sin(car.h), 0, cos(car.h))
 		if not app.camera.is_position_behind(pos):
