@@ -1733,3 +1733,32 @@ Not touched: Gemini's catch_fence, grandstand, wall_path, scenery_builder and ro
 
 ## 2026-09-24  REVIEW Look-2: accepted  (Claude Opus 5.5)
 Merged with main (Look-3 renderer): only doc/const conflicts. Windows `run_gates.ps1 -All -Features` on the merged tree: 35/35, features 77/0, stderr empty.
+
+## 2026-09-24  REVIEW P6-02a (Gemini): accepted  (Claude Opus 5.5)
+Nordschleife section 1 on main:
+- `TrackAsset.validate()` is clean.
+- Zero bake warnings; the bake warns above CLAUDE.md's 0.20°/m bank rule, so the zero-warning check enforces it.
+- 100 % of BotLine points are on tarmac.
+- `nordschleife_s1` and the laps gates pass.
+
+Two generator faults, both fixed on `rb/look-tracks` (PR #27):
+1. `add_forest()` grounded trees by reading the MultiMesh back, which bakes every tree at the origin whenever a headless run builds the cache first. It hit Spa's copy of the same code; the Nordschleife escaped only because a windowed run happened to bake it first.
+2. A flat-colour terrain override hid Look-1's grass.
+
+No fix rows needed.
+
+## 2026-09-24  DONE F-ci-ui  (Claude Opus 5.5) — branch `rb/ci-ui-fixes`
+- **Export check without Windows:**
+  - New "Linux Check" preset in `export_presets.cfg`, with the same include/exclude filters as the Windows and macOS presets.
+  - Exported here with the official 4.6.2 templates; the packaged binary's `--v2-export-check` prints V2 EXPORT PASS with empty stderr.
+  - Negative control: with Spa's `dem.raw` removed from that preset's filter, it prints V2 EXPORT FAIL and exits 1.
+  - `godot/build/linux/` is ignored.
+- **CI (`.github/workflows/gates.yml`):**
+  - `export-check` job: checks that all presets share one include and one exclude filter, exports the Linux build (templates cached), and runs `--v2-export-check`.
+  - `features` job: `--v2-present` under xvfb with Mesa; fails on any failed check or any stderr.
+- **Settings panel:** the scroll content did not expand vertically, so the tab pages stopped at their 590 px minimum and left an empty band. `content.size_flags_vertical = SIZE_EXPAND_FILL`; two more rows now show.
+- **Docs:**
+  - ART-DIRECTION's front-end paragraph described the legacy front end (studio, demo, Help, `--compare`); rewritten for v2.
+  - LLM-GUIDE "Known boundaries" dropped the legacy barrier and generic-loft lines.
+  - TESTING describes the new CI jobs.
+- **Dropped:** the HUD overlap I noted earlier exists only in the non-console HUD, which the game no longer shows (`--v2-present` now opens the front end).

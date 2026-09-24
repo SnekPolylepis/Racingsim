@@ -15,6 +15,7 @@ godot/build/*.exe
 godot/build/*.zip
 godot/build/*.log
 godot/build/macos/
+godot/build/linux/
 godot/build/legacy/
 
 # Generated test evidence: screenshots, logs, result JSON, capture rounds
