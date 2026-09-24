@@ -268,11 +268,7 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 	asset.add_child(terrain)
 	terrain.owner = asset
 	terrain.bake()
-	var material = StandardMaterial3D.new()
-	material.albedo_color = Color(0.24, 0.36, 0.16)
-	material.roughness = 1.0
-	for chunk in asset.get_node("Terrain/Eifel").get_children():
-		chunk.material_override = material
+	# The chunks keep terrain.gd's PS2 grass (Look-1); a flat colour override here predated it.
 	var heights = PackedFloat64Array()
 	heights.resize(w * h)
 	for chunk in asset.get_node("Terrain/Eifel").get_children():
@@ -332,12 +328,45 @@ static func add_forest(
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
-	if not terrain.is_empty():
-		var multimesh = asset.get_node("Scenery/" + title).multimesh
-		for i in multimesh.instance_count:
-			var xf = multimesh.get_instance_transform(i)
+	var multimesh = asset.get_node("Scenery/" + title).multimesh
+	var clear = road_clearance(asset.get_node("Main"))
+	# Ground each tree from the scatter's own layout: reading the MultiMesh back returns zeros under
+	# the headless renderer, which baked every tree at the origin into the shared track cache. A tree
+	# that lands near another part of the circuit (a far offset on a winding closed road) is dropped.
+	for i in multimesh.instance_count:
+		var xf: Transform3D = trees.last_bake.xforms[i]
+		if near_road(clear, xf.origin):
+			xf = Transform3D(Basis.from_scale(Vector3.ZERO), xf.origin)
+		elif not terrain.is_empty():
 			xf.origin.y = terrain_height(terrain, xf.origin)
-			multimesh.set_instance_transform(i, xf)
+		multimesh.set_instance_transform(i, xf)
+
+
+## Road centre points hashed into CLEAR_M cells (plan view) for near_road().
+const CLEAR_M = 24.0
+
+
+static func road_clearance(road) -> Dictionary:
+	var cells = {}
+	for p in road.last_bake.center:
+		var key = Vector2i(floori(p.x / CLEAR_M), floori(p.z / CLEAR_M))
+		if not cells.has(key):
+			cells[key] = []
+		cells[key].append(Vector2(p.x, p.z))
+	return cells
+
+
+## True when `point` is within CLEAR_M of the road's centreline anywhere on the circuit.
+static func near_road(cells: Dictionary, point: Vector3) -> bool:
+	var at = Vector2(point.x, point.z)
+	var cx = floori(point.x / CLEAR_M)
+	var cz = floori(point.z / CLEAR_M)
+	for dx in [-1, 0, 1]:
+		for dz in [-1, 0, 1]:
+			for p in cells.get(Vector2i(cx + dx, cz + dz), []):
+				if at.distance_squared_to(p) < CLEAR_M * CLEAR_M:
+					return true
+	return false
 
 
 static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
@@ -738,7 +767,9 @@ static func build_asset() -> Node3D:
 				0.3
 			)
 
-	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 5.0, 10.0, 40.0, 713)
+	# The Nordschleife runs through Eifel forest: a near row and a deep band behind it.
+	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 11.0, 10.0, 45.0, 713)
+	add_forest(asset, terrain, "EifelDeep", 0.0, -1.0, 16.0, 45.0, 150.0, 714)
 	add_scenery_kit(asset, road, positions, measured)
 	add_lighting(asset, road, positions, measured)
 	return asset

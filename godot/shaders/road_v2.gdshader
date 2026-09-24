@@ -31,7 +31,9 @@ void fragment() {
 	vec3 base = texture(albedo_tex, uv).rgb;
 	float grain = base.r;
 	float wear = floor(clamp(grain * 6.0, 0.0, 1.0) * 5.0) / 5.0;
-	vec3 col = afterhours ? base * 2.5 + vec3(.014, .017, .021) : base * 3.8 + vec3(.015);
+	// Day: the warm-brown asphalt photo graded to a cool neutral grey, so under the warm sun the circuit
+	// reads GT4 grey rather than pink-tan.
+	vec3 col = afterhours ? base * 2.5 + vec3(.014, .017, .021) : base * vec3(3.4, 3.75, 4.15) + vec3(.012, .013, .016);
 	// The rubbered line: without a racing-line channel, a soft band down the middle of the road.
 	float line = exp(-pow(abs(lat * 1.6), 2.0));
 	col *= 1.0 - rubber * .45 * line;
@@ -66,6 +68,7 @@ void fragment() {
 	reflected = min(reflected, vec3(1.1));
 	EMISSION = (OUTPUT_IS_SRGB ? to_srgb(reflected) : reflected) + col * 0.045;
 	ALBEDO = col + neon * glow * 0.18;
-	METALLIC = 0.23;
-	ROUGHNESS = mix(0.32, 0.48, wear) + line * 0.06;
+	// Low sheen: at 0.23 metallic and 0.32 roughness the road flared white driving toward the sun.
+	METALLIC = afterhours ? 0.23 : 0.08;
+	ROUGHNESS = afterhours ? mix(0.32, 0.48, wear) + line * 0.06 : mix(0.5, 0.64, wear) + line * 0.05;
 }
