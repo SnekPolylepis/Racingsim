@@ -1,22 +1,18 @@
 extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
-## P4-01 drives the TrackAsset/CarBody path in native Godot coordinates. Legacy feature harnesses
-## remain on the planar path until their dependent P4 ports are complete.
-const TrackModel = preload("res://scripts/track3d.gd")
+## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
+## deleted in P7-01).
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
 const TrackDrive = preload("res://scripts/proving/track_drive.gd")
 const WallQuery = preload("res://scripts/surface/wall_query.gd")
 const WallContact = preload("res://scripts/vehicle/wall_contact.gd")
 const PropSet = preload("res://scripts/props/prop_set.gd")
-const CarModel = preload("res://scripts/car.gd")
 const RaceModel = preload("res://scripts/race.gd")
-const Collisions = preload("res://scripts/collisions.gd")
 const Visuals = preload("res://scripts/visuals.gd")
 const Storage = preload("res://scripts/storage.gd")
 const Controls = preload("res://scripts/controls.gd")
-const Interface = preload("res://scripts/interface.gd")
 const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
 const DEFAULT_SETTINGS = {
@@ -62,8 +58,8 @@ const DEFAULT_SETTINGS = {
 	"folder": "user://"
 }
 var settings = DEFAULT_SETTINGS.duplicate(true)
-var track = TrackModel.new()
-var car = CarModel.new()
+var track = null
+var car = CarBody.new()
 var race = RaceModel.new()
 var visuals = Visuals.new()
 var storage = Storage.new()
@@ -101,7 +97,6 @@ var quality_clock = 0.0
 var quality_frames = 0
 var quality_time = 0.0
 var test_input = false
-var test_mode = false
 var benchmark_driver
 var model_preset = ""
 var active_record_path = ""
@@ -116,7 +111,6 @@ var skid_last = [null, null, null, null]
 var skid_times = []
 ## Car state before the latest physics tick; _process blends toward the current state (render interpolation).
 var prev_pose = {}
-var v2_mode = false
 var v2_smoke = false
 var v2_flow_test = false
 var v2_export_check = false
@@ -134,99 +128,19 @@ var v2_seen = {"ghost": false, "cameras": {}, "engine_level": 0.0}
 
 
 func _ready():
-	test_mode = (
-		"--features" in OS.get_cmdline_user_args()
-		or "--smoke" in OS.get_cmdline_user_args()
-		or "--art-review" in OS.get_cmdline_user_args()
-		or "--title-review" in OS.get_cmdline_user_args()
-		or "--compare" in OS.get_cmdline_user_args()
-		or "--showcase" in OS.get_cmdline_user_args()
-		or "--flow-benchmark" in OS.get_cmdline_user_args()
-		or "--performance" in OS.get_cmdline_user_args()
-		or "--audio-review" in OS.get_cmdline_user_args()
-	)
 	v2_visual_smoke = "--v2-visual-smoke" in OS.get_cmdline_user_args()
 	v2_flow_test = "--v2-flow-test" in OS.get_cmdline_user_args()
 	v2_export_check = "--v2-export-check" in OS.get_cmdline_user_args()
-	v2_present = "--v2-present" in OS.get_cmdline_user_args()
+	# `--features` (tools/run_gates.ps1 -Features) runs the same windowed v2 check since P7-01 retired the
+	# legacy feature suite; it also prints a FEATURE RESULTS line.
+	v2_present = "--v2-present" in OS.get_cmdline_user_args() or "--features" in OS.get_cmdline_user_args()
 	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()
-	v2_mode = v2_smoke or not test_mode
-	if v2_mode:
-		setup_v2()
-		return
-	if test_mode:
-		settings_path = "user://native-tests/settings.json"
-		DirAccess.make_dir_recursive_absolute("user://native-tests")
-	presets = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
-	setup_fields = JSON.parse_string(FileAccess.get_file_as_string("res://data/setup_fields.json"))
-	var saved = storage.read_json(settings_path) if FileAccess.file_exists(settings_path) else {}
-	if saved is Dictionary:
-		for k in DEFAULT_SETTINGS:
-			if (
-				saved.has(k)
-				and (
-					typeof(saved[k]) == typeof(DEFAULT_SETTINGS[k])
-					or (Storage.numeric(saved[k]) and Storage.numeric(DEFAULT_SETTINGS[k]))
-				)
-			):
-				settings[k] = saved[k]
-		for k in ["keys", "pad"]:
-			if saved.get(k) is Dictionary:
-				settings[k] = saved[k]
-	if "--title-review" in OS.get_cmdline_user_args():
-		settings = DEFAULT_SETTINGS.duplicate(true)
-	if test_mode:
-		settings.folder = "user://native-tests"
-		settings.fullscreen = false
-	if not storage.initialize(settings.folder):
-		storage.initialize()
-		settings.folder = "user://"
-	controls.configure(settings)
-	car.simcade_enabled = settings.handling_model == 0
-	car.configure(presets[preset_key])
-	setup_environment()
-	setup_retro_grade()
-	ui = Interface.new()
-	add_child(ui)
-	ui.initialize(self)
-	if ui and ui.menu_car:
-		ui.menu_car.select(presets.keys().find(preset_key))
-	sound = Sound.new()
-	add_child(sound)
-	record_writer = preload("res://scripts/record_writer.gd").new()
-	add_child(record_writer)
-	refresh_tracks()
-	load_track_now(track_files[0])
-	apply_settings()
-	setup_skids()
-	frontend = preload("res://scripts/front_end.gd").new()
-	ui.root.add_child(frontend)
-	ui.root.move_child(frontend, ui.blocker.get_index())
-	frontend.initialize(self)
-	retro.attach_ui()
-	get_tree().auto_accept_quit = false
-	get_tree().root.close_requested.connect(request_quit)
-	get_window().focus_exited.connect(
-		func():
-			if test_mode and benchmark_driver != null:
-				return
-			controls.clear()
-			if not test_mode and not in_menu:
-				set_paused(true)
-	)
-	if test_mode:
-		if "--title-review" in OS.get_cmdline_user_args():
-			frontend.show_page("boot")
-		call_deferred("run_feature_tests")
-	else:
-		frontend.show_page("boot")
+	setup_v2()
 
 
 func message(value):
-	if v2_mode and frontend and frontend.v2_panels:
+	if frontend and frontend.v2_panels:
 		frontend.v2_panels.notice(str(value))
-	if ui and is_instance_valid(ui.status):
-		ui.status.text = value
 
 
 func blocked():
@@ -239,110 +153,6 @@ func guard_dirty(action):
 
 func request_quit():
 	guard_dirty(func(): get_tree().quit())
-
-
-func refresh_tracks():
-	track_files = []
-	var bundled = Array(DirAccess.get_files_at("res://tracks"))
-	bundled.sort()
-	bundled.erase("Spa-Francorchamps.json")
-	bundled.push_front("Spa-Francorchamps.json")
-	for name in bundled:
-		if name.ends_with(".json"):
-			track_files.append("res://tracks/" + name)
-	if ui and ui.menu_track:
-		ui.menu_track.clear()
-		for file in track_files:
-			ui.menu_track.add_item(file.get_file().get_basename())
-		var index = track_files.find(active_track_file)
-		if index >= 0:
-			ui.menu_track.select(index)
-
-
-func load_track(index):
-	if index >= 0 and index < track_files.size():
-		request_track_file(track_files[index])
-
-
-func request_track_file(file):
-	var previous = track_files.find(active_track_file)
-	if previous >= 0 and ui and ui.menu_track:
-		ui.menu_track.select(previous)
-	guard_dirty(
-		func():
-			load_track_now(file)
-			ui.close()
-	)
-
-
-## Low-level load without a discard prompt. UI callers should use request_track_file.
-func load_track_now(file):
-	var d = storage.read_json(file)
-	var error = storage.validate_track(d)
-	if not error.is_empty():
-		message(error)
-		return false
-	track.load_data(d)
-	active_track_file = file
-	rebuild_world()
-	reset_car()
-	load_record()
-	refresh_tracks()
-	instruments.rebuild_map()
-	message("%s · %.3f km" % [track.data.name, track.length / 1000])
-	return true
-
-
-func rebuild_world():
-	if is_instance_valid(scenery):
-		scenery.free()
-	scenery = Node3D.new()
-	add_child(scenery)
-	track.build_barriers()
-	if not track.samples.is_empty():
-		visuals.build_track(scenery, track)
-	apply_time_of_day()
-
-
-## Reset motion, tire state, run progress and visible car meshes; keep the selected record.
-## Call load_record separately when track/car/setup/rules identity has changed.
-func reset_car():
-	car.reset_pose(track.grid_pose())
-	race.reset()
-	controls.clear()
-	instruments.reset()
-	skid_last = [null, null, null, null]
-	if skid_multi:
-		for i in skid_multi.instance_count:
-			skid_multi.set_instance_transform(
-				i, Transform3D(Basis.IDENTITY.scaled(Vector3.ZERO), Vector3.ZERO)
-			)
-	for o in track.data.objects:
-		if o.type == "cone":
-			o.x = o.get("ox", o.x)
-			o.y = o.get("oy", o.y)
-			o.vx = 0
-			o.vy = 0
-	if model.is_empty() or model_preset != preset_key:
-		if model.has("root"):
-			model.root.free()
-		if ghost_model.has("root"):
-			ghost_model.root.free()
-		model = visuals.make_car(car.p)
-		ghost_model = visuals.make_car(car.p, true)
-		add_child(model.root)
-		add_child(ghost_model.root)
-		model_preset = preset_key
-		for mesh in ghost_model.root.find_children("*", "MeshInstance3D", true, false):
-			mesh.layers = 2
-		warm_ghost.call_deferred()
-	model.root.visible = true
-	ghost_model.root.visible = false
-	prev_pose = {}
-	if retro:
-		retro.valid_history = false
-	visuals.pose_car(model, car.snapshot(), track)
-	update_camera(1, true)
 
 
 ## Compatibility cannot asynchronously compile a newly visible transparent ghost.
@@ -386,101 +196,6 @@ func warm_ghost():
 		camera.set_cull_mask_value(2, true)
 
 
-func change_car(key):
-	preset_key = key
-	car.configure(presets[key])
-	if ui and ui.menu_car:
-		ui.menu_car.select(presets.keys().find(key))
-	reset_car()
-	load_record()
-
-
-func choose_file(kind, write):
-	ui.dialogs += 1
-	controls.clear()
-	var dialog = FileDialog.new()
-	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE if write else FileDialog.FILE_MODE_OPEN_FILE
-	dialog.filters = PackedStringArray(["*.json ; Racing Sim JSON"])
-	dialog.title = ("Export " if write else "Import ") + kind
-	add_child(dialog)
-	if write:
-		dialog.current_file = (
-			storage.safe_name(car.p.name if kind == "setup" else track.data.name)
-			+ (".ghost.json" if kind == "ghost" else ".json")
-		)
-	dialog.file_selected.connect(
-		func(path):
-			ui.dialogs -= 1
-			dialog.queue_free()
-			if write:
-				var data = setup_document() if kind == "setup" else ghost_document()
-				if kind == "ghost" and race.ghost.is_empty():
-					message("No best lap to export")
-					return
-				message("Exported " + path.get_file() if storage.write_json(path, data) else storage.error)
-			elif kind == "setup":
-				import_setup(path)
-			else:
-				import_ghost(path)
-	)
-	dialog.canceled.connect(
-		func():
-			ui.dialogs -= 1
-			dialog.queue_free()
-	)
-	dialog.popup_centered_ratio(.75)
-
-
-func choose_folder():
-	ui.dialogs += 1
-	var dialog = FileDialog.new()
-	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
-	dialog.title = "Choose racing data folder"
-	add_child(dialog)
-	dialog.dir_selected.connect(
-		func(path):
-			ui.dialogs -= 1
-			dialog.queue_free()
-			connect_storage(path)
-	)
-	dialog.canceled.connect(
-		func():
-			ui.dialogs -= 1
-			dialog.queue_free()
-	)
-	dialog.popup_centered_ratio(.75)
-
-
-func connect_storage(folder):
-	var old = storage.root
-	if not storage.initialize(folder):
-		message(storage.error)
-		storage.initialize(old)
-		return
-	settings.folder = folder
-	save_settings()
-	refresh_tracks()
-	load_record()
-	ui.open_library()
-	message("Connected " + ProjectSettings.globalize_path(folder))
-
-
-func use_local_storage():
-	connect_storage("user://")
-
-
-func delete_file(file):
-	if file.begins_with("res://"):
-		return
-	if DirAccess.remove_absolute(file) != OK:
-		message("Could not delete " + file.get_file())
-		return
-	refresh_tracks()
-	message("Deleted " + file.get_file())
-
-
 func effective_setup():
 	var values = car.setup.duplicate(true)
 	values.tcsLevel = car.tcs_level()
@@ -490,94 +205,19 @@ func effective_setup():
 	return values
 
 
-func setup_document():
-	return {
-		"schema": 1,
-		"savedAt": Time.get_datetime_string_from_system(true) + "Z",
-		"car": preset_key,
-		"setup": effective_setup()
-	}
-
-
-func save_setup(name):
-	var file = storage.path("setups", storage.safe_name(name) + ".json")
-	var action = func():
-		message("Setup saved" if storage.write_json(file, setup_document()) else storage.error)
-		ui.open_garage()
-	if FileAccess.file_exists(file):
-		ui.confirm("Replace setup?", file.get_file() + " already exists.", action)
-	else:
-		action.call()
-
-
-func import_setup(file):
-	var data = storage.read_json(file)
-	if not data is Dictionary:
-		message("Invalid setup JSON")
-		return false
-	var preset = data.get("car", preset_key)
-	var values = data.get("setup", data)
-	if not presets.has(preset) or not values is Dictionary:
-		message("Unknown car or invalid setup")
-		return false
-	var result = presets[preset].setup.duplicate(true)
-	for field in setup_fields:
-		if values.has(field[1]):
-			if not Storage.numeric(values[field[1]]):
-				message("Invalid setup value: " + field[1])
-				return false
-			result[field[1]] = clampf(values[field[1]], field[3], field[4])
-	for key in ["tcsLevel", "asmLevel"]:
-		if values.has(key):
-			if not Storage.numeric(values[key]):
-				message("Invalid aid level: " + key)
-				return false
-			result[key] = clampf(values[key], 0, 10)
-	if not result.has("tcsLevel"):
-		result.tcsLevel = (result.tcIntensity * 10) if result.tcOn > .5 else 0.0
-	# Old setups preserve their aids rather than silently enabling stability management.
-	if not result.has("asmLevel"):
-		result.asmLevel = 0.0
-	change_car(preset)
-	car.setup = result
-	car.set_tcs(result.tcsLevel)
-	reset_car()
-	load_record()
-	ui.open_garage()
-	message("Loaded " + file.get_file())
-	return true
-
-
-## Build a native configuration identity from document/setup/car/rules.
-## Exclude track name/timestamp and cone runtime state; this is serialized JSON, not canonical JSON.
+## The record's identity: the TrackAsset's record_key() with the effective setup, car, wear, rules and
+## handling model (serialized JSON, not canonical JSON).
 func record_path():
 	var identity = {
-		"track": track.record_key() if v2_mode else track.data.duplicate(true),
-		"setup": v2_effective_setup() if v2_mode else effective_setup(),
+		"track": track.record_key(),
+		"setup": v2_effective_setup(),
 		"car": preset_key,
 		"wear": settings.wear,
 		"off_track": settings.off_track,
 		"contact": settings.contact,
 		"handling": "simcade" if settings.handling_model == 0 else "simulation"
 	}
-	if v2_mode:
-		return storage.path("records", JSON.stringify(identity).sha256_text() + ".json")
-	identity.track.erase("savedAt")
-	identity.track.erase("name")
-	# Default-on fields added after records existed must not change old record identities.
-	if identity.track.get("autoBarriers", true):
-		identity.track.erase("autoBarriers")
-	for o in identity.track.objects:
-		for k in ["vx", "vy", "hit"]:
-			o.erase(k)
-		if o.type == "cone":
-			o.x = o.ox
-			o.y = o.oy
 	return storage.path("records", JSON.stringify(identity).sha256_text() + ".json")
-
-
-func legacy_ghost_path():
-	return storage.path("ghosts", storage.safe_name(track.data.name) + ".ghost.json")
 
 
 func load_record():
@@ -588,13 +228,12 @@ func load_record():
 	race.collision_invalidate = settings.contact
 	active_record_path = record_path()
 	var file = active_record_path
-	if not v2_mode and not FileAccess.file_exists(file):
-		file = legacy_ghost_path()
 	if FileAccess.file_exists(file):
 		var saved = storage.read_json(file)
 		if (
 			storage.validate_ghost(saved).is_empty()
-			and (not v2_mode or (saved.get("schema") == 2 and saved.get("track") == track.record_key()))
+			and saved.get("schema") == 2
+			and saved.get("track") == track.record_key()
 			and saved.get("car", preset_key) == preset_key
 			and (saved.has("configuration") or settings.handling_model == 1)
 			and saved.get("configuration", active_record_path.get_file()) == active_record_path.get_file()
@@ -625,11 +264,6 @@ func begin_session():
 	race.collision_invalidate = settings.contact
 
 
-## Best individual sector times live beside the record: records/<hash>.sectors.json {"schema":1,"best":[s1,s2,s3]}.
-func sectors_path():
-	return record_path().get_basename() + ".sectors.json"
-
-
 func save_sectors():
 	race.sectors_dirty = false
 	record_writer.enqueue(
@@ -647,9 +281,9 @@ func save_sectors():
 
 func ghost_document(destination = ""):
 	return {
-		"schema": 2 if v2_mode else 1,
+		"schema": 2,
 		"savedAt": Time.get_datetime_string_from_system(true) + "Z",
-		"track": track.record_key() if v2_mode else storage.safe_name(track.data.name) + ".json",
+		"track": track.record_key(),
 		"car": preset_key,
 		"configuration": (record_path() if destination.is_empty() else destination).get_file(),
 		"time": race.best,
@@ -658,37 +292,7 @@ func ghost_document(destination = ""):
 
 
 func save_record():
-	var job = {"path": active_record_path, "data": ghost_document(active_record_path)}
-	if not v2_mode:
-		job.legacy = legacy_ghost_path()
-	record_writer.enqueue(job)
-
-
-func import_ghost(file):
-	record_writer.flush()
-	var data = storage.read_json(file)
-	var error = storage.validate_ghost(data)
-	if not error.is_empty():
-		message(error)
-		return false
-	race.best = data.time
-	race.ghost = data.samples
-	storage.write_json(record_path(), ghost_document())
-	message("Imported best lap " + RaceModel.time_text(race.best))
-	return true
-
-
-func clear_ghost():
-	record_writer.flush()
-	for file in [record_path(), legacy_ghost_path(), sectors_path()]:
-		if FileAccess.file_exists(file):
-			DirAccess.remove_absolute(file)
-	race.best = 0
-	race.ghost = []
-	race.delta = null
-	race.best_sectors = [0.0, 0.0, 0.0]
-	race.session_sectors = [0.0, 0.0, 0.0]
-	message("Best lap and sectors cleared")
+	record_writer.enqueue({"path": active_record_path, "data": ghost_document(active_record_path)})
 
 
 func save_settings():
@@ -696,25 +300,6 @@ func save_settings():
 	settings.pad = controls.pad
 	if not storage.write_json(settings_path, settings):
 		message(storage.error)
-
-
-func apply_settings():
-	controls.dead = clampf(settings.deadzone, 0, .3)
-	controls.linearity = clampf(settings.linearity, 1, 3)
-	controls.keyboard_rate = clampf(settings.keyboard_rate, 1, 8)
-	car.simcade_enabled = settings.handling_model == 0
-	car.simcade_steering = settings.simcade_grip_assist
-	car.wear_enabled = settings.wear
-	car.auto_clutch = settings.auto_clutch
-	race.off_track_invalidate = settings.off_track
-	race.collision_invalidate = settings.contact
-	set_quality(int(settings.quality))
-	if retro:
-		retro.apply_settings()
-	apply_time_of_day()
-	DisplayServer.window_set_mode(
-		DisplayServer.WINDOW_MODE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED
-	)
 
 
 ## Retro rendering deliberately omits screen-space lighting and AA. Medium and High cast
@@ -731,11 +316,7 @@ func set_quality(value):
 	)
 	sun.shadow_blur = 1.4 if quality == 2 else 1.0
 	var view = retro.world_view if retro else get_viewport()
-	view.msaa_3d = (
-		Viewport.MSAA_2X
-		if settings.native_msaa and (v2_mode or settings.render_resolution == 2)
-		else Viewport.MSAA_DISABLED
-	)
+	view.msaa_3d = (Viewport.MSAA_2X if settings.native_msaa else Viewport.MSAA_DISABLED)
 	view.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
 	# Ambient occlusion is a High-tier extra. Low and Medium keep the flat console fill.
 	environment.ssao_enabled = quality == 2
@@ -843,9 +424,12 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline.json")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain.json")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
 	)
-	var loaded = inputs and load_v2_track("spa")
-	var ok = loaded and track.id == "spa" and track.length > 6000.0
+	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
+	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
 	print("V2 EXPORT ", "PASS" if ok else "FAIL")
 	var scene_tree = get_tree()
 	for player in find_children("*", "AudioStreamPlayer", true, false):
@@ -1227,6 +811,11 @@ func present_tick():
 			}
 		)
 	)
+	var failures = []
+	for name in checks:
+		if not checks[name]:
+			failures.append(name)
+	print("FEATURE RESULTS ", JSON.stringify({"checks": checks.size(), "failures": failures}))
 	get_tree().quit(0 if ok else 1)
 
 
@@ -1258,118 +847,13 @@ func render_v2(dt):
 
 ## Fixed 240 Hz simulation only. Preserve controls -> car -> collisions -> race ordering.
 func _physics_process(dt):
-	if v2_mode:
-		physics_v2(dt)
-		return
-	if blocked() or track.samples.is_empty():
-		prev_pose = {}
-		return
-	if frontend and frontend.page == "attract":
-		frontend.demo_driver.feed(controls, car, track, settings)
-	car.input = controls.update(dt, car.speed)
-	# Speed-sensitive steering: strength 1 halves lock at 14 m/s (browser default), 0 = none.
-	var assist = float(settings.steer_assist_pad if controls.pad_active else settings.steer_assist_kb)
-	car.steer_falloff = 14.0 / assist if assist > .001 else 0.0
-	var grip_assist = settings.steer_grip_pad if controls.pad_active else settings.steer_grip_kb
-	car.steer_slip_limit = car.peak_slip_angle() * .85 if grip_assist else 0.0
-	if test_input:
-		car.input.throttle = 1.0
-	for action in controls.events:
-		if action == "reset":
-			reset_car()
-		elif action == "shiftUp":
-			car.request_shift(1)
-		elif action == "shiftDown":
-			car.request_shift(-1)
-	controls.events.clear()
-	prev_pose = car.snapshot()
-	car.step(dt, track, settings.automatic)
-	var old_v = Vector2(car.vx, car.vy)
-	Collisions.step(car, track, dt)
-	if benchmark_driver != null:
-		benchmark_driver.observe(car, track, car.collided)
-	var impact = old_v.distance_to(Vector2(car.vx, car.vy))
-	if impact > .15:
-		sound.impact(impact)
-	var attract = frontend != null and frontend.page == "attract"
-	if not attract and race.update(car, track, dt):
-		save_record()
-		message("New best lap · " + RaceModel.time_text(race.best))
-	if not attract and race.sectors_dirty:
-		save_sectors()
-	if frontend and not attract:
-		frontend.observe_tick()
-	instruments.sample(car, dt)
-	elapsed += dt
-	skid_timer += dt
-	if skid_timer >= .035:
-		skid_timer = 0
-		add_skids()
+	physics_v2(dt)
 
 
 ## Render/audio/UI updates continue while custom simulation is blocked.
 func _process(dt):
-	if v2_mode:
-		render_v2(dt)
-		adaptive_quality_v2(dt)
-		return
-	if model.is_empty():
-		return
-	if record_writer and not record_writer.errors.is_empty():
-		message(record_writer.errors.pop_front())
-	var started = Time.get_ticks_usec()
-	ui.sync_menus()
-	if in_menu:
-		menu_time += dt
-		visuals.pose_car(model, car.snapshot(), track)
-		visuals.animate(track, elapsed)
-		var pos = model.root.position
-		var ang = menu_time * .18 + 2.2
-		camera.projection = Camera3D.PROJECTION_PERSPECTIVE
-		camera.fov = 40
-		camera.position = pos + Vector3(cos(ang) * 8.8, 1.9 + sin(menu_time * .11) * .4, sin(ang) * 8.8)
-		camera.look_at(pos + Vector3.UP * .55 + model.root.basis.x * .3, Vector3.UP)
-		# Frame the car in the unobscured right side of the menu.
-		camera.look_at(pos + Vector3.UP * .55 + model.root.basis.x * .3 - camera.basis.x * 1.55, Vector3.UP)
-	else:
-		var now = car.snapshot()
-		visuals.pose_car(
-			model,
-			(
-				now
-				if prev_pose.is_empty()
-				else CarModel.blend(prev_pose, now, Engine.get_physics_interpolation_fraction())
-			),
-			track
-		)
-		visuals.animate(track, elapsed)
-		update_camera(dt)
-	var gp = race.ghost_pose()
-	if not ghost_warming:
-		ghost_model.root.visible = settings.ghost and not gp.is_empty()
-	if ghost_model.root.visible and not ghost_warming:
-		var el = track.elev_at(gp[0], gp[1])
-		var forward = Vector3(cos(gp[2]), el.gx * cos(gp[2]) + el.gy * sin(gp[2]), sin(gp[2])).normalized()
-		var right = Vector3(-sin(gp[2]), -el.gx * sin(gp[2]) + el.gy * cos(gp[2]), cos(gp[2])).normalized()
-		var up = right.cross(forward).normalized()
-		ghost_model.root.transform = Transform3D(
-			Basis(forward, up, forward.cross(up).normalized()), Vector3(gp[0], el.z, gp[1])
-		)
-	sound.update(car, dt, not blocked(), settings)
-	instruments.queue_redraw()
-	quality_time += dt
-	quality_frames += 1
-	quality_clock += dt
-	if settings.adaptive and quality_clock > 4 and not blocked():
-		var fps = quality_frames / maxf(.01, quality_time)
-		if fps < 45 and quality > 0:
-			set_quality(quality - 1)
-		elif fps > 85 and quality < int(settings.quality):
-			set_quality(quality + 1)
-		quality_clock = 0
-		quality_time = 0
-		quality_frames = 0
-	instruments.frame_ms = lerpf(instruments.frame_ms, (Time.get_ticks_usec() - started) / 1000.0, .1)
+	render_v2(dt)
+	adaptive_quality_v2(dt)
 
 
 ## Keep the v2 quality option effective without calling the legacy blocked/UI path.
@@ -1410,7 +894,7 @@ func update_camera(dt, snap = false):
 		desired = pos - forward * 16 * zoom_user + Vector3.UP * 14 * zoom_user
 	elif settings.camera == 2:
 		# Bonnet: on the 6-DOF car it rides with the body's roll and pitch.
-		var body_up = model.root.basis.y if v2_mode else Vector3.UP
+		var body_up = model.root.basis.y
 		desired = pos + forward * 1.3 + body_up * 1.1
 		target = pos + forward * 45 + body_up
 	elif settings.camera >= 3:
@@ -1420,141 +904,35 @@ func update_camera(dt, snap = false):
 		camera.look_at(pos, Vector3(0, 0, -1) if settings.camera == 3 else forward)
 		return
 	camera.position = desired if snap else camera.position.lerp(desired, 1 - exp(-dt * 7))
-	var ground = camera_ground if v2_mode else track.elev_at(camera.position.x, camera.position.z).z
+	var ground = camera_ground
 	camera.position.y = maxf(camera.position.y, ground + (.6 if settings.camera == 2 else 1.6))
-	camera.look_at(target, model.root.basis.y if v2_mode and settings.camera == 2 else Vector3.UP)
+	camera.look_at(target, model.root.basis.y if settings.camera == 2 else Vector3.UP)
 	camera.fov = lerpf(camera.fov, 64 + minf(car.speed * .12, 8), minf(dt * 2, 1))
 
 
-func cycle_camera():
-	settings.camera = (int(settings.camera) + 1) % 5
-	update_camera(1, true)
-	save_settings()
-	message(["Chase", "High chase", "Bonnet", "Overhead north", "Overhead car"][settings.camera] + " camera")
-
-
-func toggle_pause():
-	if ui.is_open():
-		ui.close()
-		return
-	if in_menu:
-		return
-	set_paused(not paused)
-
-
-func set_paused(value):
-	paused = value
-	controls.clear()
-	prev_pose = {}
-	if frontend:
-		frontend.show_page("pause" if value else "drive")
-
-
-## Return to the title screen. The car waits on the grid.
-func show_main_menu():
-	ui.close()
-	paused = false
-	in_menu = true
-	menu_time = 0.0
-	reset_car()
-	if frontend:
-		frontend.show_page("main")
-	ui.sync_menus()
-
-
-func start_drive():
-	ui.close()
-	in_menu = false
-	paused = false
-	reset_car()
-	if frontend:
-		frontend.show_page("drive")
-	ui.sync_menus()
-
-
 func _input(event):
-	if v2_mode:
-		if frontend and frontend.handle(event):
-			get_viewport().set_input_as_handled()
-			return
-		controls.handle(event, not in_menu and not paused)
-		return
-	# Automated laps own their input stream. Desktop events must not pause a
-	# timing sample or change its driving controls; ordinary play is unaffected.
-	if test_mode and benchmark_driver != null and not event.has_meta("showcase_input"):
-		get_viewport().set_input_as_handled()
-		return
 	if frontend and frontend.handle(event):
 		get_viewport().set_input_as_handled()
 		return
-	var listening = not controls.listening.is_empty()
-	if controls.handle(event, not blocked()):
-		if listening and controls.listening.is_empty():
-			save_settings()
-			ui.update_mapping_labels()
-		get_viewport().set_input_as_handled()
-		return
-	if retro and retro.forward_input(event):
-		get_viewport().set_input_as_handled()
+	controls.handle(event, not in_menu and not paused)
 
 
 func _unhandled_input(event):
-	if v2_mode:
-		if event is InputEventKey and event.pressed and not event.echo:
-			match event.physical_keycode:
-				KEY_ESCAPE:
-					if frontend:
-						frontend.back()
-				KEY_V:
-					settings.camera = (int(settings.camera) + 1) % 5
-					update_camera(1, true)
-					save_settings()
-				KEY_Y:
-					settings.telemetry = not settings.telemetry
-					save_settings()
-				KEY_B:
-					settings.debug = not settings.debug
-					save_settings()
-		return
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.physical_keycode == KEY_ESCAPE:
-			if ui.is_open():
-				ui.close()
-			else:
-				toggle_pause()
-			return
-		if ui.is_open() or in_menu:
-			return
 		match event.physical_keycode:
-			KEY_G:
-				ui.open_garage()
+			KEY_ESCAPE:
+				if frontend:
+					frontend.back()
 			KEY_V:
-				cycle_camera()
-			KEY_M:
-				settings.automatic = not settings.automatic
-				save_settings()
-			KEY_B:
-				settings.debug = not settings.debug
+				settings.camera = (int(settings.camera) + 1) % 5
+				update_camera(1, true)
 				save_settings()
 			KEY_Y:
 				settings.telemetry = not settings.telemetry
 				save_settings()
-			KEY_F11:
-				settings.fullscreen = not settings.fullscreen
-				apply_settings()
+			KEY_B:
+				settings.debug = not settings.debug
 				save_settings()
-	if ui.is_open() or in_menu:
-		return
-	if (
-		event is InputEventMouseButton
-		and event.pressed
-		and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]
-	):
-		zoom_user = clampf(
-			zoom_user * (.9 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1 / .9), .5, 2.5
-		)
-	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_START:
-		toggle_pause()
 
 
 func setup_skids():
@@ -1580,20 +958,18 @@ func add_skids():
 	for i in 4:
 		var w = car.wheels[i]
 		# v2: the wheel's contact point and ground normal (w.roadZ is its height; CarBody sets it).
-		var ground = w.roadZ if v2_mode else track.elev_at(w.wx, w.wy, w.sIdx).z
+		var ground = w.roadZ
 		var normal = Vector3.UP
-		if v2_mode and i < car.contact_hits.size() and not car.contact_hits[i].is_empty():
+		if i < car.contact_hits.size() and not car.contact_hits[i].is_empty():
 			normal = car.contact_hits[i].normal
 		var pos = Vector3(w.wx, ground, w.wy) + normal * .035
 		# v2: mark only a tyre past its slip peak (sliding), not one merely near its grip limit: on the
 		# 6-DOF car at a fast pace `skidding` (friction ellipse > 0.92) held through every braking zone
 		# and corner and filled all 1600 marks in two laps.
-		var marking = w.skidding
-		if v2_mode:
-			marking = (
-				w.skidding
-				and (absf(w.slipAngle) > car.peak_slip_angle() or absf(w.slipRatio) > car.peak_slip_ratio())
-			)
+		var marking = (
+			w.skidding
+			and (absf(w.slipAngle) > car.peak_slip_angle() or absf(w.slipRatio) > car.peak_slip_ratio())
+		)
 		if marking and skid_last[i] != null:
 			var previous = skid_last[i]
 			var length = pos.distance_to(previous)
@@ -1615,33 +991,6 @@ func add_skids():
 			skid_multi.set_instance_transform(
 				index, Transform3D(Basis.IDENTITY.scaled(Vector3.ZERO), Vector3.ZERO)
 			)
-
-
-## Deferred after startup so the UI/models exist; the runner owns test completion and exit.
-func run_feature_tests():
-	if "--audio-review" in OS.get_cmdline_user_args():
-		var review = preload("res://scripts/audio_review.gd").new()
-		add_child(review)
-		await review.run(self)
-		return
-	if "--flow-benchmark" in OS.get_cmdline_user_args() or "--performance" in OS.get_cmdline_user_args():
-		var benchmark = preload("res://scripts/showcase_benchmark.gd").new()
-		add_child(benchmark)
-		await benchmark.run(self, "--performance" in OS.get_cmdline_user_args())
-		return
-	if "--compare" in OS.get_cmdline_user_args():
-		var review = preload("res://scripts/showcase_review.gd").new()
-		add_child(review)
-		await review.run_compare(self)
-		return
-	var test = load("res://scripts/verification.gd").new()
-	add_child(test)
-	if "--title-review" in OS.get_cmdline_user_args():
-		await test.run_title(self)
-	elif "--art-review" in OS.get_cmdline_user_args():
-		await test.run_art(self)
-	else:
-		await test.run(self)
 
 
 func setup_environment():
@@ -1700,9 +1049,3 @@ func apply_time_of_day():
 		if lamps:
 			lamps.visible = night
 		visuals.world.road_material.set_shader_parameter("afterhours", night)
-
-
-func setup_retro_grade():
-	retro = preload("res://scripts/retro_renderer.gd").new()
-	add_child(retro)
-	retro.initialize(self)

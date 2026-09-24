@@ -125,7 +125,7 @@ func rolling():
 			c.input = inp(0, 0, 0)
 			c.step(DT, s, false)
 		var th = deg_to_rad(8.0)
-		var rr = CarBody.TrackModel.SURF[0].rr
+		var rr = CarBody.SURF[0].rr
 		var m = c.p.mass
 		var a = 9.81 * (sin(th) - rr * cos(th)) * m / (m + 4 * c.p.wheelI / (c.p.wheelR * c.p.wheelR))
 		var want = a * 3.0

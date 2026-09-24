@@ -4,7 +4,6 @@ extends RefCounted
 ## Generated scenery and cone references belong to the current world rebuild.
 # All assets are procedural and bundled. Physics remains independent of Godot rigid bodies.
 const NightStyle = preload("res://scripts/night_style.gd")
-const CircuitWorld = preload("res://scripts/circuit_world.gd")
 const RetroAssets = preload("res://scripts/retro_assets.gd")
 var materials = {}
 var paint_materials = []
@@ -88,10 +87,6 @@ func quad(st, a, b, c, d, color):
 	triangle(st, a, c, d, color)
 
 
-func surface_point(sm, offset, raise_by = 0.0):
-	return Vector3(sm.x + sm.nx * offset, sm.z - offset * tan(sm.bank) + raise_by, sm.y + sm.ny * offset)
-
-
 func mesh_node(parent, st, textured = false):
 	st.generate_normals()
 	st.index()
@@ -119,331 +114,6 @@ func mesh_node(parent, st, textured = false):
 	node.material_override = mat
 	parent.add_child(node)
 	return node
-
-
-## Create a new world from current samples/document; caller frees the old scenery.
-func build_track(parent, track):
-	cone_nodes = []
-	flags = []
-	# Terrain, road, verges, curbs, barriers and trackside furniture come from CircuitWorld.
-	world = CircuitWorld.new()
-	world.build(parent, track)
-	NightStyle.build(parent, track, world)
-	var low = world.low
-	var minx = world.extent.position.x
-	var maxx = world.extent.end.x
-	var miny = world.extent.position.y
-	var maxy = world.extent.end.y
-	box(
-		parent,
-		Vector3((minx + maxx) / 2, low - 4.3, (miny + maxy) / 2),
-		Vector3(maxx - minx + 6000, .3, maxy - miny + 6000),
-		"4f6a45"
-	)
-	var start = track.pos_at(float(track.data.startS if track.data.startS != null else 0.0))
-	for row in 2:
-		for col in 12:
-			var sm = track.pos_at(float(track.data.startS if track.data.startS != null else 0.0) + row * .55)
-			var offset = (col - 5.5) * start.w / 12
-			var pos = Vector3(
-				sm.x - sin(sm.h) * offset, sm.z - offset * tan(sm.bank) + .025, sm.y + cos(sm.h) * offset
-			)
-			var tile = box(
-				parent, pos, Vector3(.55, .03, start.w / 12), "ede9da" if (row + col) % 2 else "222b31"
-			)
-			tile.rotation.y = -sm.h
-	var banner = Node3D.new()
-	parent.add_child(banner)
-	banner.position = Vector3(start.x, start.z, start.y)
-	banner.rotation.y = -start.h
-	for side in [-1, 1]:
-		box(banner, Vector3(0, 3.6, side * (start.w / 2 + 2)), Vector3(.45, 7.2, .45), "d6dbdc")
-	box(banner, Vector3(0, 7.0, 0), Vector3(.65, 1.1, start.w + 4.8), "172731")
-	var label = Label3D.new()
-	label.text = "RACING SIM  /  START"
-	label.font_size = 80
-	label.pixel_size = .009
-	label.position = Vector3(-.34, 7, 0)
-	label.rotation.y = -PI / 2
-	label.modulate = Color("f1d07a")
-	banner.add_child(label)
-	for o in track.data.objects:
-		if o.type == "cone":
-			var root = Node3D.new()
-			parent.add_child(root)
-			cylinder(root, Vector3(0, .35, 0), .27, .7, "ef783c", 0)
-			cylinder(root, Vector3(0, .4, 0), .13, .12, "fff4de", .09)
-			box(root, Vector3(0, .04, 0), Vector3(.6, .08, .6), "30373b")
-			cone_nodes.append([root, o])
-			continue
-		var a = Vector3(o.x1, world.ground_height(o.x1, o.y1), o.y1)
-		var b = Vector3(o.x2, world.ground_height(o.x2, o.y2), o.y2)
-		var height = .8 if o.type == "tire" else 1.2
-		var count = maxi(1, ceili(a.distance_to(b) / 4))
-		for i in count:
-			var aa = a.lerp(b, float(i) / count)
-			var bb = a.lerp(b, float(i + 1) / count)
-			var wall = box(
-				parent,
-				(aa + bb) / 2 + Vector3.UP * height / 2,
-				Vector3(aa.distance_to(bb) + .02, height, .8 if o.type == "tire" else .7),
-				"6e3935" if o.type == "tire" else "b1b9bd"
-			)
-			wall.rotation.y = -atan2(bb.z - aa.z, bb.x - aa.x)
-	build_scenery(parent, track)
-	# Grid slots, named corners and braking boards from the browser presentation layer.
-	for i in 16:
-		var p = track.pos_at(float(track.data.startS if track.data.startS != null else 0.0) - 12 - i * 8)
-		var lateral = (-1 if i % 2 == 0 else 1) * p.w * .23
-		var root = Node3D.new()
-		parent.add_child(root)
-		root.position = Vector3(
-			p.x - sin(p.h) * lateral, p.z - lateral * tan(p.bank) + .04, p.y + cos(p.h) * lateral
-		)
-		root.rotation.y = -p.h
-		for side in [-1, 1]:
-			box(root, Vector3(-1.5, 0, side * 1.15), Vector3(5, .015, .09), "d0cec0")
-		box(root, Vector3(1, 0, 0), Vector3(.09, .015, 2.3), "d0cec0")
-	for item in track.data.get("presentation", {}).get("labels", []):
-		var pr = track.project(item.x, item.y)
-		var p = track.pos_at(pr.s)
-		var corner_label = Label3D.new()
-		corner_label.text = item.name
-		corner_label.font_size = 48
-		corner_label.pixel_size = .035
-		corner_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		corner_label.position = Vector3(
-			p.x - sin(p.h) * (p.w / 2 + 7), p.z + 3, p.y + cos(p.h) * (p.w / 2 + 7)
-		)
-		parent.add_child(corner_label)
-		for distance in [100, 50]:
-			var bp = track.pos_at(pr.s - distance)
-			var edge = bp.w / 2 + 3
-			var root = Node3D.new()
-			parent.add_child(root)
-			root.position = Vector3(
-				bp.x - sin(bp.h) * edge, bp.z - edge * tan(bp.bank), bp.y + cos(bp.h) * edge
-			)
-			root.rotation.y = -bp.h
-			box(root, Vector3(0, 1, 0), Vector3(.15, 2, 1.7), "e5e4db")
-			var sign_label = Label3D.new()
-			sign_label.text = str(distance)
-			sign_label.font_size = 60
-			sign_label.pixel_size = .014
-			sign_label.position = Vector3(-.085, 1, 0)
-			sign_label.rotation.y = -PI / 2
-			sign_label.modulate = Color("182e3a")
-			root.add_child(sign_label)
-
-
-func build_scenery(parent, track):
-	var rng = RandomNumberGenerator.new()
-	rng.seed = 831
-	var groups = {}
-	var ao_poses = []
-	var scen = track.data.get("presentation", {}).get("scenery", {})
-	var density = float(scen.get("trees", 1.0))
-	var inner = float(scen.get("treeline", 36.0))
-	var tall = float(scen.get("treeHeight", 1.0))
-	var clearings = scen.get("clearings", [])
-	var resolved_clearings = []
-	if not clearings.is_empty():
-		var labels = track.data.get("presentation", {}).get("labels", [])
-		var label_map = {}
-		for l in labels:
-			if l.has("name"):
-				label_map[l.name] = l
-		for cl in clearings:
-			var cl_s = -1.0
-			var anchor = cl.get("anchor")
-			if anchor is String and label_map.has(anchor):
-				var l = label_map[anchor]
-				cl_s = track.project(float(l.x), float(l.y)).s
-			elif cl.has("s"):
-				cl_s = float(cl.s)
-			if cl_s >= 0.0:
-				var rad = float(cl.get("radius", 40.0))
-				var side = str(cl.get("side", "any")).to_lower()
-				var curv = track.curvature_at(cl_s, 20.0)
-				resolved_clearings.append({"s": cl_s, "radius": rad, "side": side, "curv": curv})
-	for dist in range(0, int(track.length), 12):
-		var p = track.pos_at(dist)
-		for side in [-1, 1]:
-			for band in 3:
-				for attempt in ceili(density):
-					if rng.randf() > density / ceil(density) * .8:
-						continue
-					var off = side * (p.w / 2 + inner + band * 55 + rng.randf_range(0, 48))
-					var x = p.x - sin(p.h) * off + rng.randf_range(-8, 8)
-					var y = p.y + cos(p.h) * off + rng.randf_range(-8, 8)
-					var pr = track.project(x, y)
-					if (
-						absf(pr.lat) < pr.width / 2 + 10
-						or track.data.paint.has(str(floori(x / 2)) + "," + str(floori(y / 2)))
-					):
-						continue
-					var in_clearing = false
-					for cl in resolved_clearings:
-						if absf(wrapf(pr.s - cl.s, -track.length / 2.0, track.length / 2.0)) < cl.radius:
-							if cl.side == "any":
-								in_clearing = true
-								break
-							elif cl.side == "left" and pr.lat < 0.0:
-								in_clearing = true
-								break
-							elif cl.side == "right" and pr.lat > 0.0:
-								in_clearing = true
-								break
-							elif cl.side == "outside":
-								var outside_left = cl.curv > 0.0
-								if (outside_left and pr.lat < 0.0) or (not outside_left and pr.lat > 0.0):
-									in_clearing = true
-									break
-							elif cl.side == "inside":
-								var inside_right = cl.curv > 0.0
-								if (inside_right and pr.lat > 0.0) or (not inside_right and pr.lat < 0.0):
-									in_clearing = true
-									break
-					if in_clearing:
-						continue
-					var pine = rng.randf() < float(scen.get("pines", .55))
-					var key = str(floori(x / 100)) + "," + str(floori(y / 100)) + str(pine)
-					if not groups.has(key):
-						groups[key] = {"pine": pine, "poses": [], "colours": []}
-					var height = rng.randf_range(7, 14) * tall
-					var basis = (
-						Basis(Vector3.UP, rng.randf() * TAU)
-						* Basis.from_scale(Vector3(height * .7, height, height * .7))
-					)
-					groups[key].poses.append(
-						Transform3D(basis, Vector3(x, world.ground_height(x, y) - .15, y))
-					)
-					# Spread hue and value across the stand. Lerping from white over a half range gave
-					# every conifer nearly the same light tint, so the treeline read as one flat hedge.
-					var tint = Color("6f8a52").lerp(Color("c6cf9a"), rng.randf())
-					var shade = rng.randf_range(.74, 1.0)
-					groups[key].colours.append(Color(tint.r * shade, tint.g * shade, tint.b * shade))
-	for distance in range(0, int(track.length), 48):
-		var sm = track.pos_at(distance)
-		var off = (sm.w * .5 + 18) * (-1 if distance % 96 == 0 else 1)
-		var x = sm.x - sin(sm.h) * off
-		var y = sm.y + cos(sm.h) * off
-		var pr = track.project(x, y)
-		if (
-			absf(pr.lat) < pr.width * .5 + 8
-			or track.data.paint.has(str(floori(x / 2)) + "," + str(floori(y / 2)))
-		):
-			continue
-		var in_clearing_shrub = false
-		for cl in resolved_clearings:
-			if absf(wrapf(pr.s - cl.s, -track.length / 2.0, track.length / 2.0)) < cl.radius:
-				if cl.side == "any":
-					in_clearing_shrub = true
-					break
-				elif cl.side == "left" and pr.lat < 0.0:
-					in_clearing_shrub = true
-					break
-				elif cl.side == "right" and pr.lat > 0.0:
-					in_clearing_shrub = true
-					break
-				elif cl.side == "outside":
-					var outside_left = cl.curv > 0.0
-					if (outside_left and pr.lat < 0.0) or (not outside_left and pr.lat > 0.0):
-						in_clearing_shrub = true
-						break
-				elif cl.side == "inside":
-					var inside_right = cl.curv > 0.0
-					if (inside_right and pr.lat > 0.0) or (not inside_right and pr.lat < 0.0):
-						in_clearing_shrub = true
-						break
-		if in_clearing_shrub:
-			continue
-		var key = "shrubs" + str(floori(x / 100)) + "," + str(floori(y / 100))
-		if not groups.has(key):
-			groups[key] = {"pine": false, "poses": [], "colours": []}
-		var basis = Basis(Vector3.UP, rng.randf() * TAU) * Basis.from_scale(Vector3(3.5, 2.0, 3.5))
-		groups[key].poses.append(Transform3D(basis, Vector3(x, world.ground_height(x, y) - .15, y)))
-		groups[key].colours.append(Color("8d9a5f").lerp(Color("c3c288"), rng.randf()))
-	for group in groups.values():
-		for pose in group.poses:
-			ao_poses.append(Transform3D(Basis.from_scale(Vector3(5, 1, 5)), pose.origin + Vector3.UP * .21))
-	var ao_material = ShaderMaterial.new()
-	ao_material.shader = preload("res://shaders/baked_ao.gdshader")
-	world.multimesh(parent, RetroAssets.ao_mesh(), ao_poses, [], ao_material, false)
-	var meshes = [RetroAssets.cards(3), RetroAssets.cards(2), RetroAssets.cards(1)]
-	for group in groups.values():
-		var mat = ShaderMaterial.new()
-		mat.shader = preload("res://shaders/retro_tree.gdshader")
-		mat.set_shader_parameter("painted_tree", RetroAssets.tree(group.pine))
-		for tier in 3:
-			var mm = MultiMesh.new()
-			mm.transform_format = MultiMesh.TRANSFORM_3D
-			mm.use_colors = true
-			mm.mesh = meshes[tier]
-			mm.instance_count = group.poses.size()
-			for i in mm.instance_count:
-				mm.set_instance_transform(i, group.poses[i])
-				mm.set_instance_color(i, group.colours[i])
-			var node = MultiMeshInstance3D.new()
-			node.name = "WoodsLOD%d" % tier
-			node.multimesh = mm
-			node.material_override = mat
-			node.visibility_range_begin = [0, 110, 280][tier]
-			node.visibility_range_end = [110, 280, 850][tier]
-			node.visibility_range_begin_margin = 0
-			node.visibility_range_end_margin = 0
-			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			parent.add_child(node)
-	# Distant hills: a ring of broad low mounds well outside the circuit that fade into the fog.
-	var minx = INF
-	var maxx = -INF
-	var miny = INF
-	var maxy = -INF
-	var low = 0.0
-	for sm in track.samples:
-		minx = minf(minx, sm.x)
-		maxx = maxf(maxx, sm.x)
-		miny = minf(miny, sm.y)
-		maxy = maxf(maxy, sm.y)
-		low = minf(low, sm.z)
-	var center = Vector3((minx + maxx) / 2, low - 4.2, (miny + maxy) / 2)
-	var radius = maxf(maxx - minx, maxy - miny) * .5 + world.margin + 320
-	var hill = SphereMesh.new()
-	hill.radius = .5
-	hill.height = 1
-	hill.radial_segments = 14
-	hill.rings = 6
-	hill.is_hemisphere = true
-	for k in 22:
-		var angle = k * TAU / 22 + rng.randf_range(-.1, .1)
-		var r = radius * rng.randf_range(.95, 1.25)
-		var wide = rng.randf_range(380, 720)
-		var node = MeshInstance3D.new()
-		node.mesh = hill
-		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		node.material_override = material(Color("41603f").lerp(Color("55704f"), rng.randf()), 0, 1)
-		node.position = center + Vector3(cos(angle) * r, 0, sin(angle) * r)
-		node.scale = Vector3(wide, rng.randf_range(60, 140), wide * rng.randf_range(.6, 1))
-		parent.add_child(node)
-	var p = track.pos_at(float(track.data.startS if track.data.startS != null else 0.0) - 55)
-	for side in [-1, 1]:
-		var offset = side * (p.w / 2 + 19)
-		var x = p.x - sin(p.h) * offset
-		var y = p.y + cos(p.h) * offset
-		var pr = track.project(x, y)
-		if absf(pr.lat) < pr.width / 2 + 10:
-			continue
-		var b = Node3D.new()
-		parent.add_child(b)
-		b.position = Vector3(x, world.ground_height(x, y) - .1, y)
-		b.rotation.y = -p.h
-		box(b, Vector3(0, 2.5, 0), Vector3(60, 5, 12), "a5b2b6")
-		box(b, Vector3(0, 5.2, 0), Vector3(63, .4, 14), "d6dfdf")
-		for i in range(-26, 28, 7):
-			box(b, Vector3(i, 1.5, -side * 6.03), Vector3(5, 3, .06), "263c4d")
-			cylinder(b, Vector3(i, 7, 0), .06, 3.4, "bec7c9")
-			var flag = box(b, Vector3(i + 1, 8.2, 0), Vector3(2, 1, .04), "d55537")
-			flags.append(flag)
 
 
 ## Car body styles. Keyframes are [u, value] with u=0 at the rear bumper and u=1 at the nose; heights are metres
@@ -619,10 +289,15 @@ func shape(parent, mesh, pos, scale, color, metallic = 0.0, rough = .6):
 
 
 ## Procedural car: lofted body and cabin with wheel arches, lights, aero parts and livery number.
-## The returned dictionary interface (root/body/pivots/spins/brakes/wheel_r) is used by pose_car.
+## The returned dictionary interface (root/body/pivots/spins/brakes/wheel_r) is posed by game.gd.
 func make_car(p, ghost = false):
-	if p.get("body", "") == "gt3":
-		return preload("res://scripts/ferrari_296.gd").new().build(self, p, ghost)
+	match p.get("body", ""):
+		"roadster":
+			return preload("res://scripts/cars/mx5.gd").new().build(self, p, ghost)
+		"coupe":
+			return preload("res://scripts/cars/gt.gd").new().build(self, p, ghost)
+		"gt3":
+			return preload("res://scripts/cars/f296gt3.gd").new().build(self, p, ghost)
 	var root = Node3D.new()
 	var body = Node3D.new()
 	root.add_child(body)
@@ -959,34 +634,6 @@ func finish_car(root, body, p, ghost, brake_material, nose = 0.9):
 	return {
 		"root": root, "body": body, "pivots": pivots, "spins": spins, "brakes": brake_material, "wheel_r": R
 	}
-
-
-## Pose road-following orientation, then add suspension motion and wheel/brake animations.
-## `car` is a CarModel.snapshot() dictionary (possibly interpolated), not the live solver.
-func pose_car(model, car, track):
-	var el = track.elev_at(car.x, car.y, car.sIdx)
-	var forward = Vector3(cos(car.h), el.gx * cos(car.h) + el.gy * sin(car.h), sin(car.h)).normalized()
-	var right = Vector3(-sin(car.h), -el.gx * sin(car.h) + el.gy * cos(car.h), cos(car.h)).normalized()
-	var up = right.cross(forward).normalized()
-	right = forward.cross(up).normalized()
-	# Airborne cars sit `air` metres above the road beneath them. Older snapshots lack the key.
-	var lift = car.get("air", 0.0)
-	model.root.transform = Transform3D(Basis(forward, up, right), Vector3(car.x, el.z + lift, car.y))
-	model.body.position.y = -car.z
-	model.body.rotation = Vector3(car.roll, 0, -car.pitch)
-	for i in 4:
-		model.pivots[i].rotation.y = -car.steer if i < 2 else 0.0
-		model.pivots[i].position.y = model.wheel_r + car.dev[i]
-		model.spins[i].rotation.z = -car.phase[i]
-	model.brakes.emission = Color(1, .03, .01) * (1.7 if car.brake > .05 or car.handbrake > .05 else .55)
-
-
-func animate(track, time):
-	for pair in cone_nodes:
-		var o = pair[1]
-		pair[0].position = Vector3(o.x, track.elev_at(o.x, o.y).z, o.y)
-	for i in flags.size():
-		flags[i].rotation.y = sin(time * 3 + i) * .25
 
 
 func set_time(value):

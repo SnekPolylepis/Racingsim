@@ -55,7 +55,7 @@ func kinetic(c):
 ## The surface table is read-only, so rolling resistance stays on and its work is accounted instead:
 ## rr x wheel load x contact speed per tick (tarmac has no surface drag). The rest must be conserved.
 func energy():
-	var rr = CarBody.TrackModel.SURF[0].rr
+	var rr = CarBody.SURF[0].rr
 	var worst = 0.0
 	var rows = []
 	for key in presets:

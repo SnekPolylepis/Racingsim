@@ -1,16 +1,83 @@
-extends "res://scripts/car.gd"
+extends RefCounted
 ## 6-DOF rigid-body chassis on ray suspension (REBUILD-PLAN.md P2; spike P2-00, rig P2-03).
 ## World is Godot-native (+Y up, metres). Body frame: +X forward, +Y up, +Z right. Wheels FL, FR, RL, RR.
 ## Angular velocity is body-frame, right-hand rule: +y yaws left, +x rolls the right side down,
 ## +z pitches the nose up. Driver steer > 0 still steers right.
 ##
 ## Tyre, drivetrain and aids are the shared scripts/vehicle modules (P2-01), evaluated here in each
-## contact patch's own frame; only step() is this chassis's own. World position and velocity are
+## contact patch's own frame. The planar CarModel this grew from (scripts/car.gd) was folded in and
+## deleted in P7-01b. World position and velocity are
 ## 64-bit scalars (5.1). Suspension rays start above the mount; anti-roll bars keep acting through a
 ## lifted wheel; the body box makes contact with the ground when the car bottoms, lands or rolls.
-## The legacy plan-view fields (x, y, h, vx, vy, r, speed, vbx, vby, ax, ay) are mirrored from the
-## 3D state every tick so the inherited aids and the drivetrain read what they always read.
+## The plan-view fields (x, y, h, vx, vy, r, speed, vbx, vby, ax, ay) are mirrored from the 3D state
+## every tick (sync_legacy) for the aids, the drivetrain, the HUD and the bot.
+## Preserve the fixed-step order and the tyre/clutch/diff need clamps.
 
+const G = 9.81
+const RHO = 1.22
+## Suspension travel before the bump stop engages, metres of corner compression.
+const SUSP_TRAVEL = .08
+## Bump-stop rate as a multiple of the main spring rate, applied to compression beyond travel.
+const BUMP_STOP_RATE = 6.0
+const SurfaceTable = preload("res://scripts/surface/surface_table.gd")
+const VehicleTyre = preload("res://scripts/vehicle/tyre.gd")
+const VehicleAids = preload("res://scripts/vehicle/aids.gd")
+const VehicleDrivetrain = preload("res://scripts/vehicle/drivetrain.gd")
+var p = {}
+var setup = {}
+var wheels = []
+var x = 0.0
+var y = 0.0
+var h = 0.0
+var vx = 0.0
+var vy = 0.0
+var r = 0.0
+var ax = 0.0
+var ay = 0.0
+var speed = 0.0
+## Road altitude under the CG (sync_legacy): pos_y less the static CG height.
+var elev = 0.0
+## True while no wheel touches the ground.
+var airborne = false
+var gear = 1
+var shift_timer = 0.0
+var pending_gear = 1
+var engine_w = 0.0
+var rpm = 0.0
+var brake_hold = 0.0
+var steer_angle = 0.0
+var tc_active = false
+var abs_active = false
+var all_off = false
+var collided = false
+var wear_enabled = true
+var auto_clutch = true
+var clutch_eng = 0.0
+var throttle_eff = 0.0
+var rev_limit = false
+var vbx = 0.0
+var vby = 0.0
+var input = {"throttle": 0.0, "brake": 0.0, "steer": 0.0, "clutch": 0.0, "handbrake": 0.0}
+var noise_seed = 12345
+## Simulation is the model-level default for tests; the application selects Simcade.
+var simcade_enabled = false
+var simcade_steering = true
+static var SIMCADE_DEFAULTS = JSON.parse_string(FileAccess.get_file_as_string("res://data/simcade.json"))
+var simcade = SIMCADE_DEFAULTS.duplicate(true)
+var asm_active = false
+var asm_cut = 0.0
+var asm_brakes = [0.0, 0.0, 0.0, 0.0]
+## Speed at which steering lock halves (m/s); 0 disables speed-sensitive steering. Set per input device by game.gd.
+var steer_falloff = 14.0
+## Steering grip assist (radians, 0 = off): stops the driver steering the fronts much past their peak
+## slip angle in the direction they are already steering. Countersteer is never limited or forced.
+var steer_slip_limit = 0.0
+var tc_gain = 1.0
+var shift_cooldown = 0.0
+var blip_pending = false
+## Self-aligning torque about the front steering axes, N m, positive steers right. Output only (telemetry / future FFB).
+var steer_torque = 0.0
+const SURF = SurfaceTable.SURF
 ## Wheel centre to suspension top at static ride height, metres. Arbitrary: only moves the mount point.
 const STATIC_LENGTH = .15
 ## Suspension rays start this far above the mount, so ground that rises past the mount (a steep wall,
@@ -105,14 +172,167 @@ var last_rot = Quaternion.IDENTITY
 
 
 func configure(preset):
-	super(preset)
+	p = preset.duplicate(true)
+	setup = p.setup.duplicate(true)
+	wheels.clear()
+	for i in 4:
+		wheels.append(
+			{
+				"bx": p.a if i < 2 else -p.b,
+				"by": (-1 if i % 2 == 0 else 1) * p.track / 2,
+				"omega": 0.0,
+				"phase": 0.0,
+				"comp": 0.0,
+				"load": p.mass * G / 4,
+				"surf": SURF[0],
+				"temp": 25.0,
+				"core": 25.0,
+				"roadZ": 0.0,
+				"dev": 0.0,
+				"devRate": 0.0,
+				"mz": 0.0,
+				"wear": 0.0,
+				"alphaRelax": 0.0,
+				"slipRatio": 0.0,
+				"slipAngle": 0.0,
+				"fx": 0.0,
+				"fy": 0.0,
+				"ellipse": 0.0,
+				"abs": 1.0,
+				"brakeT": 0.0,
+				"sIdx": -1,
+				"wx": 0.0,
+				"wy": 0.0,
+				"skidding": false
+			}
+		)
+	reset_pose({"x": 0.0, "y": 0.0, "h": 0.0})
 	# Simcade retuned for the 6-DOF chassis (P2-07): data/simcade.json's "carbody" section goes over the
-	# shared defaults, and the car's own preset overrides still go over both. The planar CarModel never
-	# reads that section, so its behaviour and baselines are unchanged.
+	# shared defaults, and the car's own preset overrides still go over both.
 	simcade = SIMCADE_DEFAULTS.duplicate(true)
 	simcade.merge(SIMCADE_DEFAULTS.get("carbody", {}), true)
 	simcade.merge(p.get("simcade", {}), true)
 	rig()
+
+
+func reset_pose(pose):
+	asm_cut = 0.0
+	asm_active = false
+	asm_brakes = [0.0, 0.0, 0.0, 0.0]
+	if simcade_enabled:
+		tc_gain = 1.0
+		shift_cooldown = 0.0
+		blip_pending = false
+	x = pose.x
+	y = pose.y
+	h = pose.h
+	vx = 0
+	vy = 0
+	r = 0
+	ax = 0
+	ay = 0
+	speed = 0
+	airborne = false
+	gear = 1
+	shift_timer = 0
+	brake_hold = 0
+	collided = false
+	engine_w = p.idle * PI / 30
+	rpm = p.idle
+	steer_angle = 0
+	noise_seed = 12345
+	for w in wheels:
+		for key in [
+			"omega",
+			"comp",
+			"wear",
+			"alphaRelax",
+			"slipRatio",
+			"slipAngle",
+			"fx",
+			"fy",
+			"brakeT",
+			"phase",
+			"dev",
+			"devRate",
+			"mz",
+			"roadZ"
+		]:
+			w[key] = 0.0
+		w.load = p.mass * G / 4
+		# Runs start on warm tyres, as after an out-lap.
+		w.temp = 25.0 + .75 * (setup.tempOpt - 25.0)
+		if simcade_enabled:
+			w.temp = setup.tempOpt
+		w.core = w.temp
+		w.abs = 1.0
+		w.sIdx = -1
+		w.surf = SURF[0]
+	for key in input:
+		input[key] = 0.0
+
+
+func rnd():
+	noise_seed = (noise_seed * 1664525 + 1013904223) & 0xffffffff
+	return float(noise_seed) / 4294967296.0
+
+
+func sg(v):
+	return -1.0 if v < 0 else 1.0
+
+
+const LAT_B = 1.4
+
+
+## Slip ratio / slip angle (rad) at which the native tyre curves peak for the current setup.
+func peak_slip_ratio():
+	return VehicleTyre.peak_slip_ratio(self)
+
+
+func peak_slip_angle():
+	return VehicleTyre.peak_slip_angle(self)
+
+
+func tcs_level():
+	return VehicleAids.tcs_level(self)
+
+
+func asm_level():
+	return VehicleAids.asm_level(self)
+
+
+func set_tcs(level):
+	VehicleAids.set_tcs(self, level)
+
+
+func simcade_curve(value, begin, end):
+	return VehicleTyre.simcade_curve(self, value, begin, end)
+
+
+func tyre_temperature_grip(w):
+	return VehicleTyre.tyre_temperature_grip(self, w)
+
+
+func steering(body_x, body_y):
+	VehicleAids.steering(self, body_x, body_y)
+
+
+func pacejka(v, b, c, d, e):
+	return VehicleTyre.pacejka(v, b, c, d, e)
+
+
+func request_shift(direction):
+	VehicleDrivetrain.request_shift(self, direction)
+
+
+## Distribute axle torque and limit locking torque to the one-step equalization need.
+func axle_split(left, right, torque, torques, drive, dt):
+	VehicleDrivetrain.axle_split(self, left, right, torque, torques, drive, dt)
+
+
+## Advance gearing/clutch/engine/brakes and wheel torques in the established solver order.
+func drivetrain(dt, torques, automatic):
+	VehicleDrivetrain.step(self, dt, torques, automatic)
 
 
 ## Suspension geometry from the preset: at static ride the CG sits cgHeight above flat ground.
@@ -220,7 +440,7 @@ func place_on(surface, px: float, pz: float, heading: float):
 
 
 ## Give a placed car forward speed with rolling wheels, in the gear a driver would be in
-## (engine below 75 % of redline), engine speed matched. Mirrors tests/dynamics.gd stick().
+## (engine below 75 % of redline), engine speed matched. Mirrors tests/v2/aids_simcade.gd stick().
 func launch(v: float):
 	vel = basis().x * v
 	for w in wheels:
@@ -360,7 +580,7 @@ func step(dt, surface, automatic = true):
 			rate[i] = approach
 		# Rough ground (grass, gravel, runoff) shakes the damper as car.gd does, scaled down in Simcade.
 		# Kerbs are real geometry here, as they are there, so they add none.
-		var rough = TrackModel.SURF[hit.surface]
+		var rough = SURF[hit.surface]
 		if rough.bump > 0 and rough.id != 1:
 			var bump = (rnd() - .5) * rough.bump * minf(1, speed / 10)
 			rate[i] += bump * (simcade.rough_bump_scale if simcade_enabled else 1.0)
@@ -443,7 +663,7 @@ func step(dt, surface, automatic = true):
 		w.roadZ = point.y
 		w.wx = point.x
 		w.wy = point.z
-		w.surf = TrackModel.SURF[hit.surface]
+		w.surf = SURF[hit.surface]
 		var sf = w.surf
 		if sf.id <= 1:
 			all_off = false

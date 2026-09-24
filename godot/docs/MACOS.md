@@ -1,6 +1,6 @@
 # macOS build and validation
 
-> **Rebuild note (2026-09-23):** the macOS preset exports the v2 game. `tools/macos.zip` is the template, and the release zip keeps the app binary executable. The flows below (Circuits, Choose folder, the feature suite) describe the legacy game. The v2 game saves under `Racing Sim/v2/` and has not yet been run on a Mac.
+> **Rebuild note (2026-09-23):** the macOS preset exports the rebuilt game. `tools/macos.zip` is the template, and the release zip keeps the app binary executable. The legacy game (Circuits, Choose folder, the old feature suite) was deleted in P7-01a; the "Recorded validation" section below is historical.
 
 The native Godot game has a universal macOS export containing arm64 (Apple Silicon) and x86_64 (Intel). It uses Forward+ with Metal and retains the project's OpenGL fallback. The browser game is separate and unchanged.
 
@@ -10,7 +10,7 @@ Open `godot/build/macos/Racing Sim.app`, or double-click `Play Racing Sim.comman
 
 Control shortcuts work across dialogs and menus. Apple keyboards may need Fn/Globe for F11 (fullscreen); fullscreen is also available in Settings.
 
-Saves default to `~/Library/Application Support/Godot/app_userdata/Racing Sim/`. Choose folder in Circuits can connect the existing portable data folders. The app bundle is read-only game content, never a save destination. Verification uses `native-tests` beneath the same application data directory, separate from normal saves.
+Saves default to `~/Library/Application Support/Godot/app_userdata/Racing Sim/`. The game saves under `user://v2`. The app bundle is read-only game content, never a save destination. Verification uses `native-tests` beneath the same application data directory, separate from normal saves.
 
 ## Rebuild
 
@@ -34,17 +34,12 @@ From `godot/`:
 ```sh
 GODOT_BIN="$PWD/tools/Godot.app/Contents/MacOS/Godot"
 "$GODOT_BIN" --headless --path . --script scripts/game.gd --check-only
-"$GODOT_BIN" --headless --path . --script tests/handling.gd
-"$GODOT_BIN" --headless --path . --script tests/dynamics.gd
-"$GODOT_BIN" --headless --path . --script tests/dynamics.gd -- --simcade
-"$GODOT_BIN" --headless --path . --script tests/validation.gd
-"$GODOT_BIN" --headless --path . --script tests/laps.gd
-"$GODOT_BIN" --headless --path . --script tests/laps.gd -- --simcade
-"$GODOT_BIN" --headless --path . --script tests/showcase_laps.gd
-"build/macos/Racing Sim.app/Contents/MacOS/Racing Sim" -- --features
+for s in tests/v2/*.gd; do "$GODOT_BIN" --headless --path . --script "$s"; done  # see tools/gates.json for arguments
+"$GODOT_BIN" --path . -- --features
+"build/macos/Racing Sim.app/Contents/MacOS/Racing Sim" --headless -- --v2-export-check
 ```
 
-The feature suite requires a graphical login session; do not add `--headless`. It exercises rendered UI, audio PCM, driving, save round trips and full-lap frontend flows. Inspect stderr as well as `~/Library/Application Support/Godot/app_userdata/Racing Sim/native-tests/feature-results.json`. For the fallback renderer, repeat with `--rendering-method gl_compatibility` before `--`.
+`--features` (the same as `--v2-present`) requires a graphical login session; do not add `--headless`. `tools/gates.json` lists each suite's arguments (the lap suite runs once per car).
 
 ## Recorded validation — 2026-09-22
 
