@@ -1,5 +1,18 @@
 # Native changelog
 
+## 2026-09-24 — Rebuild Preview 2
+
+- Circuits: Nordschleife section 1, T13 to Aremberg (DGM1 terrain, OSM centreline), in the menu, the
+  lap suite and the export.
+- Cars: dedicated PS2-era models for the MX-5, GT and 296 GT3 (scripts/cars/), with night head and tail
+  lamps (Sol, P4-cars).
+- Front end: settings (display, driving incl. Simulation handling and aids, controls, audio), garage and
+  pause menus on the new game (Sol, P4-menus).
+- Look: PS2-style road, grass, gravel and runoff materials on TrackAssets (Look-1).
+- P7: the pre-rebuild game is deleted; CarBody absorbed the planar CarModel; `--features` runs the v2
+  presentation check. Exports no longer package docs/.
+- Tests: 35 headless gates (Windows and Linux CI) and the windowed features check.
+
 ## 2026-09-23 — Rebuild Preview 1
 
 The first build of the rebuild (REBUILD-PLAN.md): the game now runs on the 6-DOF car and authored
