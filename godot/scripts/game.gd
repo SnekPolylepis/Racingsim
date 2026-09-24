@@ -223,6 +223,8 @@ func _ready():
 
 
 func message(value):
+	if v2_mode and frontend and frontend.v2_panels:
+		frontend.v2_panels.notice(str(value))
 	if ui and is_instance_valid(ui.status):
 		ui.status.text = value
 
@@ -551,7 +553,7 @@ func import_setup(file):
 func record_path():
 	var identity = {
 		"track": track.record_key() if v2_mode else track.data.duplicate(true),
-		"setup": effective_setup(),
+		"setup": v2_effective_setup() if v2_mode else effective_setup(),
 		"car": preset_key,
 		"wear": settings.wear,
 		"off_track": settings.off_track,
@@ -731,7 +733,7 @@ func set_quality(value):
 	var view = retro.world_view if retro else get_viewport()
 	view.msaa_3d = (
 		Viewport.MSAA_2X
-		if settings.render_resolution == 2 and settings.native_msaa
+		if settings.native_msaa and (v2_mode or settings.render_resolution == 2)
 		else Viewport.MSAA_DISABLED
 	)
 	view.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
@@ -807,6 +809,7 @@ func setup_v2():
 	add_child(ghost_model.root)
 	ghost_model.root.visible = false
 	var hud = CanvasLayer.new()
+	hud.name = "V2UIRoot"
 	add_child(hud)
 	instruments = Instruments.new()
 	hud.add_child(instruments)
@@ -924,6 +927,124 @@ func return_v2_menu() -> void:
 		record_writer.flush()
 	if frontend:
 		frontend.show_page("main")
+
+
+## V2 menu setting changes use their own save file and refresh only the systems they affect.
+func set_v2_setting(key: String, value: Variant) -> void:
+	if not settings.has(key):
+		return
+	var changed = settings[key] != value
+	settings[key] = value
+	controls.configure(settings)
+	car.simcade_enabled = int(settings.handling_model) == 0
+	car.simcade_steering = settings.simcade_grip_assist
+	car.wear_enabled = settings.wear
+	car.auto_clutch = settings.auto_clutch
+	if key in ["quality", "native_msaa", "render_resolution"]:
+		set_quality(int(settings.quality))
+	if key == "time_of_day":
+		apply_time_of_day()
+	if key == "fullscreen" and DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_mode(
+			(
+				DisplayServer.WINDOW_MODE_FULLSCREEN
+				if settings.fullscreen
+				else DisplayServer.WINDOW_MODE_WINDOWED
+			)
+		)
+	if key in ["camera", "tilt"] and camera:
+		update_camera(1, true)
+	if changed and key in ["wear", "off_track", "contact", "handling_model"] and track is Node3D:
+		place_v2_on_grid()
+		load_record()
+	save_settings()
+
+
+## V2 named setups are standalone schema-1 documents, independent of the legacy garage.
+func v2_effective_setup() -> Dictionary:
+	var values = car.setup.duplicate(true)
+	values.tcsLevel = car.tcs_level()
+	values.asmLevel = car.asm_level()
+	values.tcOn = 1.0 if values.tcsLevel > 0 else 0.0
+	values.tcIntensity = values.tcsLevel / 10.0
+	return values
+
+
+func v2_setup_document() -> Dictionary:
+	return {
+		"schema": 1,
+		"savedAt": Time.get_datetime_string_from_system(true) + "Z",
+		"car": preset_key,
+		"setup": v2_effective_setup()
+	}
+
+
+func save_v2_setup(name: String) -> bool:
+	var file = storage.path("setups", storage.safe_name(name) + ".json")
+	var ok = storage.write_json(file, v2_setup_document())
+	message("Setup saved" if ok else storage.error)
+	return ok
+
+
+func load_v2_setup(file: String) -> bool:
+	var data = storage.read_json(file)
+	if not data is Dictionary:
+		message("Invalid setup JSON")
+		return false
+	var preset = str(data.get("car", preset_key))
+	var values = data.get("setup", data)
+	if not presets.has(preset) or not values is Dictionary:
+		message("Unknown car or invalid setup")
+		return false
+	var result = presets[preset].setup.duplicate(true)
+	for field in setup_fields:
+		if values.has(field[1]):
+			if not Storage.numeric(values[field[1]]):
+				message("Invalid setup value: " + field[1])
+				return false
+			result[field[1]] = clampf(values[field[1]], field[3], field[4])
+	for aid in ["tcsLevel", "asmLevel"]:
+		if values.has(aid):
+			if not Storage.numeric(values[aid]):
+				message("Invalid aid level: " + aid)
+				return false
+			result[aid] = clampf(values[aid], 0, 10)
+	if not result.has("tcsLevel"):
+		result.tcsLevel = result.tcIntensity * 10 if result.tcOn > .5 else 0.0
+	if not result.has("asmLevel"):
+		result.asmLevel = 0.0
+	if preset != preset_key:
+		change_v2_car(preset)
+	car.setup = result
+	car.set_tcs(result.tcsLevel)
+	apply_v2_setup()
+	message("Loaded " + file.get_file())
+	return true
+
+
+## Re-rig and reset after setup edits, then select the record for that exact configuration.
+func apply_v2_setup() -> void:
+	car.rig()
+	if track is Node3D:
+		place_v2_on_grid()
+		load_record()
+	if frontend:
+		frontend.reset_session_history()
+
+
+func restart_v2_lap() -> void:
+	if not track is Node3D:
+		return
+	place_v2_on_grid()
+	if v2_props:
+		v2_props.reset()
+	begin_session()
+	controls.clear()
+	prev_pose = snapshot_v2()
+	paused = false
+	in_menu = false
+	if frontend:
+		frontend.show_page("drive")
 
 
 func place_v2_on_grid():
@@ -1190,6 +1311,7 @@ func _physics_process(dt):
 func _process(dt):
 	if v2_mode:
 		render_v2(dt)
+		adaptive_quality_v2(dt)
 		return
 	if model.is_empty():
 		return
@@ -1248,6 +1370,28 @@ func _process(dt):
 		quality_time = 0
 		quality_frames = 0
 	instruments.frame_ms = lerpf(instruments.frame_ms, (Time.get_ticks_usec() - started) / 1000.0, .1)
+
+
+## Keep the v2 quality option effective without calling the legacy blocked/UI path.
+func adaptive_quality_v2(dt: float) -> void:
+	if in_menu or paused or not settings.adaptive:
+		quality_clock = 0.0
+		quality_time = 0.0
+		quality_frames = 0
+		return
+	quality_time += dt
+	quality_frames += 1
+	quality_clock += dt
+	if quality_clock <= 4.0:
+		return
+	var fps = quality_frames / maxf(.01, quality_time)
+	if fps < 45 and quality > 0:
+		set_quality(quality - 1)
+	elif fps > 85 and quality < int(settings.quality):
+		set_quality(quality + 1)
+	quality_clock = 0.0
+	quality_time = 0.0
+	quality_frames = 0
 
 
 func update_camera(dt, snap = false):
@@ -1359,7 +1503,8 @@ func _unhandled_input(event):
 		if event is InputEventKey and event.pressed and not event.echo:
 			match event.physical_keycode:
 				KEY_ESCAPE:
-					return_v2_menu()
+					if frontend:
+						frontend.back()
 				KEY_V:
 					settings.camera = (int(settings.camera) + 1) % 5
 					update_camera(1, true)

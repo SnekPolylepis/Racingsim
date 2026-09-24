@@ -1409,3 +1409,92 @@ Merged onto main 54670dc: rb/P4-06-front-end (Sol: front end, v2 records, export
 - Verification of the exported Windows exe: `--v2-export-check` gives V2 EXPORT PASS. A windowed `--v2-present` run of the exe itself passes (valid lap 57.888 s, ghost, minimap, 5 cameras, engine audio) with empty stderr.
 - The macOS app exported cleanly but is untested here, since there is no Mac.
 - Cleanup: 8 merged, clean Desktop worktrees removed; 47 merged remote and 51 merged local branches deleted. Kept: Gemini's unfinished `RacingSim-nordschleife` and `rb/P6-02a`, `RacingSim-spa` (one uncommitted change), `RacingSim-merge2` (the owner's retained legacy exe), the Codex-managed `.codex` worktrees, and the two unmerged, superseded branches (`rb/F-P6-01`, `rb/P2-06-review`).
+
+## 2026-09-23  DONE P4-menus v2 settings, garage and pause  (GPT-6 Sol) — branch `rb/P4-menus`
+The v2 front end now has Settings and Garage from the main/car pages. Esc (or controller Start/B) opens an in-drive Pause page with Resume, Restart lap, Settings, Garage and Back to menu. Restart resets the car, props and timing attempt while retaining the selected best record. `V2UIRoot` is the single CanvasLayer for instruments, front end and panels; the panels are Control descendants of the front end, sized for the 1280×896 logical UI with Rajdhani fonts and visible focus styles so Claude can reparent this root into the retro UI viewport.
+
+Settings save to `user://v2/settings.json` (isolated native-test path in suites), including handling model, aids, transmission, camera, units, ghost, telemetry/debug, audio, controls remapping and display choices. Output mode, CRT/composite, aspect, Authentic/Sharp UI, time of day, render resolution, upscale, framebuffer, dithering and speed blur are present and persisted for the upcoming retro renderer port; options already implemented by v2 (quality/adaptive quality, MSAA, fullscreen, time of day, camera, HUD and audio) apply now. The garage exposes all 42 setup fields by category and applies edits to CarBody immediately. Named schema-1 setups save/load in the configured v2 storage folder, with confirmation before replace/delete; load validates and clamps fields. Each setup or handling change resets the current attempt and loads its own record. The v2 `record_path()` now explicitly uses `v2_effective_setup()`; the front-end suite proves setup and handling select different paths and restore the original path when switched back.
+
+**Legacy functions ported for P7-01 deletion:** `interface.gd`'s `style`, `label`, `button`, `row`, `number`, `choice`, `check`, `open`, `close`, `is_open`, `confirm`, `ask_name`, `open_garage`, `setting`, `open_settings`, `update_mapping_labels` became the independent controls and flows in `v2_panels.gd`; its `apply_garage` behavior became `game.gd::apply_v2_setup`. `game.gd`'s legacy `effective_setup`, `setup_document`, `save_setup`, `import_setup`, and relevant `apply_settings` behavior became `v2_effective_setup`, `v2_setup_document`, `save_v2_setup`, `load_v2_setup`, and `set_v2_setting`. The legacy front end's pause actions were rebuilt in `show_v2_page()`. Shared v2 persistence and presentation functions (`save_settings`, `record_path`, `load_record`, `set_quality`) remain in use after the legacy path is removed.
+
+The asset cache now writes a plain-text revision sidecar before trying to reuse a packed scene, and includes shader sources in its identity. A release executable skips old scenes that refer to removed shaders instead of emitting load errors before regeneration.
+
+Verification on the final branch: `tools/run_gates.ps1 -All` **42/42**, front-end **28/0**, all stderr empty; windowed `-- --features` **212/0**, empty stderr; windowed `-- --v2-present` **PASS**, empty stderr; Windows release export exited 0 with empty stderr, and its executable printed **V2 EXPORT PASS**, exit 0, empty stderr after rebuilding both cached assets. `gdformat -l 110` and `git diff --check` clean. The owner opens and merges the PR from [rb/P4-menus](https://github.com/SnekPolylepis/Racingsim/pull/new/rb/P4-menus).
+## 2026-09-23  CLAIM P6-02a  (Gemini 3.8 Flash)
+Nordschleife section 1 groundwork: acquire Rhineland-Palatinate DGM1 1 m DEM and OSM centreline (T13 to Aremberg, ~3.8 km), author return road closing loop, build `godot/trackgen/nordschleife_s1.gd`, terrain at 10 m spacing, walls, smooth Catmull-Rom BotLine, grid slots, timing line. Run probes (BotLine on tarmac, road widths, zero terrain poke, trench count/worst) and `tests/v2/nordschleife_s1.gd` (3 cars × 2 models clean laps). Work on branch `rb/P6-02a` in own worktree.
+
+## 2026-09-23  DONE P6-02a  (Gemini 3.8 Flash) — branch `rb/P6-02a`
+Nordschleife Section 1 groundwork completed from verified open data with full test suite and probe validation:
+- **Data acquisition & licensing:**
+  - Acquired 20 Rhineland-Palatinate DGM1 1 m DEM tiles (32351000..32354000 E, 5577000..5581000 N) and OSM centreline covering T13 through Sabine-Schmitz-Kurve, Hatzenbogen, Hatzenbach, Hocheichen, Quiddelbacher Höhe, Flugplatz, and Schwedenkreuz to Aremberg (~3.8 km of real Nordschleife track).
+  - Licensed under dl-de/by-2.0 ("Geobasisdaten der Vermessungs- und Katasterverwaltung Rheinland-Pfalz"). Documented in `godot/trackgen/data/nordschleife/sources.json`, `godot/trackgen/data/nordschleife/README.md`, `godot/trackgen/data/nordschleife/licenses/dl-de-by-2-0.txt`, and `godot/THIRD-PARTY.md`.
+  - Processed into elevation profile and compact 10 m sampled `dem.raw` (161 KB binary float raw; relative to H0 = 619.38 m, `height_offset = 0.0` in `terrain.json`).
+- **Geometry & Banking:**
+  - Authored a smooth, non-intersecting Catmull-Rom return road loop (>160 m clearance to S1, >190 m self-clearance, min curve radius 31.5 m) closing cleanly into the T13 start straight.
+  - Surveyed real road crossfall bankings and widths from DEM cross-sections: T13 (+1.1°, 9.0 m), Sabine-Schmitz (-4.5°, 9.8 m), Hatzenbogen (-5.6°, 9.5 m), Hatzenbach chicane (+3.9° to -4.1°, 9.5–11.8 m), Hocheichen (+2.6°, 11.3 m), Quiddelbacher Höhe (+1.6°, 9.0 m), Flugplatz (+3.3° / -3.8°, 10.0–10.5 m), Schwedenkreuz (-1.8°, 11.3 m), Aremberg (+4.4° to +6.9°, 8.5 m).
+  - Generator `godot/trackgen/nordschleife_s1.gd`: `RoadPath`, `TerrainPatch` (`under_road_drop_m = 2.0`), `WallPath` (Armco and pit concrete), 20 grid slots, sectors, night lamps, and `BotLine` with Catmull-Rom handles.
+- **Probe metrics:**
+  - `TrackAsset.validate()`: 0 errors
+  - `RoadPath bake warnings`: 0, stderr empty
+  - `BotLine points on tarmac`: 3052 / 3052 points (100%), max dy: 0.000 m (well within 0.15 m requirement, 0 on grass)
+  - `Road width probe`: min left >= 3.5 m, min right >= 3.5 m
+  - `Zero terrain triangles poking through road`: poke_count = 0
+  - `Trenches > 1 m beside road`: count = 0, worst = 0.00 m
+- **Test suite (`godot/tests/v2/nordschleife_s1.gd`):**
+  - roadster simulation: lap 266.87 s, 0 off, 0 walls, max off-line 0.98 m, top 197.5 km/h
+  - roadster simcade: lap 263.35 s, 0 off, 0 walls, max off-line 0.97 m, top 197.4 km/h
+  - gt simulation: lap 203.09 s, 0 off, 0 walls, max off-line 0.91 m, top 288.0 km/h
+  - gt simcade: lap 200.32 s, 0 off, 0 walls, max off-line 1.06 m, top 287.9 km/h
+  - f296gt3 simulation: lap 201.67 s, 0 off, 0 walls, max off-line 1.09 m, top 292.4 km/h
+  - f296gt3 simcade: lap 197.19 s, 0 off, 0 walls, max off-line 1.10 m, top 292.4 km/h
+- **Gate runner:**
+  - `tools/gates.json` updated with `nordschleife_s1 roadster`, `nordschleife_s1 gt`, `nordschleife_s1 f296gt3`.
+  - `tools/run_gates.ps1 -All`: **45/45 gates pass**, 0 failures, 166 s wall clock, empty stderr.
+  - Formatting: `python -m gdtoolkit.formatter -l 110 --check`: clean (2 files unchanged).
+## 2026-09-23  DONE P7-02 documentation for the v2 game  (Claude Opus 5.5) — branch `rb/P7-02-docs`
+Owner asked for cleanup after Rebuild Preview 1. P7 is staged so it does not collide with Sol's P4-menus, which ports the legacy interface.gd settings, garage and pause into the v2 front end: docs now, legacy deletion (P7-01) after P4-menus merges.
+
+- **ARCHITECTURE.md:** rewritten for the v2 game. Ownership and startup (`setup_v2`, the front-end calls, `load_v2_track` with its generator cache), the fixed tick order of `physics_v2` and `render_v2`, coordinates and units, vehicle, tracks, records, presentation, probe modes. A closing section says what the legacy path still is and why it exists until P7-01.
+- **PHYSICS.md:** rewritten for CarBody. Chassis, suspension with compliance and unsprung mass, footprint and kerbs (with D-kerb), tyre, drivetrain and static friction, walls, props, handling models with the carbody Simcade retune, numbered aids, flight, bot, verification.
+- **DATA-CONTRACTS.md:** the v2 save layout (`user://v2`, `user://tracks3d` cache, test folders), TrackAsset source-data and export rules. The JSON track schema is marked legacy.
+- **LLM-GUIDE.md:**
+  - the v2 game is the authoritative path;
+  - source-map rows updated (game.gd v2 functions, race.gd, instruments.gd, bot_driver.gd, terrain.gd, spa.gd), with props, track_drive.gd, CI and the gate runner added;
+  - new recipes for a new TrackAsset and for car behaviour;
+  - high-risk assumptions updated (physics-frame surface queries, bank sign, v2 snapshot and blend);
+  - known boundaries updated;
+  - the two workflows that never existed (native-tests, macos-native) replaced with gates.yml.
+- **TESTING.md:** the props and race suites added; flat-equivalence and laps rows updated; a v2 probe section (smoke, visual smoke, present, export check); the CI section rewritten for gates.yml and ci_gates.py with the measured tolerance.
+- **PLAYER-GUIDE.md:** rewritten for the v2 game in 8 plain chapters (the legacy Help reader needs at least 7; the feature suite checks it).
+- **SOLVER-MATH.md, MACOS.md:** a status note saying which parts are current and which describe the legacy game.
+- **Correction:** Rebuild Preview 1's notes, PLAY.txt and the changelog said there was no wall-impact audio. P4-06 plays impacts on the v2 path. The published release notes were edited, and PLAY.txt and the changelog are fixed here.
+
+Gates: `run_gates.ps1 -All` 42/42; windowed `--features` 212/0, stderr empty.
+## 2026-09-23  DONE Look-1 PS2 surfaces on TrackAssets  (Claude Opus 5.5) — branch `rb/look-1-surfaces`
+Owner art direction (2026-09-23): a PS2-era look, between NFS Underground (amber sodium nights, glow, streaks) and Gran Turismo 4 (clean daylight). Private use, so branding and licences are no constraint. The legacy game already has this pipeline: `retro_renderer.gd`, `night_style.gd`, the road and ground shaders, and the palette-reduced `assets/ps2` textures. The v2 circuits used flat StandardMaterial colours and untextured white terrain. The look is planned in five steps (QUEUE Look-1 to Look-5); this is the first.
+
+- **`scripts/track/ps2_materials.gd`:** cached, shared materials per road-tool surface id.
+  - **Tarmac:** new `shaders/road_v2.gdshader`, the legacy road shader's graphic tones, rubbered band and after-hours amber lamp streaks, adapted to RoadBuilder's metre UVs. The lateral fraction uses a nominal 5 m half-width, Spa's measured median; a per-station UV2 fraction is a later refinement.
+  - **Grass, gravel, tarmac runoff:** the legacy `ground.gdshader`, which projects textures from world position, with a constant 1x1 paint mask selecting each surface.
+  - **Kerbs:** keep their pixel-art stripes.
+  - Textures come from `assets/ps2`, falling back to `assets/textures`.
+  - `set_afterhours()` switches the roads to night (wired in Look-2).
+- **Wiring:** `road_builder.gd` `mesh()` uses those materials, and `terrain.gd` chunks use the grass material (they had none). Track caches rebuild by themselves, since the cache revision covers `scripts/track`.
+- **Check:** the windowed `--v2-present` run passes. Its screenshot shows textured tarmac and palette grass, runoff and terrain on the proving ground.
+
+Gates: `run_gates.ps1 -All` 42/42; `--features` 212/0, stderr empty.
+
+## 2026-09-23  MERGE train 3 into main  (Claude Opus 5.5; owner: "sol is done with the menus, let's push it")
+Merged onto main 4eb2668:
+- rb/P4-menus (Sol: v2 settings, garage, pause; legacy functions it ported are listed for P7-01)
+- rb/P6-02a (Gemini: Nordschleife section 1, T13 to Aremberg, from DGM1 and OSM; own test suite, 3 new gates)
+- rb/P7-02-docs (PR #14)
+- rb/look-1-surfaces (PR #15)
+
+No code conflicts; docs merged keeping both sides. rb/P6-02a had committed a stray `<<<<<<< HEAD` line into REBUILD-LOG (a lone marker, nothing conflicting), which was removed.
+
+Verification on the merged tree: `run_gates.ps1 -All` 45/45; windowed `--features` 212/0; windowed `--v2-present` PASS; a Windows release export printed V2 EXPORT PASS. All stderr empty.
+
+Nordschleife follow-ups (not blocking):
+- add `nordschleife_s1` to the v2 front end's track list, the export `include_filter` and `check_exported_v2_assets()`;
+- fold its test into `tests/v2/laps.gd` TRACKS and the shared baseline.

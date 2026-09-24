@@ -1,0 +1,58 @@
+{
+  "acquired": "2026-09-23",
+  "osm_licence": "ODbL 1.0 (https://www.openstreetmap.org/copyright)",
+  "dgm1_catalogue": "https://geoshop.rlp.de/opendata-dgm1.html",
+  "dgm1_attribution": "\u00a9 GeoBasis-DE / LVermGeoRP 2026, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]",
+  "dgm1_tiles": [
+    "dgm1_32_351_5581_1_rp_2025.tif",
+    "dgm1_32_351_5580_1_rp_2025.tif",
+    "dgm1_32_351_5579_1_rp_2025.tif",
+    "dgm1_32_351_5578_1_rp_2025.tif",
+    "dgm1_32_351_5577_1_rp_2025.tif",
+    "dgm1_32_352_5581_1_rp_2025.tif",
+    "dgm1_32_352_5580_1_rp_2025.tif",
+    "dgm1_32_352_5579_1_rp_2025.tif",
+    "dgm1_32_352_5578_1_rp_2025.tif",
+    "dgm1_32_352_5577_1_rp_2025.tif",
+    "dgm1_32_353_5581_1_rp_2025.tif",
+    "dgm1_32_353_5580_1_rp_2025.tif",
+    "dgm1_32_353_5579_1_rp_2025.tif",
+    "dgm1_32_353_5578_1_rp_2025.tif",
+    "dgm1_32_353_5577_1_rp_2025.tif",
+    "dgm1_32_354_5581_1_rp_2025.tif",
+    "dgm1_32_354_5580_1_rp_2025.tif",
+    "dgm1_32_354_5579_1_rp_2025.tif",
+    "dgm1_32_354_5578_1_rp_2025.tif",
+    "dgm1_32_354_5577_1_rp_2025.tif"
+  ],
+  "files": {
+    "build_data.py": {
+      "bytes": 17756,
+      "sha256": "183b5a4b39d144379fe541d69e57e66c9a5944f15b6a33f899581aa85bf09fa3"
+    },
+    "centreline.json": {
+      "bytes": 72698,
+      "sha256": "5cadb35ea7efb3b12b24275dd694639e7ac8dfe7f03dae1627c668af1cb62dc2"
+    },
+    "dem.raw": {
+      "bytes": 161204,
+      "sha256": "3fc43e98149cd0b8d7eb7385732744395faf552e4cf726ac1f63ba56399c8583"
+    },
+    "terrain.json": {
+      "bytes": 279,
+      "sha256": "05451b81af225e521300efbdfa86bec4b362507e61d89ce32abcf6f8142727e7"
+    },
+    "README.md": {
+      "bytes": 1493,
+      "sha256": "91a30022a2d23316436cbdf390cbd5ff8fad355bfbcfa9b2f76312b4a6d70ac7"
+    },
+    "licenses/dl-de-by-2.0.txt": {
+      "bytes": 1413,
+      "sha256": "3e5a253de2e97f5db33e0754ce8cb2a75677de552f54a46512915dd72517944e"
+    },
+    "licenses/ODbL-1.0.txt": {
+      "bytes": 25278,
+      "sha256": "607680718977f6f6c9607972afd98f208573f19251315ed1362a8589b51beaf5"
+    }
+  }
+}

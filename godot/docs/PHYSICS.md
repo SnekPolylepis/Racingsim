@@ -1,36 +1,149 @@
-# Native physics: handling models
+# Physics: the 6-DOF car and its handling models
 
-The native custom solver runs at 240 Hz and is authoritative. The browser-parity path (`car.parity`) has been retired: native physics is no longer required to reproduce the browser solver, and the current `scripts/car.gd` has no parity property. Historical model constructors default to Simulation; the application defaults to Simcade. See ARCHITECTURE for coordinates, solver ordering and clamps.
+The vehicle solver is custom, deterministic and fixed at 240 Hz (semi-implicit Euler). `CarBody`
+(`scripts/vehicle/car_body.gd`) is the car on the v2 path. The planar `CarModel` (`scripts/car.gd`)
+survives as its base class and for the legacy suites until P7-01. ARCHITECTURE.md covers coordinates
+and the tick order. SOLVER-MATH.md derives the shared tyre and drivetrain equations. The REBUILD-LOG
+DONE entries (P2-00 to P2-08, P2-comp, P2-comp-b, P4-03, props) carry the measurements behind each
+choice below.
+
+## Chassis
+
+- **Body:** a rigid body with total mass, principal inertias `(iroll, izz, ipitch)` from the preset,
+  a quaternion attitude and angular velocity in the body frame. The gyroscopic term is advanced by RK4
+  (explicit Euler gained energy in a free spin). Position and velocity are 64-bit.
+- **Free attitude:** gravity is a world −Y force with no slope term. Crests, flight, landings, banking
+  and rollovers all come from the forces; no attitude is assigned.
+- **Aero:** downforce acts at each axle along the body's down axis (`clAF`, `clAR`), drag at the CG
+  against velocity (`cdA`).
+- **Body contact:** a box of sill and roof points (`bodyClearance` sets the sill) is probed only when
+  contact is plausible (a lifted wheel, a big tilt, a bottomed corner, a fast fall). Each touching
+  point gets a penalty spring and damper with clamped sliding friction, so a rolled or bottomed car
+  rests on its body.
+
+## Suspension, tyre compliance and unsprung mass
+
+- **Rays:** each corner's mount sits in the body frame. The suspension ray starts `RAY_LIFT` (0.5 m)
+  above it, so ground rising past the mount (a steep wall, a kerb under a bottomed corner) still
+  answers continuously.
+- **Suspension forces:** spring, bump or rebound damper, and a bump stop at 6x the spring rate past
+  8 cm of travel. Anti-roll bars keep acting through a lifted wheel.
+- **Wheel mass (P2-comp, `compliance = true`):** each wheel has its own mass (`unsprungMass`
+  [front, rear] kg) moving along the suspension axis, between the suspension above and a radial tyre
+  spring (`tyreRate` N/m, plus 500 N s/m of hysteresis) below. The tyre cannot pull.
+  - **Wheel load:** the tyre force.
+  - **Body force along each axis:** the suspension force plus unsprung mass times felt acceleration.
+    That is exact at rest and in free fall, and a tyre spike reaches the body only through the wheel.
+  - **Integration:** wheel travel uses linearised backward Euler over the spring, damper and tyre
+    terms, so 14–17 Hz wheel hop stays stable. The wheel stops at full droop.
+  - **Ride height:** the mount sits the static tyre squash higher, so ride height (`cgHeight`) is
+    unchanged.
+  - **Placing the car:** `place()` seats each wheel where spring (bump stop included) and tyre
+    balance on the ground under it.
+- **Legacy option:** `compliance = false` keeps the massless wheel on a rigid tyre, used by the
+  strict legacy comparisons.
+
+## Tyre footprint and kerbs (P2-06, P2-comp-b)
+
+- **Samples:** a rigid-tyre envelope over 9 samples per wheel (5 on smooth ground), with edge
+  bisection. On smooth ground it is bit-identical to the single centre ray.
+- **Tread shape:** a crowned tread (0.4 m) and shoulders stand in for camber control and sidewall
+  compliance.
+- **Steep faces:** surfaces steeper than 60° to the tyre's up locate edges but never carry the tyre.
+- **Kerb corners:** with compliance on, a tyre on a sharp edge's corner takes the rigid tread's normal
+  along the wheel (the ground normal leaned by the circle's slope, scaled by how squarely the edge
+  crosses the wheel). A square step then pushes the car back as well as up. Shaped kerbs (bevel,
+  ribbed, sausage) are followed as surfaces.
+- **Rough ground:** grass, gravel and runoff add a small random damper excitation, scaled down in
+  Simcade.
+- **Kerbs in both models:** owner decision D-kerb, 2026-09-23. Kerbs feel the same in Simcade and
+  Simulation.
+
+## Tyre forces, drivetrain and static friction
+
+- **Shared modules:** the tyre model (`scripts/vehicle/tyre.gd`) and drivetrain (`drivetrain.gd`) are
+  shared with the legacy car.
+  - Pacejka curves are combined through a friction ellipse.
+  - Load sensitivity is taken relative to each axle's static load.
+  - Tyre temperature uses two nodes, a fast surface and a slow core.
+  - Wear grows from zero.
+  - Self-aligning torque gives `car.steer_torque`.
+- **Contact frame:** forces act at each contact point, in a frame built from the ground normal and
+  the wheel's heading.
+- **Need clamps (keep them):** the tyre force "need" clamps and the clutch and differential
+  equalisation clamps limit each stiff coupling to the change needed in one tick. Removing them brings
+  back standstill jitter and drivetrain oscillation.
+- **Static friction (P2-04):** below 0.3 m/s the tyre also cancels its share of gravity along the
+  contact plane, shared by wheel load. A parked car holds on a 20° grade and a 37° side slope without
+  creeping.
+
+## Walls and props
+
+- **Walls (`wall_contact.gd`, P4-03):**
+  - The chassis hull box is swept against wall collision (layer 2) each tick, so nothing tunnels at
+    300 km/h.
+  - Contacts come from intersect and collide queries, with the face normal from a ray.
+  - Sequential impulses with friction resolve them, with a restitution threshold of 0.5 m/s. Response
+    varies by wall kind (tyre, armco, concrete).
+  - In Simcade the car keeps more of its speed along the wall.
+- **Props (`scripts/props/`):** cones, bollards and marker boards (`data/props.json`) are small
+  rigid bodies that sleep until touched.
+  - They exchange impulses with the car hull, the ground and walls, conserving momentum. A 4 kg cone
+    at 100 km/h costs the car about 0.35 km/h.
+  - Prop-to-prop collisions are not modelled.
 
 ## Handling models
 
-Simulation (`simcade_enabled=false`) preserves the pre-overhaul tyre, drivetrain, suspension, temperature and contact calculations. Missing optional aid fields preserve original TC intensity, ABS settings and zero ASM. Existing dynamics and lap harnesses run this path unless passed `-- --simcade`.
+`car.simcade_enabled` picks the model; the app defaults to Simcade.
 
-Simcade is conditional inside the native path. `data/simcade.json` owns shared tuning, with optional `preset.simcade` overrides. No suspension, drivetrain, gearing, differential, aero or need-clamp equations are replaced.
+- **Simulation** keeps the base tyre, drivetrain, temperature and contact calculations. Missing
+  optional aid fields keep the original TC intensity and ABS settings, and zero ASM.
+- **Simcade** is conditional inside the same solver. `data/simcade.json` holds the shared tuning, then
+  the `carbody` section for the 6-DOF car (`asm_slip_cut_gain` 18, `sliding_grip_long` 0.84), then
+  optional per-preset overrides.
+  - The lateral curve ramps to its peak at 5°, holds it to 13°, then decays toward 0.87. Longitudinal
+    slip uses the same shape.
+  - Load sensitivity is x0.60. Temperature penalties are x0.24 and wear penalties a third.
+  - Beyond the rear peak slip angle, a dissipative yaw moment damps rotation. It never assigns a
+    heading.
+  - The steering assist caps same-direction lock at the kinematic grip angle plus a margin, and
+    countersteer stays available.
+  - Gravel drag is higher.
 
-The lateral force curve ramps sinusoidally to peak at 5 degrees, holds peak through 13 degrees, then decays exponentially toward 0.87. Longitudinal slip uses the same shape at 0.78–1.8 times the existing peak ratio. The unchanged combined-force ellipse prevents simultaneous full longitudinal and lateral force. Load sensitivity is multiplied by 0.60. Temperature penalties are scaled by 0.24 (absolute thermal floor 0.952); wear penalties by one third. Temperatures still evolve through the original two-node heat model; Simcade starts at optimum.
+## Numbered aids
 
-Beyond the rear tyre peak body-slip angle, an opposing yaw moment proportional to inertia, yaw rate and excess slip dissipates rotation. It never assigns a heading or clamps lateral velocity. Steering assist caps same-direction lock at the kinematic grip angle plus 0.70 × 5 degrees; countersteering remains available. The shared option applies to keyboard and controller.
+- **TCS 0–10** maps to the integral traction-control intensity; 0 is off.
+- **ASM 0–10** estimates the intended yaw from speed and steering, limited by grip, and compares it
+  with the body-frame yaw rate and slip. On the 6-DOF car it reads the body frame, so it sees a bank
+  or crest the way the driver feels it. It requests brake torque on one wheel and an engine torque
+  cut; ABS can release an ASM brake.
+- **Defaults:** Simcade TCS 3 / ASM 3 / ABS on. Simulation keeps each preset's values and zero ASM.
+- **Records:** the effective aids and handling model are part of the record identity.
 
-Curbs contribute 0.55 of their wheel-height excitation and rough surfaces 0.35 of the random bump. Grass retains slippery grip and drag. Gravel drag increases to 1.25 with symmetric longitudinal/lateral resistance. Simcade contact removes inward normal velocity, retains 0.94 tangential speed and 0.65 yaw rate; contact invalidation is unchanged.
+## Flight and landing
 
-## Numbered aids and compatibility
+No special case is needed. With no ground within wheel reach, the tyres carry no load and the body
+flies ballistically with free attitude. Landing compresses the tyre springs and suspension, and the
+body box takes a hard landing.
 
-TCS 0–10 maps to the existing native integral TC intensity; 0 disables it. ASM 0–10 estimates intended yaw from speed and steering, limits it by available grip and compares it with yaw/body slip. It requests a selected wheel's brake torque and an engine-torque reduction. Wheel torques still enter through the existing drivetrain/force loop and ABS can release an ASM brake. The physical yaw damping is separate and remains with ASM off. Simcade defaults are TCS 3 / ASM 3 / ABS on. Simulation defaults retain each preset's previous values and zero ASM.
+The proving ground's crest takes off from about 149 km/h (152.5 km/h approach) with the 296 GT3.
+`tests/v2/proving_ground.gd` measures it.
 
-The 42 original setup fields are retained. Optional tcsLevel/asmLevel fields survive saves, and exported legacy TC fields reflect the effective level. Legacy fractional intensities remain representable; the UI moves in whole levels. Missing ASM in an old setup means off. Effective aids and handling model enter the record hash; graphics and time of day do not. Ghost sample structure remains browser-compatible. Unconfigured legacy ghosts are not automatically adopted into Simcade.
+## Bot
 
-## Measured verification
+`bot_driver.gd` drives any asset's BotLine at a fraction (0.85) of the car's own grip, which a quick
+virtual skidpad measures and caches per configuration.
 
-`tests/dynamics.gd -- --simcade` compares acceleration, stopping distance and skidpad grip with fresh Simulation measurements (±8%), tests 90%-limit transients and recovery, keyboard full lock, ASM 1, tyre plateaus, heat soak and setup/surface/contact authority. `tests/laps.gd -- --simcade` requires clean laps and ±4% of the recorded Simulation bot baseline. These synthetic controllers measure defined cases, not universal spin immunity or real-car validation. Final numbers and output locations are in PS2-SIMCADE-REPORT.md.
+- **Speed plan:** the banked-turn limit from the line's curvature (measured over ±8 m) with load
+  sensitivity, a crest limit, and a backward braking pass that shares grip with cornering.
+- **Steering:** pure pursuit with a small capped cross-track term and yaw damping.
+- **Pedals:** they release as body slip passes 3–8°.
 
-## Vertical dynamics and flight
+It is a validation driver for `tests/v2/laps.gd` and `--v2-present`, not AI opponents.
 
-The road beneath the car asks for a normal acceleration of `g·cosθ + v²·kv`: gravity's share along the surface normal plus the centripetal term of following vertical curvature `kv` (negative over a crest). While the car is grounded, `g_eff` is that value clamped to `[0, 3g]` and drives the heave equation, so crests lighten the car and compressions load it.
+## Verification
 
-When `m·(g·cosθ + v²·kv)` plus aerodynamic downforce goes negative, no tyre force can hold the car to the road, and it takes off with the road's own vertical velocity at the lip. In the air, `car.air` is the height above the road beneath and `car.air_vz` the world vertical velocity; gravity and downforce act straight down, slope gravity is removed, every tyre carries zero load (so there is no grip, steering or braking force), and the wheels hang at full droop while pitch and roll hold their takeoff values. When `air` returns to zero, the closing speed into the road becomes suspension compression rate, so the landing is absorbed by the springs, dampers and bump stop.
-
-Simplification: the rendered attitude in flight follows the road beneath the car rather than integrating free rotation. That is close for short jumps and wrong for long ones.
-
-Suspension travel: corner compression beyond 8 cm meets a bump stop at six times the spring rate. A corner's force is clamped so it can never imply negative load, and that clamped value drives both the wheel load and the chassis degrees of freedom. Road deviation per wheel relative to the chassis tangent plane is limited to 0.70 m, above the measured 0.64 m residual in the Caracciola-Karussell.
-
+The headless suites in `tests/v2/` (TESTING.md) gate all of this: suspension statics, flat
+equivalence with CarModel (±3 % massless, ±5 % compliant), energy, footprint and kerbs, static
+friction, aids and Simcade bands, walls, props, the proving ground's features and clean bot laps on
+every track, car and model within 2 % of the recorded baseline.

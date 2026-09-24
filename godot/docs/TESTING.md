@@ -82,10 +82,12 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 | `suspension.gd` | Cross-weight / warp vs rigid-body statics, roof drop, side drop, ditch weave max tilt and body penetration, close two-deck regression | 12 checks |
 | `static_friction.gd` | Braked car on 8–37° slopes (creep < 0.004 mm/s), friction-limit slide on grass, unbraked rolling matches analytic rate, hold-release-rebrake cycle | 6 checks |
 | `energy_wall.gd` | Energy conservation (free-rolling coast, ΔKE < 0.5%), 37° concrete wall at 150 km/h (all wheels down, body roll matches skidpad gradient × g sin 37°, path error < 1 m) | 4 checks |
-| `flat_equivalence.gd` | CarBody vs CarModel: tyre peaks exact; 0–100, 100–0, 150 m skidpad and top speed within ±3% of baseline, per car, per handling model | Split by `--car` |
+| `flat_equivalence.gd` | CarBody vs CarModel: tyre peaks exact; 0–100, 100–0, 150 m skidpad and top speed within ±3% on the massless wheel, and within ±5% with tyre compliance, per car and handling model | Split by `--car` |
 | `aids_simcade.gd` | Simulation dynamics bands and the full Simcade suite (ASM, keyboard lock, thermal grip, grass/gravel, differential, ARB) on CarBody, inheriting thresholds from `tests/dynamics.gd` | 114 checks; split by `--car` / `--part simulation\|simcade` |
 | `footprint.gd` | Rigid-tyre envelope over a 5 cm step (within 0.5 mm of analytic), bit-identical to centre ray on smooth ground (1200 poses), TrackSurface kerb road cost < 300 µs | 10 checks; timing gate with `-Perf` |
 | `barrier.gd` | Head-on 300 km/h into concrete/armco/tyre walls (no pass-through), glancing 150 km/h (energy-only loss), leaning on a wall 3 s, flying over a wall (0 contacts), oblique 300 km/h | 6 checks; timing gate with `-Perf` |
+| `props.gd` | Cones, bollards and marker boards: rest on flat and on a ramp, 1 m tumbling drop, hits at 30/100/200 km/h (no pass-through of car or ground, car speed loss), momentum in free fall, wall bounce, determinism, proving-ground placement, cost | 13 checks; timing gate with `-Perf` |
+| `race.gd` | `race.gd` `update_asset()` on the proving ground's gates: scripted lap and sector times against distance / speed, schema-2 ghost samples (9 numbers, ~30 Hz), delta and ghost pose, cut, off-track, reverse and reset, ghost-document validation, a bot lap matching the laps gate | 10 checks |
 | `track_asset.gd` | TrackAsset validation (accepts fixture, rejects 8 broken variants), timing-gate crossing, deck resolution, TrackSurface contact, 296 integration lap, per-tick cost | 23 checks; timing gate with `-Perf` |
 | `road_tool.gd` | RoadPath + RoadBuilder: analytic straight heights/bank, a proving loop built with the tool (idempotent re-bake, tessellation, kerb/surface ids, grid slots), 296 lap | 16 checks |
 | `road_tool_v2.gd` | Sausage and ribbed kerbs, per-side verges and runoff, inset ditch (within 2 mm of TestSurface.ditch), elevation spline C2 continuity, grid configuration | 11 checks |
@@ -94,7 +96,7 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 | `road_density.gd` | Variable lateral road-station density: incompatible count falls back, analytic cross-section match, watertight collision mesh (0 boundary cracks), seam height-step < 1 mm, UV continuity, proving ground scene size | 6 checks |
 | `scenery.gd` | Scenery kit components (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding): layer-2 collision where required, validation, kerb paint, proving-ground integration | 11 checks |
 | `proving_ground.gd` | Built proving ground on TrackSurface: crest takeoff speed, bowl lateral demand, compression load, ditch ride depth, BotLine laps (Simulation + Simcade), kerb crossings at 60/120 km/h | 25 checks |
-| `laps.gd` | BotDriver on every shipped TrackAsset: valid lap, zero off-track wheel-ticks, zero wall contacts; records or compares against `docs/rebuild/laps-v2-baseline.json` | Split by `--car`; see below |
+| `laps.gd` | BotDriver on every shipped TrackAsset (proving ground, Spa), all three cars in both handling models: valid lap, zero off-track wheel-ticks, zero wall and prop contacts; records or compares against `docs/rebuild/laps-v2-baseline.json` | Split by `--car`; see below |
 | `front_end.gd` | V2 menu car/TrackAsset choice, Spa bake-on-load cache, drive/menu return, schema-2 ghost and sector persistence, distinct track record keys | Runs with `-- --v2-flow-test`; uses `user://native-tests/v2` |
 | `test_surfaces_scene.gd` | The `scenes/proving/test_surfaces.tscn` drive scene: car settles on each analytic shape, controls respond, visual adapter poses correctly | 14 checks |
 
@@ -110,13 +112,25 @@ The baseline file `docs/rebuild/laps-v2-baseline.json` stores one lap time per `
 
 The Spa bank warning recorded in earlier rebuild runs was resolved by F-P6-01b. The 2026-09-23 P4-06 `-All` run passed 42/42 gates with empty stderr. To check a Windows export's packaged generators and Spa heightmap, run the exported executable with `--headless -- --v2-export-check`; it prints `V2 EXPORT PASS` and exits.
 
+### v2 game probes (windowed unless noted)
+
+- `tools/Godot.exe --headless --path . -- --v2-smoke`: 120 ticks of the v2 game, pose and interpolation sanity.
+- `tools/Godot.exe --path . -- --v2-visual-smoke`: the same, with rendering.
+- `tools/Godot.exe --path . -- --v2-present`: the bot drives two proving-ground laps at 3x speed while the camera cycles all five modes. It checks a valid lap, the ghost on lap 2, the minimap, camera modes and engine audio, prints `V2 PRESENT PASS`, and saves `user://v2-present.png` to look at. It also runs on an exported exe (`RacingSim.exe -- --v2-present`).
+- `RacingSim.exe --headless -- --v2-export-check` (exported builds): `V2 EXPORT PASS` when the generators and every data file they read are inside the package.
+
 ## Continuous integration and formatting
 
-`.github/workflows/native-tests.yml` runs on every push once the folder is a GitHub repository: `gdformat --check`, script parsing, handling, bot laps and the rendered feature suite. The feature suite runs on Mesa's software OpenGL under Xvfb, using the renderer's OpenGL fallback; the workflow switches off anisotropic texture filtering for that run only, because software anisotropic sampling takes minutes per frame. The same trick applies to any local software-rendered run (Vulkan lavapipe or llvmpipe). Format before committing with `gdformat -l 110 scripts tests` (`pip install "gdtoolkit==4.*"`).
+`.github/workflows/gates.yml` runs on every push and pull request on ubuntu-latest (`tools/ci_gates.py`): `gdformat --check`, the script parse check and every headless suite in `tools/gates.json`, with timing gates off (`RACINGSIM_PERF_GATES=0`).
+
+- **Legacy baselines:** they must match exactly, except the two suites listed in `ci_gates.py` `PLATFORM_TOLERANCE`, whose numbers differ between Windows and Linux in the last digits (measured, F-CI). dynamics-simulation allows one unit in the last printed digit; showcase-laps' lap JSON allows 1e-3 relative. The runner prints the largest differences it saw.
+- **Not in CI:** the windowed feature suite, `--v2-present` and exports. Run them locally before a release.
+
+Format before committing with `gdformat -l 110 scripts tests` (`pip install "gdtoolkit==4.*"`).
 
 Old run logs live in `tests/logs/` (git-ignored).
 
-The separate `.github/workflows/macos-native.yml` workflow downloads the pinned Mac editor/templates, builds and verifies a universal ad-hoc signed app, runs headless native suites, and uploads the ZIP. It does not run the graphical feature suite. This workflow has not yet been executed on GitHub; local Mac results are recorded in [MACOS.md](MACOS.md).
+There is no macOS CI workflow; macOS exports are built locally from the macOS preset (`tools/macos.zip` template). See [MACOS.md](MACOS.md).
 
 ## Manual smoke checklist
 

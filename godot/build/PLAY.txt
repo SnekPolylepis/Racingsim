@@ -31,13 +31,13 @@ WHAT'S NEW IN THE REBUILD
   - The car is a true 3-D body on four suspension corners, with tyre flex and wheel mass:
     it can crest, fly, land, roll over and ride kerbs realistically.
   - Walls, barriers and knock-over cones; lap timing through 3-D gates with sectors and a
-    live delta; best-lap ghost; minimap; tyre temperatures; telemetry; engine and tyre audio.
+    live delta; best-lap ghost; minimap; tyre temperatures; telemetry; engine, tyre and impact audio.
   - Best laps, ghosts and sector times save per car, setup and handling model.
 
 KNOWN LIMITS OF THIS PREVIEW
   - Only the Proving Ground and Spa. The Nordschleife is in progress.
   - Placeholder car models, sparse scenery, no night lighting on the new circuits yet.
-  - No wall-impact sounds yet. Runoff areas at Spa are approximations.
+  - Runoff areas at Spa are approximations.
   - No settings, garage or pause menu on the new front end yet (Esc goes back to the menu).
   - Records from the old game do not carry over (they live in a separate folder).
 

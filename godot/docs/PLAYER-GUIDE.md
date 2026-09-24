@@ -1,87 +1,90 @@
 # Racing Sim — player handbook
 
-This guide is included in the native game. Open Help and choose a chapter. It also lives in the source project for players and maintainers.
+This handbook describes the rebuilt game (Rebuild Preview 1 onward): a full 3-D car on hand-built 3-D circuits. In-game Help reads it chapter by chapter, so each chapter is plain text.
 
 ## Getting started
 
-On Windows launch RacingSim.exe or Play Racing Sim.cmd. On macOS open Racing Sim.app or Play Racing Sim.command from the project folder. No browser, installation or Godot editor is needed. Skip the studio card or let it finish, then press Enter or the controller's main action button at PRESS START. Choose Race, Time Trial or Free Run, your car and setup, then your circuit and light. Load circuit prepares the run and shows a three-second grid countdown. Back cancels preparation or returns from the grid to circuit selection. Garage, Circuits, Settings, Help and Quit are on the main menu. Use the mouse, arrows / D-pad and Enter / main action; Esc or the second controller action goes back. W or Up accelerates, S or Down brakes, and A/D or Left/Right steer. The title starts a driving demonstration after 25 seconds without input.
+On Windows run RacingSim.exe. On macOS open Racing Sim.app. The first time, right-click it and choose Open, because the app is not notarized. No installation, browser or Godot editor is needed, and nothing is downloaded while you play.
 
-The default showcase is the 296 GT3 at Spa. For learning the controls, the Roadster and Monza are also available. Brake before a corner, turn smoothly and apply throttle gradually on exit. R resets to the grid and restores the car and tires. Escape (or Start on a controller) opens the pause menu: Resume, Restart run, Garage, Settings, Help, Main menu and Quit game. Closing Garage or Settings returns to the pause menu. Escape also closes an open window. The game pauses when its window loses focus.
+In the menu choose Race, pick a car, then pick a circuit and choose Load circuit. The first time a circuit is opened it is built from its data, then cached. Spa takes about half a minute to build, and later loads are quick. You start on the grid, and the lap timer starts when you first cross the start line. Esc returns to the menu at any time.
 
-The default selection is Spa-Francorchamps with the Ferrari 296 GT3, Simcade handling and Afternoon lighting. The console-era presentation uses small filtered textures, glossy reflected paint, painted forests, soft glow and subtle colour dithering. Settings on the title screen also offers Afterhours: indigo skies, amber pit accents and amber floodlights. Time of day and the wet-looking night streaks do not change grip or records. The dedicated 296 body, steering wheels, suspension and brake lights remain animated.
+## Circuits and cars
 
-The three included circuits are Monza, Spa-Francorchamps and Nürburgring Nordschleife. Spa and the Nordschleife are built from OpenStreetMap survey data (© OpenStreetMap contributors) with real elevation from terrain models: Spa is 7.004 km across the Ardennes, while the Nordschleife is the complete 20.832 km Eifel mountain circuit spanning nearly 300 m of vertical climb and plunge from Breidscheid to Hohe Acht. Widths, curbs, runoff and scenery are approximations. Monza is a playable approximation traced from official maps. Cars use roadster, GT and Ferrari 296 GT3 parameter presets with procedural body models. The roadster is modelled on a 1990 Mazda MX-5 (NA, 1.6): 2.265 m wheelbase, 955 kg, 136 Nm, a 7200 rpm redline, a five-speed gearbox and 185/60R14 tyres, with no ABS and no traction control.
+The Proving Ground is an invented test circuit of about 2.5 km. It is the place to learn how the car behaves at the edge. It has:
+- a banked bowl;
+- a crest you can take off from at about 150 km/h in the 296;
+- a compression and off-camber corners;
+- a concrete ditch and every kind of kerb.
+
+Spa-Francorchamps is built from real survey data:
+- the OpenStreetMap centreline;
+- the Walloon government's LiDAR elevation and road banking;
+- road widths and kerbs measured from its 2023 aerial photographs.
+
+Eau Rouge and Raidillon climb as they really do. Runoff areas are approximations for now.
+
+The cars are the Mazda MX-5 (NA 1.6), a GT car with high downforce, and the Ferrari 296 GT3. The car models are placeholders; better ones are coming.
 
 ## Driving and gear changes
 
-Keyboard defaults:
-• W / Up: accelerator; S / Down: brake.
-• A/D or Left/Right: steering; Space: handbrake.
-• E or Shift: shift up; Q or Ctrl: shift down.
-• C: clutch; R: reset to grid; M: automatic/manual gearbox.
+Keyboard controls:
+- W or Up accelerates; S or Down brakes.
+- A/D or Left/Right steer.
+- Space is the handbrake and C the clutch.
+- E or Shift changes up; Q or Ctrl changes down.
+- R puts the car back on the grid and cancels the lap in progress.
 
-Automatic mode shifts for you. To select reverse, hold the brake while stopped until the gear changes, then use the accelerator. Repeat while stopped to return to forward drive. In manual mode, use the shift keys and choose whether automatic clutch assistance is enabled in Settings → Driving.
+With a controller, the left stick steers, the triggers are throttle and brake, and the bumpers change gear.
 
-Keyboard inputs are smoothed. Holding a direction produces more steering than a short tap. Simcade has steering grip assist on for both keyboard and controller; its Controls option can disable it. Simulation retains separate keyboard/controller grip and speed-sensitive steering settings. Countersteering remains available to catch a slide. Handbrake use can still rotate the car quickly.
+The car is a true 3-D body on four suspension corners, with tyre flex and wheel mass. It leans, pitches, lifts wheels, rides kerbs, crests, flies, and can roll over.
 
-Controller defaults: left stick steering, RT/LT accelerator/brake, LB clutch, X handbrake, A/B shift up/down, Back reset, Start pause. Button names assume a common Xbox-style layout. Physical controller hardware has not yet been verified on this build.
+Kerbs push the car up and back, and hitting a square edge costs speed. Walls stop the car, and cones can be knocked over. Grass and gravel have much less grip than tarmac, and running wide onto them invalidates the lap.
 
-## Handling models
+## Handling and aids
 
-Settings → Driving selects Simcade or Simulation. Changing model resets the attempt and selects separate best laps and ghosts.
+This preview drives with Simcade handling: forgiving tyres that hold their grip over a wide slip range, stability management (ASM 3), traction control (TCS 3), ABS and a steering assist.
 
-Simcade is the default. It retains weight transfer, drivetrain, suspension, differential and aero, with a wider tyre limit, gentler temperature and wear penalties, milder kerbs and dissipative wall contacts. Steering grip assist helps keyboard and controller inputs stay within a catchable range. It does not provide unlimited grip: brake before tight corners and avoid abrupt inputs on grass.
-
-Simulation retains the previous native tyre and contact model, its setup sensitivity and original preset TC/ABS defaults. It has no default ASM.
-
-Garage → Aids has TCS 0–10, ASM 0–10 and ABS On/Off. Simcade defaults to TCS 3, ASM 3 and ABS On. TCS reduces torque when driven wheels spin; a higher level intervenes earlier. ASM selectively brakes a wheel and reduces torque when yaw or body slip departs from the intended turn. ABS releases brake pressure near lockup. Zero switches TCS or ASM off. The aids can be used in either model. They are separate from the small physical yaw damping built into Simcade.
-
-Old setups keep their original TC/ABS choices and load with ASM off. Saved native setups include optional aid levels while keeping the browser's legacy fields. All original tuning fields remain supported; differential and anti-roll-bar changes still matter.
+Simulation handling keeps the full tyre model, with no assists by default. It and the aid levels will be selectable once the settings menu arrives in the new front end. Best laps are kept separately for each handling model, car and setup.
 
 ## Cameras, display and sound
 
-V cycles chase, high chase, bonnet, north-up overhead and car-relative overhead views. The mouse wheel changes driving zoom. Settings → Display also provides camera selection, chase height, km/h or mph, graphics quality, adaptive quality and fullscreen. F11 toggles fullscreen. On Apple keyboards, function shortcuts may require Fn/Globe; the menus also offer fullscreen access.
+V cycles the cameras: chase, high chase, bonnet (it leans with the car), overhead north-up, and overhead following the car.
 
-Render resolution offers 480p (the default), 720p and Native. Default 480p component uses a 640×448 world and Authentic UI, displayed in anamorphic 16:9. Choose 4:3 for a conventional TV shape. Authentic menus and HUD share the output filter; Sharp UI is optional. Optional 480i generates alternating fields with deflicker; CRT / composite adds mild colour bleed and a mask. The default framebuffer is 24-bit; colour dithering applies to optional 16-bit RGB555. Low speed blur affects the driving world. Afternoon and Afterhours use the same pipeline and OpenGL fallback. Medium and High quality add directional shadows; Low uses car drop shadows and painted ground darkening. Native offers optional MSAA 2×. Road height and banking remain physical at every setting.
+The HUD shows:
+- the lap timer, best and last laps, and whether the lap is valid;
+- sector splits and the live delta to your best;
+- a minimap and tyre temperatures;
+- the speedometer with gear and RPM.
 
-Settings → Audio provides mute, master, engine and effects levels. Engine pitch follows RPM; throttle changes its tone and level. Tire squeal responds to slip, surface noise changes with speed and terrain, and shifts/impacts have short effects. Sound fades out in menus and while paused.
+Y toggles the telemetry graph and B the debug readout.
 
-If the game is silent, close menus, resume driving, check mute and volume, then check your system output device. The engine blends edited real-car recordings across rev ranges, with a softer off-throttle layer. The source Ferrari models are unspecified; these are tuned game voices rather than exact recordings of each selectable car. Tire, road and mechanical effects remain synthesized.
+The engine sound is built from recordings, blended by RPM and load. Tyres squeal by surface and slip, and impacts sound when you hit something. Sky, fog and lighting follow the time of day.
 
-## Laps, tires and telemetry
+## Laps, sectors and ghosts
 
-Cross the start line in the driving direction to begin timing. Each lap is split into three sectors shown under the lap time: purple is your best ever for this car, setup and rules, green is your best this session, yellow is slower, and dark red means the lap was already invalid. For a few seconds after the line the previous lap's sectors stay visible. IDEAL is the sum of your best three sectors. A valid lap must pass the automatic checkpoints in order and return to the start. The time panel shows the current lap, best and last lap. An invalid last lap is marked with a cross and the reason: off track, contact, a missed checkpoint (passed too far from the road) or the checkpoints reached. When off-track invalidation is turned off, checkpoints accept runoff up to about 25 m from the road edge. Reset starts a fresh attempt.
+A lap counts from start line to start line, through every timing gate in order. The lap becomes invalid if you:
+- miss a checkpoint;
+- put all four wheels off the track;
+- hit a wall, when contact rules are on.
 
-Settings → Driving controls off-track invalidation and barrier-contact invalidation. Off-track invalidation applies when all four tires leave the road/curb. Changing race rules or tire wear starts a fresh run and selects its matching record.
+The HUD says why. Each lap is split into three sectors. Purple is your best ever for this car, setup and handling model; green is the best of this session; yellow is slower.
 
-A valid new best records a ghost. Enable its display in Settings. The live delta compares your elapsed time with the ghost at the corresponding distance: a negative value means ahead. Ghosts are reference replays, not opponents with collision physics.
+Your best valid lap is saved with its ghost: a translucent blue car that drives your best lap alongside you, from the start line until its lap time runs out. The delta at the top of the screen shows how far ahead (green) or behind (red) you are at this point of the lap.
 
-The minimap shows the circuit and car. Four tire cards show surface temperature, with warm/overheated colour; detailed core temperature and wear remain in the debug view. The surface reacts quickly to slides; the core changes more slowly. Simcade starts at the optimum temperature and compresses its effect on grip. Simulation starts warm and retains stronger temperature and wear effects. Curbs are raised: riding one tilts the car and shakes the tires. The tachometer shows RPM, speed, gear and a shift lamp. Aid levels stay visible and brighten while assistance acts. Pause with Esc, the controller menu button or the on-screen Pause button. The Time sheet lists completed laps, sectors, validity/best flags and top speed, with Retry, Change car, Change circuit and Main menu. A completed lap also enables Last-lap replay; Back returns to the time sheet.
+## Files and saves
 
-B toggles detailed vehicle information and wheel-force lines. Y toggles a rolling ten-second graph of speed, throttle, brake and steering. The graph scales values for comparison; it is not a raw data export. Debug information is intended to help understand vehicle behavior and diagnose changes.
+Best laps, ghosts, sector times and settings save automatically under your application data folder:
+- Windows: %APPDATA%/Godot/app_userdata/Racing Sim/v2/
+- macOS: ~/Library/Application Support/Godot/app_userdata/Racing Sim/v2/
 
-## Garage and setups
+Built circuits are cached in the tracks3d folder beside it. Deleting that cache is always safe; the circuit is rebuilt on its next load. Records from the pre-rebuild game are kept separately and do not carry over.
 
-Open Garage or press G. Its seven tabs contain the original tuning controls: Tires, Suspension, Aero, Brakes, Diff, Gearing and Aids. Values are constrained to their supported ranges. Change one or two values at a time and compare the same section of track.
+## Troubleshooting and known limits
 
-Tires affect available grip and temperature behavior. Suspension affects body motion and load distribution. Aero changes speed-dependent forces. Brakes affect stopping and balance. Differential settings affect how driven wheels share torque. Gearing changes the relationship between road speed and engine RPM. Aids adjust driving assistance.
+If a circuit takes a long time to load the first time, that is the one-off build; later loads use the cache. If the game ever starts with odd settings, deleting the v2 settings.json restores the defaults. Physical controllers work through Godot's standard gamepad mapping; wheels and force feedback are not supported.
 
-Close the garage to apply a changed setup. The car resets and loads the record associated with that setup. Save as creates a named setup. Load restores one; loading a setup for another car also changes the car. Defaults restores that preset's tuning. Import and Export exchange setup JSON with the browser version or another native installation.
-
-## Files, ghosts and portability
-
-Default saves are under %APPDATA%/Godot/app_userdata/Racing Sim/ on Windows, or ~/Library/Application Support/Godot/app_userdata/Racing Sim/ on macOS. Local saves switches back to the default location; Rescan refreshes the library. Settings remain in the local application folder.
-
-The native game reads setup and ghost JSON. Existing exported files can be selected individually or through their racing-data folder.
-
-Native best laps are separated by circuit configuration, car, tuning and race rules. A per-track exchange ghost is also maintained for compatibility. Older imported ghosts may lack setup/rule information, so treat them as reference laps rather than certified comparisons. Explicit ghost import assigns the replay to your current configuration.
-
-Circuits includes Import ghost, Export ghost and Clear best lap. Clearing removes the current configuration's best and the track's exchange ghost; other native configuration records remain. Back up the racing-data folder to preserve named setups and records.
-
-## Remapping and troubleshooting
-
-Open Settings → Controls. Click a keyboard binding, then press the replacement key. Click a controller binding, then press a button or move an axis. Escape cancels capture. Steering needs a signed axis; pedals use positive trigger travel. Reset mappings restores defaults. Deadzone and steering-response controls tune controller feel.
-
-If the car will not move, close any menu/dialog, resume from pause and check gear/input bindings. Reset with R if needed.
-
-Native builds target Windows x64 and macOS (Apple Silicon and Intel). Mac validation limits are recorded in the source project’s godot/docs/MACOS.md. Rendered checks have passed on the Windows RTX 4080 and macOS Apple M4 using Metal. Intel Macs, other GPUs and real controller hardware need further testing. There is no multiplayer, force feedback or airborne vehicle simulation. The source project's godot/docs directory contains architecture, file formats and maintenance instructions for developers and LLMs.
+This is a preview:
+- Only the Proving Ground and Spa are available; the Nordschleife is in progress.
+- The old game's settings, garage and pause menus are being moved to the new front end.
+- Car models are placeholders and scenery is sparse.
+- There is no night lighting on the new circuits yet.

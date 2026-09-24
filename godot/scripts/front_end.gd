@@ -32,6 +32,7 @@ var rim_index = 0
 var navigation_log = []
 var ui_player: AudioStreamPlayer
 var ui_sounds = {}
+var v2_panels: Control
 const V2_TRACKS = {"proving_ground": "Proving Ground", "spa": "Spa-Francorchamps"}
 
 
@@ -78,6 +79,10 @@ func initialize(owner_app):
 	if not app.v2_mode:
 		demo_driver = preload("res://scripts/showcase_driver.gd").new()
 		show_page("boot")
+	else:
+		v2_panels = preload("res://scripts/v2_panels.gd").new()
+		add_child(v2_panels)
+		v2_panels.initialize(app)
 
 
 func make_tone(kind):
@@ -285,6 +290,7 @@ func focus_first():
 		and is_instance_valid(buttons[0])
 		and buttons[0].is_inside_tree()
 		and (app.ui == null or not app.ui.is_open())
+		and (v2_panels == null or not v2_panels.is_open())
 		and page != "drive"
 	):
 		buttons[0].grab_focus()
@@ -292,9 +298,14 @@ func focus_first():
 
 func back():
 	if app.v2_mode:
+		if v2_panels and v2_panels.is_open():
+			v2_panels.close()
+			return
 		match page:
 			"drive":
-				app.return_v2_menu()
+				show_page("pause")
+			"pause":
+				show_page("drive")
 			"loading":
 				loading = false
 				loading_serial += 1
@@ -350,6 +361,13 @@ func back():
 
 func handle(event):
 	if app.v2_mode:
+		if not app.controls.listening.is_empty():
+			var was_listening = true
+			if app.controls.handle(event, false):
+				if was_listening and app.controls.listening.is_empty():
+					app.save_settings()
+					v2_panels.update_mapping_labels()
+				return true
 		if (
 			event is InputEventKey
 			and event.pressed
@@ -361,6 +379,10 @@ func handle(event):
 		if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B:
 			back()
 			return true
+		if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_START:
+			if page in ["drive", "pause"] and not v2_panels.is_open():
+				back()
+				return true
 		return false
 	if event is InputEventKey or event is InputEventMouseButton:
 		pad_prompts = false
@@ -781,9 +803,9 @@ func _process(dt):
 		return
 	if app.v2_mode:
 		age += dt
-		choices.visible = page != "drive"
-		prompt.visible = page != "drive"
-		prompt.text = "ARROWS  Move     ENTER  Select     ESC  Back"
+		choices.visible = page != "drive" and not v2_panels.is_open()
+		prompt.visible = page != "drive" and not v2_panels.is_open()
+		prompt.text = "ARROWS  Move     ENTER  Select     ESC  Pause / Back"
 		queue_redraw()
 		return
 	age += dt
@@ -847,20 +869,25 @@ func show_v2_page(next: String) -> void:
 	page = next
 	age = 0.0
 	if app.instruments:
-		app.instruments.visible = next == "drive"
+		app.instruments.visible = next in ["drive", "pause"]
 	for child in choices.get_children():
 		choices.remove_child(child)
 		child.queue_free()
 	buttons.clear()
-	app.in_menu = next != "drive"
+	app.in_menu = next not in ["drive", "pause"]
+	app.paused = next == "pause"
+	app.controls.clear()
 	match next:
 		"main":
 			add_option("Race", func(): show_page("car"), 0)
-			add_option("Quit", app.request_quit, 1)
+			add_option("Garage", func(): open_v2_panel("garage"), 1)
+			add_option("Settings", func(): open_v2_panel("settings"), 2)
+			add_option("Quit", app.request_quit, 3)
 		"car":
 			add_option("Continue to circuit", func(): show_page("circuit"), 0)
 			add_option("Car: " + app.car.p.name, cycle_v2_car, 1)
-			add_option("Back", back, 2)
+			add_option("Garage / setup", func(): open_v2_panel("garage"), 2)
+			add_option("Back", back, 3)
 		"circuit":
 			add_option("Load circuit", prepare_v2_race, 0)
 			add_option(
@@ -871,11 +898,23 @@ func show_v2_page(next: String) -> void:
 				355
 			)
 			add_option("Back", back, 2)
+		"pause":
+			add_option("Resume", func(): show_page("drive"), 0)
+			add_option("Restart lap", app.restart_v2_lap, 1)
+			add_option("Settings", func(): open_v2_panel("settings"), 2)
+			add_option("Garage", func(): open_v2_panel("garage"), 3)
+			add_option("Back to menu", app.return_v2_menu, 4)
 	if selected_track.is_empty():
 		selected_track = app.v2_track_id
 	if not buttons.is_empty():
 		call_deferred("focus_first")
 	queue_redraw()
+
+
+func open_v2_panel(kind: String) -> void:
+	v2_panels.open(kind)
+	choices.visible = false
+	prompt.visible = false
 
 
 func cycle_v2_car() -> void:

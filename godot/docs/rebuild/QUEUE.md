@@ -39,6 +39,12 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P4-02 | race.gd on TrackAssets: 3D gates, checkpoints in order, sectors, schema-2 ghosts (5.4 pose); live timing in the v2 game path | Claude | | done | reviewed on main; persistence is P4-06 |
 | P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | done (review R-P4-07) | merged in M-TRAIN |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Claude | P4-02 | review: Sol | rb/P4-vis; read "DONE P4-04/P4-05"; left: night lamps from Lights/ (no track has them yet), wall-impact audio (needs F-P4-01's WallContact on the v2 path), menus (P4-06) |
+| P4-menus | V2 settings, 42-field garage, named setups and pause menu; retro presentation settings persisted for the upcoming renderer port | Sol | Rebuild Preview 1 | review: owner | `rb/P4-menus`; [open PR](https://github.com/SnekPolylepis/Racingsim/pull/new/rb/P4-menus); read "DONE P4-menus" |
+| Look-1 | PS2 surfaces on TrackAssets: palette-textured tarmac (road_v2 shader, amber night streaks), ground shader for grass/gravel/runoff and terrain, via scripts/track/ps2_materials.gd | Claude | | review: Sol | rb/look-1-surfaces; read "DONE Look-1". Owner art direction 2026-09-23: PS2-era, NFS Underground x GT4, amber nights |
+| Look-2 | Amber nights: Lights/ lamps on proving ground and Spa (sodium floods along the track, pit and grandstand), night_style halos/streaks for TrackAssets, time of day on the v2 path (ps2_materials.set_afterhours), car headlights | Claude | Look-1 | open | |
+| Look-3 | PS2 renderer on the v2 path: retro_renderer.gd (640x448, ordered dither, glow, motion persistence, console output), v2 HUD and menus in the Authentic UI viewport | Claude | P4-menus | open | waits for Sol's menus (shared UI root) |
+| Look-4 | Dress proving ground and Spa per ART-DIRECTION.md: crowd cards, fences, painted tyre walls, billboards, marshal posts, lamp placement support for Look-2 | Gemini (content only), Claude review | Look-1 | open | |
+| Look-5 | Scenery kit and walls in PS2 materials (armco, tyre and concrete textures from assets/ps2; crowd cards; tree cards) | Claude | Look-1 | open | |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
 
@@ -52,7 +58,10 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | done | reviewed on main |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-01-polish | Spa from measured data: widths and kerbs from SPW Orthophotos 2023, banking from SPW LiDAR cross-sections; authored runoffs halved on corner outsides | Claude | | review: Sol | rb/P6-01-polish; read "DONE P6-01-polish". Left: paved runoff and gravel extents (not measurable from the photos), Eau Rouge/Raidillon kerb profiles by hand |
-| P6-02 | Nordschleife in sections | Gemini (content/tools only), Claude review | P6-01 | open | |
+| P6-02a | Nordschleife section 1 groundwork | Gemini (content/tools only), Claude review | P6-01 | review: Claude | rb/P6-02a; DGM1 + OSM + return road, BotLine, probe |
+| P6-02b | Nordschleife remaining sections | Gemini (content/tools only), Claude review | P6-02a | open | |
 | P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | done | reviewed on main; PropSet in P4-06 game loop |
-| P7 | Delete the legacy model and tracks, rewrite docs, Windows + macOS export | Sol, Gemini | P5-04, P6-01 | open | split when it's reached |
+| P7-02 | Docs rewritten for the v2 game: ARCHITECTURE, PHYSICS, LLM-GUIDE, TESTING, PLAYER-GUIDE, DATA-CONTRACTS; SOLVER-MATH and MACOS marked where they describe the legacy game | Claude | | review: Sol | rb/P7-02-docs; read "DONE P7-02" |
+| P7-01 | Delete the legacy game: CarModel planar path in game.gd, track.gd/track3d.gd/circuit_world.gd/collisions.gd/interface.gd, godot/tracks JSON, legacy tests and baselines; move feature coverage to v2 suites; car.gd shared state folded into CarBody | Claude | P4-menus | blocked: waits for Sol's P4-menus (it ports interface.gd's settings/garage/pause) | |
+| P7-03 | Release packaging (Windows + macOS exports, changelog): first done as v0.1.0-preview.1 | Claude | | done (preview) | re-run per release |
