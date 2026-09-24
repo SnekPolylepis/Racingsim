@@ -151,6 +151,7 @@ func validate_track(d):
 
 
 ## Validate numeric samples and ordered times; does not certify the recorded lap was legitimate.
+## Schema 2 (TrackAsset laps, P4-02) samples carry the 5.4 pose: 9 numbers each.
 func validate_ghost(d):
 	if (
 		not d is Dictionary
@@ -161,8 +162,9 @@ func validate_ghost(d):
 	):
 		return "Not a ghost lap."
 	var previous = -1.0
+	var width = 9 if d.get("schema", 1) == 2 else 6
 	for sample in d.samples:
-		if not sample is Array or sample.size() < 6:
+		if not sample is Array or sample.size() < width:
 			return "Invalid ghost sample."
 		for v in sample:
 			if not numeric(v):
