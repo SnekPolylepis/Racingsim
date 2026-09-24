@@ -1778,3 +1778,13 @@ The Look-4 review cut Look-5 to consistency, draw calls and night response. I me
 - **Tooling:** `tests/v2/track_screenshots.gd` prints draw calls and objects per view.
 
 Gates for the merged Look-tracks + Look-5 tree are in the next entry.
+
+Gates for Look-tracks + Look-5 (this branch; Linux cloud, Godot 4.6.2):
+- `ci_gates.py` 34/34;
+- windowed `--v2-present` 77/0;
+- `--v2-look` on Spa 72/0 and on the Nordschleife 72/0;
+- all stderr empty.
+
+480p Authentic frame on llvmpipe, compared with Look-tracks alone: Spa 118 → 112 ms, Nordschleife 151 → 137 ms.
+
+A first run here timed out in `front_end` because the fresh worktree's import was racing other Godot processes (missing `.godot/imported` font). After a clean import it passed; it was not a code fault.
