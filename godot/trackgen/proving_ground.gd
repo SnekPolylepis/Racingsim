@@ -14,6 +14,7 @@ const Gantry = preload("res://scripts/track/gantry.gd")
 const Billboards = preload("res://scripts/track/billboards.gd")
 const PitBuilding = preload("res://scripts/track/pit_building.gd")
 const MarshalPost = preload("res://scripts/track/marshal_post.gd")
+const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const PropBody = preload("res://scripts/props/prop_body.gd")
 const OUTPUT = "res://tracks3d/proving_ground/proving_ground.scn"
 const ARC = PI / 2.0
@@ -276,14 +277,25 @@ static func elevation(curve: Curve3D, length: float) -> PackedVector2Array:
 	return out
 
 
-static func add_wall(asset: Node3D, title: String, road: RoadPath, side: int, kind: int) -> void:
+static func add_wall(
+	asset: Node3D,
+	title: String,
+	road: RoadPath,
+	side: int,
+	kind: int,
+	from_m: float = 0.0,
+	to_m: float = -1.0,
+	offset: float = 4.0
+) -> void:
 	var wall = WallPath.new()
 	wall.name = title
 	wall.follow_road = NodePath("../Main")
 	wall.side = side
 	wall.kind = kind
-	wall.offset = 4.0
+	wall.offset = offset
 	wall.step_m = 5.0
+	wall.from_m = from_m
+	wall.to_m = to_m
 	asset.add_child(wall)
 	wall.owner = asset
 	wall.bake()
@@ -337,15 +349,25 @@ static func add_lighting(asset: Node3D, road: RoadPath) -> void:
 	asset.add_child(lights)
 	lights.owner = asset
 	var stations = road.last_bake.stations
+	var total_stations = stations.size()
 	for i in range(18):
-		var idx = int(i * stations.size() / 18)
+		var idx = int(i * total_stations / 18)
 		var st = stations[idx]
 		var lamp = OmniLight3D.new()
 		lamp.name = "Lamp%02d" % i
 		lamp.position = st.pos + Vector3(0.0, 9.0, 0.0)
 		lamp.light_energy = 1.5
 		lamp.omni_range = 48.0
+		lamp.light_color = Color("#F2A14A")
 		lamp.shadow_enabled = false
+		var kind = "sodium_mast"
+		if st.s >= 20.0 and st.s <= 160.0:
+			kind = "pit"
+		elif st.s >= 200.0 and st.s <= 320.0:
+			kind = "flood"
+		lamp.set_meta("kind", kind)
+		lamp.set_meta("height", 9.0)
+		lamp.set_meta("colour", Color("#F2A14A"))
 		lights.add_child(lamp)
 		lamp.owner = asset
 
@@ -518,6 +540,10 @@ static func add_scenery_kit(asset: Node3D, _road: RoadPath) -> void:
 	asset.add_child(marshals)
 	marshals.owner = asset
 	marshals.bake()
+
+	# 7. Spectator crowd banks at bowl and crest
+	SceneryBuilder.build_crowd_bank(asset, _road, "BowlCrowdBank", 260.0, 70.0, 1, 14.0)
+	SceneryBuilder.build_crowd_bank(asset, _road, "CrestCrowdBank", 1190.0, 60.0, 1, 12.0)
 
 
 func _initialize() -> void:

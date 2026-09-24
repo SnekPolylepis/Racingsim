@@ -116,6 +116,10 @@ func bake() -> void:
 	var n_panels = l.base.size() if l.closed else l.base.size() - 1
 	var collision_faces = PackedVector3Array()
 
+	var dist = [0.0]
+	for k in range(1, l.base.size()):
+		dist.append(dist[-1] + l.base[k - 1].distance_to(l.base[k]))
+
 	for i in n_panels:
 		var j = (i + 1) % l.base.size()
 		var b0 = l.base[i]
@@ -123,18 +127,41 @@ func bake() -> void:
 		var t0 = b0 + Vector3(0, fence_height, 0)
 		var t1 = b1 + Vector3(0, fence_height, 0)
 
-		# Visual panel quads (both front and back)
-		SceneryBuilder.add_quad(st, b0, b1, t1, t0, panel_col)
-		SceneryBuilder.add_quad(st, b1, b0, t0, t1, panel_col)
+		var s0 = dist[i]
+		var s1 = s0 + b0.distance_to(b1)
+
+		# Visual panel quads with true metre UV coordinates for fence.gdshader
+		SceneryBuilder.add_uv_quad(
+			st,
+			b0,
+			b1,
+			t1,
+			t0,
+			Vector2(s0, 0.0),
+			Vector2(s1, 0.0),
+			Vector2(s1, fence_height),
+			Vector2(s0, fence_height),
+			panel_col
+		)
+		SceneryBuilder.add_uv_quad(
+			st,
+			b1,
+			b0,
+			t0,
+			t1,
+			Vector2(s1, 0.0),
+			Vector2(s0, 0.0),
+			Vector2(s0, fence_height),
+			Vector2(s1, fence_height),
+			panel_col
+		)
 
 		if solid:
 			collision_faces.append_array(PackedVector3Array([b0, b1, t1, b0, t1, t0]))
 			collision_faces.append_array(PackedVector3Array([b1, b0, t0, b1, t0, t1]))
 
 	st.generate_normals()
-	var panel_mat = StandardMaterial3D.new()
-	panel_mat.vertex_color_use_as_albedo = true
-	panel_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var panel_mat = SceneryBuilder.fence_material()
 	st.set_material(panel_mat)
 	var panels_mesh = st.commit()
 

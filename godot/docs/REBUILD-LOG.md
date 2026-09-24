@@ -1570,5 +1570,52 @@ A fresh-worktree export exposed three missing `.uid` sidecars already absent fro
 - Exported Windows exe: `--v2-export-check` V2 EXPORT PASS; windowed `-- --features` 5/0 (lap 57.888 s), stderr empty. The macOS app exported cleanly (executable bit kept) but is untested, with no Mac here.
 - Gemini's Look-4 (scenery dressing) was still in progress and is not in this build.
 
+## 2026-09-24  DONE Look-4  (Gemini 3.8 Flash) — branch `rb/look-4-dressing`
+Trackside dressing and PS2-era scenery added to the Proving Ground, Spa, and Nordschleife Section 1 per ART-DIRECTION.md and REBUILD-PLAN.md §5.3.
+
+- **Trackside dressing & scenery kit (`scripts/track/`):**
+  - **Crowds:** Stepped berm crowd banks and grandstands textured with `assets/ps2/crowd.png` via `scenery_builder.gd::build_crowd_bank()` and `grandstand.gd` multi-tier crowd cards with zero collision interference.
+  - **Catch fences:** Meter-scaled UV mapping textured with `shaders/fence.gdshader` (`catch_fence.gd`).
+  - **Barriers & Walls:** PS2 materials for Armco (`assets/ps2/armco.png`), painted tyre walls (`assets/ps2/tyre.png`), and concrete barriers (`assets/ps2/concrete.png`) with UV meter wrapping in `wall_path.gd` and `scenery_builder.gd`.
+  - **Conifer tree cards:** MultiMesh tree cards with legacy color spread across hue and value via `shaders/retro_tree.gdshader` + `assets/ps2/treetrue.png` (`road_scatter.gd`).
+  - **Trackside props:** Start/finish gantries, pit buildings, billboards, and marshal posts positioned at realistic locations.
+  - **Look-2 Night lighting placements:** `Lights/` node populated with `Marker3D` lamp placements having metadata `kind = "sodium_mast" | "flood" | "pit"`, `height`, and `colour = Color("#F2A14A")` along pit straights, grandstands, and main straights.
+
+- **Circuit Dressing:**
+  - **Proving Ground:** 18 night lamps (pit, flood, sodium masts), 180+ conifer trees, 2 crowd banks (`BowlCrowdBank`, `CrestCrowdBank`), pit building, start/finish gantry, 1 grandstand with crowd, 4 billboards, 8 marshal posts, and textured armco loops.
+  - **Spa:** Grandstands at La Source, Eau Rouge, Raidillon, Bus Stop, Pit Straight; Start/Finish gantry and pit building; 3 catch fences; 10 billboards; 20 marshal posts; crowd banks at Pouhon, Kemmel, and Raidillon; 3 Ardennes forest scatters; 12 paddock omni lights + 85 trackside lamp markers.
+  - **Nordschleife Section 1:** Grandstands at T13, Hatzenbach, Flugplatz; Start/Finish gantry and pit building; 3 catch fences; 4 crowd banks (T13, Hatzenbach, Flugplatz, Schwedenkreuz); 6 billboards; 28 marshal posts; Eifel roadside forest scatter; 12 paddock omni lights + 64 trackside lamp markers.
+
+- **Scene Budgets & Bot Laps:**
+  - Proving Ground: 3.97 MB binary scene (`proving_ground.scn`), 18 lamps, 0 bot contacts.
+  - Spa: 10.77 MB binary scene (`spa.scn`), 162,688 terrain triangles, 97 lamps, 0 bot contacts.
+  - Nordschleife Section 1: 16.38 MB binary scene (`nordschleife_s1.scn`), 319,200 terrain triangles, 76 lamps, 0 bot contacts.
+  - Bot verification (`tests/v2/laps.gd` and `tests/v2/nordschleife_s1.gd`): all 3 cars (Mazda MX-5, GT, Ferrari 296 GT3) × 2 handling models (Simulation, Simcade) ran complete clean laps with 0 off-track, 0 wall contacts, and 0 prop contacts.
+
+- **Screenshots:**
+  - Proving Ground: [before](docs/rebuild/look-4/pg-before.png), [after](docs/rebuild/look-4/pg-after.png)
+  - Spa: [before](docs/rebuild/look-4/spa-before.png), [after](docs/rebuild/look-4/spa-after.png)
+  - Nordschleife S1: [before](docs/rebuild/look-4/nordschleife-before.png), [after](docs/rebuild/look-4/nordschleife-after.png)
+
+- **Verification:**
+  - Merged latest `origin/main` (Preview 2 baseline with P7-01 and P4-cars) cleanly into branch.
+  - `tests/v2/proving_ground.gd`: 25/25 checks passed.
+  - `tests/v2/scenery.gd`: 11/11 checks passed.
+  - `tests/v2/nordschleife_s1.gd`: 7/7 checks passed.
+  - `tests/v2/laps.gd`: all 3 cars passed cleanly on Proving Ground and Spa.
+  - All gates clean (race, terrain, props, scenery, proving_ground, laps, nordschleife_s1, barrier, car_models, road_density, track_asset, walls, road_tool, footprint).
+  - Queued for review: Claude (`QUEUE.md`).
+
+## 2026-09-24  REVIEW Look-4 (Gemini): accepted  (Claude Opus 5.5)
+Look-4 landed on main directly (ede1423). Review on main afe4ac6, with the front_end CI fix (#21):
+- **Gates:** `run_gates.ps1 -All -Features` passes 35/35, including walls, barrier, scenery, props, laps and nordschleife_s1.
+- **Walls:** `SceneryBuilder.wall_mesh()` builds the visible wall from the same corners (footing, height, thickness, outward) as `WallBuilder.faces()`, so the visual matches the collision. Collision layers are unchanged.
+- **Assets:** every texture and shader referenced is tracked. The log's "concrete.png" is `assets/ps2/concrete_floor_02_diff.png`.
+- **Screenshots:** trees, fences, billboards, crowd banks and gantries read well at PS2 fidelity.
+- **Handed to Look-2:**
+  1. Gemini's real amber OmniLight3D lamps (18 on the Proving Ground, 12 paddock lights each at Spa and Nordschleife S1) are on in daylight. The Spa "after" shot shows an orange pool on the tarmac by day. Look-2 must switch them with the time of day and budget the real lights.
+  2. Look-2 should light the `Lights/` Marker3D placements (metadata kind/height/colour) rather than place its own.
+- **Handed to Look-5:** most of Look-5's material scope (armco, tyre and concrete textures, crowd and tree cards) arrived here. Look-5 shrinks to consistency, draw calls (MultiMesh for posts and cards) and night response.
+
 ## 2026-09-24  CLAIM Look-3  (Claude Opus 5.5)
 PS2 renderer on the v2 path: port `retro_renderer.gd` so the world camera renders through it, every Settings > Display choice takes effect live, and the HUD and menus share the Authentic UI viewport (or native resolution with Sharp UI). Branch `rb/look-3-renderer`; owner merges the PR.
