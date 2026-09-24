@@ -1569,3 +1569,6 @@ A fresh-worktree export exposed three missing `.uid` sidecars already absent fro
 - `build/PLAY.txt` and `docs/CHANGELOG.md` updated for Preview 2: Nordschleife section 1, the new car models, settings, garage and pause menus, Look-1 surfaces, P7.
 - Exported Windows exe: `--v2-export-check` V2 EXPORT PASS; windowed `-- --features` 5/0 (lap 57.888 s), stderr empty. The macOS app exported cleanly (executable bit kept) but is untested, with no Mac here.
 - Gemini's Look-4 (scenery dressing) was still in progress and is not in this build.
+
+## 2026-09-24  CLAIM Look-3  (Claude Opus 5.5)
+PS2 renderer on the v2 path: port `retro_renderer.gd` so the world camera renders through it, every Settings > Display choice takes effect live, and the HUD and menus share the Authentic UI viewport (or native resolution with Sharp UI). Branch `rb/look-3-renderer`; owner merges the PR.
