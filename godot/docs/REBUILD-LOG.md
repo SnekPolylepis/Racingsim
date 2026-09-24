@@ -1569,3 +1569,40 @@ A fresh-worktree export exposed three missing `.uid` sidecars already absent fro
 - `build/PLAY.txt` and `docs/CHANGELOG.md` updated for Preview 2: Nordschleife section 1, the new car models, settings, garage and pause menus, Look-1 surfaces, P7.
 - Exported Windows exe: `--v2-export-check` V2 EXPORT PASS; windowed `-- --features` 5/0 (lap 57.888 s), stderr empty. The macOS app exported cleanly (executable bit kept) but is untested, with no Mac here.
 - Gemini's Look-4 (scenery dressing) was still in progress and is not in this build.
+
+## 2026-09-24  DONE Look-4  (Gemini 3.8 Flash) — branch `rb/look-4-dressing`
+Trackside dressing and PS2-era scenery added to the Proving Ground, Spa, and Nordschleife Section 1 per ART-DIRECTION.md and REBUILD-PLAN.md §5.3.
+
+- **Trackside dressing & scenery kit (`scripts/track/`):**
+  - **Crowds:** Stepped berm crowd banks and grandstands textured with `assets/ps2/crowd.png` via `scenery_builder.gd::build_crowd_bank()` and `grandstand.gd` multi-tier crowd cards with zero collision interference.
+  - **Catch fences:** Meter-scaled UV mapping textured with `shaders/fence.gdshader` (`catch_fence.gd`).
+  - **Barriers & Walls:** PS2 materials for Armco (`assets/ps2/armco.png`), painted tyre walls (`assets/ps2/tyre.png`), and concrete barriers (`assets/ps2/concrete.png`) with UV meter wrapping in `wall_path.gd` and `scenery_builder.gd`.
+  - **Conifer tree cards:** MultiMesh tree cards with legacy color spread across hue and value via `shaders/retro_tree.gdshader` + `assets/ps2/treetrue.png` (`road_scatter.gd`).
+  - **Trackside props:** Start/finish gantries, pit buildings, billboards, and marshal posts positioned at realistic locations.
+  - **Look-2 Night lighting placements:** `Lights/` node populated with `Marker3D` lamp placements having metadata `kind = "sodium_mast" | "flood" | "pit"`, `height`, and `colour = Color("#F2A14A")` along pit straights, grandstands, and main straights.
+
+- **Circuit Dressing:**
+  - **Proving Ground:** 18 night lamps (pit, flood, sodium masts), 180+ conifer trees, 2 crowd banks (`BowlCrowdBank`, `CrestCrowdBank`), pit building, start/finish gantry, 1 grandstand with crowd, 4 billboards, 8 marshal posts, and textured armco loops.
+  - **Spa:** Grandstands at La Source, Eau Rouge, Raidillon, Bus Stop, Pit Straight; Start/Finish gantry and pit building; 3 catch fences; 10 billboards; 20 marshal posts; crowd banks at Pouhon, Kemmel, and Raidillon; 3 Ardennes forest scatters; 12 paddock omni lights + 85 trackside lamp markers.
+  - **Nordschleife Section 1:** Grandstands at T13, Hatzenbach, Flugplatz; Start/Finish gantry and pit building; 3 catch fences; 4 crowd banks (T13, Hatzenbach, Flugplatz, Schwedenkreuz); 6 billboards; 28 marshal posts; Eifel roadside forest scatter; 12 paddock omni lights + 64 trackside lamp markers.
+
+- **Scene Budgets & Bot Laps:**
+  - Proving Ground: 3.97 MB binary scene (`proving_ground.scn`), 18 lamps, 0 bot contacts.
+  - Spa: 10.77 MB binary scene (`spa.scn`), 162,688 terrain triangles, 97 lamps, 0 bot contacts.
+  - Nordschleife Section 1: 16.38 MB binary scene (`nordschleife_s1.scn`), 319,200 terrain triangles, 76 lamps, 0 bot contacts.
+  - Bot verification (`tests/v2/laps.gd` and `tests/v2/nordschleife_s1.gd`): all 3 cars (Mazda MX-5, GT, Ferrari 296 GT3) × 2 handling models (Simulation, Simcade) ran complete clean laps with 0 off-track, 0 wall contacts, and 0 prop contacts.
+
+- **Screenshots:**
+  - Proving Ground: [before](docs/rebuild/look-4/pg-before.png), [after](docs/rebuild/look-4/pg-after.png)
+  - Spa: [before](docs/rebuild/look-4/spa-before.png), [after](docs/rebuild/look-4/spa-after.png)
+  - Nordschleife S1: [before](docs/rebuild/look-4/nordschleife-before.png), [after](docs/rebuild/look-4/nordschleife-after.png)
+
+- **Verification:**
+  - Merged latest `origin/main` (Preview 2 baseline with P7-01 and P4-cars) cleanly into branch.
+  - `tests/v2/proving_ground.gd`: 25/25 checks passed.
+  - `tests/v2/scenery.gd`: 11/11 checks passed.
+  - `tests/v2/nordschleife_s1.gd`: 7/7 checks passed.
+  - `tests/v2/laps.gd`: all 3 cars passed cleanly on Proving Ground and Spa.
+  - All gates clean (race, terrain, props, scenery, proving_ground, laps, nordschleife_s1, barrier, car_models, road_density, track_asset, walls, road_tool, footprint).
+  - Queued for review: Claude (`QUEUE.md`).
+
