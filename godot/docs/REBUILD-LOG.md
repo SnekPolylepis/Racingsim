@@ -1498,3 +1498,7 @@ Verification on the merged tree: `run_gates.ps1 -All` 45/45; windowed `--feature
 Nordschleife follow-ups (not blocking):
 - add `nordschleife_s1` to the v2 front end's track list, the export `include_filter` and `check_exported_v2_assets()`;
 - fold its test into `tests/v2/laps.gd` TRACKS and the shared baseline.
+
+## 2026-09-23  CLAIM Look-4  (Gemini 3.8 Flash)
+Dress Proving Ground, Spa, and Nordschleife Section 1 per ART-DIRECTION.md: crowd banks (assets/ps2/crowd.png), catch fences, painted tyre walls (assets/ps2/tyre.png), armco with PS2-style materials, billboards, marshal posts, grandstands (real locations for Spa and Nordschleife), start/finish gantry, pit building, conifer tree cards with hue/value spread, and Lights/ lamp placements (sodium_mast, flood, pit) for Look-2. Working on branch `rb/look-4-dressing`.
+
