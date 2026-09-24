@@ -1306,3 +1306,12 @@ Gates (`run_gates.ps1 -All`): all pass, laps included, with empty stderr.
 **CI** (`rb/CI`, Gemini): approve. The GitHub Actions run is green (11m50s). The five legacy files it touches are gdformat-only (joined lines, one redundant pair of parentheses), which fixes the long-standing format-check failures.
 - **Fix row F-CI:** `ci_gates.py` accepts legacy baseline lines within 5 % relative and v2 JSON within 2 %, while the Windows runner requires identical output. Only legacy dynamics-simulation and showcase-laps differ on Linux. Scope the tolerance to them, at the smallest value that passes.
 - Its "spa roadster simulation" allowance is obsolete; that lap has passed since P4-07b.
+
+## 2026-09-23  DONE F-CI measured CI tolerance  (Claude Opus 5.5) — branch `rb/F-CI` (on `rb/CI` + main)
+`godot/tools/ci_gates.py` (the GitHub Actions runner) accepted any legacy baseline number within 5 % relative, and v2 lap JSON within 2 %, in every legacy suite. The Windows runner requires identical output.
+- **Now:** every legacy suite must match exactly, except the two that differ on Linux, listed in `PLATFORM_TOLERANCE`.
+- **Measured on ubuntu-latest** (run 35936568590):
+  - dynamics-simulation differs only by one unit in the last printed digit (max 0.01 on 2-decimal values).
+  - showcase-laps' lap JSON differs by at most 4.2e-4 relative (an integer count off by 1).
+- **Tolerance:** one last-digit unit for printed numbers (both suites), plus 1e-3 relative for showcase-laps' JSON (2.4x the measured drift). The runner prints the largest differences it saw on every run.
+- The obsolete "spa roadster simulation" allowance and its `--no-allow-spa-roadster` flag are removed; that lap has passed since P4-07b.

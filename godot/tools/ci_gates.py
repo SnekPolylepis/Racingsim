@@ -39,12 +39,22 @@ def find_godot(explicit_path=None, godot_dir=None):
 
 # Legacy suites whose output differs between the Windows baselines and Linux CI in the last digits
 # (libm/float formatting). Every other legacy suite must match its baseline exactly. Tolerance per
-# suite: (relative, absolute) on each differing number; the runner prints the largest differences it
-# saw so the values can stay as tight as the platform needs.
+# suite: (relative, absolute) on each differing number, and a printed number may also be off by one
+# unit in its last printed digit (rounding). Measured on ubuntu-latest (F-CI, 2026-09-23): dynamics-
+# simulation differs only by one last-digit unit (max 0.01 on 2-decimal values); showcase-laps' lap
+# JSON by at most 4.2e-4 relative (an integer count off by 1). The runner prints the largest
+# differences it sees, so these can be kept this tight.
 PLATFORM_TOLERANCE = {
-    "legacy dynamics-simulation": (0.05, 0.02),
-    "legacy showcase-laps": (0.05, 0.02),
+    "legacy dynamics-simulation": (0.0, 0.0),
+    "legacy showcase-laps": (1e-3, 0.0),
 }
+
+
+def last_digit_unit(token):
+    """One unit in the last printed decimal place of a numeric token ('0.13' -> 0.01, '42' -> 1)."""
+    digits = token.split(".")[1] if "." in token else ""
+    mantissa = digits.lower().split("e")[0]
+    return 10.0 ** -len(mantissa) if mantissa else 1.0
 
 
 def numbers_close(a, b, tol, worst):
@@ -108,8 +118,12 @@ def match_legacy_baseline(got_text, want_text, tol=None):
                 fg, fw = float(clean_g), float(clean_w)
             except ValueError:
                 return False, f"line {i+1} token mismatch: '{tg}' vs '{tw}'"
+            unit = max(last_digit_unit(clean_g), last_digit_unit(clean_w))
+            if abs(fg - fw) <= unit * 1.000001:
+                numbers_close(fg, fw, tol, worst)
+                continue
             if not numbers_close(fg, fw, tol, worst):
-                return False, f"line {i+1} '{tg}' vs '{tw}' outside tolerance {tol}"
+                return False, f"line {i+1} '{tg}' vs '{tw}' outside tolerance {tol} and its last digit"
     return True, f"within platform tolerance {tol}: max diff rel {worst['rel']:.2e}, abs {worst['abs']:.2e}"
 
 
