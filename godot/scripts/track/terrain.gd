@@ -25,6 +25,9 @@ const RoadSection = preload("res://scripts/track/road_section.gd")
 const MAX_EXTENT = 5000.0
 const CELL_GRID = 50.0
 
+## The under-road drop at the footprint's outer edge (m) and how fast it grows inwards (m per m).
+const EDGE_DROP_M = .05
+const EDGE_DROP_SLOPE = .1
 @export_group("Heightmap")
 ## Grayscale or HDR heightmap texture (EXR or 16-bit PNG).
 @export var heightmap: Texture2D
@@ -48,7 +51,10 @@ const CELL_GRID = 50.0
 @export var road_paths: Array[NodePath] = []
 ## Distance outside the outer verge edge over which terrain blends toward verge height, metres.
 @export var blend_m: float = 8.0
-## Minimum distance below the road surface for terrain vertices under the road footprint, metres.
+## Minimum distance below the road surface for terrain vertices under the road footprint, metres. It
+## tapers to EDGE_DROP_M at the footprint's outer edge (rising EDGE_DROP_SLOPE per metre inwards): a vertex
+## just inside the edge buried deep pulled the terrain triangles reaching past the edge down with it, a
+## trench beside the road (Spa: 257 stations over 1 m deep, up to 3.6 m, with a 2 m drop).
 @export var under_road_drop_m: float = 0.3
 
 @export_group("Chunking")
@@ -262,7 +268,8 @@ func stitch_heights(grid: Dictionary, roads: Array) -> void:
 					var h_loc = road_surface_height_at(sec_eval, lat)
 					var p_surf = st_eval.pos + fr_eval[0] * lat + fr_eval[1] * h_loc
 					var y_road_surf = (road.transform * p_surf).y
-					data[v_idx] = minf(h_orig, y_road_surf - under_road_drop_m)
+					var drop = minf(under_road_drop_m, EDGE_DROP_M + (edge_lat - lat_mag) * EDGE_DROP_SLOPE)
+					data[v_idx] = minf(h_orig, y_road_surf - drop)
 				else:
 					var d_out = maxf(0.0, lat_mag - edge_lat)
 					if d_out <= blend_m:
