@@ -1265,3 +1265,44 @@ The rest of P4-03. New: `scripts/props/prop_body.gd` (PropBody), `scripts/props/
 - No crushing or damage.
 - The game loop doesn't call PropSet yet (P4-core).
 - The nose rake is a stand-in for a real nose shape until the hull gets one.
+
+## 2026-09-23  DONE P4-02 lap timing on TrackAssets  (Claude Opus 5.5) — branch `rb/P4-02-race` (from main)
+Owner decision: **P6-03 Monza: no.**
+
+`scripts/race.gd` gains `update_asset(car, asset, dt)` beside the legacy `update()`, which is untouched: legacy suites are identical and the feature suite is 212/0. It keeps race.gd's public fields (lap_time, valid, last, best, sectors/flags, delta, ghost, completed, last_reason), so the P4-05 HUD reads them unchanged.
+- **Gates:** `TrackAsset.gates()` (start, then sector and checkpoint gates in lap order) and `TrackAsset.crossed()`. A gate counts when the CG crosses its vertical plane forwards within ±15 m sideways and ±3 m vertically, so another deck never counts. Every gate must be met in order. A cut that passes outside a gate, or crosses the gate after the expected one, invalidates the lap ("missed checkpoint N"). A missed sector gate still ends its sector.
+- Sectors end at the two sector gates and the line. Best, session and flags work as before.
+- Off-track (`car.all_off`) and contact (`car.collided`, set by WallContact) rules are unchanged.
+- **Ghost samples follow §5.4:** `[t, x, y, z, qx, qy, qz, qw, lap_distance]` at ~30 Hz. `ghost_xform()` gives the ghost's Transform3D (position lerp, rotation slerp). `ghost_time_at()` reads lap distance from the last field, so legacy and asset ghosts both work.
+- **Ghost file schema 2** (DATA-CONTRACTS): `"track"` is the asset's `record_key()`. `storage.validate_ghost` requires 9 numbers per sample when `schema` is 2. Old ghosts never load on TrackAssets (D4).
+- **v2 game path** (`game.gd`): `setup_v2` makes a RaceModel with the settings' rules, `physics_v2` calls `update_asset` every tick, and a reset (grid placement) calls `race.reset()` so the teleport crosses no gate. Timing is in memory only. **Saving and loading records on this path is P4-06:** it returns before storage, settings and the record writer are set up, and the front end has to choose the track and car. `record_path()` must then key on `track.record_key()`, not `track.data`.
+
+`tests/v2/race.gd` (10/10, in gates.json). Most checks use a scripted car moving exactly along the proving ground's lap line:
+- a lap at 30 m/s times 83.7375 s against 83.7342 s (distance / speed), with sectors within 0.0042 s (one tick)
+- the first valid lap becomes the best and the ghost
+- the ghost is 2512 samples of 9 numbers at 30.0 Hz; an identical second lap has 0.000 s delta and the ghost pose sits on the car
+- a lap 10 % slower ends with a +9.29 s delta (expected +9.29)
+- passing checkpoint 1, 20 m off the line: invalid ("missed checkpoint 1")
+- 15 m with all wheels off: invalid ("off track")
+- reversing across the line starts no lap
+- a reset mid-lap ends the attempt
+- a schema-2 document validates and 6-number samples are rejected
+- the f296gt3 bot lap on CarBody: race.gd 60.425 s, valid, sectors 13.85 / 23.28 / 23.30 s, identical to the laps gate's own timing
+
+Gates: `run_gates.ps1 -All` passes except the known Spa bank warning in the laps stderr (F-P6-01). `--features` 212/0 with empty stderr, and `--v2-smoke` passes.
+## 2026-09-23  REVIEW F-P6-01 and CI (Gemini)  (Claude Opus 5.5) — landed as `rb/F-P6-01b`; CI approved with a fix row
+**F-P6-01** (`rb/F-P6-01`, Gemini): landed in part, on a clean branch from main. The branch copied main's log in by hand, and merging it would have duplicated entries.
+- **Kept: bank blend.** Overlapping corners now blend banks by weight (`profile_at`), so the Spa RoadPath warning is gone. The laps rows' stderr is now empty, for the first time since Spa landed.
+- **Kept:** lighter forest scatter (ArdennesNear 32 → 18, ArdennesDeep 42 → 24).
+- **Kept:** `tracks3d/spa/spa.scn` (11.2 MB) is no longer committed and is git-ignored. The dev drive scene bakes it on first use and caches it in `user://tracks3d/`, and tests build it in memory.
+- **Rejected: terrain grid 10 → 20 m and under-road drop 2 → 10 m.** Probing both sides of the road every 10 m found trenches beside the road (a dip below both the road edge and the terrain further out) at 1,033 station-sides over 1 m deep, up to 9.9 m, against 257 (up to 3.6 m) on main. The 10 m drop was meant to stop a ray slipping through a road triangle seam from reading the grass below at s ≈ 6125. It hides that seam (the wheel would read no ground instead) and digs pits a car running wide can fall into. The probe found 0 of 17,500 road rays reading anything but tarmac on main's settings.
+- **Added (Claude): the trench fix in `scripts/track/terrain.gd`.** The under-road drop now tapers from `under_road_drop_m` down to `EDGE_DROP_M` (0.05 m) at the footprint's outer edge, rising 0.1 m per metre inwards. A deeply buried vertex just inside the edge had pulled the terrain triangles reaching past it down: the trenches.
+  - Spa (10 m grid, 2 m drop): 257 → 16 trenches over 1 m, worst 3.6 → 2.8 m. The remaining 16 are around Eau Rouge (s 1040-1060), 860-890, 2310-2400 and 4930-4940, possibly real terrain; worth a visual check.
+  - Still 0 of 17,500 road rays read anything but tarmac.
+  - `tests/v2/terrain.gd`'s stitch checks now require the terrain at least `EDGE_DROP_M` under the whole footprint and 0.3 m under the middle (±2 m). Results: 0.250 / 0.300 m, and 0.150 / 0.300 m with runoff and kerbs. 7/7.
+
+Gates (`run_gates.ps1 -All`): all pass, laps included, with empty stderr.
+
+**CI** (`rb/CI`, Gemini): approve. The GitHub Actions run is green (11m50s). The five legacy files it touches are gdformat-only (joined lines, one redundant pair of parentheses), which fixes the long-standing format-check failures.
+- **Fix row F-CI:** `ci_gates.py` accepts legacy baseline lines within 5 % relative and v2 JSON within 2 %, while the Windows runner requires identical output. Only legacy dynamics-simulation and showcase-laps differ on Linux. Scope the tolerance to them, at the smallest value that passes.
+- Its "spa roadster simulation" allowance is obsolete; that lap has passed since P4-07b.

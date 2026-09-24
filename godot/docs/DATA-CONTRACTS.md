@@ -76,6 +76,8 @@ Sector file: `records/<record hash>.sectors.json` = `{"schema":1,"savedAt":"..."
 
 Ghost document: `{"schema":1,"savedAt":"...","track":"Example.json","car":"roadster","time":68.225,"samples":[[t,x,y,heading,steerAngle,lapDistance],...]}`. Time is seconds, heading/steering radians, distance meters since the start. The recorder samples about 30 times/second. Validation requires positive finite time, at least two samples, numeric values and nondecreasing sample times. It does not prove a lap's competitive legitimacy.
 
+TrackAsset ghost document (P4-02, schema 2): `{"schema":2,"savedAt":"...","track":"<TrackAsset record_key(), e.g. proving_ground@v1>","car":"f296gt3","configuration":"...","time":60.425,"samples":[[t,x,y,z,qx,qy,qz,qw,lapDistance],...]}`: the 5.4 pose (world position in metres, body rotation quaternion) and metres since the start line, about 30 samples/second. `validate_ghost` requires 9 numbers per sample when `schema` is 2. Schema-1 ghosts are never loaded on TrackAssets (plan D4: old ghosts are dropped).
+
 Native `configuration` is an optional extra string identifying the native record filename. Browser-compatible ghosts live at `ghosts/<safe track name>.ghost.json`; native records live at `records/<SHA256>.json`.
 
 `record_path()` hashes JSON containing the track document, effective setup (including resolved aid levels), car key, handling model, wear setting and off-track/contact rules. Name and savedAt are removed; cone transient fields are removed and positions restored. Other track metadata remains part of this identity, so presentation changes can also select a different record. This is a hash of the implementation's serialization, not a canonical semantic JSON hash.

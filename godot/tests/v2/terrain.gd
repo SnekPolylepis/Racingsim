@@ -3,7 +3,8 @@ extends SceneTree
 ##   1. Analytic heightmap: 200 random points within 1 cm of analytic value, surface == 2 (grass).
 ##   2. Chunk seams: border rays hit with no gaps (< 1 mm diff across seam).
 ##   3. Road stitch: straight RoadPath across terrain; verge outer edge matches verge within 2 cm;
-##      no terrain above road footprint (lowered >= 0.3 m).
+##      no terrain above road footprint (lowered >= 0.3 m under the middle, tapering to
+##      TerrainPatch.EDGE_DROP_M at the footprint's outer edge so no trench opens beside it).
 ##   4. 296 CarBody rest check on terrain (settles, 4 contacts, surface 2) and drives 200 m across
 ##      road and terrain at 60 km/h without NaN.
 ##   5. Performance: 2 km x 2 km, 1 m-per-pixel heightmap (8M tris) bake time and car step µs.
@@ -312,7 +313,8 @@ func test_road_stitch() -> void:
 		if err_r >= 0.02 or err_l >= 0.02:
 			edge_ok = false
 	results["stitch_worst_edge_err_m"] = worst_edge_err
-	# Part 2: no terrain above road footprint (terrain lowered >= 0.3 m below road surface)
+	# Part 2: no terrain above road footprint (0.3 m below the road under the middle, tapering to
+	# TerrainPatch.EDGE_DROP_M at the footprint's outer edge)
 	# Temporarily disable road surface collision in PhysicsServer3D to measure terrain surface alone
 	var road_rids = []
 	for child in stitched_asset.get_node("Surfaces").get_children():
@@ -320,6 +322,7 @@ func test_road_stitch() -> void:
 			road_rids.append(child.get_rid())
 			PhysicsServer3D.body_set_collision_layer(child.get_rid(), 0)
 	var min_drop = INF
+	var centre_drop = INF
 	var no_poke = true
 	var sec_eval = RoadBuilder.section_at(keys, 150.0, 300.0, false)
 	for k in 21:
@@ -332,17 +335,19 @@ func test_road_stitch() -> void:
 				continue
 			var drop = h_road - hit_t.point.y
 			min_drop = minf(min_drop, drop)
-			if hit_t.point.y > h_road - 0.3 + 1e-4:
+			if absf(lat) <= 2.0:
+				centre_drop = minf(centre_drop, drop)
+			if drop < TerrainPatch.EDGE_DROP_M - 1e-4:
 				no_poke = false
 	# Re-enable road collision
 	for rid in road_rids:
 		PhysicsServer3D.body_set_collision_layer(rid, 1)
 	results["stitch_min_drop_m"] = min_drop
 	check(
-		edge_ok and worst_edge_err < 0.02 and no_poke and min_drop >= 0.3 - 1e-4,
+		edge_ok and worst_edge_err < 0.02 and no_poke and centre_drop >= 0.3 - 1e-4,
 		(
-			"road stitch: verge outer edge matches within 2 cm (worst %.4f m); no terrain above road footprint (min drop %.3f m >= 0.3 m)"
-			% [worst_edge_err, min_drop]
+			"road stitch: verge outer edge matches within 2 cm (worst %.4f m); terrain under the whole footprint at least %.2f m below it (min %.3f m), 0.3 m under the middle (min %.3f m)"
+			% [worst_edge_err, TerrainPatch.EDGE_DROP_M, min_drop, centre_drop]
 		)
 	)
 
@@ -378,6 +383,7 @@ func test_road_stitch_runoff_kerb() -> void:
 			road_rids.append(child.get_rid())
 			PhysicsServer3D.body_set_collision_layer(child.get_rid(), 0)
 	var min_drop = INF
+	var centre_drop = INF
 	var no_poke = true
 	var sec_eval = RoadBuilder.section_at(keys, 100.0, 200.0, false)
 	for k in 21:
@@ -390,16 +396,18 @@ func test_road_stitch_runoff_kerb() -> void:
 				continue
 			var drop = h_road - hit_t.point.y
 			min_drop = minf(min_drop, drop)
-			if hit_t.point.y > h_road - 0.3 + 1e-4:
+			if absf(lat) <= 2.0:
+				centre_drop = minf(centre_drop, drop)
+			if drop < TerrainPatch.EDGE_DROP_M - 1e-4:
 				no_poke = false
 	for rid in road_rids:
 		PhysicsServer3D.body_set_collision_layer(rid, 1)
 	results["stitch_rk_min_drop_m"] = min_drop
 	check(
-		edge_ok and worst_edge_err < 0.02 and no_poke and min_drop >= 0.3 - 1e-4,
+		edge_ok and worst_edge_err < 0.02 and no_poke and centre_drop >= 0.3 - 1e-4,
 		(
-			"road stitch with runoff and kerb: verge outer edge matches within 2 cm (worst %.4f m); no terrain above footprint (min drop %.3f m >= 0.3 m)"
-			% [worst_edge_err, min_drop]
+			"road stitch with runoff and kerb: verge outer edge matches within 2 cm (worst %.4f m); terrain under the whole footprint at least %.2f m below it (min %.3f m), 0.3 m under the middle (min %.3f m)"
+			% [worst_edge_err, TerrainPatch.EDGE_DROP_M, min_drop, centre_drop]
 		)
 	)
 

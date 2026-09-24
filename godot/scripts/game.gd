@@ -740,6 +740,11 @@ func setup_v2():
 		get_tree().quit(1)
 		return
 	v2_surface = track.surface()
+	# P4-02: lap timing on the asset's 3D gates, in memory (records are saved once P4-06 gives this path
+	# storage and the front end).
+	race = RaceModel.new()
+	race.off_track_invalidate = settings.off_track
+	race.collision_invalidate = settings.contact
 	car = CarBody.new()
 	car.simcade_enabled = settings.handling_model == 0
 	car.configure(presets[preset_key])
@@ -768,6 +773,8 @@ func place_v2_on_grid():
 	car.rot = Basis(forward, up, forward.cross(up)).orthonormalized().get_rotation_quaternion()
 	car.pos = slot.origin + up * car.setup.cgHeight
 	car.sync_legacy()
+	# A reset teleports: the jump must not cross a gate, and the attempt in progress ends.
+	race.reset()
 	prev_pose = snapshot_v2()
 
 
@@ -829,6 +836,7 @@ func physics_v2(dt):
 	controls.events.clear()
 	prev_pose = snapshot_v2()
 	car.step(dt, v2_surface, settings.automatic)
+	race.update_asset(car, track, dt)
 	if v2_smoke and v2_tick >= 123:
 		var pose = snapshot_v2()
 		var blended = blend_v2(prev_pose, pose, 0.5)
