@@ -29,7 +29,7 @@ All paths below are relative to `godot/`.
 | File | Owns | Common edits |
 |---|---|---|
 | `project.godot` | Main scene, 240 Hz clock, renderer, viewport | Engine configuration; keep native scope explicit |
-| `scripts/game.gd` | Orchestration. v2: `setup_v2`, `load_v2_track`, `change_v2_car`, `start_v2_drive`, `return_v2_menu`, `physics_v2` (tick order in ARCHITECTURE.md), `render_v2`, v2 `record_path`, probe modes (`--v2-smoke`, `--v2-present`, `--v2-export-check`). Legacy: the planar game loop | New settings, mode transitions, application services. Keep v2 code off the legacy path |
+| `scripts/game.gd` | Orchestration. v2: `setup_v2`, `load_v2_track`, `change_v2_car`, `start_v2_drive`, `return_v2_menu`, `physics_v2` (tick order in ARCHITECTURE.md), `render_v2`, v2 `record_path`, probe modes (`--v2-smoke`, `--v2-present`, `--v2-look`, `--v2-export-check`); `PRESENTATION_SETTINGS`, and `_input()` forwarding to the UI viewport. Legacy: the planar game loop | New settings, mode transitions, application services. Keep v2 code off the legacy path |
 | `scripts/main.gd` | Entry adapter | Usually leave as a one-line extension |
 | `scripts/surface/surface_table.gd` | SURF: grip, rolling resistance, drag and bump per surface id (0 tarmac, 1 kerb, 2 grass, 3 gravel, 4 runoff) | Surface tuning; CarBody, TrackAsset and the road tool read it |
 | `scripts/race.gd` | Timing: `update_asset()` for TrackAssets (3-D gates, gates in order, sectors, schema-2 5.4 ghost samples, `ghost_xform()`) | Timing and ghost logic; `tests/v2/race.gd` |
@@ -41,7 +41,8 @@ All paths below are relative to `godot/`.
 | `scripts/storage.gd` | JSON validation, safe names, reads/writes | File handling without gameplay state |
 | `data/cars.json` | Three presets, setup defaults and presentation keys (`body`, colours, `num`) | Add/change car constants or looks |
 | `data/setup_fields.json` | 42 field definitions and seven garage groups | Garage field schema and ranges |
-| `scripts/retro_renderer.gd` | World/UI, glow, GPU history and field-composition viewports | Authentic UI shares output filtering; Sharp UI optional |
+| `scripts/retro_renderer.gd` | The v2 presentation chain (ARCHITECTURE.md "Presentation chain"): world raster, glow, GPU history, UI viewport holding `V2UIRoot`, console output; `apply_settings()` for every Display setting; `forward_input()` and `to_canvas()`/`from_canvas()` | Display settings, output look, UI scale and input mapping |
+| `scripts/presentation_check.gd` | Windowed Look-3 check run by `--v2-present`/`--v2-look`: each display mode's sizes, frame time, screenshots and real mouse/key/pad input | Add a mode when a Display setting is added |
 | `scripts/front_end.gd`, `scripts/v2_panels.gd` | Console pages, car/TrackAsset choice, loading, drive/menu flow; settings, garage and pause panels | Menus and player-facing actions |
 | `scripts/record_writer.gd` | Serial background atomic record/sector saves | Flush before read/import/delete/shutdown; immutable completed samples |
 | `scripts/retro_assets.gd`, `scripts/retro_flare.gd` | Generated small art textures, painted sky, occluded flare | Procedural presentation |
@@ -97,7 +98,7 @@ All paths below are relative to `godot/`.
 
 **New setup field:** add a row `[group,key,label,min,max,step,unit]` to `setup_fields.json`; add the corresponding numeric default to every preset's `setup`; consume it in `car_body.gd` or the `scripts/vehicle/` modules. The garage builds itself from the rows. Import bounds come from those same definitions. Setup changes affect record identity. Update any tests that deliberately check field count.
 
-**New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; add its control in `v2_panels.gd` and apply it in the relevant consumer. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
+**New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; add its control in `v2_panels.gd` and apply it in the relevant consumer. A Display/output setting also goes in `game.gd::PRESENTATION_SETTINGS` and is read in `retro_renderer.gd::apply_settings()`. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
 
 **New graphics:** road, verge, terrain and trackside materials come from the TrackAsset builders (`scripts/track/`, `ps2_materials.gd`); cars from `visuals.gd` and `ferrari_296.gd`. Follow [ART-DIRECTION.md](ART-DIRECTION.md).
 
@@ -113,6 +114,7 @@ All paths below are relative to `godot/`.
 - TrackSurface queries only work inside a physics frame (`_physics_process`). In `_process`, use values sampled in the last physics tick (see `camera_ground`).
 - Bank convention: positive lowers the right side (RoadSection, measured road data, the bot's `bank_right`).
 - `car.parity` is retired. The browser-parity path is no longer a project constraint and is no longer gated by a test; the current car model has no parity property. Native physics is authoritative and may evolve freely. New vehicle behaviour goes on the normal native path and is covered by the `tests/v2/` vehicle suites (`aids_simcade`, `flat_equivalence`, `suspension`, ...).
+- In a windowed run the whole v2 UI (`V2UIRoot`: HUD, front end, panels, dialogs) lives in `retro.ui_view`, a SubViewport on a 1280x896 canvas, and the camera in `retro.world_view`. The UI only receives input that `game._input()` forwards; a new input path that bypasses `_input()` never reaches it. Map screen positions with `retro.from_canvas()`/`to_canvas()`; `get_viewport()` of a UI node is the UI viewport, not the window. Headless runs build no renderer and keep the UI in the root viewport.
 - The car contact-patch shadow (`shaders/blob_shadow.gdshader`) renders in the opaque pass with an ordered dither. A transparent material on that mesh is never composited by the world SubViewport, so switching it back to alpha blending silently removes the shadow instead of failing loudly.
 - The game poses the car model from `snapshot_v2()`/`blend_v2()`; add new animated state there, or it will not interpolate.
 - Control-point bank is degrees; sampled bank and car heading are radians.
@@ -133,6 +135,6 @@ Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac
 
 ## PS2-era art direction (2026-09-21)
 
-Start with [ART-DIRECTION.md](ART-DIRECTION.md) for the shared world/UI output chain, resolution modes, palettes, materials, body winding and screenshot/timing matrix. Startup defaults are Spa-Francorchamps and f296gt3; maintain UI picker consistency if changing them. `--compare --round=N` captures the full matrix; `--features` includes both input-driven full laps; `--performance` measures all six lighting/resolution cases for the selected backend.
+Start with [ART-DIRECTION.md](ART-DIRECTION.md) for the shared world/UI output chain, resolution modes, palettes, materials and budgets; ARCHITECTURE.md "Presentation chain" describes the v2 implementation (Look-3). Out of the box the game is Authentic-leaning: 640x448 raster, 16:9 anamorphic, soft upscale, colour dithering, low speed blur, Authentic UI. `--v2-present` (and `--features`) ends with the presentation check, which times every display mode and screenshots drive, title and settings pages into `user://look-3/`; `--v2-look --v2-track=spa` runs it alone on another circuit. The legacy `--compare` and `--performance` matrices went with the legacy game.
 
 `car.simcade_enabled` selects the handling model. Models instantiated by historical headless tests default to Simulation; game settings default to Simcade. Always set the intended model explicitly in new harnesses. Handling enters record identity; time of day and renderer settings do not.

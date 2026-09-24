@@ -16,9 +16,11 @@ in P7-01 (2026-09-23); see the last section.
    settings), the `RecordWriter`, the environment (`setup_environment()`, `apply_time_of_day()`) and
    graphics quality.
 3. Builds the presentation: the car and ghost models (`visuals.make_car`), a CanvasLayer holding the
-   instruments (HUD) and the front end, audio (`audio.gd`), and skid marks.
-4. Opens the front end at "main". Normal play builds no track until the player picks one. The smoke,
-   presentation and export probes load the proving ground immediately.
+   instruments (HUD) and the front end (`V2UIRoot`), audio (`audio.gd`), and skid marks. With a
+   display (not headless) it then builds the PS2 presentation chain (`retro_renderer.gd`, below),
+   which takes the camera and moves `V2UIRoot` into its UI viewport.
+4. Opens the front end at "main" ("drive" in `--v2-present`). Normal play builds no track until the
+   player picks one. The smoke, presentation and export probes load the proving ground immediately.
 
 The front end (`front_end.gd`, v2 pages: main → car → circuit → drive) calls:
 
@@ -157,12 +159,59 @@ Baked scenes are not committed: generators run on first load and the result is c
   (`scripts/track/track_lights.gd`); `render_v2()` moves a pool of four sodium SpotLight3Ds to the lamps
   nearest the camera. The car's headlight SpotLight3D (`visuals.gd`, no shadows) is night-only.
 
+### Presentation chain (Look-3)
+
+`retro_renderer.gd` (`game.retro`) is built by `setup_v2()` whenever there is a display; headless runs
+have none, and the UI root then stays in the root viewport. Each frame:
+
+1. **World:** the camera lives in `world_view`, a SubViewport sharing the game's World3D. The root
+   viewport renders no 3D (`disable_3d`). The 3D raster always has square pixels at the presentation
+   aspect: `448 x aspect` by 448 at 480p and 480i (796x448 at 16:9), `720 x aspect` by 720 at 720p,
+   the presentation's physical size at Native. Godot 4.6 has no anisotropic camera projection
+   (`camera_set_transform` orthonormalizes, so the legacy X-scaled camera transform did nothing and
+   stretched SD 24 %), so the console's non-square pixels come from the history pass resampling
+   instead. MSAA 2x only at Native with `native_msaa`. `retro_flare.gd` draws the sun flare inside this raster; its occlusion
+   ray is a TrackSurface query in `_physics_process`.
+2. **Glow:** `glow_view`, a quarter-size bright pass (`retro_glow.gdshader`; threshold 0.88 by day,
+   0.64 at night).
+3. **History:** two alternating targets (`retro_screen.gdshader`) at the console raster (640x448
+   anamorphic at 480p, one 640x224 field at 480i, the world size otherwise) resample the world and add
+   the glow (0.4 by day, 1.1 at
+   night), the soft filter (Upscale: Soft), motion persistence (Speed blur: 0, 0.12, 0.25, scaled by
+   speed above 20 m/s; off in menus) and the ordered dither (Colour dithering).
+4. **UI:** `ui_view` holds `V2UIRoot` (instruments, front end, settings/garage, embedded dialogs and
+   popups) on a fixed 1280x896 logical canvas (`size_2d_override`). Authentic UI renders it at
+   640x448; Sharp UI at the presentation's physical size.
+5. **Output:** two alternating targets (`console_output.gdshader`) composite the Authentic UI, the 480i
+   fields (59.94 Hz, alternate lines kept from the previous field), CRT/composite chroma and RGB555
+   quantization (dithered with Colour dithering). `display` shows the result in the presentation
+   rectangle (4:3 or 16:9, letter/pillarboxed, black bars) with nearest (Sharp) or linear (Soft)
+   filtering; `sharp_display` overlays the Sharp UI.
+
+`apply_settings()` reads every Display setting (`game.PRESENTATION_SETTINGS`). `set_v2_setting()`
+calls it on each change, `set_quality()` on quality changes, and the root viewport's `size_changed`
+on window resizes and fullscreen, so every choice is live. Nothing is read back to the CPU.
+
+**Input:** the UI viewport only sees what `game._input()` forwards after `front_end.handle()` and
+`controls.handle()`: `retro.forward_input()` maps mouse positions from the root viewport through the
+presentation rectangle to the 1280x896 canvas (`to_canvas()`/`from_canvas()`) and passes keys and pad
+buttons unchanged, so focus navigation and `ui_accept` work. A consumed event is marked handled, so
+`_unhandled_input()` shortcuts do not also fire. Code that needs a UI node's screen position must go
+through `from_canvas()`; `get_global_rect()` inside `V2UIRoot` is in canvas coordinates.
+
 ## Probe and test modes (v2)
 
 - `--v2-smoke`: headless, 120 ticks, pose and interpolation sanity.
 - `--v2-visual-smoke`: the same, windowed.
 - `--v2-present`: windowed. The bot drives two proving-ground laps at 3x speed while cameras cycle.
-  It checks timing, ghost, minimap and audio, and saves `user://v2-present.png`.
+  It checks timing, ghost, minimap and audio, then runs `presentation_check.gd`: every render
+  resolution, UI mode, aspect, 480i/CRT, RGB555 and night in turn, checking raster and UI viewport
+  sizes, timing frames while the bot drives, saving drive, title and settings screenshots to
+  `user://look-3/`, and sending real mouse clicks, arrow keys and a pad A press through
+  `Input.parse_input_event` that must reach the right control. Prints `LOOK TIMINGS` and
+  `V2 PRESENT PASS`, and saves `user://v2-present.png`.
+- `--v2-look`: the presentation check alone after 10 s of driving. `--v2-track=<id>` picks the
+  circuit for either (e.g. `spa`).
 - `--v2-export-check`: in an exported build, verifies that every generator and its data are inside
   the PCK and load.
 - `tests/v2/front_end.gd`: the menu flow, the record round trip and returning to the menu.
@@ -172,5 +221,5 @@ Baked scenes are not committed: generators run on first load and the result is c
 P7-01a (2026-09-23) deleted the pre-rebuild game: JSON tracks, planar collisions, the old interface and
 feature suite. `--features` is an alias for `--v2-present`. P7-01b folded the planar CarModel
 (`scripts/car.gd`) into CarBody, moved the surface table to `scripts/surface/surface_table.gd`, and
-deleted `track.gd`, `track3d.gd` and `tests/dynamics.gd`. `retro_renderer.gd` and `night_style.gd`
-remain for the PS2 look work (Look-2, Look-3).
+deleted `track.gd`, `track3d.gd` and `tests/dynamics.gd`. Look-3 ported `retro_renderer.gd` onto the
+v2 game (above) and removed its legacy-only parts. `night_style.gd` remains for Look-2.

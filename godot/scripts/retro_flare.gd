@@ -1,6 +1,21 @@
 extends Control
-## Original hexagon flare, rendered inside the world viewport. Terrain ray occludes the sun.
+## Original hexagon flare, rendered inside the world viewport (Look-3). A ray from the camera toward
+## the sun against the TrackAsset's collision (terrain, road, walls) occludes it. TrackSurface queries
+## only work in a physics frame, so the ray runs there at 30 Hz and _draw reads the result.
 var app
+var sun_clear = false
+var tick = 0
+
+
+func _physics_process(_dt):
+	tick += 1
+	if tick % 8 != 0:
+		return
+	sun_clear = false
+	if app == null or app.v2_surface == null or not app.track is Node3D:
+		return
+	var dir = app.sun.global_basis.z.normalized()
+	sun_clear = app.v2_surface.contact(app.camera.global_position, dir, 800.0).is_empty()
 
 
 func _process(_dt):
@@ -8,7 +23,7 @@ func _process(_dt):
 
 
 func _draw():
-	if app == null or app.settings.time_of_day != 0 or app.visuals.world == null:
+	if app == null or int(app.settings.time_of_day) != 0 or not sun_clear:
 		return
 	var cam = app.camera
 	var dir = app.sun.global_basis.z.normalized()
@@ -19,16 +34,6 @@ func _draw():
 	var dimensions = Vector2(app.retro.world_view.size)
 	if not Rect2(Vector2.ZERO, dimensions).grow(50).has_point(pos):
 		return
-	var query = PhysicsRayQueryParameters3D.create(cam.global_position, point)
-	if not cam.get_world_3d().direct_space_state.intersect_ray(query).is_empty():
-		return
-	# Use the already-built render heightfield. ground_height() performs two
-	# full circuit projections per sample and caused 40 ms stalls facing the sun.
-	# The small bias covers the road ribbon sitting above this 8 m terrain grid.
-	for i in range(4, 600, 12):
-		var ray = cam.global_position + dir * i
-		if app.visuals.world.height(ray.x, ray.z) + .65 > ray.y:
-			return
 	var centre = dimensions * .5
 	var strength = clampf(1 - pos.distance_to(centre) / dimensions.length(), 0, 1)
 	for item in [
