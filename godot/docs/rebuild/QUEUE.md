@@ -44,7 +44,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | Look-2 | Amber nights: Lights/ lamps on proving ground and Spa (sodium floods along the track, pit and grandstand), night_style halos/streaks for TrackAssets, time of day on the v2 path (ps2_materials.set_afterhours), car headlights | Claude | Look-1 | done (PR #24, merged with Look-3; gates 35/35, features 77/0) | |
 | Look-3 | PS2 renderer on the v2 path: retro_renderer.gd (640x448, ordered dither, glow, motion persistence, console output), v2 HUD and menus in the Authentic UI viewport | Claude | P4-menus | done (PR #23; Windows GPU review 2026-09-24) | |
 | Look-4 | Dress proving ground, Spa and Nordschleife per ART-DIRECTION.md: crowd cards, fences, painted tyre walls, billboards, marshal posts, lamp placement support for Look-2 | Gemini (content only), Claude review | Look-1 | done (reviewed by Claude 2026-09-24) | rb/look-4-dressing |
-| Look-5 | Scenery kit and walls in PS2 materials (armco, tyre and concrete textures from assets/ps2; crowd cards; tree cards) | Claude | Look-1 | open | |
+| Look-5 | Scenery kit and walls in PS2 materials (armco, tyre and concrete textures from assets/ps2; crowd cards; tree cards) | Claude | Look-1 | review: Sol | rb/look-5-scenery (stacked on rb/look-tracks); read "DONE Look-5". Material work arrived in Look-4 |
+
 | Look-tracks | Spa and Nordschleife daylight look outside the Look-5 kit: forest cache bug, terrain grass, haze and view distance, road/runoff grade, forest density | Claude (owner-assigned) | Look-1 | review: Sol | rb/look-tracks; read "DONE Look-tracks" |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |

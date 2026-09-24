@@ -1762,3 +1762,19 @@ Gates (Linux cloud, Godot 4.6.2):
 - all stderr empty; parse and gdformat clean.
 
 For Sol (Look-5): `ground.gdshader` and `road_v2.gdshader` changed their grades here. `trackgen/spa.gd` and `nordschleife_s1.gd` `add_forest()` now filter and ground trees after `RoadScatter.bake()`; keep that if batching moves the trees.
+
+## 2026-09-24  DONE Look-5 draw calls, night response, consistency  (Claude Opus 5.5; owner: Sol had not started) — branch `rb/look-5-scenery`, stacked on `rb/look-tracks`
+The Look-4 review cut Look-5 to consistency, draw calls and night response. I measured before changing anything.
+
+- **Draw calls:** at Spa Pouhon a view made 617 draw calls. With the car hidden it made 100; with the car hidden and shadows off, 66; with the track hidden too, 5. So **the car was 517 of 617**. The whole Spa circuit is about 61 draws plus its shadow passes, because Look-4 already batched the scenery (123 geometry nodes in Spa's asset, 60 of them night-lamp chunks hidden by day).
+  - The 296's body is 178 mesh nodes over 26 materials, drawn again in each shadow pass.
+  - New `visuals.merge_static(body)`, run at the end of `make_car()` for the three dedicated cars. It merges the body's static meshes into one per (material, cast shadow, transparency, vertex colour), de-indexed with inverse-transpose normals. `SurfaceTool.append_from` dropped 824 triangles when indexed primitives and unindexed lofts shared a group.
+  - Kept separate: nodes in `headlights` (night lamps and glows switch visibility), hidden nodes and wheels (outside `body`). Shared materials still animate (brake emission).
+  - Mesh draws per car: 296 187 → 37, MX-5 58 → 36, GT 58 → 26. Triangles unchanged (8,466 / 5,032 / 3,744).
+  - Spa Pouhon: **617 → 167 draw calls (−73 %)**.
+  - `car_models` 51/0, including the lamps switching day and night. Car screenshots before and after look the same.
+- **Night response:** I checked the Look-2 night captures on this branch. Crowds, billboards, fences and buildings sit dark under the amber lamps; none glows by itself. No change needed.
+- **Consistency:** scenery builders create their materials per build. Each baked piece is already one mesh, so moving them into `ps2_materials.gd` would not change draw calls, only shader variants (compiled once each). Left as is.
+- **Tooling:** `tests/v2/track_screenshots.gd` prints draw calls and objects per view.
+
+Gates for the merged Look-tracks + Look-5 tree are in the next entry.
