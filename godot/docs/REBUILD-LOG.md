@@ -1315,3 +1315,27 @@ Gates (`run_gates.ps1 -All`): all pass, laps included, with empty stderr.
   - showcase-laps' lap JSON differs by at most 4.2e-4 relative (an integer count off by 1).
 - **Tolerance:** one last-digit unit for printed numbers (both suites), plus 1e-3 relative for showcase-laps' JSON (2.4x the measured drift). The runner prints the largest differences it saw on every run.
 - The obsolete "spa roadster simulation" allowance and its `--no-allow-spa-roadster` flag are removed; that lap has passed since P4-07b.
+## 2026-09-23  DONE P4-04/P4-05 presentation on the v2 game path  (Claude Opus 5.5) — branch `rb/P4-vis` (from main)
+Owner moved P4-04/P4-05 from Gemini to Claude (no Gemini on P4). The v2 path (`game.gd` setup_v2 / physics_v2 / render_v2) now has:
+- **Car pose:** full 6-DOF, free attitude in flight. The model is posed from the interpolated 5.4 snapshot (position lerp, rotation slerp, per-wheel steer, spin and suspension compression), and brake glow comes from the pedal inputs.
+- **Ghost car:** `race.ghost_xform()` (P4-02's 5.4 samples), CG-referenced like the car, shown while the current lap is inside the best lap's time (`settings.ghost`).
+- **Cameras:** `update_camera()` with all five modes. The bonnet camera rides with the body's roll and pitch. The ground clamp uses a height sampled under the camera each physics tick (`camera_ground`), since surface queries only work inside a physics frame.
+- **HUD** (`instruments.gd`, on its own CanvasLayer until P4-06 brings the menus): time attack, sectors and flags, delta, ideal lap, tyre cards, speedometer and gear, telemetry (Y), debug (B).
+  - The minimap comes from `TrackAsset.minimap()`, and the ghost dot from `ghost_xform()`.
+  - CP n/m counts the asset's gates.
+  - Debug force arrows are skipped until the retro presentation exists on this path.
+- **Audio** (`audio.gd`): engine, gears and tyre sounds from CarBody's inherited fields. Surface ids come from each wheel's contact (`w.surf`).
+- **Skid marks** at the contact point, laid along the ground normal. On the v2 path a tyre marks only when it is past its slip peak (slip angle or ratio beyond `peak_slip_angle/ratio()`), not merely at `skidding` (friction ellipse > 0.92). At a fast pace that held through every braking zone and corner and filled all 1600 marks in two laps; now 1029 in two laps at bot pace, mostly braking zones.
+- **Sky, fog, sun and ambient light** from `apply_time_of_day()` (the sky was black on this path).
+- **Keys (session only):** V camera, Y telemetry, B debug. This path neither loads nor saves settings until P4-06, and saving would overwrite the user's settings with defaults. Esc still quits (F-P4-01 is Sol's).
+
+The legacy path's behaviour is unchanged: each shared function takes its v2 branch only on `v2_mode` or a TrackAsset.
+
+**New windowed check, `-- --v2-present`:** the bot drives two proving-ground laps at 3x speed while the camera cycles all five modes. It checks a valid first lap, the ghost shown on lap 2, the minimap, the camera modes and live engine audio, and saves `user://v2-present.png`. Result: PASS (best 57.888 s, engine level 0.44, 1029 skid marks), stderr empty. The screenshot shows the HUD (timing, sectors, delta, minimap, tyres, speedo), the ghost, sky, kerbs and scenery.
+
+Gates: `run_gates.ps1 -All` **41/41 pass** (the Spa warning is gone since F-P6-01b). `--features` 212/0 with empty stderr, and `--v2-smoke` passes.
+
+Not done yet:
+- night lamps from `Lights/` (no TrackAsset has lamps yet)
+- wall-impact audio (`sound.impact` needs WallContact on this path: F-P4-01)
+- menus and pause (P4-06)
