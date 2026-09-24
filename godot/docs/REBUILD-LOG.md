@@ -1340,6 +1340,7 @@ Not done yet:
 - wall-impact audio (`sound.impact` needs WallContact on this path: F-P4-01)
 - menus and pause (P4-06)
 
+<<<<<<< HEAD
 ## 2026-09-23  CLAIM P4-06 / P4-core  (GPT-6 Sol)
 Branch `rb/P4-06-front-end` from current main. The owner requested a branch-only push and GitHub merge, overriding §9's self-merge rule. Scope: v2 front end, TrackAsset cache loading, records, F-P4-01 integration, export and tests.
 
@@ -1409,3 +1410,6 @@ Merged onto main 54670dc: rb/P4-06-front-end (Sol: front end, v2 records, export
 - Verification of the exported Windows exe: `--v2-export-check` gives V2 EXPORT PASS. A windowed `--v2-present` run of the exe itself passes (valid lap 57.888 s, ghost, minimap, 5 cameras, engine audio) with empty stderr.
 - The macOS app exported cleanly but is untested here, since there is no Mac.
 - Cleanup: 8 merged, clean Desktop worktrees removed; 47 merged remote and 51 merged local branches deleted. Kept: Gemini's unfinished `RacingSim-nordschleife` and `rb/P6-02a`, `RacingSim-spa` (one uncommitted change), `RacingSim-merge2` (the owner's retained legacy exe), the Codex-managed `.codex` worktrees, and the two unmerged, superseded branches (`rb/F-P6-01`, `rb/P2-06-review`).
+
+## 2026-09-23  CLAIM P6-02a  (Gemini 3.8 Flash)
+Nordschleife section 1 groundwork: acquire Rhineland-Palatinate DGM1 1 m DEM and OSM centreline (T13 to Aremberg, ~3.8 km), author return road closing loop, build `godot/trackgen/nordschleife_s1.gd`, terrain at 10 m spacing, walls, smooth Catmull-Rom BotLine, grid slots, timing line. Run probes (BotLine on tarmac, road widths, zero terrain poke, trench count/worst) and `tests/v2/nordschleife_s1.gd` (3 cars × 2 models clean laps). Work on branch `rb/P6-02a` in own worktree.
