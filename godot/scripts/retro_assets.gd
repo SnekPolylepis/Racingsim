@@ -10,19 +10,6 @@ static func baked(key):
 	return load(path) if not generating and ResourceLoader.exists(path) else null
 
 
-static func ao_mesh():
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for i in 12:
-		st.set_color(Color(1, 1, 1, .32))
-		st.add_vertex(Vector3.ZERO)
-		for j in [i, i + 1]:
-			st.set_color(Color(1, 1, 1, 0))
-			st.add_vertex(Vector3(cos(j * TAU / 12), 0, sin(j * TAU / 12)))
-	st.generate_normals()
-	return st.commit()
-
-
 static func panorama(night = false, reflection = false):
 	var key = "sky" + str(night) + str(reflection)
 	var texture = baked(key)
@@ -121,18 +108,3 @@ static func painted(kind):
 	img.generate_mipmaps()
 	cache[kind] = ImageTexture.create_from_image(img)
 	return cache[kind]
-
-
-static func cards(count):
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for i in count:
-		var b = Basis(Vector3.UP, PI * i / count)
-		var vertices = [Vector3(-.5, 0, 0), Vector3(-.5, 1, 0), Vector3(.5, 1, 0), Vector3(.5, 0, 0)]
-		var uvs = [Vector2(0, 1), Vector2(0, 0), Vector2(1, 0), Vector2(1, 1)]
-		for j in [0, 1, 2, 0, 2, 3]:
-			st.set_uv(uvs[j])
-			st.set_normal(Vector3.UP.lerp(b * Vector3.BACK, .3).normalized())
-			st.set_color(Color.WHITE.darkened(.4 * uvs[j].y))
-			st.add_vertex(b * vertices[j])
-	return st.commit()

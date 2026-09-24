@@ -15,6 +15,21 @@ const Storage = preload("res://scripts/storage.gd")
 const Controls = preload("res://scripts/controls.gd")
 const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
+const RetroRenderer = preload("res://scripts/retro_renderer.gd")
+## Settings > Display choices the Look-3 presentation chain reads (RetroRenderer.apply_settings).
+const PRESENTATION_SETTINGS = [
+	"render_resolution",
+	"upscale",
+	"output_mode",
+	"crt_filter",
+	"framebuffer_colour",
+	"colour_dither",
+	"speed_blur",
+	"screen_aspect",
+	"ui_mode",
+	"native_msaa",
+	"time_of_day",
+]
 const DEFAULT_SETTINGS = {
 	"camera": 0,
 	"tilt": .72,
@@ -123,6 +138,9 @@ var v2_tick = 0
 ## `-- --v2-present` (windowed, P4-04/P4-05 check): the bot drives two laps at 3x speed while the
 ## camera cycles; the run then checks timing, ghost, minimap, skids and audio and saves a screenshot.
 var v2_present = false
+## `-- --v2-look` (Look-3): --v2-present without the laps; drive 10 s, then only the presentation check.
+## `--v2-track=<id>` picks the circuit for either (default proving_ground).
+var v2_look_only = false
 var v2_bot = null
 var v2_seen = {"ghost": false, "cameras": {}, "engine_level": 0.0}
 
@@ -133,7 +151,15 @@ func _ready():
 	v2_export_check = "--v2-export-check" in OS.get_cmdline_user_args()
 	# `--features` (tools/run_gates.ps1 -Features) runs the same windowed v2 check since P7-01 retired the
 	# legacy feature suite; it also prints a FEATURE RESULTS line.
-	v2_present = "--v2-present" in OS.get_cmdline_user_args() or "--features" in OS.get_cmdline_user_args()
+	v2_look_only = "--v2-look" in OS.get_cmdline_user_args()
+	v2_present = (
+		v2_look_only
+		or "--v2-present" in OS.get_cmdline_user_args()
+		or "--features" in OS.get_cmdline_user_args()
+	)
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--v2-track="):
+			v2_track_id = arg.get_slice("=", 1)
 	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()
 	setup_v2()
 
@@ -302,8 +328,9 @@ func save_settings():
 		message(storage.error)
 
 
-## Retro rendering deliberately omits screen-space lighting and AA. Medium and High cast
-## directional shadows; measured cost on this machine is about 0.15 ms of a 16.667 ms frame.
+## Retro rendering deliberately omits screen-space lighting and AA (RetroRenderer owns the world
+## viewport's MSAA: 2x only at Native with native_msaa). Medium and High cast directional shadows;
+## measured cost on this machine is about 0.15 ms of a 16.667 ms frame.
 func set_quality(value):
 	quality = clampi(value, 0, 2)
 	sun.shadow_enabled = quality >= 1
@@ -315,9 +342,7 @@ func set_quality(value):
 		else DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	)
 	sun.shadow_blur = 1.4 if quality == 2 else 1.0
-	var view = retro.world_view if retro else get_viewport()
-	view.msaa_3d = (Viewport.MSAA_2X if settings.native_msaa else Viewport.MSAA_DISABLED)
-	view.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
+	get_viewport().screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
 	# Ambient occlusion is a High-tier extra. Low and Medium keep the flat console fill.
 	environment.ssao_enabled = quality == 2
 	environment.ssao_radius = 1.4
@@ -400,11 +425,16 @@ func setup_v2():
 	sound = Sound.new()
 	add_child(sound)
 	setup_skids()
-	if not v2_smoke and not v2_present:
+	if not v2_smoke:
 		frontend = preload("res://scripts/front_end.gd").new()
 		hud.add_child(frontend)
 		frontend.initialize(self)
-		frontend.show_page("main")
+		frontend.show_page("drive" if v2_present else "main")
+	# Look-3: the world camera and the whole UI root render through the PS2 presentation chain.
+	if DisplayServer.get_name() != "headless":
+		retro = RetroRenderer.new()
+		add_child(retro)
+		retro.initialize(self, hud)
 	update_camera(1, true)
 	prev_pose = snapshot_v2()
 	if v2_present:
@@ -524,10 +554,12 @@ func set_v2_setting(key: String, value: Variant) -> void:
 	car.simcade_steering = settings.simcade_grip_assist
 	car.wear_enabled = settings.wear
 	car.auto_clutch = settings.auto_clutch
-	if key in ["quality", "native_msaa", "render_resolution"]:
+	if key == "quality":
 		set_quality(int(settings.quality))
 	if key == "time_of_day":
 		apply_time_of_day()
+	if retro and key in PRESENTATION_SETTINGS:
+		retro.apply_settings()
 	if key == "fullscreen" and DisplayServer.get_name() != "headless":
 		DisplayServer.window_set_mode(
 			(
@@ -699,11 +731,13 @@ func physics_v2(dt):
 	if v2_tick < 3:
 		return
 	car.input = controls.update(dt, car.speed)
-	if v2_present:
+	# The bot keeps driving after the laps while the presentation check times frames.
+	if v2_present or v2_bot != null:
 		if v2_bot == null:
 			v2_bot = BotDriver.new(track.get_node("BotLine"), car, v2_surface)
 		car.input = v2_bot.command(car)
-		present_tick()
+		if v2_present:
+			present_tick()
 	for action in controls.events:
 		match action:
 			"reset":
@@ -769,31 +803,42 @@ func physics_v2(dt):
 		get_tree().quit(0 if valid else 1)
 
 
-## --v2-present: cycle the camera every 6 s of sim, note what showed, finish after two laps.
+## --v2-present: cycle the camera every 6 s of sim, note what showed, finish after two laps; then the
+## Look-3 presentation check (scripts/presentation_check.gd) runs every display mode.
 func present_tick():
-	if v2_tick % (240 * 6) == 0:
+	if v2_tick % (240 * 6) == 0 and not v2_look_only:
 		settings.camera = (int(settings.camera) + 1) % 5
 		v2_seen.cameras[settings.camera] = true
 	v2_seen.ghost = v2_seen.ghost or (ghost_model.has("root") and ghost_model.root.visible)
 	v2_seen.engine_level = maxf(v2_seen.engine_level, sound.engine_level if sound else 0.0)
-	if race.completed < 2 and elapsed < 300.0:
+	if (race.completed < 2 and elapsed < 300.0) and not (v2_look_only and elapsed > 10.0):
 		return
 	v2_present = false
 	var marks = 0
 	for t in skid_times:
 		if t > -100.0:
 			marks += 1
-	var checks = {
-		"valid first lap": race.completed >= 1 and race.best > 0,
-		"ghost shown on lap 2": v2_seen.ghost,
-		"minimap points": instruments.map_points.size() > 100,
-		"camera modes": v2_seen.cameras.size() >= 5,
-		"engine audio": v2_seen.engine_level > .01,
-	}
-	var ok = not checks.values().has(false)
-	var shot = "user://v2-present.png"
+	var checks = {}
+	if not v2_look_only:
+		checks = {
+			"valid first lap": race.completed >= 1 and race.best > 0,
+			"ghost shown on lap 2": v2_seen.ghost,
+			"minimap points": instruments.map_points.size() > 100,
+			"camera modes": v2_seen.cameras.size() >= 5,
+			"engine audio": v2_seen.engine_level > .01,
+		}
 	settings.camera = 0
 	update_camera(1, true)
+	var look = {}
+	if retro:
+		var probe = preload("res://scripts/presentation_check.gd").new()
+		add_child(probe)
+		look = await probe.run(self)
+		for name in look.checks:
+			checks["look " + name] = look.checks[name]
+		print("LOOK TIMINGS ", v2_track_id, " ", JSON.stringify(look.timings))
+	var ok = not checks.values().has(false)
+	var shot = "user://v2-present.png"
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(shot)
 	print(
@@ -807,7 +852,8 @@ func present_tick():
 				"last": race.last,
 				"skid_marks": marks,
 				"engine_level_max": v2_seen.engine_level,
-				"screenshot": ProjectSettings.globalize_path(shot)
+				"screenshot": ProjectSettings.globalize_path(shot),
+				"look_screenshots": look.get("screenshots", []).size()
 			}
 		)
 	)
@@ -915,6 +961,9 @@ func _input(event):
 		get_viewport().set_input_as_handled()
 		return
 	controls.handle(event, not in_menu and not paused)
+	# The UI root lives in RetroRenderer's UI viewport, which only sees what is forwarded to it.
+	if retro and retro.forward_input(event):
+		get_viewport().set_input_as_handled()
 
 
 func _unhandled_input(event):

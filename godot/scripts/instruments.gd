@@ -420,7 +420,8 @@ func draw_debug():
 		12,
 		MUTED
 	)
-	# Force arrows project through the retro presentation, which the v2 path does not build yet.
+	# Force arrows project through the retro presentation (world raster -> 1280x896 UI canvas), which
+	# only exists with a display.
 	if app.retro == null:
 		return
 	for w in car.wheels:
