@@ -1572,3 +1572,41 @@ A fresh-worktree export exposed three missing `.uid` sidecars already absent fro
 
 ## 2026-09-24  CLAIM Look-2  (Claude Opus 5.5)
 Amber nights on branch `rb/look-2-nights`: sodium lamps on TrackAssets (`scripts/track/track_lights.gd`, a road-following placement helper Look-4 can call), road_v2 amber streaks driven by the real lamp positions, Afterhours wired through `ps2_materials.set_afterhours()`, and car headlights checked at night. Gemini's scenery files (catch_fence, grandstand, wall_path, scenery_builder, road_scatter) are not touched.
+
+## 2026-09-24  DONE Look-2 Amber nights  (Claude Opus 5.5) — branch `rb/look-2-nights`
+Afterhours now lights the TrackAssets like an NFSU night: sodium lamps along the road, amber pools and streaks on the tarmac under each lamp, dark indigo fill, and a car headlight that shows on the road.
+
+- **`scripts/track/track_lights.gd` (new), the placement helper Look-4 can call.**
+  - `place(road, spacing, zones, extra, height_at)` walks a RoadPath and alternates sides. Zones override spacing and sides (`alternate`, `both`, `left`, `right`) and wrap on a closed road. Poles stand `extra` metres beyond the verge edge, outside the walls. A lamp is dropped if another part of the road more than 80 m away passes within 13 m of it.
+  - `build(asset, road, lamps)` bakes `Lights/`. Every ~400 m chunk gets one MultiMesh for the fixtures (galvanised pole, arm and housing, plus an unshaded lens as a second surface) and one for the halos (`shaders/sodium_halo.gdshader`, the camera-facing halo and horizontal streak of `lamp_corona.gdshader`/night_style, visible to 560 m with a near fade). No light nodes are baked. Calling `build` again appends.
+  - It also writes the road's streak texture (below). `set_night()` hides `Lights/` by day.
+  - `make_pool()` / `update_pool()`: the game moves four downward sodium SpotLight3Ds (no shadows, 32 m range) to the lamps nearest the camera. Each light fades to zero as its lamp reaches the distance of the nearest lamp left out of the pool, so reassigning a light never pops.
+- **Streaks match the lamps.** road_v2's fixed "every 64 m, alternating sides on UV.y" pattern is gone. `build` gives each road its own copy of the tarmac material with a `lamp_data` texture (RGBAF, 4 m of station per texel, 3 rows of the 6 nearest lamps as station and side × strength). The shader sums a lamp-side streak, a glossy reflection line and a broad pool for each lamp. Lamps in dense zones are weaker so overlapping pools don't burn out; with no lamp texture the shader draws no streaks. `tests/v2/proving_ground.gd` checks every lamp's station and side against the texel under it (67/67).
+- **Generators:** each one replaced its always-on OmniLight3Ds (18 on the proving ground, 12 on Spa, 12 on the Nordschleife; they were lit by day too) with `TrackLights`:
+  - **Proving ground:** 50 m spacing; both sides every 25 m over start/finish and the pits, and every 22 m past the bowl grandstand. 67 lamps.
+  - **Spa:** 64 m spacing; both sides every 26 m from the pit straight through La Source, 30 m through Eau Rouge and Raidillon, 32 m at the Bus Stop. 158 lamps.
+  - **Nordschleife S1:** 72 m spacing; both sides every 26 m through the T13 start. 154 lamps.
+  - `CACHE_REVISION` is bumped on Spa and the Nordschleife. The user://tracks3d revision hash already covers `scripts/track/` and `shaders/`.
+- **game.gd:**
+  - `apply_time_of_day()` ends in `apply_track_night()`, which also runs on every `load_v2_track()`. It calls `Ps2Materials.set_afterhours(night, track)`, which now also updates the road_v2 materials inside a loaded or cached asset, and `TrackLights.set_night()`.
+  - `render_v2()` updates the pool.
+  - Night fill is darker and bluer: ambient `56628c` at 0.34 (was 0.65), moon 0.32 (was 0.7), fog `2a2433`.
+  - The dead legacy `scenery`/`NightCircuit` block is removed.
+- **Headlights** (`visuals.gd finish_car`, all three cars): the SpotLight3D already existed but lit almost nothing, because at 0.55 m high its beam met the road at about 3°. It now sits at 0.95 m, pitches down 3° and has a narrower 20° cone at energy 16 with softer falloff, shadows off. The beam shows on the road 8–40 m ahead.
+
+**Cost** (Forward+, default quality 1, 1280×800 window, this machine; `tests/v2/night_screenshots.gd`):
+- Lamps add 3–15 draw calls per view (e.g. Spa Kemmel 609 vs 594 with Lights/ hidden; La Source 580 vs 577).
+- Real lights added: 4 pooled SpotLight3Ds, down from 12–18 unshadowed OmniLight3Ds per track that were always on. The car headlight is 1 SpotLight3D, which already existed.
+- Spa whole-lap sweep at Afterhours (chase view every 20 m, 1050 frames, vsync off): mean 0.68 ms/frame (≈1480 fps), worst frame 10.5 ms, GPU mean 0.38 ms and worst 0.42 ms, at most 628 draw calls.
+- The first frame after a track loads at night measured 2.2–2.7 ms GPU while the shaders compiled.
+- The 60 fps target has a wide margin on this machine; slower GPUs are not measured.
+
+**Screenshots** (`docs/rebuild/screenshots/look-2/`, Afterhours unless noted): [proving ground start](rebuild/screenshots/look-2/proving-ground-start.png), [grandstand](rebuild/screenshots/look-2/proving-ground-grandstand.png), [back straight](rebuild/screenshots/look-2/proving-ground-back.png), [Spa La Source](rebuild/screenshots/look-2/spa-la-source.png) and [by day](rebuild/screenshots/look-2/spa-la-source-day.png) (lamps hidden), [Eau Rouge](rebuild/screenshots/look-2/spa-eau-rouge.png), [Kemmel](rebuild/screenshots/look-2/spa-kemmel.png), [pit straight](rebuild/screenshots/look-2/spa-pit-straight.png), [Nordschleife start](rebuild/screenshots/look-2/nordschleife-start.png), [T13](rebuild/screenshots/look-2/nordschleife-t13.png). I looked at every image and iterated six times: the first pass was grey-violet and the pit straight burned out to beige.
+
+**Gates** (Windows, this worktree):
+- `run_gates.ps1 -All`: 33/34 PASS. `front_end` FAIL: `SCRIPT ERROR: Invalid call. Nonexistent function 'get' in base 'Nil'` at `tests/v2/front_end.gd:126` (reading the saved record), then a 600 s timeout. This is the known fresh-machine test bug being fixed on rb/F-front-end-ci, not a lighting failure.
+- Windowed `-- --features`: 5/0, lap 57.888 s (unchanged), stderr empty.
+- `--check-only` parse clean; `gdformat -l 110 --check` clean.
+- Not run: the Linux CI script (no Linux here) and a release export.
+
+Not touched: Gemini's catch_fence, grandstand, wall_path, scenery_builder and road_scatter. `scripts/night_style.gd` is left in place as the legacy reference.

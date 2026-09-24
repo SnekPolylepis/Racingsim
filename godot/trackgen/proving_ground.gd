@@ -8,6 +8,7 @@ const RoadSection = preload("res://scripts/track/road_section.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
+const TrackLights = preload("res://scripts/track/track_lights.gd")
 const CatchFence = preload("res://scripts/track/catch_fence.gd")
 const Grandstand = preload("res://scripts/track/grandstand.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
@@ -331,23 +332,16 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 	challenge.owner = asset
 
 
+## Look-2 sodium lamps (scripts/track/track_lights.gd): every 50 m on alternating sides, both sides
+## every 25 m along the start/finish and the pits (left, 40-110 m), and on the right every 22 m past
+## the bowl grandstand (225-275 m). Poles stand 5.5 m beyond the verge, outside the 4 m armco.
 static func add_lighting(asset: Node3D, road: RoadPath) -> void:
-	var lights = Node3D.new()
-	lights.name = "Lights"
-	asset.add_child(lights)
-	lights.owner = asset
-	var stations = road.last_bake.stations
-	for i in range(18):
-		var idx = int(i * stations.size() / 18)
-		var st = stations[idx]
-		var lamp = OmniLight3D.new()
-		lamp.name = "Lamp%02d" % i
-		lamp.position = st.pos + Vector3(0.0, 9.0, 0.0)
-		lamp.light_energy = 1.5
-		lamp.omni_range = 48.0
-		lamp.shadow_enabled = false
-		lights.add_child(lamp)
-		lamp.owner = asset
+	var length = road.last_bake.length
+	var zones = [
+		{"from_m": length - 75.0, "to_m": 120.0, "spacing": 25.0, "sides": "both"},
+		{"from_m": 205.0, "to_m": 295.0, "spacing": 22.0, "sides": "both"},
+	]
+	TrackLights.build(asset, road, TrackLights.place(road, 50.0, zones, 5.5))
 
 
 static func build_asset() -> Node3D:
@@ -357,7 +351,6 @@ static func build_asset() -> Node3D:
 	asset.display_name = "Proving Ground"
 	asset.version = 1
 	asset.default_time_of_day = "day"
-	asset.lighting = {"night_lamps": 18}
 	var road = RoadPath.new()
 	road.name = "Main"
 	road.closed = true

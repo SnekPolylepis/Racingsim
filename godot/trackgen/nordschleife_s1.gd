@@ -7,11 +7,12 @@ const RoadSection = preload("res://scripts/track/road_section.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
+const TrackLights = preload("res://scripts/track/track_lights.gd")
 const TerrainPatch = preload("res://scripts/track/terrain.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
-const CACHE_REVISION = 1
+const CACHE_REVISION = 2
 
 
 static func read_json(path: String) -> Dictionary:
@@ -336,23 +337,13 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 	path.owner = asset
 
 
+## Look-2 sodium lamps (scripts/track/track_lights.gd): every 72 m on alternating sides, both sides
+## every 26 m through the T13 start and pit area. Poles stand 3.5 m beyond the verge, outside the
+## 1.2 m armco.
 static func add_lighting(asset: Node3D, road: RoadPath) -> void:
-	var lights = Node3D.new()
-	lights.name = "Lights"
-	asset.add_child(lights)
-	lights.owner = asset
-	for i in range(12):
-		var fraction = float(i) / 12.0
-		var s = fposmod(road.last_bake.length - 200.0 + fraction * 400.0, road.last_bake.length)
-		var index = int(s / road.last_bake.length * road.last_bake.stations.size())
-		var st = road.last_bake.stations[index]
-		var lamp = OmniLight3D.new()
-		lamp.name = "PaddockLamp%02d" % i
-		lamp.position = st.pos + st.tangent.cross(Vector3.UP) * 16.0 + Vector3.UP * 8.0
-		lamp.light_energy = 1.5
-		lamp.omni_range = 40.0
-		lights.add_child(lamp)
-		lamp.owner = asset
+	var length = road.last_bake.length
+	var zones = [{"from_m": length - 240.0, "to_m": 160.0, "spacing": 26.0, "sides": "both"}]
+	TrackLights.build(asset, road, TrackLights.place(road, 72.0, zones, 3.5))
 
 
 static func build_asset() -> Node3D:
@@ -365,7 +356,6 @@ static func build_asset() -> Node3D:
 	asset.display_name = "Nürburgring Nordschleife (Section 1 v0)"
 	asset.version = 1
 	asset.default_time_of_day = "day"
-	asset.lighting = {"night_lamps": 12}
 	asset.set_meta("cache_revision", CACHE_REVISION)
 	asset.set_meta(
 		"attribution",

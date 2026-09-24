@@ -151,8 +151,11 @@ Baked scenes are not committed: generators run on first load and the result is c
   and impacts.
 - **Skid marks:** a 1600-instance MultiMesh at wheel contact points along the ground normal. On the v2
   path a tyre marks only past its slip peak.
-- **Sky:** sky, fog, sun and ambient light come from `apply_time_of_day()`. Night lamps from
-  `Lights/` are not wired yet.
+- **Sky:** sky, fog, sun and ambient light come from `apply_time_of_day()`. At Afterhours
+  `apply_track_night()` (also run on every track load) turns on the road_v2 amber streaks through
+  `Ps2Materials.set_afterhours(night, track)` and shows the TrackAsset's `Lights/`
+  (`scripts/track/track_lights.gd`); `render_v2()` moves a pool of four sodium SpotLight3Ds to the lamps
+  nearest the camera. The car's headlight SpotLight3D (`visuals.gd`, no shadows) is night-only.
 
 ## Probe and test modes (v2)
 

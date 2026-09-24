@@ -8,9 +8,10 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
 const TerrainPatch = preload("res://scripts/track/terrain.gd")
+const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 1
+const CACHE_REVISION = 2
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -423,23 +424,17 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 	path.owner = asset
 
 
-static func add_lighting(asset: Node3D, road: RoadPath) -> void:
-	var lights = Node3D.new()
-	lights.name = "Lights"
-	asset.add_child(lights)
-	lights.owner = asset
-	for i in range(12):
-		var fraction = float(i) / 12.0
-		var s = fposmod(road.last_bake.length - 420.0 + fraction * 1050.0, road.last_bake.length)
-		var index = int(s / road.last_bake.length * road.last_bake.stations.size())
-		var st = road.last_bake.stations[index]
-		var lamp = OmniLight3D.new()
-		lamp.name = "PaddockLamp%02d" % i
-		lamp.position = st.pos + st.tangent.cross(Vector3.UP) * 18.0 + Vector3.UP * 10.0
-		lamp.light_energy = 1.5
-		lamp.omni_range = 48.0
-		lights.add_child(lamp)
-		lamp.owner = asset
+## Look-2 sodium lamps (scripts/track/track_lights.gd): every 64 m on alternating sides, both sides
+## every 26 m from the pit straight through La Source, denser through Eau Rouge and Raidillon and at the
+## Bus Stop. Poles stand 4 m beyond the verge, outside the 2 m armco.
+static func add_lighting(asset: Node3D, road: RoadPath, positions: Dictionary) -> void:
+	var length = road.last_bake.length
+	var zones = [
+		{"from_m": length - 420.0, "to_m": positions["La Source"] + 70.0, "spacing": 26.0, "sides": "both"},
+		{"from_m": positions["Eau Rouge"] - 70.0, "to_m": positions["Raidillon"] + 140.0, "spacing": 30.0},
+		{"from_m": positions["Bus Stop"] - 160.0, "to_m": positions["Bus Stop"] + 90.0, "spacing": 32.0},
+	]
+	TrackLights.build(asset, road, TrackLights.place(road, 64.0, zones, 4.0))
 
 
 static func build_asset() -> Node3D:
@@ -452,7 +447,6 @@ static func build_asset() -> Node3D:
 	asset.display_name = "Spa-Francorchamps (v0)"
 	asset.version = 1
 	asset.default_time_of_day = "day"
-	asset.lighting = {"night_lamps": 12}
 	asset.set_meta("cache_revision", CACHE_REVISION)
 	asset.set_meta(
 		"attribution",
@@ -556,7 +550,7 @@ static func build_asset() -> Node3D:
 		80.0,
 		603
 	)
-	add_lighting(asset, road)
+	add_lighting(asset, road, positions)
 	return asset
 
 

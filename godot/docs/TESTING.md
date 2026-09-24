@@ -94,6 +94,7 @@ The Spa bank warning recorded in earlier rebuild runs was resolved by F-P6-01b. 
 - `tools/Godot.exe --headless --path . -- --v2-smoke`: 120 ticks of the v2 game, pose and interpolation sanity.
 - `tools/Godot.exe --path . -- --v2-visual-smoke`: the same, with rendering.
 - `tools/Godot.exe --path . -- --v2-present`: the bot drives two proving-ground laps at 3x speed while the camera cycles all five modes. It checks a valid lap, the ghost on lap 2, the minimap, camera modes and engine audio, prints `V2 PRESENT PASS`, and saves `user://v2-present.png` to look at. It also runs on an exported exe (`RacingSim.exe -- --v2-present`).
+- `tools/Godot.exe --path . --script tests/v2/night_screenshots.gd -- --v2-flow-test` (Look-2, windowed): Afterhours captures of the proving ground, Spa and the Nordschleife start into `docs/rebuild/screenshots/look-2/`, each view's draw calls and GPU time with the lamps shown and hidden, and a whole-lap Spa frame-time sweep. Prints `NIGHT SHOTS RESULTS`; look at the images.
 - `RacingSim.exe --headless -- --v2-export-check` (exported builds): `V2 EXPORT PASS` when the generators and every data file they read are inside the package.
 
 ## Continuous integration and formatting
