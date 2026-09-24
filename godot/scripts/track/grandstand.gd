@@ -26,6 +26,7 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 @export_range(0.2, 1.0, 0.05) var row_height = 0.4
 @export var has_roof = true
 @export_range(3.0, 12.0, 0.5) var roof_height = 5.0
+@export var has_crowd = true
 ## If true, creates a concrete front barrier on layer 2 under Walls/<name>.
 @export var solid_front = true
 
@@ -77,6 +78,10 @@ func bake() -> void:
 	var col_roof = Color(0.35, 0.38, 0.42)
 	var col_pillars = Color(0.25, 0.26, 0.28)
 
+	var st_crowd = SurfaceTool.new()
+	if has_crowd:
+		st_crowd.begin(Mesh.PRIMITIVE_TRIANGLES)
+
 	# Build tiers along slices
 	for i in count:
 		var sl0 = slices[i]
@@ -106,6 +111,26 @@ func bake() -> void:
 			var r0_top = sl0.point + sl0.outward * d1 + sl0.up * h1
 			var r1_top = sl1.point + sl1.outward * d1 + sl1.up * h1
 			SceneryBuilder.add_quad(st, t0_out, t1_out, r1_top, r0_top, col_concrete)
+
+			# Crowd cards on tier
+			if has_crowd:
+				var c0_bot = t0_in + sl0.outward * 0.15
+				var c1_bot = t1_in + sl1.outward * 0.15
+				var c0_top = c0_bot + sl0.up * 0.65
+				var c1_top = c1_bot + sl1.up * 0.65
+				var u0 = float(i) * step_m / 4.0
+				var u1 = float(i + 1) * step_m / 4.0
+				SceneryBuilder.add_uv_quad(
+					st_crowd,
+					c0_bot,
+					c1_bot,
+					c1_top,
+					c0_top,
+					Vector2(u0, 1.0),
+					Vector2(u1, 1.0),
+					Vector2(u1, 0.0),
+					Vector2(u0, 0.0)
+				)
 
 		# Back wall
 		var bk0_bot = sl0.point + sl0.outward * total_depth - sl0.up * 0.2
@@ -152,6 +177,11 @@ func bake() -> void:
 	mat.cull_mode = BaseMaterial3D.CULL_BACK
 	st.set_material(mat)
 	var grandstand_mesh = st.commit()
+
+	if has_crowd:
+		st_crowd.generate_normals()
+		st_crowd.set_material(SceneryBuilder.crowd_material())
+		st_crowd.commit(grandstand_mesh)
 
 	# Container in Scenery/
 	var prep = SceneryBuilder.prepare_container(self, "Scenery")

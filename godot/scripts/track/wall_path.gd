@@ -18,6 +18,7 @@ enum Side { LEFT, RIGHT }
 
 const WallBuilder = preload("res://scripts/track/wall_builder.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 ## WallBuilder.Kind: 0 armco, 1 tyre, 2 concrete.
 @export_enum("Armco", "Tyre", "Concrete") var kind = 0
@@ -137,7 +138,7 @@ func bake():
 	body.add_child(col)
 	var vis = MeshInstance3D.new()
 	vis.name = "Mesh"
-	vis.mesh = WallBuilder.mesh(face_list, kind)
+	vis.mesh = SceneryBuilder.wall_mesh(l.base, l.outward, dims.x, dims.y, l.closed, kind)
 	body.add_child(vis)
 	walls.add_child(body)
 	for n in [body, col, vis]:
