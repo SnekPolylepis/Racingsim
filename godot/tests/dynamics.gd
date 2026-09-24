@@ -419,17 +419,8 @@ func simcade_setup_and_surface_checks():
 				worst < 3 and c.speed < (27 if surface == 2 else 15),
 				"%s surface %d coast: %.2f m/s, %.3f deg slip" % [key, surface, c.speed, worst]
 			)
-		c.reset_pose({"x": 0.0, "y": 0.0, "h": 0.0})
-		c.vx = 30
-		c.vy = 2
-		c.r = .4
-		preload("res://scripts/collisions.gd").impulse(
-			c, Vector2(2, -.8), Vector2(-.4, -.9165).normalized(), .25, .6
-		)
-		check(
-			absf(c.r) < .4 and Vector2(c.vx, c.vy).length() < 30,
-			"%s glancing contact dissipates yaw and speed" % key
-		)
+		# The planar glancing-contact check left with collisions.gd (P7-01); the 6-DOF wall response is
+		# gated by tests/v2/barrier.gd.
 		var split = []
 		for diff in [0, 2]:
 			c.setup.diffType = diff

@@ -1,9 +1,8 @@
 extends SceneTree
-## P6-02a validation and lap suite for Nürburgring Nordschleife Section 1.
-## Bakes the track in-memory, validates TrackAsset contracts, probes geometry/terrain/barriers,
-## and tests BotDriver laps for all 3 cars (roadster, gt, f296gt3) under Simulation and Simcade.
-## Exit 0 only if TrackAsset validates, zero warnings, all probe criteria pass, and all laps complete
-## with zero off-track wheel ticks and zero wall contacts.
+## P6-02a probe suite for Nürburgring Nordschleife section 1: bakes the track in memory, validates the
+## TrackAsset contract and probes geometry, terrain and barriers (BotLine on tarmac, road width, no
+## terrain through the road, no trenches beside it). Its bot laps, every car in both handling models, run
+## in tests/v2/laps.gd with the other circuits against the shared baseline (moved there in P7-01).
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
@@ -140,77 +139,9 @@ func _physics_process(_delta: float) -> bool:
 		"Zero trenches > 1 m beside road (count=%d, worst=%.2f m)" % [trench_count, worst_trench]
 	)
 
-	# 6. Bot laps
-	for key in presets:
-		for simcade in [false, true]:
-			var r = run_lap(key, simcade)
-			var name = "nordschleife_s1 %s %s" % [key, "simcade" if simcade else "simulation"]
-			results[name] = r
-			check(
-				r.ok and r.lap > 0 and r.off == 0 and r.walls == 0,
-				(
-					"%s: lap %.2f s, %d off-track ticks, %d wall ticks, max %.2f m off line, top %.1f km/h"
-					% [name, r.lap, r.off, r.walls, r.max_off_line, r.top * 3.6]
-				)
-			)
-
 	print(
 		"NORDSCHLEIFE_S1 RESULTS ",
 		JSON.stringify({"checks": checks, "failures": failures, "results": results})
 	)
 	quit(0 if failures.is_empty() else 1)
 	return true
-
-
-func run_lap(key: String, simcade: bool) -> Dictionary:
-	var c = CarBody.new()
-	c.simcade_enabled = simcade
-	c.configure(presets[key])
-	c.wear_enabled = false
-	var pole = asset.grid_slots()[0]
-	var fwd = -pole.basis.z
-	c.place(pole.origin, atan2(fwd.z, fwd.x), pole.origin.y)
-	var walls = WallQuery.new(asset, c.hull_half)
-	var bot = BotDriver.new(bot_line, c, surf)
-	var gates = asset.gates()
-	var next_gate = 0
-	var started = -1.0
-	var lap_time = -1.0
-	var off = 0
-	var wall_ticks = 0
-	var max_off_line = 0.0
-	var top = 0.0
-	var ok = true
-	var prev = c.pos
-	var time = 0.0
-	var cap = 2.5 * asset.length / 15.0 + 60.0
-
-	while time < cap:
-		c.input = bot.command(c)
-		c.step(DT, surf, true)
-		if WallContact.step(c, walls) > 0:
-			wall_ticks += 1
-		time += DT
-		for w in c.wheels:
-			if w.load > 0 and w.surf.id >= 2:
-				off += 1
-		top = maxf(top, c.speed)
-		if started >= 0:
-			max_off_line = maxf(max_off_line, bot.off_line)
-		if TrackAsset.crossed(gates[next_gate], prev, c.pos):
-			if next_gate == 0:
-				if started >= 0:
-					lap_time = time - started
-					break
-				started = time
-				next_gate = 1 % gates.size()
-			else:
-				next_gate = (next_gate + 1) % gates.size()
-		prev = c.pos
-		if not is_finite(c.pos_x + c.pos_y + c.pos_z) or bot.off_line > 30.0:
-			ok = false
-			break
-
-	return {
-		"ok": ok, "lap": lap_time, "off": off, "walls": wall_ticks, "max_off_line": max_off_line, "top": top
-	}
