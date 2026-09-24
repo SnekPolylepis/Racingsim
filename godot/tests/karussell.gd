@@ -45,9 +45,7 @@ func drive(track, presets, start_s, distance, target_speed):
 	car.reset_pose({"x": pose.x, "y": pose.y, "h": pose.h})
 	car.vx = cos(pose.h) * target_speed
 	car.vy = sin(pose.h) * target_speed
-	var out = {
-		"roll": 0.0, "dev": 0.0, "lift": 0, "min_load": 1e9, "travelled": 0.0, "finite": true
-	}
+	var out = {"roll": 0.0, "dev": 0.0, "lift": 0, "min_load": 1e9, "travelled": 0.0, "finite": true}
 	var begun = car.x
 	for tick in 120 * 240:
 		var pr = track.project(car.x, car.y, car.wheels[0].sIdx)
@@ -107,19 +105,15 @@ func _initialize():
 	var kar = drive(track, presets, karussell_s - 70, 190.0, 22.0)
 	check(kar.finite, "Karussell run stays finite")
 	check(kar.travelled > 150.0, "drove %.0f m through the corner" % kar.travelled)
-	check(
-		kar.dev > .12,
-		"wheels leave the old 12 cm clamp behind: peak deviation %.2f m" % kar.dev
-	)
+	check(kar.dev > .12, "wheels leave the old 12 cm clamp behind: peak deviation %.2f m" % kar.dev)
 	check(
 		rad_to_deg(kar.roll) > 2.5,
-		"chassis rolls into the banking (%.2f deg, flat control %.2f deg)"
-		% [rad_to_deg(kar.roll), rad_to_deg(flat.roll)]
+		(
+			"chassis rolls into the banking (%.2f deg, flat control %.2f deg)"
+			% [rad_to_deg(kar.roll), rad_to_deg(flat.roll)]
+		)
 	)
-	check(
-		kar.roll > flat.roll * 2.0,
-		"Karussell roll is far beyond the control run"
-	)
+	check(kar.roll > flat.roll * 2.0, "Karussell roll is far beyond the control run")
 	check(kar.min_load < flat.min_load, "a corner unloads over the concrete that never unloads flat")
 
 	print(

@@ -74,12 +74,7 @@ func load_data(d):
 func cat3(a, b, c, d, t):
 	return (
 		0.5
-		* (
-			2 * b
-			+ (-a + c) * t
-			+ (2 * a - 5 * b + 4 * c - d) * t * t
-			+ (-a + 3 * b - 3 * c + d) * t * t * t
-		)
+		* (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t)
 	)
 
 
@@ -148,7 +143,7 @@ func build_frames():
 		var a = samples[posmod(i - 1, N)]
 		var b = samples[i]
 		var c = samples[(i + 1) % N]
-		var tan_v = (c.pos - a.pos)
+		var tan_v = c.pos - a.pos
 		if tan_v.length_squared() < 1e-12:
 			tan_v = c.pos - b.pos
 		tan_v = tan_v.normalized()

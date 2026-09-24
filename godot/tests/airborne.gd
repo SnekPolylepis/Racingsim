@@ -154,8 +154,10 @@ func _initialize():
 	for sm in track.samples:
 		sharpest = minf(sharpest, sm.kv)
 	print(
-		"crest: sharpest vertical curvature %.4f 1/m, takeoff above %.1f m/s"
-		% [sharpest, sqrt(9.81 / -sharpest)]
+		(
+			"crest: sharpest vertical curvature %.4f 1/m, takeoff above %.1f m/s"
+			% [sharpest, sqrt(9.81 / -sharpest)]
+		)
 	)
 
 	var fast = run(track, presets.roadster, 40.0)
