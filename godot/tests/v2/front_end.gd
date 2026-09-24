@@ -20,7 +20,7 @@ func run() -> void:
 	root.add_child(app)
 	await process_frame
 	check(
-		app.v2_mode and app.frontend.page == "main" and app.in_menu and not (app.track is Node3D),
+		app.frontend.page == "main" and app.in_menu and not (app.track is Node3D),
 		"front end opens before the first track bake"
 	)
 	app.frontend.open_v2_panel("settings")

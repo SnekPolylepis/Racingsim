@@ -17,7 +17,11 @@ const PropSet = preload("res://scripts/props/prop_set.gd")
 const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const DT = 1.0 / 240
 const BASELINE = "res://docs/rebuild/laps-v2-baseline.json"
-const TRACKS = {"proving_ground": "res://trackgen/proving_ground.gd", "spa": "res://trackgen/spa.gd"}
+const TRACKS = {
+	"proving_ground": "res://trackgen/proving_ground.gd",
+	"spa": "res://trackgen/spa.gd",
+	"nordschleife_s1": "res://trackgen/nordschleife_s1.gd"
+}
 var presets
 var assets = {}
 var failures = []

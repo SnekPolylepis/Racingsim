@@ -1,5 +1,0 @@
-Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
-
-Simulation Monza best=261.504166666511 offSteps=0 ghost=7845 barriers=1920 contacts=0
-Simulation Spa-Francorchamps best=325.174999999786 offSteps=0 ghost=9755 barriers=2306 contacts=0
-ALL NATIVE LAPS PASS

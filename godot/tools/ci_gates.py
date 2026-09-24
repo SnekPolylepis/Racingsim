@@ -44,10 +44,9 @@ def find_godot(explicit_path=None, godot_dir=None):
 # simulation differs only by one last-digit unit (max 0.01 on 2-decimal values); showcase-laps' lap
 # JSON by at most 4.2e-4 relative (an integer count off by 1). The runner prints the largest
 # differences it sees, so these can be kept this tight.
-PLATFORM_TOLERANCE = {
-    "legacy dynamics-simulation": (0.0, 0.0),
-    "legacy showcase-laps": (1e-3, 0.0),
-}
+# The two legacy suites this covered (dynamics-simulation, showcase-laps) were retired with the legacy
+# game in P7-01, so no suite needs one today; the mechanism stays for any future text-baseline suite.
+PLATFORM_TOLERANCE = {}
 
 
 def last_digit_unit(token):

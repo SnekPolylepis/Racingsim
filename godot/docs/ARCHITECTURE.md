@@ -161,22 +161,18 @@ Baked scenes are not committed: generators run on first load and the result is c
 - `--v2-visual-smoke`: the same, windowed.
 - `--v2-present`: windowed. The bot drives two proving-ground laps at 3x speed while cameras cycle.
   It checks timing, ghost, minimap and audio, and saves `user://v2-present.png`.
-- `--v2-export-check`: in an exported build, verifies that both generators and Spa's data are inside
+- `--v2-export-check`: in an exported build, verifies that every generator and its data are inside
   the PCK and load.
 - `tests/v2/front_end.gd`: the menu flow, the record round trip and returning to the menu.
 
-## Legacy path (until P7-01)
+## Legacy code still present (P7-01b)
 
-With `--features`, `--smoke` or the other legacy review modes, `game.gd` runs the pre-rebuild game:
+The pre-rebuild game (JSON tracks, planar collisions, the old interface and feature suite) was deleted
+in P7-01a (2026-09-23). `--features` is now an alias for `--v2-present`. What remains, until P7-01b:
 
-- CarModel (`scripts/car.gd`) on JSON tracks (`scripts/track3d.gd`, `scripts/track.gd`,
-  `godot/tracks/`), with planar collisions (`collisions.gd`);
-- the retro renderer and its interface (`interface.gd`, `circuit_world.gd`).
-
-It exists only so the 212-check windowed feature suite and the legacy baseline suites (dynamics, laps,
-handling, airborne, karussell, track3d, validation, showcase laps) keep passing unchanged. CarBody
-still inherits from `car.gd`, and aids_simcade and flat_equivalence compare against CarModel.
-
-P7-01 removes this path. It first ports the settings, garage and pause menus to the v2 front end (Sol,
-P4-menus), then moves the feature coverage to v2 suites, then deletes the legacy scripts, tracks and
-tests. Until then, changes to shared code must keep both paths' suites green.
+- `scripts/car.gd` (CarModel): CarBody still inherits its tyre, drivetrain and aid code from it, and
+  `tests/v2/flat_equivalence.gd` compares against it;
+- `scripts/track3d.gd`: the SURF surface table that CarBody, RoadSection and TrackAsset read, and
+  `scripts/track.gd`, which it depends on;
+- `tests/dynamics.gd`: the threshold source `tests/v2/aids_simcade.gd` extends;
+- `retro_renderer.gd` and `night_style.gd`, kept for the PS2 look work (Look-2, Look-3).

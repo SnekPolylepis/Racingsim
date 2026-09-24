@@ -31,38 +31,25 @@ All paths below are relative to `godot/`.
 | `project.godot` | Main scene, 240 Hz clock, renderer, viewport | Engine configuration; keep native scope explicit |
 | `scripts/game.gd` | Orchestration. v2: `setup_v2`, `load_v2_track`, `change_v2_car`, `start_v2_drive`, `return_v2_menu`, `physics_v2` (tick order in ARCHITECTURE.md), `render_v2`, v2 `record_path`, probe modes (`--v2-smoke`, `--v2-present`, `--v2-export-check`). Legacy: the planar game loop | New settings, mode transitions, application services. Keep v2 code off the legacy path |
 | `scripts/main.gd` | Entry adapter | Usually leave as a one-line extension |
-| `scripts/car.gd` | Vehicle state, tire forces, chassis, drivetrain | Vehicle behavior; preserve solver clamps |
-| `scripts/track.gd` | Superseded plan-view model, retained only for `tests/validation.gd` | Do not extend; the game runs on `track3d.gd` |
-| `scripts/track3d.gd` | The circuit: 3-space ribbon geometry, frames, true banking, cross-section profiles, 3-D projection, barriers, validation | Geometry/query behaviour. This is the live model |
-| `scripts/collisions.gd` | Planar contact response and moving cones | Barrier/cone physics |
-| `scripts/race.gd` | Timing: `update_asset()` for TrackAssets (3-D gates, gates in order, sectors, schema-2 5.4 ghost samples, `ghost_xform()`); legacy `update()` for JSON tracks | Timing and ghost logic; `tests/v2/race.gd` |
+| `scripts/car.gd` | CarModel: tyre forces, drivetrain and aids that CarBody inherits (folded into CarBody in P7-01b) | Preserve solver clamps |
+| `scripts/track.gd`, `scripts/track3d.gd` | Legacy circuit model; only the `track3d.gd` SURF surface table is still used (moves out in P7-01b) | Do not extend |
+| `scripts/race.gd` | Timing: `update_asset()` for TrackAssets (3-D gates, gates in order, sectors, schema-2 5.4 ghost samples, `ghost_xform()`) | Timing and ghost logic; `tests/v2/race.gd` |
 | `scripts/controls.gd` | Bindings, held inputs, ramps, controller polling | Input behavior/remapping |
-| `scripts/interface.gd` | Modal screens, dialogs, Help | Menus/layout and player-facing actions |
 | `scripts/instruments.gd` | HUD, minimap, debug, 600-sample graph; `on_asset()` switches the minimap, ghost dot and checkpoint count to TrackAssets | Instrument presentation |
 | `scripts/visuals.gd` | Procedural meshes/materials/scenery and model poses | 3D appearance without changing physics |
 | `scripts/ferrari_296.gd` | Dedicated 296 GT3 body, aero, glazing, livery and racing wheels | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
-| `scripts/audio.gd`, `scripts/audio_review.gd` | Recorded engine RPM/load bank, synthesized effects and focused mixer checks | Engine/tire/road/shift/impact sound; offline assets in `assets/audio/` |
+| `scripts/audio.gd` | Recorded engine RPM/load bank, synthesized effects | Engine/tire/road/shift/impact sound; offline assets in `assets/audio/` |
 | `scripts/storage.gd` | JSON validation, safe names, reads/writes | File handling without gameplay state |
-| `scripts/verification.gd` | Rendered source/export integration runner | Native functional regression coverage |
 | `data/cars.json` | Three presets, setup defaults and presentation keys (`body`, colours, `num`) | Add/change car constants or looks |
 | `data/setup_fields.json` | 42 field definitions and seven garage groups | Garage field schema and ranges |
-| `tracks/*.json` | Three bundled circuit documents | Shipped circuit geometry |
-| `tests/laps.gd` | Roadster bot laps on Monza and Spa | Track/physics regression |
-| `tests/handling.gd` | Native-only handling layer, interpolation blend, checkpoint reasons, auto barriers, sectors | Curb/tire-temp/aligning-torque/steering/barrier/timing changes |
-| `tests/track3d.gd` | Ribbon frames, rotational banking, curvature split, overpass decks, cross-section profiles and plan-view parity | Ribbon geometry changes |
-| `tests/airborne.gd` | Takeoff, zero tyre load in flight and landing compression over a synthetic crest; reports Nordschleife crest sharpness | Airborne state, vertical curvature or normal-force changes |
-| `tests/karussell.gd` | Drives the Caracciola-Karussell against a flat control: road deviation, chassis roll and corner unloading | Suspension travel, cross-section or profile changes |
-| `tests/validation.gd`, `tests/showcase_laps.gd` | Spatial validation equivalence and 296/Spa laps, including digital intervention | Track validation and showcase regression |
 | `scripts/retro_renderer.gd` | World/UI, glow, GPU history and field-composition viewports | Authentic UI shares output filtering; Sharp UI optional |
-| `scripts/front_end.gd` | Legacy console pages and v2 car/TrackAsset choice, loading and drive/menu flow | Keep v2 pages independent of legacy `track.data` and `Interface` |
-| `scripts/showcase_driver.gd`, `scripts/showcase_benchmark.gd`, `scripts/showcase_review.gd` | Input-only driving, full flow/performance and repeatable comparison captures | Isolated source/export acceptance |
+| `scripts/front_end.gd`, `scripts/v2_panels.gd` | Console pages, car/TrackAsset choice, loading, drive/menu flow; settings, garage and pause panels | Menus and player-facing actions |
 | `scripts/record_writer.gd` | Serial background atomic record/sector saves | Flush before read/import/delete/shutdown; immutable completed samples |
 | `scripts/retro_assets.gd`, `scripts/retro_flare.gd` | Generated small art textures, painted sky, occluded flare | Procedural presentation |
 | `data/simcade.json` | Shared Simcade and ASM constants; optional per-car `simcade` overrides | Handling tuning; dynamics targets required |
 | `scripts/night_style.gd` | After-dark floodlights, depth-tested halos/streaks and pit accents | PS2-inspired circuit presentation only |
-| `scripts/circuit_world.gd` | Heightfield terrain, textured road/verge/curb meshes, gravel mask, barriers, furniture and named landmarks | Circuit look |
 | `shaders/*.gdshader`, `assets/textures/` | Road, ground and painted-concrete shaders; CC0 texture sets | Surface look |
-| `.github/workflows/gates.yml`, `tools/ci_gates.py` | CI on every push: gdformat check, parse check and the headless suites from `tools/gates.json` on Linux; exact legacy baselines except the two with measured platform tolerance (`PLATFORM_TOLERANCE`) | Test automation |
+| `.github/workflows/gates.yml`, `tools/ci_gates.py` | CI on every push: gdformat check, parse check and the headless suites from `tools/gates.json` on Linux; exact baselines | Test automation |
 | `tools/run_gates.ps1`, `tools/gates.json` | Local parallel gate runner: affected suites by default, `-All`, `-Perf`, `-Features` | Register every new suite in `gates.json` |
 | `export_presets.cfg`, `tools/`, `packaging/` | Windows/macOS templates, local engines and reproducible Mac packaging | Packaging |
 | `build/` | Executable, play instructions, engine notices | Generated deliverable plus notices |
@@ -73,7 +60,7 @@ All paths below are relative to `godot/`.
 | `scripts/vehicle/drivetrain.gd` | Shared drivetrain: engine, clutch, gearbox, diffs | Moved from `car.gd` in P2-01; both chassis paths call it |
 | `scripts/vehicle/aids.gd` | Shared aids: TC, ABS, ASM, steering assist, Simcade layer | Moved from `car.gd` in P2-01; ASM uses body-frame yaw rate on CarBody |
 | `scripts/vehicle/tyre_footprint.gd` | Rigid-tyre envelope: 9 fixed samples per wheel (5 on smooth ground) plus edge bisection; returns the centre ray bit-for-bit on smooth surfaces | Do not change `SMOOTH_TOL` or `FACE_COS` without re-running `footprint.gd` on real kerbs |
-| `scripts/vehicle/wall_contact.gd` | WallContact: swept hull box on layer 2, 3D impulses with friction, Simcade arcade response | Call after `car.step()` inside the physics frame; the planar `collisions.gd` is kept for CarModel until P7 |
+| `scripts/vehicle/wall_contact.gd` | WallContact: swept hull box on layer 2, 3D impulses with friction, Simcade arcade response | Call after `car.step()` inside the physics frame; the only wall response |
 | `scripts/vehicle/bot_driver.gd` | BotDriver: drives CarBody along a TrackAsset's BotLine at a fraction of the car's grip, measured on a virtual skidpad (`grip_curve()`, cached). Banked-turn speed plan over a ±8 m curvature chord, friction-circle braking, pure pursuit, cross-track correction and yaw damping, slip-aware pedals | Re-record `laps-v2-baseline.json` after any change that moves laps; see REBUILD-LOG P4-07, P4-07b |
 | `scripts/props/prop_body.gd`, `scripts/props/prop_set.gd` | Knock-over props (`data/props.json` kinds): small rigid bodies, sleeping until touched, with impulses against car hull, ground and walls | `PropSet.from_asset()` reads an asset's `Props/`; call `step()` after WallContact |
 | `scripts/proving/track_drive.gd` | `load_asset(id)`: builds a TrackAsset from its generator or loads the bake cached in `user://tracks3d/`, keyed on the generator revision. Used by the v2 game; also a dev drive scene | Generator or data changes invalidate the cache by themselves |
@@ -110,11 +97,9 @@ All paths below are relative to `godot/`.
 
 **New setup field:** add a row `[group,key,label,min,max,step,unit]` to `setup_fields.json`; add the corresponding numeric default to every preset's `setup`; consume it in `car.gd`. The garage builds itself from the rows. Import bounds come from those same definitions. Setup changes affect record identity. Update any tests that deliberately check field count.
 
-**New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; connect it in `interface.gd`; apply it in `apply_settings()` or the relevant consumer. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
+**New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; add its control in `v2_panels.gd` and apply it in the relevant consumer. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
 
-**New geometry rule:** edit `track3d.gd` and rebuild all derived samples after relevant mutations. Rendering, surface queries and lap checkpoints depend on these samples. Reset cached wheel sample hints through a car reset when changing live circuits.
-
-**New graphics:** ground, road, verges, curbs, barriers and trackside furniture are built by `circuit_world.gd`; cars, trees, labels and user objects by `visuals.gd`. Place anything on the ground with `world.ground_height(x,y)` (road plane on the road, verge blend, then terrain). Camera/environment and lighting presets live in `game.gd`; world rendering and glow/dither/history live in `retro_renderer.gd`. The same screen shaders run under OpenGL. Medium and High quality enable directional shadows; Native alone can opt into MSAA. SSAO/SSR/FXAA are disabled. Textures live in `assets/textures` (CC0, see its README) and are sampled by the shaders in `shaders/`. Use MultiMesh for anything repeated per metre of track. In a rotated `Basis`, scale with `basis*Basis.from_scale(v)`; `Basis.scaled(v)` scales in the parent frame and shears rotated shapes. Keep asset generation outside the physics step.
+**New graphics:** road, verge, terrain and trackside materials come from the TrackAsset builders (`scripts/track/`, `ps2_materials.gd`); cars from `visuals.gd` and `ferrari_296.gd`. Follow [ART-DIRECTION.md](ART-DIRECTION.md).
 
 **New TrackAsset (v2):** write a generator in `trackgen/<id>.gd` with a static `build_asset()` returning a validated TrackAsset (§5.3: Surfaces on layer 1, Walls on layer 2, TimingLine, Grid, BotLine with smooth handles, optional Props/Scenery/Lights). Keep the RoadPath bank change under 0.20°/m (it warns above that) and leave the terrain's under-road drop tapered. Commit source data under `trackgen/data/<id>/` with its licence and rebuild scripts, and cache raw downloads outside git. Add the id to `tests/v2/laps.gd` TRACKS, record its baseline (`-- --record`) and add a probe like Spa's: racing line on tarmac, no trenches beside the road. Add it to the v2 front end's track list, the export presets' `include_filter` and `check_exported_v2_assets()`, and attribute its data in `THIRD-PARTY.md` and `build/THIRD-PARTY.md`.
 
