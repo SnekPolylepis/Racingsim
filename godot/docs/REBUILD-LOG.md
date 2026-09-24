@@ -1340,7 +1340,6 @@ Not done yet:
 - wall-impact audio (`sound.impact` needs WallContact on this path: F-P4-01)
 - menus and pause (P4-06)
 
-<<<<<<< HEAD
 ## 2026-09-23  CLAIM P4-06 / P4-core  (GPT-6 Sol)
 Branch `rb/P4-06-front-end` from current main. The owner requested a branch-only push and GitHub merge, overriding §9's self-merge rule. Scope: v2 front end, TrackAsset cache loading, records, F-P4-01 integration, export and tests.
 
