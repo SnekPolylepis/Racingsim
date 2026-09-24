@@ -37,33 +37,52 @@ def find_godot(explicit_path=None, godot_dir=None):
     return None
 
 
-def dicts_close(d1, d2, rel_tol=0.02, abs_tol=5):
-    if d1.keys() != d2.keys():
-        return False
-    for k in d1:
-        v1, v2 = d1[k], d2[k]
-        if isinstance(v1, dict) and isinstance(v2, dict):
-            if not dicts_close(v1, v2, rel_tol, abs_tol):
-                return False
-        elif isinstance(v1, (int, float)) and isinstance(v2, (int, float)):
-            if not (abs(v1 - v2) <= max(abs_tol, rel_tol * max(abs(v1), abs(v2)))):
-                return False
-        elif v1 != v2:
-            return False
-    return True
+# Legacy suites whose output differs between the Windows baselines and Linux CI in the last digits
+# (libm/float formatting). Every other legacy suite must match its baseline exactly. Tolerance per
+# suite: (relative, absolute) on each differing number; the runner prints the largest differences it
+# saw so the values can stay as tight as the platform needs.
+PLATFORM_TOLERANCE = {
+    "legacy dynamics-simulation": (0.05, 0.02),
+    "legacy showcase-laps": (0.05, 0.02),
+}
 
 
-def match_legacy_baseline(got_text, want_text):
+def numbers_close(a, b, tol, worst):
+    """True when two numbers differ within tol = (rel, abs); records the difference in worst."""
+    diff = abs(a - b)
+    rel = diff / max(abs(a), abs(b), 1e-12)
+    worst["rel"] = max(worst["rel"], rel)
+    worst["abs"] = max(worst["abs"], diff)
+    return diff <= max(tol[1], tol[0] * max(abs(a), abs(b)))
+
+
+def json_close(a, b, tol, worst):
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(json_close(a[k], b[k], tol, worst) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(json_close(x, y, tol, worst) for x, y in zip(a, b))
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool):
+        return numbers_close(float(a), float(b), tol, worst)
+    return a == b
+
+
+def match_legacy_baseline(got_text, want_text, tol=None):
+    """Exact match, or with tol = (rel, abs) every differing number within it (same text otherwise)."""
     got_norm = got_text.replace("\r\n", "\n").strip()
     want_norm = want_text.replace("\r\n", "\n").strip()
     if got_norm == want_norm:
         return True, "identical to baseline"
+    if tol is None:
+        for i, (g, w) in enumerate(zip(got_norm.splitlines(), want_norm.splitlines())):
+            if g != w:
+                return False, f"differs from baseline at line {i+1} (exact match required)"
+        return False, "differs from baseline (line count)"
 
     got_lines = got_norm.splitlines()
     want_lines = want_norm.splitlines()
     if len(got_lines) != len(want_lines):
         return False, f"line count mismatch: got {len(got_lines)}, want {len(want_lines)}"
-
+    worst = {"rel": 0.0, "abs": 0.0}
     for i, (g, w) in enumerate(zip(got_lines, want_lines)):
         if g == w:
             continue
@@ -71,17 +90,15 @@ def match_legacy_baseline(got_text, want_text):
             try:
                 jg = json.loads(g[len("SHOWCASE LAP ") :])
                 jw = json.loads(w[len("SHOWCASE LAP ") :])
-                if dicts_close(jg, jw):
-                    continue
-            except Exception:
-                pass
-            return False, f"line {i+1} JSON mismatch"
-
+            except ValueError:
+                return False, f"line {i+1} JSON unreadable"
+            if json_close(jg, jw, tol, worst):
+                continue
+            return False, f"line {i+1} JSON outside tolerance (max rel {worst['rel']:.2e}, abs {worst['abs']:.2e})"
         g_toks = g.split()
         w_toks = w.split()
         if len(g_toks) != len(w_toks):
             return False, f"line {i+1} token count mismatch"
-
         for tg, tw in zip(g_toks, w_toks):
             if tg == tw:
                 continue
@@ -89,16 +106,14 @@ def match_legacy_baseline(got_text, want_text):
             clean_w = re.sub(r"[,;°%]", "", tw)
             try:
                 fg, fw = float(clean_g), float(clean_w)
-                if abs(fg - fw) <= max(0.02, 0.05 * max(abs(fg), abs(fw))):
-                    continue
             except ValueError:
-                pass
-            return False, f"line {i+1} token mismatch: '{tg}' vs '{tw}'"
+                return False, f"line {i+1} token mismatch: '{tg}' vs '{tw}'"
+            if not numbers_close(fg, fw, tol, worst):
+                return False, f"line {i+1} '{tg}' vs '{tw}' outside tolerance {tol}"
+    return True, f"within platform tolerance {tol}: max diff rel {worst['rel']:.2e}, abs {worst['abs']:.2e}"
 
-    return True, "matches baseline (within platform float tolerance)"
 
-
-def run_suite(godot_bin, godot_dir, suite, logs_dir, timeout, allow_spa_roadster):
+def run_suite(godot_bin, godot_dir, suite, logs_dir, timeout):
     name = suite["name"]
     safe_name = re.sub(r"[^A-Za-z0-9_-]", "_", name)
     out_file = os.path.join(logs_dir, f"{safe_name}.out")
@@ -185,7 +200,7 @@ def run_suite(godot_bin, godot_dir, suite, logs_dir, timeout, allow_spa_roadster
         with open(baseline_file, "r", encoding="utf-8", errors="replace") as f:
             want = f.read()
 
-        matched, match_note = match_legacy_baseline(out_text, want)
+        matched, match_note = match_legacy_baseline(out_text, want, PLATFORM_TOLERANCE.get(name))
         want_exit = int(suite.get("exit", 0))
         ok = matched and (exit_code == want_exit)
         note = match_note
@@ -245,18 +260,10 @@ def run_suite(godot_bin, godot_dir, suite, logs_dir, timeout, allow_spa_roadster
     failures = results_data.get("failures", [])
     checks = results_data.get("checks", 0)
 
-    # Check for known allowed failure: laps.gd "spa roadster simulation"
     is_allowed = False
-    if allow_spa_roadster and suite.get("script") == "tests/v2/laps.gd":
-        if failures and all("spa roadster simulation" in str(f) for f in failures):
-            is_allowed = True
-
-    if (exit_code == 0 and len(failures) == 0) or is_allowed:
+    if exit_code == 0 and len(failures) == 0:
         ok = True
-        if is_allowed:
-            note = f"{checks} checks; ALLOWED failure: spa roadster simulation (P4-07b)"
-        else:
-            note = f"{checks} checks, 0 failures"
+        note = f"{checks} checks, 0 failures"
     else:
         ok = False
         note = f"{checks} checks, {len(failures)} failures"
@@ -289,11 +296,6 @@ def main():
     )
     parser.add_argument("--timeout", type=int, default=300, help="Per-suite timeout in seconds")
     parser.add_argument("--only", default=None, help="Comma-separated suite names to run")
-    parser.add_argument(
-        "--no-allow-spa-roadster",
-        action="store_true",
-        help="Disallow known spa roadster simulation failure",
-    )
 
     args = parser.parse_args()
 
@@ -367,12 +369,10 @@ def main():
     t_start = time.time()
     results = []
 
-    allow_spa = not args.no_allow_spa_roadster
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as executor:
         future_to_suite = {
             executor.submit(
-                run_suite, godot_bin, godot_dir, s, logs_dir, args.timeout, allow_spa
+                run_suite, godot_bin, godot_dir, s, logs_dir, args.timeout
             ): s
             for s in selected
         }
