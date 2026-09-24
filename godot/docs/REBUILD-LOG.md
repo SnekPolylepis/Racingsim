@@ -1730,3 +1730,6 @@ Afterhours now lights the TrackAssets like an NFSU night: sodium lamps along the
 - Not run: the Linux CI script and a release export.
 
 Not touched: Gemini's catch_fence, grandstand, wall_path, scenery_builder and road_scatter. The generators' Look-4 placement loops are unchanged apart from the paddock lights. `scripts/night_style.gd` is left in place as the legacy reference.
+
+## 2026-09-24  REVIEW Look-2: accepted  (Claude Opus 5.5)
+Merged with main (Look-3 renderer): only doc/const conflicts. Windows `run_gates.ps1 -All -Features` on the merged tree: 35/35, features 77/0, stderr empty.
