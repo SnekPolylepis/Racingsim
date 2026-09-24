@@ -95,6 +95,7 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 | `scenery.gd` | Scenery kit components (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding): layer-2 collision where required, validation, kerb paint, proving-ground integration | 11 checks |
 | `proving_ground.gd` | Built proving ground on TrackSurface: crest takeoff speed, bowl lateral demand, compression load, ditch ride depth, BotLine laps (Simulation + Simcade), kerb crossings at 60/120 km/h | 25 checks |
 | `laps.gd` | BotDriver on every shipped TrackAsset: valid lap, zero off-track wheel-ticks, zero wall contacts; records or compares against `docs/rebuild/laps-v2-baseline.json` | Split by `--car`; see below |
+| `front_end.gd` | V2 menu car/TrackAsset choice, Spa bake-on-load cache, drive/menu return, schema-2 ghost and sector persistence, distinct track record keys | Runs with `-- --v2-flow-test`; uses `user://native-tests/v2` |
 | `test_surfaces_scene.gd` | The `scenes/proving/test_surfaces.tscn` drive scene: car settles on each analytic shape, controls respond, visual adapter poses correctly | 14 checks |
 
 ### `tests/v2/laps.gd` arguments
@@ -107,9 +108,7 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 
 The baseline file `docs/rebuild/laps-v2-baseline.json` stores one lap time per `<track> <car> <handling>` key. A change that moves a lap by more than 2% fails the gate; re-record deliberately with `--record`.
 
-### Known acceptable failure (as of 2026-09-23)
-
-The three `laps` rows' stderr carries Spa's RoadPath bake warning **"bank changes 2.69 deg/m"** at station 2398 m. This is a road-authoring artefact, not a physics bug; it is being smoothed as task **F-P6-01**. The `run_gates.ps1` summary reports it; the laps themselves pass (zero off-track, zero wall contacts) for all car × model combinations on both tracks.
+The Spa bank warning recorded in earlier rebuild runs was resolved by F-P6-01b. The 2026-09-23 P4-06 `-All` run passed 42/42 gates with empty stderr. To check a Windows export's packaged generators and Spa heightmap, run the exported executable with `--headless -- --v2-export-check`; it prints `V2 EXPORT PASS` and exits.
 
 ## Continuous integration and formatting
 

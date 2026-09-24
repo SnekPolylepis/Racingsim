@@ -92,6 +92,36 @@ static func corner_specs(data: Dictionary) -> Array:
 	return defaults
 
 
+## The measured road (P6-01 polish): trackgen/data/spa/road-profile.json from analyse_road.py, one row
+## per ~10 m centreline station. Half-widths to the track limits (inside of the white line) and the
+## kerbs beyond them come from SPW Orthophotos 2023 Été; the crossfall bank from SPW's 0.5 m LiDAR
+## ground model (line fit within 3.5 m of the centreline). Loaded once; {} when the file is missing.
+static var measured_rows = []
+
+
+static func measured(s: float, length: float) -> Dictionary:
+	if measured_rows.is_empty():
+		measured_rows = read_json(DATA + "road-profile.json").get("stations", [])
+	var n = measured_rows.size()
+	if n == 0:
+		return {}
+	var f = fposmod(s, length) / length * n
+	var i = int(floor(f)) % n
+	var j = (i + 1) % n
+	var t = f - floor(f)
+	var a = measured_rows[i]
+	var b = measured_rows[j]
+	var near = a if t < .5 else b
+	var out = {"bank": lerpf(float(a.bank_smooth_deg), float(b.bank_smooth_deg), t)}
+	for side in ["left", "right"]:
+		var ha = a["half_" + side + "_m"]
+		var hb = b["half_" + side + "_m"]
+		if ha != null and hb != null:
+			out["half_" + side] = lerpf(float(ha), float(hb), t)
+		out["kerb_" + side] = float(near["kerb_" + side])
+	return out
+
+
 static func circular_delta(s: float, at: float, length: float) -> float:
 	return fposmod(s - at + length * .5, length) - length * .5
 
@@ -133,7 +163,10 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		total_bank_weight += weight
 		var inside = "right" if corner[4] > 0 else "left"
 		var outside = "left" if corner[4] > 0 else "right"
-		values["runoff_" + outside] = maxf(values["runoff_" + outside], 4.0 + 20.0 * weight)
+		# Runoff grows on corner outsides, but half as far as v0 (4 + 20 w): the whole cross-section is built
+		# in the road's banked frame, so with the measured banks (up to ~4 deg) a 24 m runoff plus a 20 m
+		# verge ended 1.5 m above the real, flat ground (LiDAR) and left a ledge where the terrain began.
+		values["runoff_" + outside] = maxf(values["runoff_" + outside], 4.0 + 10.0 * weight)
 		values["runoff_" + inside] = maxf(values["runoff_" + inside], 3.0 + 4.0 * weight)
 		if delta >= -55.0 and delta < 30.0:
 			values["kerb_" + inside] = RoadSection.Kerb.SAUSAGE if corner[5] else RoadSection.Kerb.RAMP
@@ -142,10 +175,29 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 			values["kerb_" + outside] = RoadSection.Kerb.RIBBED
 		if corner[0] in ["Les Combes", "Pouhon", "Stavelot"] and weight > .1:
 			values["verge_surface_" + outside] = 3
-			values["verge_" + outside] = 8.0 + 12.0 * weight
+			values["verge_" + outside] = 8.0
 	# Overlapping corners blend their banks by weight (the strongest alone flipped the bank 3.8 degrees
 	# in 2.5 m between Les Combes and Malmedy); a lone corner still fades in by its own weight.
 	values.bank_deg = total_bank / maxf(total_bank_weight, 1.0)
+	# Measured widths, banking and kerb positions replace v0's authored ones where the data has them.
+	# Kerb profiles keep v0's rules (sausage at La Source and the Bus Stop apexes, ramp on inside
+	# apexes, ribbed on exits); a kerb the photos show where v0 had none is a ramp, and one v0 had
+	# where the photos show none is removed. Runoffs and verges stay authored.
+	var m = measured(s, length)
+	if not m.is_empty():
+		values.bank_deg = m.bank
+		var kerb_w = 0.0
+		for side in ["left", "right"]:
+			if m.has("half_" + side):
+				values["width_" + side] = m["half_" + side]
+			if m["kerb_" + side] >= .5:
+				if values["kerb_" + side] == RoadSection.Kerb.NONE:
+					values["kerb_" + side] = RoadSection.Kerb.RAMP
+				kerb_w = maxf(kerb_w, m["kerb_" + side])
+			else:
+				values["kerb_" + side] = RoadSection.Kerb.NONE
+		if kerb_w > 0.0:
+			values.kerb_width = clampf(kerb_w, .6, 1.8)
 	return values
 
 
@@ -155,7 +207,8 @@ static func sections(data: Dictionary, measured: float, corners: Array) -> Array
 	var s = 20.0
 	while s < length:
 		marks.append(s)
-		s += 20.0
+		# Every 10 m: the measured road's station spacing.
+		s += 10.0
 	for corner in corners:
 		for offset in [-130.0, -55.0, -45.0, 0.0, 30.0, 35.0, 120.0, 145.0]:
 			marks.append(fposmod(corner[1] + offset, length))
