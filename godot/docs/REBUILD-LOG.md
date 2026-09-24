@@ -1399,3 +1399,6 @@ The owner approved downloading the SPW data the plan names (P5-01; CC BY 4.0, ©
 - paved runoff and gravel extents (need better classification or the OSM landuse)
 - hand-shaped kerb profiles at Eau Rouge and Raidillon
 - the start/finish area's widest stations (up to 10 m a side): pit-lane side, worth a visual check in the game
+
+## 2026-09-23  MERGE train 2 into main  (Claude Opus 5.5; owner asked Claude to merge) — branch `rb/merge-train-2`
+Merged onto main 54670dc: rb/P4-06-front-end (Sol: front end, v2 records, export; also Sol's post-merge reviews, all approved), rb/F-CI (measured CI tolerance), rb/P6-01-polish (Spa from measured data). No code conflicts; docs merged keeping both sides. Gates: `run_gates.ps1 -All` 42/42; windowed `--features` 212/0, stderr empty; windowed `--v2-present` PASS (stderr: one "ObjectDB instances leaked at exit" warning from quitting mid-run; follow-up). Not merged: Gemini's P6-02a Nordschleife section 1 is uncommitted in its worktree with no DONE entry, and its own probe shows 4 BotLine points reading grass (up to 0.69 m); it stays there for Gemini to finish. Superseded branches (rb/F-P6-01, rb/CI, rb/P2-06-review) are not merged.
