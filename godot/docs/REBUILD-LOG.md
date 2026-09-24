@@ -1748,7 +1748,7 @@ Sol's P4-03 review found that `WallQuery.contacts()` took the wall kind from the
   - Simcade's arcade response removes the closing speed along every normal touched, then bleeds speed and yaw once per tick.
   - With one wall, all three are exactly the old behaviour.
   - Props already used each contact's own normal (`prop_body.gd`) and needed no change.
-- **`tests/v2/barrier.gd`** (7 → 9 checks):
+- **`tests/v2/barrier.gd`** (6 → 9 checks):
   - A concrete wall and a tyre wall meet at a right angle.
   - A hull pressed 1 cm into both must report both kinds, each with its own face normal. On main's code this check fails (4 contacts, all "concrete").
   - 150 km/h at 45° into that corner, and into one L-shaped concrete wall bending 90°, in both handling models: never past either face, energy only lost. These drive tests also pass on main's code: the old bug produced wrong normals and restitution in corners, not pass-through at this speed. They stay as regression guards.
