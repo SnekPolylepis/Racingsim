@@ -1340,6 +1340,7 @@ Not done yet:
 - wall-impact audio (`sound.impact` needs WallContact on this path: F-P4-01)
 - menus and pause (P4-06)
 
+<<<<<<< HEAD
 ## 2026-09-23  CLAIM P4-06 / P4-core  (GPT-6 Sol)
 Branch `rb/P4-06-front-end` from current main. The owner requested a branch-only push and GitHub merge, overriding §9's self-merge rule. Scope: v2 front end, TrackAsset cache loading, records, F-P4-01 integration, export and tests.
 
@@ -1420,3 +1421,34 @@ Settings save to `user://v2/settings.json` (isolated native-test path in suites)
 The asset cache now writes a plain-text revision sidecar before trying to reuse a packed scene, and includes shader sources in its identity. A release executable skips old scenes that refer to removed shaders instead of emitting load errors before regeneration.
 
 Verification on the final branch: `tools/run_gates.ps1 -All` **42/42**, front-end **28/0**, all stderr empty; windowed `-- --features` **212/0**, empty stderr; windowed `-- --v2-present` **PASS**, empty stderr; Windows release export exited 0 with empty stderr, and its executable printed **V2 EXPORT PASS**, exit 0, empty stderr after rebuilding both cached assets. `gdformat -l 110` and `git diff --check` clean. The owner opens and merges the PR from [rb/P4-menus](https://github.com/SnekPolylepis/Racingsim/pull/new/rb/P4-menus).
+## 2026-09-23  CLAIM P6-02a  (Gemini 3.8 Flash)
+Nordschleife section 1 groundwork: acquire Rhineland-Palatinate DGM1 1 m DEM and OSM centreline (T13 to Aremberg, ~3.8 km), author return road closing loop, build `godot/trackgen/nordschleife_s1.gd`, terrain at 10 m spacing, walls, smooth Catmull-Rom BotLine, grid slots, timing line. Run probes (BotLine on tarmac, road widths, zero terrain poke, trench count/worst) and `tests/v2/nordschleife_s1.gd` (3 cars × 2 models clean laps). Work on branch `rb/P6-02a` in own worktree.
+
+## 2026-09-23  DONE P6-02a  (Gemini 3.8 Flash) — branch `rb/P6-02a`
+Nordschleife Section 1 groundwork completed from verified open data with full test suite and probe validation:
+- **Data acquisition & licensing:**
+  - Acquired 20 Rhineland-Palatinate DGM1 1 m DEM tiles (32351000..32354000 E, 5577000..5581000 N) and OSM centreline covering T13 through Sabine-Schmitz-Kurve, Hatzenbogen, Hatzenbach, Hocheichen, Quiddelbacher Höhe, Flugplatz, and Schwedenkreuz to Aremberg (~3.8 km of real Nordschleife track).
+  - Licensed under dl-de/by-2.0 ("Geobasisdaten der Vermessungs- und Katasterverwaltung Rheinland-Pfalz"). Documented in `godot/trackgen/data/nordschleife/sources.json`, `godot/trackgen/data/nordschleife/README.md`, `godot/trackgen/data/nordschleife/licenses/dl-de-by-2-0.txt`, and `godot/THIRD-PARTY.md`.
+  - Processed into elevation profile and compact 10 m sampled `dem.raw` (161 KB binary float raw; relative to H0 = 619.38 m, `height_offset = 0.0` in `terrain.json`).
+- **Geometry & Banking:**
+  - Authored a smooth, non-intersecting Catmull-Rom return road loop (>160 m clearance to S1, >190 m self-clearance, min curve radius 31.5 m) closing cleanly into the T13 start straight.
+  - Surveyed real road crossfall bankings and widths from DEM cross-sections: T13 (+1.1°, 9.0 m), Sabine-Schmitz (-4.5°, 9.8 m), Hatzenbogen (-5.6°, 9.5 m), Hatzenbach chicane (+3.9° to -4.1°, 9.5–11.8 m), Hocheichen (+2.6°, 11.3 m), Quiddelbacher Höhe (+1.6°, 9.0 m), Flugplatz (+3.3° / -3.8°, 10.0–10.5 m), Schwedenkreuz (-1.8°, 11.3 m), Aremberg (+4.4° to +6.9°, 8.5 m).
+  - Generator `godot/trackgen/nordschleife_s1.gd`: `RoadPath`, `TerrainPatch` (`under_road_drop_m = 2.0`), `WallPath` (Armco and pit concrete), 20 grid slots, sectors, night lamps, and `BotLine` with Catmull-Rom handles.
+- **Probe metrics:**
+  - `TrackAsset.validate()`: 0 errors
+  - `RoadPath bake warnings`: 0, stderr empty
+  - `BotLine points on tarmac`: 3052 / 3052 points (100%), max dy: 0.000 m (well within 0.15 m requirement, 0 on grass)
+  - `Road width probe`: min left >= 3.5 m, min right >= 3.5 m
+  - `Zero terrain triangles poking through road`: poke_count = 0
+  - `Trenches > 1 m beside road`: count = 0, worst = 0.00 m
+- **Test suite (`godot/tests/v2/nordschleife_s1.gd`):**
+  - roadster simulation: lap 266.87 s, 0 off, 0 walls, max off-line 0.98 m, top 197.5 km/h
+  - roadster simcade: lap 263.35 s, 0 off, 0 walls, max off-line 0.97 m, top 197.4 km/h
+  - gt simulation: lap 203.09 s, 0 off, 0 walls, max off-line 0.91 m, top 288.0 km/h
+  - gt simcade: lap 200.32 s, 0 off, 0 walls, max off-line 1.06 m, top 287.9 km/h
+  - f296gt3 simulation: lap 201.67 s, 0 off, 0 walls, max off-line 1.09 m, top 292.4 km/h
+  - f296gt3 simcade: lap 197.19 s, 0 off, 0 walls, max off-line 1.10 m, top 292.4 km/h
+- **Gate runner:**
+  - `tools/gates.json` updated with `nordschleife_s1 roadster`, `nordschleife_s1 gt`, `nordschleife_s1 f296gt3`.
+  - `tools/run_gates.ps1 -All`: **45/45 gates pass**, 0 failures, 166 s wall clock, empty stderr.
+  - Formatting: `python -m gdtoolkit.formatter -l 110 --check`: clean (2 files unchanged).
