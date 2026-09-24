@@ -1,9 +1,8 @@
 # Native architecture and invariants
 
 The game runs on the rebuild (REBUILD-PLAN.md): a 6-DOF `CarBody` on authored 3-D `TrackAsset`s, in
-Godot-native world space. Normal launch always takes this path (`game.gd` `v2_mode`). The older planar
-game (CarModel on JSON tracks, the circuit editor's successors, the retro UI) still exists for the
-windowed feature suite and the legacy headless suites until P7-01 deletes it; see the last section.
+Godot-native world space. The older planar game (CarModel on JSON tracks, the retro UI) was deleted
+in P7-01 (2026-09-23); see the last section.
 
 ## Ownership and lifecycle
 
@@ -82,7 +81,7 @@ lap direction whatever the asset authors, track coordinates within ±5 km of the
 
 ## Vehicle
 
-`scripts/vehicle/car_body.gd` extends the legacy `scripts/car.gd` for its shared state and helpers.
+`scripts/vehicle/car_body.gd` holds the whole car: state, configuration and the 6-DOF step.
 Tyre, drivetrain and aids are the shared modules in `scripts/vehicle/` (P2-01), evaluated in each
 contact patch's frame. `step()` does, in order:
 
@@ -165,14 +164,10 @@ Baked scenes are not committed: generators run on first load and the result is c
   the PCK and load.
 - `tests/v2/front_end.gd`: the menu flow, the record round trip and returning to the menu.
 
-## Legacy code still present (P7-01b)
+## Retired legacy code (P7-01)
 
-The pre-rebuild game (JSON tracks, planar collisions, the old interface and feature suite) was deleted
-in P7-01a (2026-09-23). `--features` is now an alias for `--v2-present`. What remains, until P7-01b:
-
-- `scripts/car.gd` (CarModel): CarBody still inherits its tyre, drivetrain and aid code from it, and
-  `tests/v2/flat_equivalence.gd` compares against it;
-- `scripts/track3d.gd`: the SURF surface table that CarBody, RoadSection and TrackAsset read, and
-  `scripts/track.gd`, which it depends on;
-- `tests/dynamics.gd`: the threshold source `tests/v2/aids_simcade.gd` extends;
-- `retro_renderer.gd` and `night_style.gd`, kept for the PS2 look work (Look-2, Look-3).
+P7-01a (2026-09-23) deleted the pre-rebuild game: JSON tracks, planar collisions, the old interface and
+feature suite. `--features` is an alias for `--v2-present`. P7-01b folded the planar CarModel
+(`scripts/car.gd`) into CarBody, moved the surface table to `scripts/surface/surface_table.gd`, and
+deleted `track.gd`, `track3d.gd` and `tests/dynamics.gd`. `retro_renderer.gd` and `night_style.gd`
+remain for the PS2 look work (Look-2, Look-3).

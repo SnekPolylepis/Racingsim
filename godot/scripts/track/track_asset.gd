@@ -17,7 +17,7 @@ extends Node3D
 ## Timing gates are vertical planes across the lap line at a station, bounded laterally and in
 ## height, so a car on another deck passing through the same plan position does not trigger them.
 
-const SurfaceTable = preload("res://scripts/track3d.gd")
+const SurfaceTable = preload("res://scripts/surface/surface_table.gd")
 const TrackSurface = preload("res://scripts/surface/track_surface.gd")
 const PropBody = preload("res://scripts/props/prop_body.gd")
 ## 5.1: float32 query precision stays well under a millimetre within this distance of the origin.

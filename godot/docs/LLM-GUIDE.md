@@ -10,7 +10,7 @@ Since the rebuild (REBUILD-PLAN.md, first release v0.1.0-preview.1), normal laun
 - `CarBody` (`scripts/vehicle/car_body.gd`, the authoritative car) on authored 3-D TrackAssets;
 - the v2 front end, records and presentation in `game.gd` (`*_v2` functions).
 
-The **legacy game** (CarModel in `scripts/car.gd` on JSON tracks, plus the retro UI) remains only for the windowed feature suite and the legacy baseline suites until P7-01 removes it. `car.gd` also stays as CarBody's base class for shared state. Put new gameplay on the v2 path.
+The **legacy game** (CarModel on JSON tracks, the old UI and its suites) was deleted in P7-01 (2026-09-23) and is in git history only.
 
 Read these documents according to the task:
 
@@ -31,8 +31,7 @@ All paths below are relative to `godot/`.
 | `project.godot` | Main scene, 240 Hz clock, renderer, viewport | Engine configuration; keep native scope explicit |
 | `scripts/game.gd` | Orchestration. v2: `setup_v2`, `load_v2_track`, `change_v2_car`, `start_v2_drive`, `return_v2_menu`, `physics_v2` (tick order in ARCHITECTURE.md), `render_v2`, v2 `record_path`, probe modes (`--v2-smoke`, `--v2-present`, `--v2-export-check`). Legacy: the planar game loop | New settings, mode transitions, application services. Keep v2 code off the legacy path |
 | `scripts/main.gd` | Entry adapter | Usually leave as a one-line extension |
-| `scripts/car.gd` | CarModel: tyre forces, drivetrain and aids that CarBody inherits (folded into CarBody in P7-01b) | Preserve solver clamps |
-| `scripts/track.gd`, `scripts/track3d.gd` | Legacy circuit model; only the `track3d.gd` SURF surface table is still used (moves out in P7-01b) | Do not extend |
+| `scripts/surface/surface_table.gd` | SURF: grip, rolling resistance, drag and bump per surface id (0 tarmac, 1 kerb, 2 grass, 3 gravel, 4 runoff) | Surface tuning; CarBody, TrackAsset and the road tool read it |
 | `scripts/race.gd` | Timing: `update_asset()` for TrackAssets (3-D gates, gates in order, sectors, schema-2 5.4 ghost samples, `ghost_xform()`) | Timing and ghost logic; `tests/v2/race.gd` |
 | `scripts/controls.gd` | Bindings, held inputs, ramps, controller polling | Input behavior/remapping |
 | `scripts/instruments.gd` | HUD, minimap, debug, 600-sample graph; `on_asset()` switches the minimap, ghost dot and checkpoint count to TrackAssets | Instrument presentation |
@@ -56,7 +55,7 @@ All paths below are relative to `godot/`.
 | | | |
 | **Rebuild: vehicle** | | |
 | `scripts/vehicle/car_body.gd` | 6-DOF rigid-body chassis (CarBody): quaternion orientation, body-frame ω, semi-implicit Euler at 240 Hz, ray suspension, tyre compliance and unsprung mass, chassis-to-ground contact, 64-bit world position | Do not remove the `compliance` switch or the need clamps; do not store world position in a Vector3 (float32 precision loss at > 2 km) |
-| `scripts/vehicle/tyre.gd` | Shared tyre model: Pacejka, combined slip, temps, wear, need clamps, static friction | Moved from `car.gd` in P2-01; both CarModel and CarBody call it. Do not change the clamp logic without re-running flat equivalence |
+| `scripts/vehicle/tyre.gd` | Shared tyre model: Pacejka, combined slip, temps, wear, need clamps, static friction | Moved from `car.gd` in P2-01 |
 | `scripts/vehicle/drivetrain.gd` | Shared drivetrain: engine, clutch, gearbox, diffs | Moved from `car.gd` in P2-01; both chassis paths call it |
 | `scripts/vehicle/aids.gd` | Shared aids: TC, ABS, ASM, steering assist, Simcade layer | Moved from `car.gd` in P2-01; ASM uses body-frame yaw rate on CarBody |
 | `scripts/vehicle/tyre_footprint.gd` | Rigid-tyre envelope: 9 fixed samples per wheel (5 on smooth ground) plus edge bisection; returns the centre ray bit-for-bit on smooth surfaces | Do not change `SMOOTH_TOL` or `FACE_COS` without re-running `footprint.gd` on real kerbs |
@@ -95,7 +94,7 @@ All paths below are relative to `godot/`.
 
 ## Change recipes
 
-**New setup field:** add a row `[group,key,label,min,max,step,unit]` to `setup_fields.json`; add the corresponding numeric default to every preset's `setup`; consume it in `car.gd`. The garage builds itself from the rows. Import bounds come from those same definitions. Setup changes affect record identity. Update any tests that deliberately check field count.
+**New setup field:** add a row `[group,key,label,min,max,step,unit]` to `setup_fields.json`; add the corresponding numeric default to every preset's `setup`; consume it in `car_body.gd` or the `scripts/vehicle/` modules. The garage builds itself from the rows. Import bounds come from those same definitions. Setup changes affect record identity. Update any tests that deliberately check field count.
 
 **New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; add its control in `v2_panels.gd` and apply it in the relevant consumer. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
 
@@ -109,12 +108,12 @@ All paths below are relative to `godot/`.
 
 ## High-risk assumptions to avoid
 
-- `car.z` is suspension heave on the legacy CarModel, not track altitude. On CarBody use `pos_y` and each wheel's `roadZ` (contact height). `car.elev` is terrain elevation.
+- CarBody has no `car.z`: use `pos_y` and each wheel's `roadZ` (contact height). `car.elev` is the road altitude under the CG.
 - TrackSurface queries only work inside a physics frame (`_physics_process`). In `_process`, use values sampled in the last physics tick (see `camera_ground`).
 - Bank convention: positive lowers the right side (RoadSection, measured road data, the bot's `bank_right`).
-- `car.parity` is retired. The browser-parity path is no longer a project constraint and is no longer gated by a test; the current car model has no parity property. Native physics is authoritative and may evolve freely. New vehicle behaviour goes on the normal native path and is covered by `tests/handling.gd` and `tests/dynamics.gd`.
+- `car.parity` is retired. The browser-parity path is no longer a project constraint and is no longer gated by a test; the current car model has no parity property. Native physics is authoritative and may evolve freely. New vehicle behaviour goes on the normal native path and is covered by the `tests/v2/` vehicle suites (`aids_simcade`, `flat_equivalence`, `suspension`, ...).
 - The car contact-patch shadow (`shaders/blob_shadow.gdshader`) renders in the opaque pass with an ordered dither. A transparent material on that mesh is never composited by the world SubViewport, so switching it back to alpha blending silently removes the shadow instead of failing loudly.
-- Legacy `visuals.pose_car()` takes a `CarModel.snapshot()` dictionary. The v2 path poses the model from `snapshot_v2()`/`blend_v2()`; add new animated state there, or it will not interpolate.
+- The game poses the car model from `snapshot_v2()`/`blend_v2()`; add new animated state there, or it will not interpolate.
 - Control-point bank is degrees; sampled bank and car heading are radians.
 - Body lateral/right is positive. Do not flip all signs to match a generic 3D tutorial.
 - Tire `wear` starts at zero and grows; it is not remaining tread fraction.

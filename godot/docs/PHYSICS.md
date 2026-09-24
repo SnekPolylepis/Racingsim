@@ -1,8 +1,8 @@
 # Physics: the 6-DOF car and its handling models
 
 The vehicle solver is custom, deterministic and fixed at 240 Hz (semi-implicit Euler). `CarBody`
-(`scripts/vehicle/car_body.gd`) is the car on the v2 path. The planar `CarModel` (`scripts/car.gd`)
-survives as its base class and for the legacy suites until P7-01. ARCHITECTURE.md covers coordinates
+(`scripts/vehicle/car_body.gd`) is the car. The planar `CarModel` it grew from was folded into it
+and deleted in P7-01b; its measured figures live on in `docs/rebuild/carmodel-reference.json`. ARCHITECTURE.md covers coordinates
 and the tick order. SOLVER-MATH.md derives the shared tyre and drivetrain equations. The REBUILD-LOG
 DONE entries (P2-00 to P2-08, P2-comp, P2-comp-b, P4-03, props) carry the measurements behind each
 choice below.
@@ -144,6 +144,6 @@ It is a validation driver for `tests/v2/laps.gd` and `--v2-present`, not AI oppo
 ## Verification
 
 The headless suites in `tests/v2/` (TESTING.md) gate all of this: suspension statics, flat
-equivalence with CarModel (±3 % massless, ±5 % compliant), energy, footprint and kerbs, static
+equivalence with the recorded CarModel figures (±3 % massless, ±5 % compliant), energy, footprint and kerbs, static
 friction, aids and Simcade bands, walls, props, the proving ground's features and clean bot laps on
 every track, car and model within 2 % of the recorded baseline.

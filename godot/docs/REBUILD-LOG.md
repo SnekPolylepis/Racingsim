@@ -1523,3 +1523,20 @@ The pre-rebuild game is gone; `game.gd` runs only the v2 path.
 Left for P7-01b: `car.gd` (CarBody's base), `track.gd`/`track3d.gd` (the SURF table), `tests/dynamics.gd`, `docs/rebuild/baseline.json`.
 
 Gates: `run_gates.ps1 -All` 34/34; `-Features` 5 checks/0 failures; Windows export `--v2-export-check` PASS with all three circuits; gdformat clean.
+
+## 2026-09-23  DONE P7-01b Fold CarModel into CarBody  (Claude Opus 5.5) — branch `rb/P7-01b-carmodel`
+The last pre-rebuild code on the game path is gone.
+
+- **CarBody** (`scripts/vehicle/car_body.gd`) now holds the whole car. It took `scripts/car.gd`'s state, `configure()`, `reset_pose()` and the tyre, aid and drivetrain wrappers; the planar `step()`, `snapshot()` and `blend()` were dropped with it. Planar-only state (heave, pitch and roll rates, air, grade, bank, g_eff) is removed.
+- **Surface table:** SURF moved to `scripts/surface/surface_table.gd`. TrackAsset and CarBody (`CarBody.SURF`) read it.
+- **Deleted:** `scripts/track.gd`, `scripts/track3d.gd`, `tests/dynamics.gd` and `tools/baseline_json.py` (its inputs went in P7-01a). `docs/rebuild/baseline.json` stays as the historical pre-rebuild capture.
+- **`tests/v2/aids_simcade.gd`** is standalone. It merges the dynamics.gd procedures and thresholds, and runs on analytic flat roads (a 30 m straight or circle with grass beyond and an optional gravel patch) instead of TrackModel. Same 114 checks, all passing.
+- **`tests/v2/flat_equivalence.gd`** gates CarBody against `docs/rebuild/carmodel-reference.json`, the planar CarModel's figures recorded from 74a66d1 just before deletion. Gates are unchanged: ±3 % massless, ±5 % compliant, tyre peaks equal. The live cross-check against baseline.json went with CarModel.
+- **Game:**
+  - `game.gd` starts with `track = null` and a CarBody.
+  - race.gd lost the legacy `update()`, `ghost_pose()`, `sector_marks()` and `crossed()`.
+  - The instruments are TrackAsset-only. The debug HUD reads pitch, roll, grade and acceleration from the 6-DOF body.
+  - front_end's dead `draw_map()` is removed.
+- **Docs:** ARCHITECTURE, LLM-GUIDE, PHYSICS, SOLVER-MATH, DATA-CONTRACTS and TESTING updated.
+
+Gates: `run_gates.ps1 -All -Features` 34/34 plus features 5/0; gdformat clean.
