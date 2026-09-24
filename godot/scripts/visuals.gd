@@ -289,7 +289,7 @@ func shape(parent, mesh, pos, scale, color, metallic = 0.0, rough = .6):
 
 
 ## Procedural car: lofted body and cabin with wheel arches, lights, aero parts and livery number.
-## The returned dictionary interface (root/body/pivots/spins/brakes/wheel_r) is used by pose_car.
+## The returned dictionary interface (root/body/pivots/spins/brakes/wheel_r) is posed by game.gd.
 func make_car(p, ghost = false):
 	match p.get("body", ""):
 		"roadster":
