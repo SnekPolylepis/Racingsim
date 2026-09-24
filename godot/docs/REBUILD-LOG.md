@@ -1452,3 +1452,22 @@ Nordschleife Section 1 groundwork completed from verified open data with full te
   - `tools/gates.json` updated with `nordschleife_s1 roadster`, `nordschleife_s1 gt`, `nordschleife_s1 f296gt3`.
   - `tools/run_gates.ps1 -All`: **45/45 gates pass**, 0 failures, 166 s wall clock, empty stderr.
   - Formatting: `python -m gdtoolkit.formatter -l 110 --check`: clean (2 files unchanged).
+## 2026-09-23  DONE P7-02 documentation for the v2 game  (Claude Opus 5.5) — branch `rb/P7-02-docs`
+Owner asked for cleanup after Rebuild Preview 1. P7 is staged so it does not collide with Sol's P4-menus, which ports the legacy interface.gd settings, garage and pause into the v2 front end: docs now, legacy deletion (P7-01) after P4-menus merges.
+
+- **ARCHITECTURE.md:** rewritten for the v2 game. Ownership and startup (`setup_v2`, the front-end calls, `load_v2_track` with its generator cache), the fixed tick order of `physics_v2` and `render_v2`, coordinates and units, vehicle, tracks, records, presentation, probe modes. A closing section says what the legacy path still is and why it exists until P7-01.
+- **PHYSICS.md:** rewritten for CarBody. Chassis, suspension with compliance and unsprung mass, footprint and kerbs (with D-kerb), tyre, drivetrain and static friction, walls, props, handling models with the carbody Simcade retune, numbered aids, flight, bot, verification.
+- **DATA-CONTRACTS.md:** the v2 save layout (`user://v2`, `user://tracks3d` cache, test folders), TrackAsset source-data and export rules. The JSON track schema is marked legacy.
+- **LLM-GUIDE.md:**
+  - the v2 game is the authoritative path;
+  - source-map rows updated (game.gd v2 functions, race.gd, instruments.gd, bot_driver.gd, terrain.gd, spa.gd), with props, track_drive.gd, CI and the gate runner added;
+  - new recipes for a new TrackAsset and for car behaviour;
+  - high-risk assumptions updated (physics-frame surface queries, bank sign, v2 snapshot and blend);
+  - known boundaries updated;
+  - the two workflows that never existed (native-tests, macos-native) replaced with gates.yml.
+- **TESTING.md:** the props and race suites added; flat-equivalence and laps rows updated; a v2 probe section (smoke, visual smoke, present, export check); the CI section rewritten for gates.yml and ci_gates.py with the measured tolerance.
+- **PLAYER-GUIDE.md:** rewritten for the v2 game in 8 plain chapters (the legacy Help reader needs at least 7; the feature suite checks it).
+- **SOLVER-MATH.md, MACOS.md:** a status note saying which parts are current and which describe the legacy game.
+- **Correction:** Rebuild Preview 1's notes, PLAY.txt and the changelog said there was no wall-impact audio. P4-06 plays impacts on the v2 path. The published release notes were edited, and PLAY.txt and the changelog are fixed here.
+
+Gates: `run_gates.ps1 -All` 42/42; windowed `--features` 212/0, stderr empty.

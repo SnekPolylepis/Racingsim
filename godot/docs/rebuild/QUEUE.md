@@ -57,4 +57,6 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P6-02b | Nordschleife remaining sections | Gemini (content/tools only), Claude review | P6-02a | open | |
 | P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | done | reviewed on main; PropSet in P4-06 game loop |
-| P7 | Delete the legacy model and tracks, rewrite docs, Windows + macOS export | Sol, Gemini | P5-04, P6-01 | open | split when it's reached |
+| P7-02 | Docs rewritten for the v2 game: ARCHITECTURE, PHYSICS, LLM-GUIDE, TESTING, PLAYER-GUIDE, DATA-CONTRACTS; SOLVER-MATH and MACOS marked where they describe the legacy game | Claude | | review: Sol | rb/P7-02-docs; read "DONE P7-02" |
+| P7-01 | Delete the legacy game: CarModel planar path in game.gd, track.gd/track3d.gd/circuit_world.gd/collisions.gd/interface.gd, godot/tracks JSON, legacy tests and baselines; move feature coverage to v2 suites; car.gd shared state folded into CarBody | Claude | P4-menus | blocked: waits for Sol's P4-menus (it ports interface.gd's settings/garage/pause) | |
+| P7-03 | Release packaging (Windows + macOS exports, changelog): first done as v0.1.0-preview.1 | Claude | | done (preview) | re-run per release |
