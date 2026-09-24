@@ -1563,3 +1563,9 @@ The existing v2 bonnet camera clears the MX-5's low hood entirely; the GT and Fe
 Verification after merging current `origin/main` into the branch: `tools/run_gates.ps1 -All -Features` **47/47** with empty stderr (including windowed features **212/0**); windowed `--v2-present` **PASS** with empty stderr; real Windows release export completed with empty stderr and the packaged executable printed **V2 EXPORT PASS**, exit 0, empty stderr. `gdformat -l 110` and `git diff --check` clean. No downloaded car models or textures. The owner opens and merges the PR from [rb/P4-cars](https://github.com/SnekPolylepis/Racingsim/pull/new/rb/P4-cars).
 
 A fresh-worktree export exposed three missing `.uid` sidecars already absent from main (`ps2_materials.gd`, `road_v2.gdshader`, `nordschleife_s1.gd`). Godot generated them during import; this branch includes those metadata files so a clean checkout exports without those warnings.
+
+## 2026-09-24  RELEASE Rebuild Preview 2  (Claude Opus 5.5; owner: merge Sol's work, then a new release)
+- Merge train 4 (PR #19): Sol's P4-cars on post-P7 main; export presets no longer package `docs/`.
+- `build/PLAY.txt` and `docs/CHANGELOG.md` updated for Preview 2: Nordschleife section 1, the new car models, settings, garage and pause menus, Look-1 surfaces, P7.
+- Exported Windows exe: `--v2-export-check` V2 EXPORT PASS; windowed `-- --features` 5/0 (lap 57.888 s), stderr empty. The macOS app exported cleanly (executable bit kept) but is untested, with no Mac here.
+- Gemini's Look-4 (scenery dressing) was still in progress and is not in this build.
