@@ -621,8 +621,13 @@ func shape(parent, mesh, pos, scale, color, metallic = 0.0, rough = .6):
 ## Procedural car: lofted body and cabin with wheel arches, lights, aero parts and livery number.
 ## The returned dictionary interface (root/body/pivots/spins/brakes/wheel_r) is used by pose_car.
 func make_car(p, ghost = false):
-	if p.get("body", "") == "gt3":
-		return preload("res://scripts/ferrari_296.gd").new().build(self, p, ghost)
+	match p.get("body", ""):
+		"roadster":
+			return preload("res://scripts/cars/mx5.gd").new().build(self, p, ghost)
+		"coupe":
+			return preload("res://scripts/cars/gt.gd").new().build(self, p, ghost)
+		"gt3":
+			return preload("res://scripts/cars/f296gt3.gd").new().build(self, p, ghost)
 	var root = Node3D.new()
 	var body = Node3D.new()
 	root.add_child(body)
