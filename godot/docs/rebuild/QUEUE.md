@@ -50,6 +50,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P2-comp | Tyre compliance / unsprung mass model | Claude | | review: Sol | rb/P2-comp; read "DONE P2-comp" |
 | P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | review: Sol | rb/P2-comp-b (on rb/P2-comp); read "DONE P2-comp-b" |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
+| P6-01-polish | Spa from measured data: widths and kerbs from SPW Orthophotos 2023, banking from SPW LiDAR cross-sections; authored runoffs halved on corner outsides | Claude | | review: Sol | rb/P6-01-polish; read "DONE P6-01-polish". Left: paved runoff and gravel extents (not measurable from the photos), Eau Rouge/Raidillon kerb profiles by hand |
 | P6-02 | Nordschleife in sections | Gemini (content/tools only), Claude review | P6-01 | open | |
 | P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | review: Sol | claude/racing-sim-props-cones-v69o5c (on rb/P2-comp-b); read "DONE props". For P4-core: PropSet in the game loop |

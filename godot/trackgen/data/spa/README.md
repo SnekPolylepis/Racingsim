@@ -6,6 +6,25 @@ DTM**, not a full-resolution 0.5 m or 1 m terrain mesh. The road uses independen
 queried LiDAR heights about every 20 m. No synthetic published-profile fallback,
 SRTM, Copernicus or legacy game physics was used.
 
+## Polish (P6-01, 2026-09-23): measured widths, kerbs and banking
+
+- `fetch_sections.py` samples the same SPW MNT 0.5 m ground model across the road at every
+  centreline point, from 14 m left to 14 m right every 0.5 m (39,843 points). The result is
+  `cross-sections.json`. The raw responses (`raw-lidar/xsec/`, 5.5 MB) are a local cache that the
+  script rebuilds; they are not committed.
+- `fetch_ortho.py` exports 70 SPW **Orthophotos 2023 Été** tiles (CC BY 4.0, © SPW) along the
+  circuit: 140 m, 0.25 m/px, Web Mercator, requested with `f=image` because the service's output
+  directory refuses downloads. Requests are in `ortho-tiles.json`; the images live in the git-ignored
+  `ortho-cache/`.
+- `analyse_road.py` writes `road-profile.json`: per station, half-widths to the inside of the white
+  track-limit lines (or kerb or grass), kerb width and colours beyond them, and the crossfall bank.
+  The bank is a line fit to the LiDAR within ±3.5 m (positive lowers the right side). Edges were found
+  at 97.4 % (left) and 99.1 % (right) of stations; gaps take the median of ±2 neighbours.
+  Half-widths: median 5.0 / 4.8 m (range 3.8–10.2). Bank: −3.8° to +4.4°, changing at most
+  0.11°/m.
+- Paved runoff could not be measured from the photos: forest shadow, buildings and paddock all
+  classify as "not grass". Runoffs and verges stay authored in `spa.gd`.
+
 ## Geometry: OpenStreetMap
 
 Copyright OpenStreetMap contributors. The raw OSM extracts and the derived

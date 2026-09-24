@@ -1317,3 +1317,26 @@ Not done yet:
 - night lamps from `Lights/` (no TrackAsset has lamps yet)
 - wall-impact audio (`sound.impact` needs WallContact on this path: F-P4-01)
 - menus and pause (P4-06)
+
+## 2026-09-23  DONE P6-01-polish Spa from measured data  (Claude Opus 5.5) — branch `rb/P6-01-polish` (from main)
+The owner approved downloading the SPW data the plan names (P5-01; CC BY 4.0, © SPW; attribution in THIRD-PARTY.md and the Spa data README).
+- **Banking:** `fetch_sections.py` samples SPW's MNT 2021-2022 0.5 m ground model across the road at all 699 centreline points, ±14 m every 0.5 m (39,843 points, ~100 polite batched requests), into `cross-sections.json`.
+  - A line fit within ±3.5 m gives the crossfall. Every fit residual is under 0.15 m, so the OSM line sits on smooth tarmac throughout.
+  - Measured −3.8° to +4.4°. Each corner is banked into its turn: La Source +3.9, Eau Rouge −2.0, Raidillon +2.7, Pouhon −2.6, Blanchimont −2.3.
+  - After a 5-station mean it changes at most 0.11°/m, so no RoadPath warning.
+- **Widths and kerbs:** `fetch_ortho.py` exports 70 SPW Orthophotos 2023 Été tiles (140 m at 0.25 m/px, Web Mercator; images cached locally, not committed). `analyse_road.py` walks out from the centreline at every station to the first white track-limit line, kerb or grass, and measures kerb width and colour beyond it.
+  - Edges were found at 97 / 99 % of stations, with gaps filled by a ±2 median.
+  - Half-widths: median 5.0 / 4.8 m, range 3.8–10.2. Spa is ~10 m between the limits on most of the lap, not v0's 12.4, and 15–20 m at La Source.
+  - Checked against annotated tiles at Eau Rouge and La Source.
+  - Paved runoff could not be measured (forest shadow and paddock classify as "not grass"), so it was dropped rather than guessed.
+- **`trackgen/spa.gd`:** `measured()` reads `road-profile.json`. `profile_at()` takes the measured per-side widths, the bank, and kerb presence and width. Kerb profiles keep v0's rules; a kerb the photos show where v0 had none is a ramp, and v0 kerbs the photos don't show are removed. Road sections are keyed every 10 m (was 20).
+- **Ledges:** the whole cross-section is built in the road's banked frame, so v0's authored runoffs (up to 24 m) plus verges (up to 20 m) on corner outsides ended 1.5 m above the real, flat ground (the LiDAR shows ≤ 4 cm dips beside the road at every flagged spot). That left ledges where the terrain began. Outside runoffs now grow 4 + 10 w (was 4 + 20 w) and the extra verge width is gone.
+  - Dips beside the road over 1 m: 16 (main, up to 2.8 m) → **1** (1.06 m).
+  - 0 of 9,100 rays within 3 m of the line read anything but tarmac or kerb.
+
+**Laps:** all 6 Spa laps are clean (0 off-track, 0 walls, max 2.2 m off the line), 1.2–1.4 % faster with real banking. Baseline re-recorded. `run_gates.ps1 -All` **41/41**.
+
+**Left:**
+- paved runoff and gravel extents (need better classification or the OSM landuse)
+- hand-shaped kerb profiles at Eau Rouge and Raidillon
+- the start/finish area's widest stations (up to 10 m a side): pit-lane side, worth a visual check in the game
