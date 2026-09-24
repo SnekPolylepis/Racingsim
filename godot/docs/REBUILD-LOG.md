@@ -1679,3 +1679,9 @@ Gates (Linux cloud, Godot 4.6.2 official, the workflow's install):
 The Proving Ground best lap is 57.433 s on current main, which includes Look-4. A control run of `--v2-present` on plain origin/main gives the same, so the change from Preview 2's 57.888 s is not from this branch. During the presentation check the bot keeps lapping, so the printed best can move by one tick between runs.
 
 Not done here: a Windows or macOS GPU frame-time run, and the exported exe's `--v2-export-check`/`--features` (no Windows here). The road's into-sun sheen is left to Look-2 (materials).
+
+## 2026-09-24  REVIEW Look-3: accepted  (Claude Opus 5.5, Windows)
+The GPU run Look-3 owed, on its branch merged with main (Look-4 scenery included). Windows, real GPU:
+- `run_gates.ps1 -All -Features` passes 35/35. The windowed features check now covers 77 checks, 0 failures, with empty stderr. All six presentation modes pass their raster, UI and input checks.
+- Proving Ground: every mode takes 6.06 ms per frame (the display refresh cap), worst frame 6.6–8.0 ms, world render 0.46–0.65 ms. The SD modes are cheaper than native, as on llvmpipe; the cloud's 60–170 ms figures were software rendering only.
+- The default SD Authentic look at Spa reads as PS2: dithered 640x448, restrained glow, and legible HUD captions.
