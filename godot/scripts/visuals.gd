@@ -291,13 +291,17 @@ func shape(parent, mesh, pos, scale, color, metallic = 0.0, rough = .6):
 ## Procedural car: lofted body and cabin with wheel arches, lights, aero parts and livery number.
 ## The returned dictionary interface (root/body/pivots/spins/brakes/wheel_r) is posed by game.gd.
 func make_car(p, ghost = false):
+	var built = null
 	match p.get("body", ""):
 		"roadster":
-			return preload("res://scripts/cars/mx5.gd").new().build(self, p, ghost)
+			built = preload("res://scripts/cars/mx5.gd").new().build(self, p, ghost)
 		"coupe":
-			return preload("res://scripts/cars/gt.gd").new().build(self, p, ghost)
+			built = preload("res://scripts/cars/gt.gd").new().build(self, p, ghost)
 		"gt3":
-			return preload("res://scripts/cars/f296gt3.gd").new().build(self, p, ghost)
+			built = preload("res://scripts/cars/f296gt3.gd").new().build(self, p, ghost)
+	if built != null:
+		merge_static(built.body)
+		return built
 	var root = Node3D.new()
 	var body = Node3D.new()
 	root.add_child(body)
@@ -536,6 +540,99 @@ func make_car(p, ghost = false):
 
 
 ## Shared animated running gear. Dedicated bodies must preserve axle positions and this return contract.
+## Look-5: merge a car body's static parts into one mesh per material, cast-shadow setting and vertex
+## format. The 296 was 178 body nodes over 26 materials (517 of a Spa view's 617 draw calls with its
+## shadow passes). Nodes that switch (night lamps and glows in `headlights`), hidden nodes and anything
+## outside `body` (wheels hang off the root) stay separate. Shared materials keep animating (brakes).
+func merge_static(body: Node3D) -> void:
+	var switched = {}
+	for ref in headlights:
+		var node = ref.get_ref()
+		if node:
+			switched[node] = true
+	var groups = {}
+	var merged = []
+	for node in body.find_children("*", "MeshInstance3D", true, false):
+		if switched.has(node) or not node.visible or node.mesh == null or node.skeleton != NodePath(""):
+			continue
+		var inside = true
+		var xf = Transform3D.IDENTITY
+		var at: Node = node
+		while at != body:
+			if not (at is Node3D) or not at.visible:
+				inside = false
+				break
+			xf = at.transform * xf
+			at = at.get_parent()
+		if not inside:
+			continue
+		for i in node.mesh.get_surface_count():
+			var mat = node.get_active_material(i)
+			var coloured = node.mesh.surface_get_arrays(i)[Mesh.ARRAY_COLOR] != null
+			var key = [mat, node.cast_shadow, node.transparency, coloured]
+			if not groups.has(key):
+				groups[key] = []
+			groups[key].append([node.mesh, i, xf])
+		merged.append(node)
+	if merged.size() < 2:
+		return
+	for key in groups:
+		var inst = MeshInstance3D.new()
+		inst.name = "MergedBody"
+		inst.mesh = merged_surface(groups[key], key[3])
+		inst.material_override = key[0]
+		inst.cast_shadow = key[1]
+		inst.transparency = key[2]
+		body.add_child(inst)
+	for node in merged:
+		# Children that were not merged (lamps, lights, labels) move up to the body with their pose.
+		for child in node.get_children():
+			if child is Node3D:
+				var keep = child.global_transform if child.is_inside_tree() else relative(body, child)
+				node.remove_child(child)
+				body.add_child(child)
+				child.transform = keep
+		node.get_parent().remove_child(node)
+		node.free()
+
+
+## One triangle surface from [mesh, surface, transform] parts, de-indexed. SurfaceTool.append_from
+## dropped triangles when indexed primitive meshes and unindexed lofts shared a group.
+static func merged_surface(parts: Array, coloured: bool) -> ArrayMesh:
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for part in parts:
+		var arrays = part[0].surface_get_arrays(part[1])
+		var xf: Transform3D = part[2]
+		var normal_basis = xf.basis.inverse().transposed()
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var normals = arrays[Mesh.ARRAY_NORMAL]
+		var uvs = arrays[Mesh.ARRAY_TEX_UV]
+		var colors = arrays[Mesh.ARRAY_COLOR]
+		var order = arrays[Mesh.ARRAY_INDEX]
+		if order == null or order.is_empty():
+			order = range(vertices.size())
+		for k in order:
+			if normals != null and not normals.is_empty():
+				st.set_normal((normal_basis * normals[k]).normalized())
+			if uvs != null and not uvs.is_empty():
+				st.set_uv(uvs[k])
+			if coloured:
+				st.set_color(colors[k])
+			st.add_vertex(xf * vertices[k])
+	return st.commit()
+
+
+## `node`'s transform relative to `ancestor`, outside the scene tree.
+static func relative(ancestor: Node3D, node: Node3D) -> Transform3D:
+	var xf = Transform3D.IDENTITY
+	var at: Node = node
+	while at != ancestor and at is Node3D:
+		xf = at.transform * xf
+		at = at.get_parent()
+	return xf
+
+
 func finish_car(root, body, p, ghost, brake_material, nose = 0.9):
 	if not ghost:
 		var shadow = MeshInstance3D.new()

@@ -61,7 +61,26 @@ func run():
 		var path = folder + "/" + shot[1] + ".png"
 		if root.get_texture().get_image().save_png(path) != OK:
 			failures.append("save " + path)
-		print("TRACK SHOT ", ProjectSettings.globalize_path(path))
+		var draws = 0.0
+		var objects = 0.0
+		for i in 10:
+			await process_frame
+			draws += RenderingServer.get_rendering_info(
+				RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME
+			)
+			objects += RenderingServer.get_rendering_info(
+				RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME
+			)
+		print(
+			"TRACK SHOT ",
+			shot[1],
+			" draws=",
+			draws / 10,
+			" objects=",
+			objects / 10,
+			" ",
+			ProjectSettings.globalize_path(path)
+		)
 	app.queue_free()
 	await process_frame
 	print("TRACK SHOTS RESULTS ", JSON.stringify({"failures": failures}))
