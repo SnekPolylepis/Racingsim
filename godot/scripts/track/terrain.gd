@@ -19,6 +19,7 @@ extends Node3D
 ##   gdal_translate -ot Float32 -of ENVI input.tif output.raw
 ## (the raw file contains width * height 32-bit IEEE floats in row-major order).
 
+const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const RoadSection = preload("res://scripts/track/road_section.gd")
 
@@ -407,6 +408,7 @@ func bake() -> void:
 			var mesh_node = MeshInstance3D.new()
 			mesh_node.name = "Chunk_%d_%d" % [cx, cz]
 			mesh_node.mesh = arr_mesh
+			mesh_node.material_override = Ps2Materials.surface(Ps2Materials.GRASS)
 			patch_terrain.add_child(mesh_node)
 			mesh_node.owner = owner_node
 			var body = StaticBody3D.new()
