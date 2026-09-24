@@ -3,6 +3,7 @@ extends SceneTree
 const Generator = preload("res://trackgen/proving_ground.gd")
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const TrackLights = preload("res://scripts/track/track_lights.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const DT = 1.0 / 240.0
 var asset
@@ -44,11 +45,16 @@ func _initialize() -> void:
 	)
 	check(
 		(
-			asset.get_node("Lights").get_child_count() == 18
+			int(asset.get_node("Lights").get_meta("lamp_count", 0)) >= 50
+			and asset.get_node("Lights").find_children("*", "Light3D", true, false).is_empty()
 			and asset.get_node("Scenery/Trees").multimesh.instance_count >= 180
 		),
-		"18 night lamps and deterministic roadside trees are baked"
+		(
+			"%d sodium lamps (no baked light nodes) and deterministic roadside trees are baked"
+			% int(asset.get_node("Lights").get_meta("lamp_count", 0))
+		)
 	)
+	check_lamp_streaks(asset, road)
 	surf = asset.surface()
 	kerb_curve = road.working_curve()
 	kerb_spline = RoadBuilder.elevation_spline(road.elevation_keys, road.last_bake.length, true)
@@ -702,5 +708,44 @@ func bot_lap(simcade: bool) -> void:
 		(
 			"%s 296 BotLine lap %.2f s, off-wheel ticks %d, max lateral %.2f m, min wall %.2f m"
 			% [key, lap_time, off_steps, max_error, min_wall]
+		)
+	)
+
+
+## Look-2: the road's amber streaks come from the lamps that are really there. Every lamp's station is in
+## the nearest-lamp texel under it with its side, and the tarmac material carries that texture.
+func check_lamp_streaks(asset, road):
+	var lights = asset.get_node("Lights")
+	var lamps: PackedVector3Array = lights.get_meta("streaks_Main", PackedVector3Array())
+	var mat = null
+	var mesh = asset.get_node("Road/Main").mesh
+	for i in mesh.get_surface_count():
+		var candidate = mesh.surface_get_material(i)
+		if candidate is ShaderMaterial and candidate.get_shader_parameter("lamp_map"):
+			mat = candidate
+	var image = mat.get_shader_parameter("lamp_data").get_image() if mat else null
+	var matched = 0
+	for lamp in lamps:
+		if image == null:
+			break
+		var x = clampi(floori(lamp.x / TrackLights.CELL), 0, image.get_width() - 1)
+		for row in TrackLights.ROWS:
+			var c = image.get_pixel(x, row)
+			if (
+				(absf(c.r - lamp.x) < .01 and signf(c.g) == lamp.y)
+				or (absf(c.b - lamp.x) < .01 and signf(c.a) == lamp.y)
+			):
+				matched += 1
+				break
+	check(
+		(
+			mat != null
+			and lamps.size() == int(lights.get_meta("lamp_count", 0))
+			and matched == lamps.size()
+			and image.get_width() == ceili(road.last_bake.length / TrackLights.CELL)
+		),
+		(
+			"road streak texture holds all %d lamps at their stations and sides (%d matched)"
+			% [lamps.size(), matched]
 		)
 	)

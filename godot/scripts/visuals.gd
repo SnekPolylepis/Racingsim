@@ -553,12 +553,18 @@ func finish_car(root, body, p, ghost, brake_material, nose = 0.9):
 		root.add_child(shadow)
 		var light = SpotLight3D.new()
 		light.name = "Headlights"
-		light.position = Vector3(p.a + nose, .55, 0)
-		light.rotation.y = -PI / 2
+		light.position = Vector3(p.a + nose, .95, 0)
+		light.rotation = Vector3(deg_to_rad(-3.0), -PI / 2, 0)
 		light.light_color = Color("c9e5ff")
-		light.light_energy = 5
-		light.spot_range = 65
-		light.spot_angle = 36
+		# Look-2: a cheap forward beam (no shadows). It sits above the lamp lenses and pitches down 3 degrees:
+		# from bumper height it met the road at ~3 degrees and lit almost nothing. Bright enough to show on
+		# dark night tarmac 8-40 m ahead; the angle falloff keeps a soft edge.
+		light.light_energy = 16
+		light.spot_attenuation = .5
+		light.spot_range = 80
+		light.spot_angle = 20
+		light.spot_angle_attenuation = 1.4
+		light.shadow_enabled = false
 		light.visible = night
 		body.add_child(light)
 		headlights.append(weakref(light))

@@ -15,9 +15,10 @@ const Billboards = preload("res://scripts/track/billboards.gd")
 const PitBuilding = preload("res://scripts/track/pit_building.gd")
 const MarshalPost = preload("res://scripts/track/marshal_post.gd")
 const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
+const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 1
+const CACHE_REVISION = 2
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -430,6 +431,10 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 	path.owner = asset
 
 
+## Lamp placements (Look-4) lit as sodium lamps (Look-2, scripts/track/track_lights.gd). The Marker3D
+## placements under Lights/ become poles; the road-following fill adds lamps every 64 m where they leave
+## the road dark, and both sides every 26 m from the pit straight through La Source. Paddock lamps
+## stand 18 m off the road and light the paddock, not the tarmac.
 static func add_lighting(asset: Node3D, road: RoadPath, corners: Dictionary, measured: float) -> void:
 	var lights = Node3D.new()
 	lights.name = "Lights"
@@ -438,23 +443,23 @@ static func add_lighting(asset: Node3D, road: RoadPath, corners: Dictionary, mea
 	var stations = road.last_bake.stations
 	var total_stations = stations.size()
 
-	# 1. Paddock area lights (12 sodium omni lights)
+	# 1. Paddock area lamps (12 sodium posts)
 	for i in range(12):
 		var fraction = float(i) / 12.0
 		var s = fposmod(measured - 420.0 + fraction * 1050.0, measured)
 		var index = int(s / measured * total_stations) % total_stations
 		var st = stations[index]
-		var lamp = OmniLight3D.new()
-		lamp.name = "PaddockLamp%02d" % i
-		lamp.position = st.pos + st.tangent.cross(Vector3.UP) * 18.0 + Vector3.UP * 10.0
-		lamp.light_energy = 1.5
-		lamp.light_color = Color("#F2A14A")
-		lamp.omni_range = 48.0
-		lamp.set_meta("kind", "pit")
-		lamp.set_meta("height", 10.0)
-		lamp.set_meta("colour", Color("#F2A14A"))
-		lights.add_child(lamp)
-		lamp.owner = asset
+		var paddock = SceneryBuilder.add_light_placement(
+			lights,
+			asset,
+			"PaddockLamp%02d" % i,
+			st.pos + st.tangent.cross(Vector3.UP) * 18.0,
+			st.tangent,
+			"pit",
+			10.0,
+			Color("#F2A14A")
+		)
+		paddock.set_meta("road_glow", false)
 
 	# 2. Trackside lamp markers (sodium_mast, flood, pit) spaced 40-70 m on alternating sides
 	var lamp_ranges = [
@@ -536,7 +541,17 @@ static func add_lighting(asset: Node3D, road: RoadPath, corners: Dictionary, mea
 			if s_end < rng["from"] and s >= measured and fposmod(s, measured) > s_end:
 				break
 
-	asset.lighting = {"night_lamps": lights.get_child_count()}
+	# 3. Poles, heads and halos for the placements, plus the fill (outside the 2 m armco).
+	var lamps = TrackLights.from_markers(asset, road, 4.0)
+	var pits = {
+		"from_m": measured - 420.0,
+		"to_m": corners.get("La Source", 350.0) + 70.0,
+		"spacing": 26.0,
+		"sides": "both"
+	}
+	lamps.append_array(TrackLights.fill(road, 64.0, [pits], 4.0, lamps))
+	TrackLights.build(asset, road, lamps)
+	asset.lighting = {"night_lamps": lamps.size()}
 
 
 static func add_scenery_kit(asset: Node3D, road: RoadPath, corners: Dictionary, measured: float) -> void:
@@ -727,7 +742,6 @@ static func build_asset() -> Node3D:
 	asset.display_name = "Spa-Francorchamps (v0)"
 	asset.version = 1
 	asset.default_time_of_day = "day"
-	asset.lighting = {"night_lamps": 12}
 	asset.set_meta("cache_revision", CACHE_REVISION)
 	asset.set_meta(
 		"attribution",

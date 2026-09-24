@@ -47,7 +47,7 @@ All paths below are relative to `godot/`.
 | `scripts/record_writer.gd` | Serial background atomic record/sector saves | Flush before read/import/delete/shutdown; immutable completed samples |
 | `scripts/retro_assets.gd`, `scripts/retro_flare.gd` | Generated small art textures, painted sky, occluded flare | Procedural presentation |
 | `data/simcade.json` | Shared Simcade and ASM constants; optional per-car `simcade` overrides | Handling tuning; dynamics targets required |
-| `scripts/night_style.gd` | After-dark floodlights, depth-tested halos/streaks and pit accents | PS2-inspired circuit presentation only |
+| `scripts/night_style.gd` | After-dark floodlights, depth-tested halos/streaks and pit accents for the deleted legacy track | Not on the game path; `scripts/track/track_lights.gd` is its TrackAsset port |
 | `shaders/*.gdshader`, `assets/textures/` | Road, ground and painted-concrete shaders; CC0 texture sets | Surface look |
 | `.github/workflows/gates.yml`, `tools/ci_gates.py` | CI on every push: gdformat check, parse check and the headless suites from `tools/gates.json` on Linux; exact baselines | Test automation |
 | `tools/run_gates.ps1`, `tools/gates.json` | Local parallel gate runner: affected suites by default, `-All`, `-Perf`, `-Features` | Register every new suite in `gates.json` |
@@ -86,6 +86,7 @@ All paths below are relative to `godot/`.
 | `scripts/track/marshal_post.gd` | MarshalPost: small cabins spaced behind barriers, single MultiMesh, no collision | |
 | `scripts/track/pit_building.gd` | PitBuilding: garage block with recessed bays, front concrete pit wall on layer 2 | |
 | `scripts/track/road_scatter.gd` | RoadScatter: seeded MultiMesh instances (default: conifers) in a band beyond the verge, no collision | |
+| `scripts/track/track_lights.gd` | Look-2 sodium lamps: `from_markers()` lights Look-4's `Lights/` Marker3D placements (kind/height/road_glow), `place(road, spacing, zones, extra)` walks a RoadPath (denser zones, alternate/both sides), `fill()` places only where markers leave the road dark; `build()` bakes Lights/ (per-400 m MultiMesh fixtures and `sodium_halo.gdshader` halos, no light nodes) and the road's per-lamp streak texture; `make_pool`/`update_pool` move 4 real SpotLight3Ds to the lamps nearest the camera; `set_night` hides Lights/ by day | The road_v2 streaks come from this texture, so a lamp added any other way has no glow on the road. Add a lamp as a Marker3D placement (SceneryBuilder.add_light_placement) before the generator's `from_markers` call; `build` also appends |
 | | | |
 | **Rebuild: generators and scenes** | | |
 | `trackgen/proving_ground.gd` | Deterministic generator for the ~2.5 km invented proving ground (bowl, crest, compression, ditch, kerbs, scenery); saves `tracks3d/proving_ground/proving_ground.scn` | Scene is > 5 MB so not committed; baked on demand. Do not change without re-running `proving_ground.gd` (25 checks) |

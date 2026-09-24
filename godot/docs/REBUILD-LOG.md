@@ -1685,3 +1685,51 @@ The GPU run Look-3 owed, on its branch merged with main (Look-4 scenery included
 - `run_gates.ps1 -All -Features` passes 35/35. The windowed features check now covers 77 checks, 0 failures, with empty stderr. All six presentation modes pass their raster, UI and input checks.
 - Proving Ground: every mode takes 6.06 ms per frame (the display refresh cap), worst frame 6.6–8.0 ms, world render 0.46–0.65 ms. The SD modes are cheaper than native, as on llvmpipe; the cloud's 60–170 ms figures were software rendering only.
 - The default SD Authentic look at Spa reads as PS2: dithered 640x448, restrained glow, and legible HUD captions.
+
+## 2026-09-24  CLAIM Look-2  (Claude Opus 5.5)
+Amber nights on branch `rb/look-2-nights`: sodium lamps on TrackAssets (`scripts/track/track_lights.gd`, a road-following placement helper Look-4 can call), road_v2 amber streaks driven by the real lamp positions, Afterhours wired through `ps2_materials.set_afterhours()`, and car headlights checked at night. Gemini's scenery files (catch_fence, grandstand, wall_path, scenery_builder, road_scatter) are not touched.
+
+## 2026-09-24  DONE Look-2 Amber nights  (Claude Opus 5.5) — branch `rb/look-2-nights`
+Afterhours now lights the TrackAssets like an NFSU night: sodium lamps along the road, amber pools and streaks on the tarmac under each lamp, dark indigo fill, and a car headlight that shows on the road. The branch merges current main (Look-4, the front_end CI fix), and it covers what the Look-4 review handed to Look-2.
+
+- **`scripts/track/track_lights.gd` (new).** Lamps come from three sources:
+  - `from_markers(asset, road, beyond)` lights Look-4's `Lights/` Marker3D placements. Their `kind` and `height` choose the fixture: a sodium mast, a flood (a wide bank of lenses) or a lighter pit post. With `beyond` set, a pole nearer the road than that many metres past the verge edge moves out beyond the walls. The markers themselves stay.
+  - `place(road, spacing, zones, extra)` walks a RoadPath and alternates sides. Zones override spacing and sides (`alternate`, `both`, `left`, `right`) and wrap on a closed road. A lamp is dropped if another part of the road more than 80 m away passes within 13 m.
+  - `fill(road, spacing, zones, extra, lamps)` keeps a `place` candidate only where the existing lamps leave the road dark.
+  - `build(asset, road, lamps)` bakes the lamps into `Lights/`. Every ~400 m chunk gets one MultiMesh per fixture style and one for the halos (`shaders/sodium_halo.gdshader`, the camera-facing halo and horizontal streak of `lamp_corona.gdshader`/night_style, visible to 560 m with a near fade). No light nodes are baked. `build` also writes the road's streak texture (below).
+  - `set_night()` hides `Lights/` by day.
+  - `make_pool()` / `update_pool()`: the game moves four downward sodium SpotLight3Ds (no shadows, 32 m range) to the lamps nearest the camera. Each light fades to zero as its lamp reaches the distance of the nearest lamp left out of the pool, so reassigning a light never pops.
+- **Streaks match the lamps.** road_v2's fixed "every 64 m, alternating sides on UV.y" pattern is gone. `build` gives each road its own copy of the tarmac material with a `lamp_data` texture (RGBAF, 4 m of station per texel, 3 rows of the 6 nearest lamps as station and side × strength). The shader sums a lamp-side streak, a glossy reflection line and a broad pool for each lamp. Lamps in dense zones are weaker so overlapping pools don't burn out. Paddock lamps (`road_glow = false`) have no streak, and a road without a lamp texture has none either. `tests/v2/proving_ground.gd` checks every lamp's station and side against the texel under it (67/67).
+- **Review hand-off (Look-4 → Look-2):**
+  1. The always-on OmniLight3Ds are gone. The Spa and Nordschleife paddock lights are now Marker3D placements (`kind = "pit"`, `road_glow = false`) built as lamps. Every real light is either the night-only pool or the headlight.
+  2. `Lights/` markers are lit: Spa 260 placements, Nordschleife 363.
+- **Generators:**
+  - **Spa:** 260 marker lamps. The fill adds lamps every 64 m where markers leave the road dark, and both sides every 26 m from the pit straight through La Source. Poles stand at least 4 m past the verge (armco at 2 m). 286 lamps.
+  - **Nordschleife S1:** 363 marker lamps. The fill uses 72 m, and both sides every 26 m through the T13 start. Poles stand at least 3.5 m past the verge. 383 lamps.
+  - **Proving ground:** road-following lamps every 50 m; both sides every 25 m over start/finish and the pits, and every 22 m past the bowl grandstand. 67 lamps. Look-4's 18 OmniLights there hung 9 m over the road centreline and were not Marker3D placements, so they were replaced rather than lit.
+  - `CACHE_REVISION` is bumped on Spa and the Nordschleife. The user://tracks3d revision hash already covers `scripts/track/` and `shaders/`.
+- **game.gd:**
+  - `apply_time_of_day()` ends in `apply_track_night()`, which also runs on every `load_v2_track()`. It calls `Ps2Materials.set_afterhours(night, track)`, which now also updates the road_v2 materials inside a loaded or cached asset, and `TrackLights.set_night()`.
+  - `render_v2()` updates the pool.
+  - Night fill is darker and bluer: ambient `56628c` at 0.34 (was 0.65), moon 0.32 (was 0.7), fog `2a2433`.
+  - The dead legacy `scenery`/`NightCircuit` block is removed.
+- **Headlights** (`visuals.gd finish_car`, all three cars): the SpotLight3D already existed but lit almost nothing, because at 0.55 m high its beam met the road at about 3°. It now sits at 0.95 m, pitches down 3° and has a narrower 20° cone at energy 16 with softer falloff, shadows off. The beam shows on the road 8–40 m ahead.
+
+**Cost** (Forward+, default quality 1, 1280×800 window, this machine; `tests/v2/night_screenshots.gd`, merged tree):
+- Lamps add 5–25 draw calls per view with Lights/ shown vs hidden. Examples: Spa Kemmel 625 vs 600, pit straight 624 vs 608, Eau Rouge 508 vs 495; Nordschleife start 467 vs 448; proving ground 6–9.
+- Real lights: 4 pooled SpotLight3Ds at night plus the car's headlight SpotLight3D, which already existed. Main had 12–18 always-on OmniLight3Ds per track.
+- Spa whole-lap sweep at Afterhours (chase view every 20 m, 1050 frames, vsync off): mean 0.67 ms/frame (≈1490 fps), worst frame 10.9 ms, GPU mean 0.29 ms and worst 0.33 ms, at most 665 draw calls.
+- The first frame after a track loads at night measured about 2.5 ms GPU while the shaders compiled.
+- The 60 fps target has a wide margin on this machine; slower GPUs are not measured.
+
+**Screenshots** (`docs/rebuild/screenshots/look-2/`, Afterhours unless noted): [proving ground start](rebuild/screenshots/look-2/proving-ground-start.png), [grandstand](rebuild/screenshots/look-2/proving-ground-grandstand.png), [back straight](rebuild/screenshots/look-2/proving-ground-back.png), [Spa La Source](rebuild/screenshots/look-2/spa-la-source.png) and [by day](rebuild/screenshots/look-2/spa-la-source-day.png) (lamps hidden, no streaks), [Eau Rouge](rebuild/screenshots/look-2/spa-eau-rouge.png), [Kemmel](rebuild/screenshots/look-2/spa-kemmel.png), [pit straight](rebuild/screenshots/look-2/spa-pit-straight.png), [Nordschleife start](rebuild/screenshots/look-2/nordschleife-start.png), [T13](rebuild/screenshots/look-2/nordschleife-t13.png). I looked at every image and iterated several times: the first pass was grey-violet, the pit straight burned out to beige, and the headlight didn't show.
+
+**Gates** (Windows):
+- Before the merge with main: `run_gates.ps1 -All` 33/34. `front_end` hit the known fresh-machine script error at `tests/v2/front_end.gd:126`, then a 600 s timeout; main has since fixed it. Windowed `-- --features` 5/0, lap 57.888 s (unchanged), stderr empty.
+- Merged tree: `--check-only` parse clean, `gdformat -l 110 --check` clean, and the night capture run finished with empty stderr. **The full `-All -Features` run on the merged tree was stopped at the owner's request and has not been run.** Run it before merging.
+- Not run: the Linux CI script and a release export.
+
+Not touched: Gemini's catch_fence, grandstand, wall_path, scenery_builder and road_scatter. The generators' Look-4 placement loops are unchanged apart from the paddock lights. `scripts/night_style.gd` is left in place as the legacy reference.
+
+## 2026-09-24  REVIEW Look-2: accepted  (Claude Opus 5.5)
+Merged with main (Look-3 renderer): only doc/const conflicts. Windows `run_gates.ps1 -All -Features` on the merged tree: 35/35, features 77/0, stderr empty.

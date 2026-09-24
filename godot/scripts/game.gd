@@ -15,6 +15,8 @@ const Storage = preload("res://scripts/storage.gd")
 const Controls = preload("res://scripts/controls.gd")
 const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
+const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
+const TrackLights = preload("res://scripts/track/track_lights.gd")
 const RetroRenderer = preload("res://scripts/retro_renderer.gd")
 ## Settings > Display choices the Look-3 presentation chain reads (RetroRenderer.apply_settings).
 const PRESENTATION_SETTINGS = [
@@ -84,7 +86,8 @@ var setup_fields = []
 var preset_key = "f296gt3"
 var track_files = []
 var active_track_file = ""
-var scenery: Node3D
+## Look-2: the few real sodium lights, moved to the lamps nearest the camera at night.
+var lamp_pool = []
 var model = {}
 var ghost_model = {}
 var ghost_warming = false
@@ -484,6 +487,7 @@ func load_v2_track(id: String) -> bool:
 		track.free()
 	track = next
 	add_child(track)
+	apply_track_night()
 	v2_track_id = id
 	v2_surface = track.surface()
 	v2_walls = WallQuery.new(track, car.hull_half)
@@ -887,6 +891,7 @@ func render_v2(dt):
 	if ghost_model.root.visible:
 		ghost_model.root.transform = Transform3D(gx.basis, gx.origin - gx.basis.y * car.setup.cgHeight)
 	update_camera(dt)
+	TrackLights.update_pool(lamp_pool, track, camera.global_position, settings.time_of_day == 1)
 	sound.update(car, dt, not in_menu and not paused, settings)
 	instruments.queue_redraw()
 
@@ -1065,6 +1070,7 @@ func setup_environment():
 	camera.far = 1100
 	add_child(camera)
 	camera.make_current()
+	lamp_pool = TrackLights.make_pool(self)
 
 
 func apply_time_of_day():
@@ -1078,23 +1084,28 @@ func apply_time_of_day():
 		environment.sky = sky
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient
 		# was close enough to the sun energy that afternoon read as overcast: everything sat in
-		# one mid value and nothing had a shaded side.
-		environment.ambient_light_color = Color("8499c0") if night else Color("9db7d6")
-		environment.ambient_light_energy = .65 if night else .42
+		# one mid value and nothing had a shaded side. Afterhours (Look-2) keeps the moon and fill low so
+		# the amber sodium lamps carry the scene, NFS Underground style.
+		environment.ambient_light_color = Color("56628c") if night else Color("9db7d6")
+		environment.ambient_light_energy = .34 if night else .42
 		environment.tonemap_exposure = 1.0
-		environment.fog_light_color = Color("44465e") if night else Color("bed3e2")
+		environment.fog_light_color = Color("2a2433") if night else Color("bed3e2")
 		environment.fog_depth_begin = 60 if night else 130
 		environment.fog_depth_end = 520 if night else 950
 		environment.fog_density = 1.0
 		environment.fog_sky_affect = .15
 		sun.light_color = Color("8ca6df") if night else Color("ffd79a")
-		sun.light_energy = .7 if night else 1.5
+		sun.light_energy = .32 if night else 1.5
 		camera.far = 650 if night else 1100
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
 			warm_ghost.call_deferred()
-	if is_instance_valid(scenery):
-		var lamps = scenery.get_node_or_null("NightCircuit")
-		if lamps:
-			lamps.visible = night
-		visuals.world.road_material.set_shader_parameter("afterhours", night)
+	apply_track_night()
+
+
+## Look-2: the loaded TrackAsset's sodium lamps and the road_v2 amber streaks follow Afterhours.
+func apply_track_night() -> void:
+	var night = settings.time_of_day == 1
+	Ps2Materials.set_afterhours(night, track if track is Node3D else null)
+	if track is Node3D:
+		TrackLights.set_night(track, night)

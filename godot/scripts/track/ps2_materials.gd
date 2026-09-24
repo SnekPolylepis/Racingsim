@@ -59,8 +59,20 @@ static func ground(sid: int) -> ShaderMaterial:
 	return mat
 
 
-## Amber night variant of every road (the lamp streaks in road_v2.gdshader).
-static func set_afterhours(on: bool) -> void:
+## Amber night variant of every road (the lamp streaks in road_v2.gdshader): the shared material, and
+## each road_v2 material under `root`. A TrackAsset loaded from the user://tracks3d cache, or one with
+## its own lamp streaks (track_lights.gd), carries its own copy of the material.
+static func set_afterhours(on: bool, root: Node = null) -> void:
 	var road = surface(TARMAC)
 	if road is ShaderMaterial:
 		road.set_shader_parameter("afterhours", on)
+	var group = root.get_node_or_null("Road") if root != null else null
+	if group == null:
+		return
+	for node in group.find_children("*", "MeshInstance3D", true, false):
+		if node.mesh == null:
+			continue
+		for i in node.mesh.get_surface_count():
+			var mat = node.mesh.surface_get_material(i)
+			if mat is ShaderMaterial and mat.shader == ROAD_SHADER:
+				mat.set_shader_parameter("afterhours", on)
