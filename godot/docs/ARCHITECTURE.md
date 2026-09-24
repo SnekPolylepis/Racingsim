@@ -162,14 +162,18 @@ Baked scenes are not committed: generators run on first load and the result is c
 have none, and the UI root then stays in the root viewport. Each frame:
 
 1. **World:** the camera lives in `world_view`, a SubViewport sharing the game's World3D. The root
-   viewport renders no 3D (`disable_3d`). Raster: 640x448 at 480p (non-square pixels; the camera's
-   server transform is X-scaled in `apply_projection()` on `frame_pre_draw`), `720 x aspect` at 720p,
-   the presentation's physical size at Native. 480i always uses one 640x224 field. MSAA 2x only at
-   Native with `native_msaa`. `retro_flare.gd` draws the sun flare inside this raster; its occlusion
+   viewport renders no 3D (`disable_3d`). The 3D raster always has square pixels at the presentation
+   aspect: `448 x aspect` by 448 at 480p and 480i (796x448 at 16:9), `720 x aspect` by 720 at 720p,
+   the presentation's physical size at Native. Godot 4.6 has no anisotropic camera projection
+   (`camera_set_transform` orthonormalizes, so the legacy X-scaled camera transform did nothing and
+   stretched SD 24 %), so the console's non-square pixels come from the history pass resampling
+   instead. MSAA 2x only at Native with `native_msaa`. `retro_flare.gd` draws the sun flare inside this raster; its occlusion
    ray is a TrackSurface query in `_physics_process`.
 2. **Glow:** `glow_view`, a quarter-size bright pass (`retro_glow.gdshader`; threshold 0.88 by day,
    0.64 at night).
-3. **History:** two alternating targets (`retro_screen.gdshader`) add the glow (0.4 by day, 1.1 at
+3. **History:** two alternating targets (`retro_screen.gdshader`) at the console raster (640x448
+   anamorphic at 480p, one 640x224 field at 480i, the world size otherwise) resample the world and add
+   the glow (0.4 by day, 1.1 at
    night), the soft filter (Upscale: Soft), motion persistence (Speed blur: 0, 0.12, 0.25, scaled by
    speed above 20 m/s; off in menus) and the ordered dither (Colour dithering).
 4. **UI:** `ui_view` holds `V2UIRoot` (instruments, front end, settings/garage, embedded dialogs and

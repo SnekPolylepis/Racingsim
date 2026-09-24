@@ -1,7 +1,9 @@
 extends Node
 ## Look-3 PS2 presentation chain for the v2 game (docs/ARCHITECTURE.md, "Presentation").
-## The world camera renders into `world_view` (640x448 SD, 720p or native raster); a quarter-size glow,
-## two alternating history passes (glow, soft filter, motion persistence, ordered dither) and two
+## The world camera renders into `world_view` with square pixels at the presentation's aspect; a
+## quarter-size glow and two alternating history passes resample it into the console raster (640x448
+## anamorphic SD, a 640x224 480i field, 720p or native) with glow, soft filter, motion persistence and
+## ordered dither; two
 ## alternating console output passes (480i fields, composite, RGB555, Authentic UI composite) follow,
 ## and `display` shows the result in the presentation rectangle. The v2 UI root (HUD, front end,
 ## settings) renders in `ui_view`, a 1280x896 logical canvas: 640x448 pixels composited by the output
@@ -108,7 +110,6 @@ func initialize(owner_app, ui_root: Node):
 	sharp_display.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	sharp_display.texture = ui_view.get_texture()
 	layer.add_child(sharp_display)
-	RenderingServer.frame_pre_draw.connect(apply_projection)
 	app.get_viewport().size_changed.connect(apply_settings)
 	apply_settings()
 
@@ -123,20 +124,27 @@ func apply_settings():
 	presentation = Rect2((logical - draw_size) * .5, draw_size)
 	var native = Vector2i((draw_size * physical_scale).round()).max(Vector2i(64, 64))
 	var resolution = clampi(int(s.render_resolution), 0, 2)
-	var dimensions = [SD, Vector2i(roundi(720 * aspect), 720), native][resolution]
+	# Godot has no anisotropic camera projection (camera_set_transform orthonormalizes, so the legacy
+	# X-scaled transform did nothing), so the 3D raster keeps square pixels at the presentation aspect
+	# and the history pass resamples it into the console raster: SD stores 640 anamorphic columns.
+	var sd_world = Vector2i(roundi(SD.y * aspect), SD.y)
+	var world_size = [sd_world, Vector2i(roundi(720 * aspect), 720), native][resolution]
+	var dimensions = [SD, world_size, world_size][resolution]
 	var output_size = dimensions
 	var interlaced = int(s.output_mode) == 1
 	if interlaced:
-		# 480i is an SD console mode whatever the raster choice: one 640x224 field per output frame.
+		# 480i is an SD console mode whatever the raster choice: one 640x224 field per output frame,
+		# resampled from a 448-line world.
+		world_size = sd_world
 		output_size = SD
 		dimensions = Vector2i(SD.x, SD.y / 2)
 	var authentic = int(s.ui_mode) == 0
 	var night = int(s.time_of_day) == 1
-	world_view.size = dimensions
+	world_view.size = world_size
 	world_view.msaa_3d = (
 		Viewport.MSAA_2X if s.native_msaa and resolution == 2 and not interlaced else Viewport.MSAA_DISABLED
 	)
-	glow_view.size = (dimensions / 4).max(Vector2i.ONE)
+	glow_view.size = (world_size / 4).max(Vector2i.ONE)
 	glow_view.get_child(0).size = Vector2(glow_view.size)
 	glow_view.get_child(0).material.set_shader_parameter("threshold", .64 if night else .88)
 	for i in 2:
@@ -153,7 +161,9 @@ func apply_settings():
 		output_passes[i].set_shader_parameter("rgb16", int(s.framebuffer_colour) == 1)
 		output_passes[i].set_shader_parameter("dithering", s.colour_dither)
 	ui_view.size = SD if authentic else native
-	# Authentic UI rasterizes glyphs at the 640x448 size they are shown at (16 px from 32 logical).
+	# Authentic UI rasterizes glyphs at their logical size and minifies them into 640x448, which keeps
+	# 12 px captions legible; rasterized at 6 px ("VALID" read "VAUD") they were not. Sharp UI
+	# rasterizes at its physical size.
 	ui_view.oversampling = not authentic
 	display.texture_filter = (
 		CanvasItem.TEXTURE_FILTER_LINEAR if int(s.upscale) == 1 else CanvasItem.TEXTURE_FILTER_NEAREST
@@ -163,7 +173,9 @@ func apply_settings():
 		rect.position = presentation.position
 		rect.size = presentation.size
 	sharp_display.visible = not authentic
-	var next = str([dimensions, output_size, s.time_of_day, s.speed_blur, s.ui_mode, s.output_mode])
+	var next = str(
+		[world_size, dimensions, output_size, s.time_of_day, s.speed_blur, s.ui_mode, s.output_mode]
+	)
 	if next != config:
 		valid_history = false
 		field_valid = false
@@ -197,13 +209,10 @@ func _process(dt):
 	field_valid = true
 
 
-## A world point in world-raster pixels, with the same non-square-pixel correction as the camera
-## (apply_projection). The flare and the debug force arrows use it.
+## A world point in world-raster pixels (square, covering the presentation rectangle). The flare and
+## the debug force arrows use it.
 func unproject(world_position):
-	var point = app.camera.unproject_position(world_position)
-	var ratio = (presentation.size.x / presentation.size.y) / (float(world_view.size.x) / world_view.size.y)
-	point.x = world_view.size.x * .5 + (point.x - world_view.size.x * .5) / ratio
-	return point
+	return app.camera.unproject_position(world_position)
 
 
 ## Root-viewport (logical) position to the 1280x896 UI canvas, and back.
@@ -237,15 +246,3 @@ func forward_input(event) -> bool:
 			forwarded.velocity = event.velocity * UI_CANVAS / presentation.size
 	ui_view.push_input(forwarded, true)
 	return ui_view.is_input_handled()
-
-
-func apply_projection():
-	if app == null:
-		return
-	# The server accepts an affine camera transform. Its X scale compensates
-	# non-square SD pixels while keeping the actual 3D raster at 640x448/224.
-	var transform = app.camera.global_transform
-	var desired_aspect = presentation.size.x / maxf(1, presentation.size.y)
-	var raster_aspect = float(world_view.size.x) / world_view.size.y
-	transform.basis.x *= desired_aspect / raster_aspect
-	RenderingServer.camera_set_transform(app.camera.get_camera_rid(), transform)

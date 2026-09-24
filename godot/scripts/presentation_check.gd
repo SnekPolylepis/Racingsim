@@ -209,21 +209,24 @@ func apply_mode(mode: Dictionary, verify = false) -> void:
 	var s = app.settings
 	var logical = app.get_viewport().get_visible_rect().size
 	var native = Vector2i((retro.presentation.size * Vector2(app.get_window().size) / logical).round())
-	var expected = [
-		Vector2i(640, 448),
-		Vector2i(roundi(720 * (16.0 / 9 if s.screen_aspect == 1 else 4.0 / 3)), 720),
-		native
-	][s.render_resolution]
+	var aspect = 16.0 / 9 if s.screen_aspect == 1 else 4.0 / 3
+	# The 3D raster has square pixels at the presentation aspect; the console raster is what the
+	# history passes store (640x448 anamorphic SD, a 640x224 field for 480i).
+	var sd_world = Vector2i(roundi(448 * aspect), 448)
+	var world = [sd_world, Vector2i(roundi(720 * aspect), 720), native][s.render_resolution]
+	var raster = [Vector2i(640, 448), world, world][s.render_resolution]
 	if s.output_mode == 1:
-		expected = Vector2i(640, 224)
-	check(retro.world_view.size == expected, name + ": world raster " + str(expected))
+		world = sd_world
+		raster = Vector2i(640, 224)
+	check(retro.world_view.size == world, name + ": square-pixel world " + str(world))
+	check(retro.history[0].size == raster, name + ": console raster " + str(raster))
 	check(
 		retro.ui_view.size == (Vector2i(640, 448) if s.ui_mode == 0 else native),
 		name + ": UI viewport " + ("640x448" if s.ui_mode == 0 else "native")
 	)
-	var aspect = retro.presentation.size.x / retro.presentation.size.y
 	check(
-		absf(aspect - (16.0 / 9 if s.screen_aspect == 1 else 4.0 / 3)) < .01, name + ": presentation aspect"
+		absf(retro.presentation.size.x / retro.presentation.size.y - aspect) < .01,
+		name + ": presentation aspect"
 	)
 	check(retro.sharp_display.visible == (s.ui_mode == 1), name + ": sharp UI overlay")
 
@@ -248,7 +251,8 @@ func time_mode(name: String) -> void:
 		gpu += RenderingServer.viewport_get_measured_render_time_gpu(world_rid)
 	RenderingServer.viewport_set_measure_render_time(world_rid, false)
 	timings[name] = {
-		"raster": str(retro.world_view.size),
+		"world": str(retro.world_view.size),
+		"raster": str(retro.history[0].size),
 		"frame_ms": snappedf(total / TIMED_FRAMES, .01),
 		"worst_ms": snappedf(worst, .01),
 		"world_gpu_ms": snappedf(gpu / TIMED_FRAMES, .01)
