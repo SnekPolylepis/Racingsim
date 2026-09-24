@@ -1619,3 +1619,63 @@ Look-4 landed on main directly (ede1423). Review on main afe4ac6, with the front
 
 ## 2026-09-24  CLAIM Look-3  (Claude Opus 5.5)
 PS2 renderer on the v2 path: port `retro_renderer.gd` so the world camera renders through it, every Settings > Display choice takes effect live, and the HUD and menus share the Authentic UI viewport (or native resolution with Sharp UI). Branch `rb/look-3-renderer`; owner merges the PR.
+
+## 2026-09-24  DONE Look-3 PS2 renderer on the v2 path  (Claude Opus 5.5) — branch `rb/look-3-renderer`
+The world camera and the whole v2 UI now render through `retro_renderer.gd`, and every Settings > Display choice takes effect live and on startup. ARCHITECTURE.md "Presentation chain" describes the implementation.
+
+- **Chain:** the camera renders into `world_view`, followed by quarter-size glow, two alternating history passes (glow, soft filter, motion persistence, ordered dither) and two alternating console output passes (480i fields, CRT/composite, RGB555, Authentic UI composite), shown letterboxed or pillarboxed at 4:3 or 16:9. The root viewport renders no 3D. Nothing is read back to the CPU.
+- **Settings wired:** render_resolution, upscale (Sharp: nearest filter and no soft pass), output_mode, crt_filter, framebuffer_colour, colour_dither (the world dither and the RGB555 dither), speed_blur, screen_aspect, ui_mode, native_msaa (2x at Native only), and time_of_day (glow).
+  - `game.PRESENTATION_SETTINGS` lists them.
+  - `set_v2_setting()`, window resize and fullscreen all call `apply_settings()`.
+- **UI:** `V2UIRoot` (HUD, front end, settings/garage panels, dialogs and popups) moves into `ui_view`, a fixed 1280x896 logical canvas.
+  - Authentic UI renders it at 640x448 and composites it in the output pass.
+  - Sharp UI renders it at the presentation's physical size and overlays it.
+  - `game._input()` forwards events after `front_end.handle()` and `controls.handle()`. Mouse positions are mapped through the presentation rectangle (`to_canvas()`/`from_canvas()`); keys and pad buttons pass unchanged. Headless runs build no renderer and keep the UI in the root viewport, so the headless gates are unchanged.
+- **Bug found and fixed:** the legacy non-square-pixel correction never worked in Godot 4.6. It X-scaled the camera through `RenderingServer.camera_set_transform`, which orthonormalizes the transform; a standalone test showed identical rasters at scales 0.62 and 1.24. As a result SD at 16:9 was stretched 24 % and the 480i field squeezed.
+  - The 3D raster is now square-pixel at the presentation aspect (796x448 at 16:9, 597x448 at 4:3).
+  - The history pass resamples it into the 640x448 anamorphic store, or into one 640x224 field for 480i.
+  - `apply_projection()` is gone, and `unproject()` needs no correction.
+  - Screenshots confirm native, SD and 480i now frame the car identically.
+- **Look tuning (default out of the box, from DEFAULT_SETTINGS):** 640x448, 16:9 anamorphic, soft upscale, dither on, low speed blur, Authentic UI.
+  - Daytime glow is restrained (threshold 0.82→0.88, strength 0.7→0.4). The old values bloomed sunlit tarmac runoff into a white patch over the road and HUD. Night is unchanged (0.64/1.1).
+  - Authentic UI rasterizes glyphs at their logical size (`oversampling` off). At 6 px, "VALID" read "VAUD"; now 12 px captions are legible.
+  - Into the sun the road still shows a strong sheen. That comes from the road material (metallic 0.23, roughness 0.32), which is Look-1/Look-2 scope and was left untouched here.
+- **Flare:** `retro_flare.gd` occlusion is now a TrackSurface ray in `_physics_process` at 30 Hz. The legacy `visuals.world` heightfield no longer exists.
+- **Deleted legacy-only retro code:** `world_pixel()`, `apply_projection()`, and `retro_assets.gd` `ao_mesh()`/`cards()` (no callers). The remaining retro_* code has v2 users:
+  - `retro_assets` panorama in game/visuals, tree/painted in `tests/build_asset_sources.gd`;
+  - `retro_tree.gdshader` in `road_scatter.gd`;
+  - `retro_paint` in visuals;
+  - the screen, glow and console_output shaders in the chain.
+- **Checks:** `--v2-present` (and `--features`) now opens the real front end on the drive page and, after its laps, runs `scripts/presentation_check.gd` over six modes: native + Sharp UI, 720p Authentic, 480p Authentic, 480p Sharp UI 4:3 RGB555, 480i CRT, and 480p night. Each mode gets:
+  - checks of the world and console raster, UI viewport, presentation aspect and Sharp overlay;
+  - frame timing while the bot drives;
+  - screenshots of the drive (all modes at one frozen sim time), the title page and the settings panel;
+  - real input through `Input.parse_input_event` in window pixels: a mouse click on Race (car page opens), a click on Settings (panel opens), a click on Close (panel closes), an arrow key moving focus, and pad A on Resume (drive resumes).
+  - `--v2-look` runs only this check, and `--v2-track=<id>` picks the circuit.
+  - Negative control: with forwarding disabled, exactly the 20 input checks fail.
+
+Frame times, from the final runs. These are Linux cloud numbers on **llvmpipe (software OpenGL 4.5, CPU-rasterized)**, 1280x800 window, 16:9 presentation 1280x720. `frame` is the wall clock per frame, including 240 Hz physics and the bot at time scale 1; `world` is the world viewport's render time as the driver reports it. Treat them as relative costs, not GPU figures; a real GPU run on Windows is still owed.
+
+| Mode (world → console raster) | Proving Ground frame / world | Spa frame / world |
+|---|---:|---:|
+| Native + Sharp UI (1280x720) | 115.0 / 44.1 ms | 165.4 / 89.3 ms |
+| 720p Authentic (1280x720) | 141.8 / 65.4 ms | 169.4 / 94.4 ms |
+| 480p Authentic (796x448 → 640x448) | 88.6 / 47.3 ms | 102.3 / 60.5 ms |
+| 480p Sharp UI 4:3 RGB555 (597x448 → 640x448) | 78.6 / 36.8 ms | 87.4 / 44.9 ms |
+| 480i CRT (796x448 → 640x224 field) | 66.6 / 32.4 ms | 89.0 / 51.5 ms |
+| 480p night | 72.9 / 34.7 ms | 96.2 / 53.2 ms |
+
+The SD modes cost 55-65 % of native on llvmpipe, whose cost scales with pixels. Per-mode noise between two identical runs was about ±10 %. The first switch to night can stall one frame (2.2 s once on llvmpipe) while night shaders compile.
+
+Screenshots in [rebuild/screenshots/look-3/](rebuild/screenshots/look-3/): Proving Ground in drive, title and settings for native + Sharp UI, 480p Authentic and 480i CRT; 720p, 4:3 RGB555 and night drive; Spa drive in native, 480p, 480i CRT and night. I looked at every one; the 480i shots show the field comb on moving detail as intended.
+
+Gates (Linux cloud, Godot 4.6.2 official, the workflow's install):
+- parse check clean;
+- `python tools/ci_gates.py`: **34/34 pass**, stderr empty, front_end included (its fix is on main now);
+- `gdformat -l 110 --check scripts tests` clean;
+- windowed `xvfb-run -a godot --path . --rendering-driver opengl3 -- --v2-present`: **V2 PRESENT PASS, FEATURE RESULTS 77 checks / 0 failures**, stderr empty;
+- `-- --v2-look --v2-track=spa`: **72 / 0**, stderr empty.
+
+The Proving Ground best lap is 57.433 s on current main, which includes Look-4. A control run of `--v2-present` on plain origin/main gives the same, so the change from Preview 2's 57.888 s is not from this branch. During the presentation check the bot keeps lapping, so the printed best can move by one tick between runs.
+
+Not done here: a Windows or macOS GPU frame-time run, and the exported exe's `--v2-export-check`/`--features` (no Windows here). The road's into-sun sheen is left to Look-2 (materials).
