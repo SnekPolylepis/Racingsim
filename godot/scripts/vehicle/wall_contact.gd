@@ -5,10 +5,10 @@ extends RefCounted
 ##   1. Sweep: the hull box travels from the pose at the start of the tick to the pose now; if a wall
 ##      is in the way, the car stops at the first touch. 300 km/h is 0.35 m per tick, more than a
 ##      0.15 m armco rail, so a pose-only test could step through it.
-##   2. Push-out: any remaining penetration (from rotation during the tick) is removed along the wall
-##      normal.
+##   2. Push-out: any remaining penetration (from rotation during the tick) is removed along each
+##      contact's wall normal; in a corner the second wall gets what the first push did not clear.
 ##   3. Impulses at each contact point, with the car's full 3D inertia: restitution on the closing
-##      speed, and sliding friction up to mu times the normal impulse. A few sequential passes so
+##      speed, and sliding friction up to mu times the normal impulse, from that contact's wall kind. A few sequential passes so
 ##      several points of the hull share the load.
 ##   Simcade, as in collisions.gd: the closing speed is removed without bounce, then the car keeps
 ##   `contact_speed_retention` of its speed and `contact_yaw_retention` of its yaw rate per tick in
@@ -43,19 +43,22 @@ static func step(car, query) -> int:
 	var cs = query.contacts(Transform3D(b, car.pos + b * car.hull_center))
 	if cs.is_empty():
 		return 0
-	# Push out of the deepest penetration along its normal.
-	var deepest = cs[0]
-	if deepest.depth > 0:
-		var n0: Vector3 = deepest.normal
-		car.pos_x += n0.x * deepest.depth
-		car.pos_y += n0.y * deepest.depth
-		car.pos_z += n0.z * deepest.depth
-	var resp = RESPONSE.get(deepest.kind, RESPONSE.concrete)
+	# Push out of each penetration along its own normal, deepest first. A later contact only gets the
+	# depth the pushes so far have not already cleared along its normal (one wall's points share it).
+	var push = Vector3.ZERO
+	for c in cs:
+		var need = c.depth - push.dot(c.normal)
+		if need > 0:
+			push += c.normal * need
+	car.pos_x += push.x
+	car.pos_y += push.y
+	car.pos_z += push.z
 	if car.simcade_enabled:
 		arcade(car, cs)
 	else:
 		for pass_i in PASSES:
 			for c in cs:
+				var resp = RESPONSE.get(c.kind, RESPONSE.concrete)
 				hit(car, c.point, c.normal, resp[0], resp[1])
 	car.collided = true
 	car.sync_legacy()
@@ -88,11 +91,16 @@ static func hit(car, at: Vector3, n: Vector3, bounce: float, friction: float):
 	car.apply_impulse(at, -t * jt)
 
 
-## Simcade's arcade contact: no bounce, closing speed removed, speed and yaw rate bled per tick.
+## Simcade's arcade contact: no bounce, closing speed removed along every wall normal touched, speed and
+## yaw rate bled once per tick in contact.
 static func arcade(car, cs):
-	var n: Vector3 = cs[0].normal
-	var closing = car.vel.dot(n)
-	if closing < 0:
-		car.vel = car.vel - n * closing
+	var closed = false
+	for c in cs:
+		var n: Vector3 = c.normal
+		var closing = car.vel.dot(n)
+		if closing < 0:
+			car.vel = car.vel - n * closing
+			closed = true
+	if closed:
 		car.vel = car.vel * car.simcade.contact_speed_retention
 		car.ang.y *= car.simcade.contact_yaw_retention
