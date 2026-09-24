@@ -1540,3 +1540,26 @@ The last pre-rebuild code on the game path is gone.
 - **Docs:** ARCHITECTURE, LLM-GUIDE, PHYSICS, SOLVER-MATH, DATA-CONTRACTS and TESTING updated.
 
 Gates: `run_gates.ps1 -All -Features` 34/34 plus features 5/0; gdformat clean.
+
+## 2026-09-23  DONE P4-cars PS2-era car models  (Codex) — branch `rb/P4-cars`
+The v2 car dispatcher now builds the Mazda MX-5 NA 1.6 and high-downforce GT from dedicated `scripts/cars/mx5.gd` and `scripts/cars/gt.gd` bodies. `scripts/cars/car_kit.gd` supplies crowned bodywork with cut wheel arches, rolled arch lips, day/night lamp lenses, and one low-poly tyre/sidewall/rim surface per animated wheel. The MX-5 has its short tail, open two-seat tub, upright windscreen, pop-up headlamp lids and paired round taillamps. The GT has a stretched bonnet, swept greenhouse, intakes, skirts, splitter, diffuser, race number 07 and a broad rear wing. The 296 GT3 retains the sculpted reference-built exterior in `ferrari_296.gd`, dispatched through `scripts/cars/f296gt3.gd`; its many separate wheel details now use the shared mesh. The existing Fresnel panorama paint, preset livery colours, ghost material, wheel pivot/spin/brake contract and 6-DOF body pose remain in place. The night lamp meshes follow `Visuals.set_time()` and ghost lamps stay dark.
+
+Mesh budgets, measured by `tests/v2/car_models.gd` on one complete car (mesh triangles and mesh-surface draw submissions, including shadow and wheels; Label3D and lighting passes excluded):
+
+| Car | Triangles | Mesh draws |
+| --- | ---: | ---: |
+| Mazda MX-5 NA 1.6 | 5,032 | 58 |
+| GT high-downforce | 3,744 | 58 |
+| Ferrari 296 GT3 | 8,466 | 187 |
+
+The model suite checks all three pose contracts, preset axle/track/radius measurements, four complete wheels, ghost creation and lamps switching with day/night: **51 checks, 0 failures**. Windowed review captures on the proving ground, taken in a close chase framing by `tests/v2/car_screenshots.gd`:
+
+- Mazda MX-5 NA: [chase](rebuild/screenshots/P4-cars/roadster.png), [bonnet](rebuild/screenshots/P4-cars/roadster-bonnet.png)
+- GT: [chase](rebuild/screenshots/P4-cars/gt.png), [bonnet](rebuild/screenshots/P4-cars/gt-bonnet.png)
+- Ferrari 296 GT3: [chase](rebuild/screenshots/P4-cars/f296gt3.png), [bonnet](rebuild/screenshots/P4-cars/f296gt3-bonnet.png)
+
+The existing v2 bonnet camera clears the MX-5's low hood entirely; the GT and Ferrari hoods remain visible. Camera placement lives in `game.gd::update_camera()` and was left to the concurrent presentation work. The `--v2-present` run still cycles all five cameras and **PASS**es.
+
+Verification after merging current `origin/main` into the branch: `tools/run_gates.ps1 -All -Features` **47/47** with empty stderr (including windowed features **212/0**); windowed `--v2-present` **PASS** with empty stderr; real Windows release export completed with empty stderr and the packaged executable printed **V2 EXPORT PASS**, exit 0, empty stderr. `gdformat -l 110` and `git diff --check` clean. No downloaded car models or textures. The owner opens and merges the PR from [rb/P4-cars](https://github.com/SnekPolylepis/Racingsim/pull/new/rb/P4-cars).
+
+A fresh-worktree export exposed three missing `.uid` sidecars already absent from main (`ps2_materials.gd`, `road_v2.gdshader`, `nordschleife_s1.gd`). Godot generated them during import; this branch includes those metadata files so a clean checkout exports without those warnings.
