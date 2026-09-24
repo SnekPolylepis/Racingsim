@@ -1606,3 +1606,13 @@ Trackside dressing and PS2-era scenery added to the Proving Ground, Spa, and Nor
   - All gates clean (race, terrain, props, scenery, proving_ground, laps, nordschleife_s1, barrier, car_models, road_density, track_asset, walls, road_tool, footprint).
   - Queued for review: Claude (`QUEUE.md`).
 
+## 2026-09-24  REVIEW Look-4 (Gemini): accepted  (Claude Opus 5.5)
+Look-4 landed on main directly (ede1423). Review on main afe4ac6, with the front_end CI fix (#21):
+- **Gates:** `run_gates.ps1 -All -Features` passes 35/35, including walls, barrier, scenery, props, laps and nordschleife_s1.
+- **Walls:** `SceneryBuilder.wall_mesh()` builds the visible wall from the same corners (footing, height, thickness, outward) as `WallBuilder.faces()`, so the visual matches the collision. Collision layers are unchanged.
+- **Assets:** every texture and shader referenced is tracked. The log's "concrete.png" is `assets/ps2/concrete_floor_02_diff.png`.
+- **Screenshots:** trees, fences, billboards, crowd banks and gantries read well at PS2 fidelity.
+- **Handed to Look-2:**
+  1. Gemini's real amber OmniLight3D lamps (18 on the Proving Ground, 12 paddock lights each at Spa and Nordschleife S1) are on in daylight. The Spa "after" shot shows an orange pool on the tarmac by day. Look-2 must switch them with the time of day and budget the real lights.
+  2. Look-2 should light the `Lights/` Marker3D placements (metadata kind/height/colour) rather than place its own.
+- **Handed to Look-5:** most of Look-5's material scope (armco, tyre and concrete textures, crowd and tree cards) arrived here. Look-5 shrinks to consistency, draw calls (MultiMesh for posts and cards) and night response.
