@@ -21,22 +21,80 @@ func build(visuals, preset, ghost):
 	var roof_rear = -1.04
 	var glass_top = 1.28
 	for side in [-1, 1]:
-		k.glass_panel("SideGlazing", [Vector3(front, .71, side * .76), Vector3(roof_front, glass_top, side * .58), Vector3(roof_rear, glass_top, side * .59), Vector3(rear, .77, side * .81)], Vector3(0, 0, side))
-		k.line("FrontPillar", Vector3(front, .71, side * .77), Vector3(roof_front, glass_top, side * .59), .038, "171a1d")
-		k.line("RearPillar", Vector3(rear, .77, side * .81), Vector3(roof_rear, glass_top, side * .60), .045, k.paint.darkened(.2))
+		k.glass_panel(
+			"SideGlazing",
+			[
+				Vector3(front, .71, side * .76),
+				Vector3(roof_front, glass_top, side * .58),
+				Vector3(roof_rear, glass_top, side * .59),
+				Vector3(rear, .77, side * .81)
+			],
+			Vector3(0, 0, side)
+		)
+		k.line(
+			"FrontPillar",
+			Vector3(front, .71, side * .77),
+			Vector3(roof_front, glass_top, side * .59),
+			.038,
+			"171a1d"
+		)
+		k.line(
+			"RearPillar",
+			Vector3(rear, .77, side * .81),
+			Vector3(roof_rear, glass_top, side * .60),
+			.045,
+			k.paint.darkened(.2)
+		)
 		k.box("MirrorStalk", Vector3(.05, .82, side * .87), Vector3(.07, .04, .24), "191f22")
 		k.box("AeroMirror", Vector3(.04, .88, side * 1.02), Vector3(.20, .10, .17), k.paint)
 		k.box("SideSkirt", Vector3(-.08, .19, side * .91), Vector3(1.80, .09, .13), "111820")
 		k.box("DoorLiverySweep", Vector3(-.27, .48, side * .914), Vector3(1.05, .075, .012), shade)
 		k.box("FrontCanard", Vector3(xf - .28, .28, side * .73), Vector3(.43, .022, .31), "111820")
-		k.lamp("GTHeadlight", Vector3(xf + .012, .48, side * .52), Vector3(.024, .075, .37), "e4ebde", "fff7d0", true)
-		k.lamp("GTTailCluster", Vector3(xr - .02, .56, side * .52), Vector3(.035, .12, .37), "ad1720", "f42c21")
+		k.lamp(
+			"GTHeadlight",
+			Vector3(xf + .012, .48, side * .52),
+			Vector3(.024, .075, .37),
+			"e4ebde",
+			"fff7d0",
+			true
+		)
+		k.lamp(
+			"GTTailCluster", Vector3(xr - .02, .56, side * .52), Vector3(.035, .12, .37), "ad1720", "f42c21"
+		)
 		k.box("WingPylon", Vector3(xr + .23, 1.02, side * .53), Vector3(.10, .42, .045), "1a2025")
 		k.box("WingEndplate", Vector3(xr + .15, 1.27, side * .91), Vector3(.48, .22, .026), "1a2025")
 		k.box("DiffuserFence", Vector3(xr + .23, .17, side * .43), Vector3(.52, .17, .023), "111820")
-	k.glass_panel("RakedWindscreen", [Vector3(front, .73, -.76), Vector3(front, .73, .76), Vector3(roof_front, glass_top, .58), Vector3(roof_front, glass_top, -.58)], Vector3.RIGHT)
-	k.glass_panel("RearWindow", [Vector3(roof_rear, glass_top, -.59), Vector3(roof_rear, glass_top, .59), Vector3(rear, .77, .81), Vector3(rear, .77, -.81)], Vector3.LEFT)
-	k.panel("PaintedRoof", [Vector3(roof_front, glass_top + .012, -.59), Vector3(roof_front, glass_top + .012, .59), Vector3(roof_rear, glass_top + .012, .59), Vector3(roof_rear, glass_top + .012, -.59)], k.paint, Vector3.UP)
+	k.glass_panel(
+		"RakedWindscreen",
+		[
+			Vector3(front, .73, -.76),
+			Vector3(front, .73, .76),
+			Vector3(roof_front, glass_top, .58),
+			Vector3(roof_front, glass_top, -.58)
+		],
+		Vector3.RIGHT
+	)
+	k.glass_panel(
+		"RearWindow",
+		[
+			Vector3(roof_rear, glass_top, -.59),
+			Vector3(roof_rear, glass_top, .59),
+			Vector3(rear, .77, .81),
+			Vector3(rear, .77, -.81)
+		],
+		Vector3.LEFT
+	)
+	k.panel(
+		"PaintedRoof",
+		[
+			Vector3(roof_front, glass_top + .012, -.59),
+			Vector3(roof_front, glass_top + .012, .59),
+			Vector3(roof_rear, glass_top + .012, .59),
+			Vector3(roof_rear, glass_top + .012, -.59)
+		],
+		k.paint,
+		Vector3.UP
+	)
 	k.box("DeepFrontIntake", Vector3(xf + .020, .30, 0), Vector3(.03, .23, .95), "111820")
 	k.box("FrontSplitter", Vector3(xf - .17, .12, 0), Vector3(.61, .035, 1.75), "111820")
 	k.box("RearDiffuser", Vector3(xr + .18, .15, 0), Vector3(.50, .035, 1.48), "111820")

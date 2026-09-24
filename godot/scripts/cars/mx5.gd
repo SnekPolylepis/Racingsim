@@ -22,24 +22,55 @@ func build(visuals, preset, ghost):
 		k.box("DoorTop", Vector3(-.36, .70, side * .59), Vector3(1.08, .055, .06), k.paint)
 		k.box("BeltlineChrome", Vector3(-.38, .73, side * .60), Vector3(.92, .015, .012), "9ba5a9", .6)
 		# Unmistakable upright NA windscreen, with a dark glazed panel and silver frame.
-		k.line("WindscreenPillar", Vector3(.16, .72, side * .61), Vector3(.02, 1.25, side * .57), .032, "2b3034")
+		k.line(
+			"WindscreenPillar", Vector3(.16, .72, side * .61), Vector3(.02, 1.25, side * .57), .032, "2b3034"
+		)
 		k.box("MirrorStalk", Vector3(.10, .79, side * .72), Vector3(.045, .04, .24), "262a2e")
 		k.box("DoorMirror", Vector3(.09, .85, side * .87), Vector3(.16, .10, .19), k.paint)
 		# Closed painted pop-up lids; a smaller illuminated lens emerges after dark.
-		k.box("PopUpHeadlightLid", Vector3(p.a + .37, .595, side * .47), Vector3(.34, .018, .31), k.paint.darkened(.10))
-		k.lamp("RaisedHeadlightLens", Vector3(p.a + .39, .65, side * .48), Vector3(.12, .10, .25), "fff0cf", "fff8e2", true)
-		k.lamp("AmberFrontIndicator", Vector3(xf + .012, .39, side * .47), Vector3(.018, .09, .18), "d97d28", "f8a443")
+		k.box(
+			"PopUpHeadlightLid",
+			Vector3(p.a + .37, .595, side * .47),
+			Vector3(.34, .018, .31),
+			k.paint.darkened(.10)
+		)
+		k.lamp(
+			"RaisedHeadlightLens",
+			Vector3(p.a + .39, .65, side * .48),
+			Vector3(.12, .10, .25),
+			"fff0cf",
+			"fff8e2",
+			true
+		)
+		k.lamp(
+			"AmberFrontIndicator",
+			Vector3(xf + .012, .39, side * .47),
+			Vector3(.018, .09, .18),
+			"d97d28",
+			"f8a443"
+		)
 		# Paired round taillamps are the NA's most useful chase-camera signature.
 		for dz in [-.12, .12]:
 			var lamp = SphereMesh.new()
 			lamp.radial_segments = 12
 			lamp.rings = 6
 			lamp.radius = .5
-			var node = visuals.shape(k.body, lamp, Vector3(xr - .018, .46, side * (.34 + dz)), Vector3(.035, .125, .125), "b31c23")
+			var node = visuals.shape(
+				k.body, lamp, Vector3(xr - .018, .46, side * (.34 + dz)), Vector3(.035, .125, .125), "b31c23"
+			)
 			node.name = "RoundTailLamp"
 			node.material_override = visuals.material("b31c23", .1, .22)
 		k.box("RearReflector", Vector3(xr - .025, .25, side * .46), Vector3(.02, .055, .17), "8b1716")
-	k.glass_panel("Windscreen", [Vector3(.155, .76, -.58), Vector3(.155, .76, .58), Vector3(.015, 1.23, .54), Vector3(.015, 1.23, -.54)], Vector3.RIGHT)
+	k.glass_panel(
+		"Windscreen",
+		[
+			Vector3(.155, .76, -.58),
+			Vector3(.155, .76, .58),
+			Vector3(.015, 1.23, .54),
+			Vector3(.015, 1.23, -.54)
+		],
+		Vector3.RIGHT
+	)
 	k.line("WindscreenHeader", Vector3(.015, 1.24, -.56), Vector3(.015, 1.24, .56), .028, "34393d")
 	k.box("NoseIntake", Vector3(xf + .016, .29, 0), Vector3(.022, .10, .71), "151b20")
 	k.box("FrontBumperLine", Vector3(xf + .024, .23, 0), Vector3(.025, .015, .88), "393b3d")

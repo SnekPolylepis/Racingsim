@@ -95,18 +95,58 @@ func coachwork(x_rear, x_front, widths, heights, floor_y, shoulder_y):
 		for j in lanes.size() - 1:
 			var t0 = lanes[j]
 			var t1 = lanes[j + 1]
-			face(crown, [crown_point(xa, t0, widths, heights, shoulder_y), crown_point(xb, t0, widths, heights, shoulder_y), crown_point(xb, t1, widths, heights, shoulder_y), crown_point(xa, t1, widths, heights, shoulder_y)], paint, Vector3.UP)
+			face(
+				crown,
+				[
+					crown_point(xa, t0, widths, heights, shoulder_y),
+					crown_point(xb, t0, widths, heights, shoulder_y),
+					crown_point(xb, t1, widths, heights, shoulder_y),
+					crown_point(xa, t1, widths, heights, shoulder_y)
+				],
+				paint,
+				Vector3.UP
+			)
 		for side in [-1, 1]:
 			var wa = y_at(widths, xa)
 			var wb = y_at(widths, xb)
-			face(sides, [crown_point(xa, side, widths, heights, shoulder_y), crown_point(xb, side, widths, heights, shoulder_y), Vector3(xb, arch_bottom(xb, floor_y), side * (wb - .01)), Vector3(xa, arch_bottom(xa, floor_y), side * (wa - .01))], paint, Vector3(0, 0, side))
+			face(
+				sides,
+				[
+					crown_point(xa, side, widths, heights, shoulder_y),
+					crown_point(xb, side, widths, heights, shoulder_y),
+					Vector3(xb, arch_bottom(xb, floor_y), side * (wb - .01)),
+					Vector3(xa, arch_bottom(xa, floor_y), side * (wa - .01))
+				],
+				paint,
+				Vector3(0, 0, side)
+			)
 	mesh(crown, "CrownedCoachwork")
 	mesh(sides, "CutWheelArchSideSkins")
 	for side in [-1, 1]:
 		for axle in [p.a, -p.b]:
 			arch_lip(axle, side, y_at(widths, axle), p.wheelR + .055)
-	panel("NosePanel", [crown_point(x_front, -1, widths, heights, shoulder_y), crown_point(x_front, 1, widths, heights, shoulder_y), Vector3(x_front, floor_y, y_at(widths, x_front)), Vector3(x_front, floor_y, -y_at(widths, x_front))], paint, Vector3.RIGHT)
-	panel("TailPanel", [crown_point(x_rear, 1, widths, heights, shoulder_y), crown_point(x_rear, -1, widths, heights, shoulder_y), Vector3(x_rear, floor_y, -y_at(widths, x_rear)), Vector3(x_rear, floor_y, y_at(widths, x_rear))], paint, Vector3.LEFT)
+	panel(
+		"NosePanel",
+		[
+			crown_point(x_front, -1, widths, heights, shoulder_y),
+			crown_point(x_front, 1, widths, heights, shoulder_y),
+			Vector3(x_front, floor_y, y_at(widths, x_front)),
+			Vector3(x_front, floor_y, -y_at(widths, x_front))
+		],
+		paint,
+		Vector3.RIGHT
+	)
+	panel(
+		"TailPanel",
+		[
+			crown_point(x_rear, 1, widths, heights, shoulder_y),
+			crown_point(x_rear, -1, widths, heights, shoulder_y),
+			Vector3(x_rear, floor_y, -y_at(widths, x_rear)),
+			Vector3(x_rear, floor_y, y_at(widths, x_rear))
+		],
+		paint,
+		Vector3.LEFT
+	)
 
 
 func crown_point(x, t, widths, heights, shoulder_y):
@@ -125,7 +165,17 @@ func arch_lip(axle, side, width, radius):
 		var x1 = axle + cos(a1) * radius
 		var y0 = p.wheelR + sin(a0) * radius
 		var y1 = p.wheelR + sin(a1) * radius
-		face(st, [Vector3(x0, y0, side * width), Vector3(x1, y1, side * width), Vector3(x1, y1 + .025, side * (width + .035)), Vector3(x0, y0 + .025, side * (width + .035))], paint.darkened(.16), Vector3(0, 0, side))
+		face(
+			st,
+			[
+				Vector3(x0, y0, side * width),
+				Vector3(x1, y1, side * width),
+				Vector3(x1, y1 + .025, side * (width + .035)),
+				Vector3(x0, y0 + .025, side * (width + .035))
+			],
+			paint.darkened(.16),
+			Vector3(0, 0, side)
+		)
 	mesh(st, "RolledWheelArch")
 
 
@@ -139,7 +189,12 @@ func lamp(label, pos, size, base_color, glow_color, night_only = false):
 	mat.emission_enabled = true
 	mat.emission = Color(glow_color)
 	mat.emission_energy_multiplier = 1.8
-	var node = box(label + "NightGlow", pos + Vector3(.003 if night_only else -.003, 0, 0), size * Vector3(.15, .83, .83), base_color)
+	var node = box(
+		label + "NightGlow",
+		pos + Vector3(.003 if night_only else -.003, 0, 0),
+		size * Vector3(.15, .83, .83),
+		base_color
+	)
 	node.material_override = mat
 	node.visible = v.night and not ghost
 	if not ghost:
@@ -203,7 +258,12 @@ func replace_wheels(model, style):
 		spin.add_child(mesh_node)
 		if not ghost:
 			var side = -1.0 if i % 2 == 0 else 1.0
-			var caliper_node = v.box(pivot, Vector3(-p.wheelR * .42, p.wheelR * .3, side * .115), Vector3(.12, .14, .055), p.get("caliper", "#c9c9c9"))
+			var caliper_node = v.box(
+				pivot,
+				Vector3(-p.wheelR * .42, p.wheelR * .3, side * .115),
+				Vector3(.12, .14, .055),
+				p.get("caliper", "#c9c9c9")
+			)
 			caliper_node.name = "BrakeCaliper"
 
 
@@ -222,9 +282,15 @@ func build_wheel(style):
 			var t0 = TAU * i / count
 			var t1 = TAU * (i + 1) / count
 			wheel_band(st, r, .83 * r, z, z + side * .002, t0, t1, wall, Vector3(0, 0, side))
-			wheel_band(st, .83 * r, .67 * r, z + side * .002, z + side * .006, t0, t1, tire, Vector3(0, 0, side))
-			wheel_band(st, .67 * r, .59 * r, z + side * .008, z + side * .012, t0, t1, rim, Vector3(0, 0, side))
-			wheel_band(st, .59 * r, .51 * r, z + side * .012, z - side * .012, t0, t1, shade, Vector3(0, 0, side))
+			wheel_band(
+				st, .83 * r, .67 * r, z + side * .002, z + side * .006, t0, t1, tire, Vector3(0, 0, side)
+			)
+			wheel_band(
+				st, .67 * r, .59 * r, z + side * .008, z + side * .012, t0, t1, rim, Vector3(0, 0, side)
+			)
+			wheel_band(
+				st, .59 * r, .51 * r, z + side * .012, z - side * .012, t0, t1, shade, Vector3(0, 0, side)
+			)
 			wheel_band(st, .13 * r, 0.0, z + side * .025, z + side * .025, t0, t1, rim, Vector3(0, 0, side))
 		for spoke in 5:
 			var angle = TAU * spoke / 5.0
@@ -236,16 +302,46 @@ func build_wheel(style):
 				var px = Vector3(cos(a), sin(a), 0)
 				var py = Vector3(-sin(a), cos(a), 0)
 				var zf = z + side * .024
-				face(st, [px * lo - py * thin + Vector3(0, 0, zf), px * hi - py * thin + Vector3(0, 0, zf), px * hi + py * thin + Vector3(0, 0, zf), px * lo + py * thin + Vector3(0, 0, zf)], rim, Vector3(0, 0, side))
+				face(
+					st,
+					[
+						px * lo - py * thin + Vector3(0, 0, zf),
+						px * hi - py * thin + Vector3(0, 0, zf),
+						px * hi + py * thin + Vector3(0, 0, zf),
+						px * lo + py * thin + Vector3(0, 0, zf)
+					],
+					rim,
+					Vector3(0, 0, side)
+				)
 	# Tread and shoulder share the same 24-sided outline. Dark bands read at PS2 resolution.
 	for i in count:
 		var t0 = TAU * i / count
 		var t1 = TAU * (i + 1) / count
-		wheel_band(st, r, r, -.151, .151, t0, t1, tire if i % 3 else wall, Vector3(cos((t0 + t1) * .5), sin((t0 + t1) * .5), 0))
+		wheel_band(
+			st,
+			r,
+			r,
+			-.151,
+			.151,
+			t0,
+			t1,
+			tire if i % 3 else wall,
+			Vector3(cos((t0 + t1) * .5), sin((t0 + t1) * .5), 0)
+		)
 	st.index()
 	st.generate_normals()
 	return st.commit()
 
 
 func wheel_band(st, outer_r, inner_r, outer_z, inner_z, a0, a1, color, outward):
-	face(st, [Vector3(cos(a0) * outer_r, sin(a0) * outer_r, outer_z), Vector3(cos(a1) * outer_r, sin(a1) * outer_r, outer_z), Vector3(cos(a1) * inner_r, sin(a1) * inner_r, inner_z), Vector3(cos(a0) * inner_r, sin(a0) * inner_r, inner_z)], color, outward)
+	face(
+		st,
+		[
+			Vector3(cos(a0) * outer_r, sin(a0) * outer_r, outer_z),
+			Vector3(cos(a1) * outer_r, sin(a1) * outer_r, outer_z),
+			Vector3(cos(a1) * inner_r, sin(a1) * inner_r, inner_z),
+			Vector3(cos(a0) * inner_r, sin(a0) * inner_r, inner_z)
+		],
+		color,
+		outward
+	)

@@ -36,15 +36,38 @@ func run():
 	for key in ["roadster", "gt", "f296gt3"]:
 		var v = Visuals.new()
 		var model = v.make_car(cars[key])
-		check(model.has("root") and model.has("body") and model.has("brakes") and model.has("wheel_r"), key + " model contract")
+		check(
+			model.has("root") and model.has("body") and model.has("brakes") and model.has("wheel_r"),
+			key + " model contract"
+		)
 		check(model.pivots.size() == 4 and model.spins.size() == 4, key + " animated wheels")
 		check(is_equal_approx(model.wheel_r, cars[key].wheelR), key + " preset radius")
 		for i in 4:
-			check(is_equal_approx(model.pivots[i].position.x, cars[key].a if i < 2 else -cars[key].b), key + " axle " + str(i))
-			check(is_equal_approx(absf(model.pivots[i].position.z), cars[key].track * .5), key + " track " + str(i))
+			check(
+				is_equal_approx(model.pivots[i].position.x, cars[key].a if i < 2 else -cars[key].b),
+				key + " axle " + str(i)
+			)
+			check(
+				is_equal_approx(absf(model.pivots[i].position.z), cars[key].track * .5),
+				key + " track " + str(i)
+			)
 		var budget = count_meshes(model.root)
 		print("CAR MODEL ", key, " ", JSON.stringify(budget))
 		check(budget.tris < 18000 and budget.draws < 200, key + " raster budget")
+		check(
+			model.root.find_children("TyreSidewallAndRim", "MeshInstance3D", true, false).size() == 4,
+			key + " complete rims and sidewalls"
+		)
+		var lamps = []
+		for ref in v.headlights:
+			var lamp = ref.get_ref()
+			if lamp is MeshInstance3D:
+				lamps.append(lamp)
+		check(lamps.size() >= 2, key + " night lamp clusters")
+		v.set_time(true)
+		check(lamps.all(func(lamp): return lamp.visible), key + " lamps light at night")
+		v.set_time(false)
+		check(lamps.all(func(lamp): return not lamp.visible), key + " lamps dim by day")
 		var ghost = v.make_car(cars[key], true)
 		check(ghost.root != null and ghost.pivots.size() == 4, key + " ghost contract")
 		model.root.free()

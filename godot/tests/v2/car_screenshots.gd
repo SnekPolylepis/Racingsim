@@ -33,6 +33,14 @@ func run():
 		var path = folder + "/" + key + ".png"
 		var code = root.get_texture().get_image().save_png(path)
 		print("CAR SCREENSHOT ", key, " ", path, " ", code)
+		app.camera.position = xf.origin + xf.basis.x * 1.15 + xf.basis.y * 1.04
+		app.camera.look_at(xf.origin + xf.basis.x * 36.0 + xf.basis.y * 1.02, xf.basis.y)
+		app.camera.fov = 64
+		for i in 4:
+			await process_frame
+		path = folder + "/" + key + "-bonnet.png"
+		code = root.get_texture().get_image().save_png(path)
+		print("CAR BONNET SCREENSHOT ", key, " ", path, " ", code)
 		app.return_v2_menu()
 		app.set_process(true)
 		app.set_physics_process(true)
