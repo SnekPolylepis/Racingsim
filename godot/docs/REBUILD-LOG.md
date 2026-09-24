@@ -1483,3 +1483,18 @@ Owner art direction (2026-09-23): a PS2-era look, between NFS Underground (amber
 - **Check:** the windowed `--v2-present` run passes. Its screenshot shows textured tarmac and palette grass, runoff and terrain on the proving ground.
 
 Gates: `run_gates.ps1 -All` 42/42; `--features` 212/0, stderr empty.
+
+## 2026-09-23  MERGE train 3 into main  (Claude Opus 5.5; owner: "sol is done with the menus, let's push it")
+Merged onto main 4eb2668:
+- rb/P4-menus (Sol: v2 settings, garage, pause; legacy functions it ported are listed for P7-01)
+- rb/P6-02a (Gemini: Nordschleife section 1, T13 to Aremberg, from DGM1 and OSM; own test suite, 3 new gates)
+- rb/P7-02-docs (PR #14)
+- rb/look-1-surfaces (PR #15)
+
+No code conflicts; docs merged keeping both sides. rb/P6-02a had committed a stray `<<<<<<< HEAD` line into REBUILD-LOG (a lone marker, nothing conflicting), which was removed.
+
+Verification on the merged tree: `run_gates.ps1 -All` 45/45; windowed `--features` 212/0; windowed `--v2-present` PASS; a Windows release export printed V2 EXPORT PASS. All stderr empty.
+
+Nordschleife follow-ups (not blocking):
+- add `nordschleife_s1` to the v2 front end's track list, the export `include_filter` and `check_exported_v2_assets()`;
+- fold its test into `tests/v2/laps.gd` TRACKS and the shared baseline.
