@@ -29,66 +29,22 @@ README).
 - **Exports:** they ship what the generator reads at runtime, via the export presets'
   `include_filter`. `check_exported_v2_assets()` in the exported build must list every such file.
 
-**Legacy game** (`--features` and the other legacy modes, until P7-01):
-
-`res://` is the Godot project/package root. Bundled `tracks/`, `data/`, scripts and documentation are resources, not save destinations. `user://` normally resolves on Windows to `%APPDATA%/Godot/app_userdata/Racing Sim/`, and on macOS to `~/Library/Application Support/Godot/app_userdata/Racing Sim/`.
-
-Settings always use local `user://settings.json`. Racing data defaults to `user://` but can be redirected through Circuits → Choose folder. Storage initializes `tracks/`, `setups/`, `ghosts/` and `records/` beneath that selected root. Connecting a folder does not copy browser localStorage or automatically populate it with bundled circuits. Libraries combine protected bundled circuits and saved circuits.
-
-`--features` / `--smoke` isolate settings and racing data under `user://native-tests/`. Do not change that isolation when extending tests. Browser root data folders are user-owned; native bundled copies under `godot/tracks/` are separate files.
-
 ## JSON I/O and validation
 
 `read_json()` returns a Variant or null and updates `storage.error`. Validate its type before using fields. `write_json()` writes a sibling `.tmp`, flushes/closes it and renames it over the destination; failure returns false and an error. This avoids exposing a partially written destination in normal operation, but is not a complete power-loss durability guarantee. Parent folders must exist.
 
 `safe_name()` validates filename characters, strips trailing dots/spaces, limits length to 80 and handles Windows reserved basenames. Apply it to user-chosen names. Unknown document fields generally survive track load/save; this is not strict schema-version migration. Validate required values before model construction. The importer allows drafts; drive/save validation is separate.
 
-## Track, schema 1 (legacy JSON circuits, until P7-01)
+## Track, schema 1 (retired)
 
-The v2 game uses TrackAssets (REBUILD-PLAN.md §5.3, ARCHITECTURE.md). This schema describes the legacy
-circuits under `godot/tracks/` and the root `tracks/` user folder, read only by the legacy path.
-
-```json
-{
-  "schema": 1, "name": "Example", "savedAt": "2026-09-18T00:00:00Z",
-  "points": [
-    {"x": 0, "y": 0, "w": 12, "z": 0, "bank": 0},
-    {"x": 100, "y": 0, "w": 12, "z": 3, "bank": 2},
-    {"x": 50, "y": 100, "w": 12, "z": 0, "bank": 0}
-  ],
-  "curbAuto": true, "curbOverride": {"1": "off"},
-  "paint": {"4,9": 2},
-  "objects": [{"type": "cone", "x": 30, "y": 20, "ox": 30, "oy": 20}],
-  "startS": 0, "gridS": null
-}
-```
-
-| Field | Contract |
-|---|---|
-| `points` | Closed loop in driving order; numeric x/y/w; missing z/bank default zero |
-| `w` | Full road width in meters, validated 4–40 |
-| `z`, `bank` | Meters and degrees respectively; editor ranges ±60 m and ±20° |
-| `curbOverride` | String segment index → `on` or `off`; absent means automatic |
-| `paint` | String `floor(x/2),floor(y/2)` grid key; 1 grass, 2 gravel, 3 tarmac runoff (native; the frozen browser build treats 3 as grass) |
-| `objects` | Cone x/y; wall or tire x1/y1/x2/y2. Cone ox/oy are rest positions |
-| `startS`, `gridS` | Arc distances in meters, nullable; default grid is start minus 10 m |
-| `presentation` | Optional theme/source/description, two curb colors and named x/y corner labels |
-
-Structural validation currently caps points at 2,000 and x/y magnitude at 100,000 m. A structurally accepted draft may still lack three points or a start line. Geometry validation checks those before driving/saving. Optional presentation metadata is expected to follow the bundled format; current structural validation is not exhaustive for every optional field. Do not describe it as a hardened arbitrary-file parser.
-
-Optional per-point `profile` is the road cross-section: an array of `[u, drop]` pairs where `u` is the fraction of half width (negative to the driver's left, so -1 is the left edge) and `drop` is metres below the banked plane. Pairs are resampled onto a fixed 33-station grid and interpolated between control points. An absent or all-zero profile is a flat cross-section and costs nothing. Only the ribbon model in `scripts/track3d.gd` reads it; `scripts/track.gd` ignores the key, so profiled circuits still load in the plan-view model as flat road. The bundled Nordschleife carries profiles on both Karussells, written by `trackgen/karussell.gd`.
-
-Optional `presentation.scenery` = `{"trees": density multiplier (1 = default), "pines": conifer share 0–1, "treeline": metres from the road edge where woods start, "treeHeight": size multiplier, "clearings": [{"anchor": corner label name or "s": metres, "radius": metres, "side": "left"|"right"|"outside"|"inside"|"any"}]}`; presentation only.
-
-Optional `presentation.landmarks` = array of landmark definitions built trackside by `circuit_world.gd`; presentation only. Schema: `{"kind": string ("grandstand"|"spectator_bank"|"building"|"bridge"|"footbridge"|"marshal_post"|"hedge"), "anchor": corner label name, {"x", "y"} or arc station s, "side": "left"|"right"|"outside"|"inside", "offset": metres from road edge (default 12), "length": metres along circuit, "scale": float multiplier (default 1.0), "variant": string (e.g. "mill", "tower", "monument", "gantry", "stone", "footbridge"), "name": string, "s_offset": float}`. Objects are purely decorative and carry no collision.
-
-`autoBarriers` (bool, default true) enables the derived trackside armco/tire walls; when true it is omitted from record identity so older records still match. Runtime cone `vx`, `vy`, `hit` are removed by `to_json()`, which saves cones at ox/oy and adds schema/timestamp to a copy. Derived samples/checkpoints/spatial data are never serialized. Width/bank interpolation and elevation queries are rebuilt on load. Paint cannot change asphalt grip because road/curb tests precede paint lookup.
+The pre-rebuild JSON circuit schema was retired with the legacy game in P7-01a (2026-09-23); see git
+history. The root `tracks/` folder still holds the owner's old documents and must not be deleted.
 
 ## Presets and setups
 
 Preset keys are `roadster`, `gt`, `f296gt3`. `data/cars.json` contains fixed constants and a default `setup` for each. The garage definition rows are `[group,key,label,min,max,step,unit]`; currently 42 legacy fields grouped into Tires, Suspension, Aero, Brakes, Diff, Gearing and Aids. Presentation-only preset keys (no physics or record effect): `body` (`roadster`, `coupe` or `gt3`, the lofted body style in `visuals.gd::BODIES`), `color`, `rim`, `caliper` (hex colours), `wing` (bool) and `num` (livery number). Missing keys fall back to defaults.
 
-Chassis keys read only by the 6-DOF `CarBody` (the planar CarModel ignores them): `treadWidth` (m, tyre footprint), `unsprungMass` (`[front, rear]` kg per corner; default 3 % of `mass`), `tyreRate` (radial tyre stiffness, N/m; default 260000) and `bodyClearance` (m, the chassis contact box's sill height above static ground; default 0.1). They are fixed constants, not garage fields.
+Chassis keys read by the 6-DOF `CarBody`: `treadWidth` (m, tyre footprint), `unsprungMass` (`[front, rear]` kg per corner; default 3 % of `mass`), `tyreRate` (radial tyre stiffness, N/m; default 260000) and `bodyClearance` (m, the chassis contact box's sill height above static ground; default 0.1). They are fixed constants, not garage fields.
 
 Setup document: `{"schema":1,"savedAt":"...","car":"roadster","setup":{"tireMu":1.38,...}}`. Import verifies the car and values, starts with that preset's defaults, applies recognized fields within their bounds, switches car, resets and loads its record. Missing fields retain preset defaults. Optional `tcsLevel` and `asmLevel` (0–10) add numbered aids without replacing the legacy fields; old TC intensity maps to its equivalent level (fractional legacy values are preserved), old ABS remains unchanged, and missing ASM imports as off. Exports include effective levels and synchronized tcOn/tcIntensity. Garage changes also reset the run when applied. Native export remains compatible with the browser's schema-1 structure.
 

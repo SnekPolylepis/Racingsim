@@ -1,8 +1,7 @@
 extends RefCounted
 ## Lap/checkpoint state and approximately 30 Hz best-lap ghost recording.
-## No filesystem access: game.gd saves when update returns true for a new best.
-## Ghost sample contract: [seconds, x, y, heading_rad, steer_rad, lap_distance_m] on legacy JSON tracks
-## (update); on TrackAssets (update_asset, P4-02) the 5.4 pose: [seconds, x, y, z, qx, qy, qz, qw,
+## No filesystem access: game.gd saves when update_asset returns true for a new best.
+## Ghost sample contract (update_asset, P4-02; the 5.4 pose): [seconds, x, y, z, qx, qy, qz, qw,
 ## lap_distance_m], world metres and the body rotation quaternion.
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 var lap_time = 0.0
@@ -41,13 +40,6 @@ var asset_gates = []
 var gates_of = null
 var prev_pos = null
 var asset_hint = -1
-
-
-func sector_marks(track):
-	var start = float(track.data.get("startS", 0.0))
-	return [
-		fposmod(start + track.length / 3, track.length), fposmod(start + track.length * 2 / 3, track.length)
-	]
 
 
 ## Sum of the best individual sectors, or 0 until all three have been set.
@@ -94,109 +86,6 @@ func reset():
 	flags = ["", "", ""]
 	sector_idx = 0
 	sector_start = 0.0
-
-
-func crossed(a, b, target, length):
-	var distance = fposmod(b - a, length)
-	return (
-		distance > 0
-		and distance < 30
-		and fposmod(target - a, length) > 0
-		and fposmod(target - a, length) <= distance
-	)
-
-
-## Consume post-collision car state; return true only when a completed valid lap beats best.
-func update(car, track, dt):
-	if track.samples.is_empty() or track.data.startS == null:
-		return false
-	var pr = track.project(car.x, car.y, car.wheels[0].sIdx)
-	var s = pr.s
-	var start = float(track.data.get("startS", 0.0))
-	var new_best = false
-	if active:
-		lap_time += dt
-		if off_track_invalidate and car.all_off:
-			valid = false
-			invalid_reason = "off track"
-		if collision_invalidate and car.collided:
-			valid = false
-			invalid_reason = "contact"
-		if ghost.size() > 1:
-			delta = lap_time - ghost_time_at(fposmod(s - start, track.length))
-		record_t += dt
-		if record_t >= 1.0 / 30:
-			record_t = 0
-			recording.append(
-				[lap_time, car.x, car.y, car.h, car.steer_angle, fposmod(s - start, track.length)]
-			)
-	car.collided = false
-	# Checkpoint gate: tight when off-track laps are invalid anyway, wide (runoff allowed) when they are not.
-	var gate = pr.width / 2 + (4.4 if off_track_invalidate else 25.0)
-	if (
-		prev_s >= 0
-		and active
-		and next_cp < track.checkpoints.size()
-		and crossed(prev_s, s, track.checkpoints[next_cp], track.length)
-	):
-		if absf(pr.lat) >= gate and valid:
-			valid = false
-			invalid_reason = "missed CP %d" % (next_cp + 1)
-		next_cp += 1
-	if (
-		prev_s >= 0
-		and active
-		and sector_idx < 2
-		and crossed(prev_s, s, sector_marks(track)[sector_idx], track.length)
-	):
-		complete_sector(sector_idx, lap_time - sector_start)
-	if prev_s >= 0 and absf(pr.lat) < pr.width / 2 + 4.4:
-		if crossed(prev_s, s, start, track.length):
-			if active:
-				if next_cp != track.checkpoints.size():
-					valid = false
-				if sector_idx == 2:
-					complete_sector(2, lap_time - sector_start)
-				last_sectors = sectors.duplicate()
-				last_flags = flags.duplicate()
-				last = lap_time
-				# Completed sample arrays are immutable. Transfer ownership; the next
-				# lap gets a new array below, avoiding thousands of deep copies here.
-				last_recording = recording
-				last_valid = valid and next_cp == track.checkpoints.size()
-				completed += 1
-				last_reason = (
-					""
-					if last_valid
-					else (
-						invalid_reason
-						if not invalid_reason.is_empty()
-						else "CP %d/%d" % [next_cp, track.checkpoints.size()]
-					)
-				)
-				if last_valid and (best == 0 or lap_time < best):
-					best = lap_time
-					ghost = recording
-					new_best = true
-			lap_time = 0
-			active = true
-			valid = true
-			next_cp = 0
-			recording = []
-			record_t = 0
-			invalid_reason = ""
-			sectors = [0.0, 0.0, 0.0]
-			flags = ["", "", ""]
-			sector_idx = 0
-			sector_start = 0.0
-			for o in track.data.objects:
-				if o.type == "cone":
-					o.x = o.get("ox", o.x)
-					o.y = o.get("oy", o.y)
-					o.vx = 0
-					o.vy = 0
-	prev_s = s
-	return new_best
 
 
 ## One tick on a TrackAsset (P4-02); returns true only when a completed valid lap beats best. Timing uses
@@ -302,23 +191,6 @@ func ghost_xform():
 	return Transform3D(Basis(qa.slerp(qb, t)), Vector3(a[1], a[2], a[3]).lerp(Vector3(b[1], b[2], b[3]), t))
 
 
-func ghost_pose():
-	if ghost.size() < 2 or not active or lap_time > best:
-		return []
-	var lo = 0
-	var hi = ghost.size() - 1
-	while lo < hi:
-		var mid = (lo + hi + 1) >> 1
-		if ghost[mid][0] <= lap_time:
-			lo = mid
-		else:
-			hi = mid - 1
-	var a = ghost[lo]
-	var b = ghost[mini(lo + 1, ghost.size() - 1)]
-	var t = clampf((lap_time - a[0]) / maxf(.00001, b[0] - a[0]), 0, 1)
-	return [lerpf(a[1], b[1], t), lerpf(a[2], b[2], t), lerp_angle(a[3], b[3], t)]
-
-
 static func time_text(t):
 	if t <= 0:
 		return "--:--.---"
@@ -328,8 +200,7 @@ static func time_text(t):
 ## Interpolate ghost elapsed time by lap distance for the live delta.
 ## This binary lookup assumes recorded distance is ordered; reversing is not a robust comparison case.
 func ghost_time_at(distance):
-	# Lap distance is the last field: index 5 in legacy samples, 8 in TrackAsset (5.4) samples.
-	var di = ghost[0].size() - 1
+	var di = 8
 	var lo = 0
 	var hi = ghost.size() - 1
 	while lo < hi:

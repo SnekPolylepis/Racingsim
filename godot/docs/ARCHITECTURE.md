@@ -1,9 +1,8 @@
 # Native architecture and invariants
 
 The game runs on the rebuild (REBUILD-PLAN.md): a 6-DOF `CarBody` on authored 3-D `TrackAsset`s, in
-Godot-native world space. Normal launch always takes this path (`game.gd` `v2_mode`). The older planar
-game (CarModel on JSON tracks, the circuit editor's successors, the retro UI) still exists for the
-windowed feature suite and the legacy headless suites until P7-01 deletes it; see the last section.
+Godot-native world space. The older planar game (CarModel on JSON tracks, the retro UI) was deleted
+in P7-01 (2026-09-23); see the last section.
 
 ## Ownership and lifecycle
 
@@ -82,7 +81,7 @@ lap direction whatever the asset authors, track coordinates within ±5 km of the
 
 ## Vehicle
 
-`scripts/vehicle/car_body.gd` extends the legacy `scripts/car.gd` for its shared state and helpers.
+`scripts/vehicle/car_body.gd` holds the whole car: state, configuration and the 6-DOF step.
 Tyre, drivetrain and aids are the shared modules in `scripts/vehicle/` (P2-01), evaluated in each
 contact patch's frame. `step()` does, in order:
 
@@ -161,22 +160,14 @@ Baked scenes are not committed: generators run on first load and the result is c
 - `--v2-visual-smoke`: the same, windowed.
 - `--v2-present`: windowed. The bot drives two proving-ground laps at 3x speed while cameras cycle.
   It checks timing, ghost, minimap and audio, and saves `user://v2-present.png`.
-- `--v2-export-check`: in an exported build, verifies that both generators and Spa's data are inside
+- `--v2-export-check`: in an exported build, verifies that every generator and its data are inside
   the PCK and load.
 - `tests/v2/front_end.gd`: the menu flow, the record round trip and returning to the menu.
 
-## Legacy path (until P7-01)
+## Retired legacy code (P7-01)
 
-With `--features`, `--smoke` or the other legacy review modes, `game.gd` runs the pre-rebuild game:
-
-- CarModel (`scripts/car.gd`) on JSON tracks (`scripts/track3d.gd`, `scripts/track.gd`,
-  `godot/tracks/`), with planar collisions (`collisions.gd`);
-- the retro renderer and its interface (`interface.gd`, `circuit_world.gd`).
-
-It exists only so the 212-check windowed feature suite and the legacy baseline suites (dynamics, laps,
-handling, airborne, karussell, track3d, validation, showcase laps) keep passing unchanged. CarBody
-still inherits from `car.gd`, and aids_simcade and flat_equivalence compare against CarModel.
-
-P7-01 removes this path. It first ports the settings, garage and pause menus to the v2 front end (Sol,
-P4-menus), then moves the feature coverage to v2 suites, then deletes the legacy scripts, tracks and
-tests. Until then, changes to shared code must keep both paths' suites green.
+P7-01a (2026-09-23) deleted the pre-rebuild game: JSON tracks, planar collisions, the old interface and
+feature suite. `--features` is an alias for `--v2-present`. P7-01b folded the planar CarModel
+(`scripts/car.gd`) into CarBody, moved the surface table to `scripts/surface/surface_table.gd`, and
+deleted `track.gd`, `track3d.gd` and `tests/dynamics.gd`. `retro_renderer.gd` and `night_style.gd`
+remain for the PS2 look work (Look-2, Look-3).

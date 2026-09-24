@@ -29,21 +29,16 @@ func reset():
 	rebuild_map()
 
 
-## True on an authored TrackAsset (P4-05), false on a legacy JSON track. The car's plan-view x, y
-## (CarBody mirrors world x, z into them) map the same way on both.
+## True once a TrackAsset is loaded. The car's plan-view x, y are CarBody's world x, z.
 func on_asset():
 	return app.track != null and app.track.has_method("gates")
 
 
-## The circuit in plan view, x and world z (or the legacy track's x, y), for the minimap.
+## The circuit in plan view, x and world z, for the minimap.
 func plan_points():
-	var out = PackedVector2Array()
 	if on_asset():
 		return app.track.minimap(512)
-	for i in range(0, app.track.samples.size(), 4):
-		var sm = app.track.samples[i]
-		out.append(Vector2(sm.x, sm.y))
-	return out
+	return PackedVector2Array()
 
 
 ## Cache the minimap polyline after a circuit load/reset rather than projecting it every frame.
@@ -97,7 +92,7 @@ func box(rect):
 
 
 func _draw():
-	if app == null or app.track == null or (not on_asset() and app.track.samples.is_empty()):
+	if app == null or not on_asset():
 		return
 	if app.frontend:
 		draw_console()
@@ -128,14 +123,9 @@ func _draw():
 	box(Rect2(16, 328, 238, 157))
 	if map_points.size() > 1:
 		draw_polyline(map_points, Color("9bb4bd"), 2, true)
-	if on_asset():
-		var gx = race.ghost_xform()
-		if app.settings.ghost and gx != null:
-			draw_circle(map_offset + Vector2(gx.origin.x, gx.origin.z) * map_scale, 3.5, Color("70cbed"))
-	else:
-		var gp = race.ghost_pose()
-		if app.settings.ghost and not gp.is_empty():
-			draw_circle(map_offset + Vector2(gp[0], gp[1]) * map_scale, 3.5, Color("70cbed"))
+	var gx = race.ghost_xform()
+	if app.settings.ghost and gx != null:
+		draw_circle(map_offset + Vector2(gx.origin.x, gx.origin.z) * map_scale, 3.5, Color("70cbed"))
 	draw_circle(map_offset + Vector2(car.x, car.y) * map_scale, 4.5, GOLD)
 	text(
 		Vector2(32, 473),
@@ -367,17 +357,16 @@ func draw_telemetry():
 		draw_polyline(pts, cols[k], 1.7, true)
 
 
-## [gates met, gates in the lap] after the start line: TrackAsset gates (race.next_cp counts from 1
-## once a lap starts) or the legacy checkpoints.
+## [gates met, gates in the lap] after the start line (race.next_cp counts from 1 once a lap starts).
 func checkpoint_progress(race):
-	if on_asset():
-		var count = race.asset_gates.size() - 1
-		return [clampi(race.next_cp - 1, 0, count) if race.active else 0, maxi(count, 0)]
-	return [race.next_cp, app.track.checkpoints.size()]
+	var count = race.asset_gates.size() - 1
+	return [clampi(race.next_cp - 1, 0, count) if race.active else 0, maxi(count, 0)]
 
 
 func draw_debug():
 	var car = app.car
+	var fwd = car.basis().x
+	var side = car.basis().z
 	var x = 280.0
 	var y = 183.0
 	box(Rect2(x, y, minf(630, size.x - 470), 178))
@@ -393,16 +382,16 @@ func draw_debug():
 	text(
 		Vector2(x + 14, y + 70),
 		(
-			"Pitch %+.2f°   Roll %+.2f°   Heave %+.0f mm"
-			% [rad_to_deg(car.pitch), rad_to_deg(car.roll), car.z * 1000]
+			"Pitch %+.2f°   Roll %+.2f°   Contacts %d"
+			% [rad_to_deg(asin(clampf(fwd.y, -1, 1))), rad_to_deg(asin(clampf(-side.y, -1, 1))), car.contacts]
 		),
 		14
 	)
 	text(
 		Vector2(x + 14, y + 92),
 		(
-			"Height %.1f m   Grade %+.1f%%   Load %.2f g   Clutch %.0f%%   Align %+.0f N·m"
-			% [car.elev, car.grade * 100, car.g_eff / 9.81, car.clutch_eng * 100, car.steer_torque]
+			"Height %.1f m   Grade %+.1f%%   Accel %.2f g   Clutch %.0f%%   Align %+.0f N·m"
+			% [car.elev, fwd.y * 100, car.accel.length() / 9.81, car.clutch_eng * 100, car.steer_torque]
 		),
 		14
 	)
@@ -435,7 +424,7 @@ func draw_debug():
 	if app.retro == null:
 		return
 	for w in car.wheels:
-		var ground = w.roadZ if on_asset() else app.track.elev_at(w.wx, w.wy).z
+		var ground = w.roadZ
 		var pos = Vector3(w.wx, ground + .15, w.wy)
 		var direction = Vector3(cos(car.h), 0, sin(car.h))
 		var right = Vector3(-sin(car.h), 0, cos(car.h))

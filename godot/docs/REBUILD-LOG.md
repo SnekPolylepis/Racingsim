@@ -1502,6 +1502,45 @@ Nordschleife follow-ups (not blocking):
 ## 2026-09-23  CLAIM Look-4  (Gemini 3.8 Flash)
 Dress Proving Ground, Spa, and Nordschleife Section 1 per ART-DIRECTION.md: crowd banks (assets/ps2/crowd.png), catch fences, painted tyre walls (assets/ps2/tyre.png), armco with PS2-style materials, billboards, marshal posts, grandstands (real locations for Spa and Nordschleife), start/finish gantry, pit building, conifer tree cards with hue/value spread, and Lights/ lamp placements (sodium_mast, flood, pit) for Look-2. Working on branch `rb/look-4-dressing`.
 
+## 2026-09-23  DONE P7-01a Delete the legacy game  (Claude Opus 5.5) — branch `rb/P7-01-legacy`
+The pre-rebuild game is gone; `game.gd` runs only the v2 path.
+
+- **Scripts deleted:** interface, verification, circuit_world, collisions, showcase_benchmark/driver/review, audio_review.
+- **game.gd** (1708 → ~1080 lines) and **front_end.gd** (988 → ~375): 26 legacy functions and every `v2_mode`/`test_mode` branch removed. Records, ghosts, camera and skids are v2-only.
+- **visuals.gd:** legacy track, scenery and pose builders removed.
+- **Probes:** `--features` is now an alias for `--v2-present`, which prints `FEATURE RESULTS`.
+- **Tests deleted:** airborne, handling, karussell, laps, showcase_laps, test_nordschleife_scenery, track3d, validation, `tests/v2/surface_backends.gd`.
+  - `tests/dynamics.gd` stays as the threshold source for aids_simcade; its planar wall check is gone.
+- **Data deleted:** the legacy baseline texts, `godot/tracks/*.json`, and the legacy Python pipelines `trackgen/spa/` and `trackgen/nordschleife/`.
+  - The root `tracks/` user folder is untouched.
+- **Nordschleife S1 fully wired:**
+  - v2 menu track list, `tests/v2/laps.gd` TRACKS (baselines recorded) and `track_drive.gd`;
+  - export `include_filter` and `check_exported_v2_assets()`.
+  - `tests/v2/nordschleife_s1.gd` is now probe-only.
+- **Gates and CI:** legacy suites and groups removed from `tools/gates.json`. `ci_gates.py` `PLATFORM_TOLERANCE` is empty.
+- **Docs:** CLAUDE.md, AGENTS.md, ARCHITECTURE, TESTING, LLM-GUIDE, DATA-CONTRACTS, MACOS and trackgen/README describe the rebuilt game only.
+
+Left for P7-01b: `car.gd` (CarBody's base), `track.gd`/`track3d.gd` (the SURF table), `tests/dynamics.gd`, `docs/rebuild/baseline.json`.
+
+Gates: `run_gates.ps1 -All` 34/34; `-Features` 5 checks/0 failures; Windows export `--v2-export-check` PASS with all three circuits; gdformat clean.
+
+## 2026-09-23  DONE P7-01b Fold CarModel into CarBody  (Claude Opus 5.5) — branch `rb/P7-01b-carmodel`
+The last pre-rebuild code on the game path is gone.
+
+- **CarBody** (`scripts/vehicle/car_body.gd`) now holds the whole car. It took `scripts/car.gd`'s state, `configure()`, `reset_pose()` and the tyre, aid and drivetrain wrappers; the planar `step()`, `snapshot()` and `blend()` were dropped with it. Planar-only state (heave, pitch and roll rates, air, grade, bank, g_eff) is removed.
+- **Surface table:** SURF moved to `scripts/surface/surface_table.gd`. TrackAsset and CarBody (`CarBody.SURF`) read it.
+- **Deleted:** `scripts/track.gd`, `scripts/track3d.gd`, `tests/dynamics.gd` and `tools/baseline_json.py` (its inputs went in P7-01a). `docs/rebuild/baseline.json` stays as the historical pre-rebuild capture.
+- **`tests/v2/aids_simcade.gd`** is standalone. It merges the dynamics.gd procedures and thresholds, and runs on analytic flat roads (a 30 m straight or circle with grass beyond and an optional gravel patch) instead of TrackModel. Same 114 checks, all passing.
+- **`tests/v2/flat_equivalence.gd`** gates CarBody against `docs/rebuild/carmodel-reference.json`, the planar CarModel's figures recorded from 74a66d1 just before deletion. Gates are unchanged: ±3 % massless, ±5 % compliant, tyre peaks equal. The live cross-check against baseline.json went with CarModel.
+- **Game:**
+  - `game.gd` starts with `track = null` and a CarBody.
+  - race.gd lost the legacy `update()`, `ghost_pose()`, `sector_marks()` and `crossed()`.
+  - The instruments are TrackAsset-only. The debug HUD reads pitch, roll, grade and acceleration from the 6-DOF body.
+  - front_end's dead `draw_map()` is removed.
+- **Docs:** ARCHITECTURE, LLM-GUIDE, PHYSICS, SOLVER-MATH, DATA-CONTRACTS and TESTING updated.
+
+Gates: `run_gates.ps1 -All -Features` 34/34 plus features 5/0; gdformat clean.
+
 ## 2026-09-23  DONE P4-cars PS2-era car models  (Codex) — branch `rb/P4-cars`
 The v2 car dispatcher now builds the Mazda MX-5 NA 1.6 and high-downforce GT from dedicated `scripts/cars/mx5.gd` and `scripts/cars/gt.gd` bodies. `scripts/cars/car_kit.gd` supplies crowned bodywork with cut wheel arches, rolled arch lips, day/night lamp lenses, and one low-poly tyre/sidewall/rim surface per animated wheel. The MX-5 has its short tail, open two-seat tub, upright windscreen, pop-up headlamp lids and paired round taillamps. The GT has a stretched bonnet, swept greenhouse, intakes, skirts, splitter, diffuser, race number 07 and a broad rear wing. The 296 GT3 retains the sculpted reference-built exterior in `ferrari_296.gd`, dispatched through `scripts/cars/f296gt3.gd`; its many separate wheel details now use the shared mesh. The existing Fresnel panorama paint, preset livery colours, ghost material, wheel pivot/spin/brake contract and 6-DOF body pose remain in place. The night lamp meshes follow `Visuals.set_time()` and ghost lamps stay dark.
 

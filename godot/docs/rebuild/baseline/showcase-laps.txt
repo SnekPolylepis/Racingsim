@@ -1,7 +1,0 @@
-Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
-
-SHOWCASE LAP {"case":"Simulation-pad","contacts":0,"interventions":{"bus_stop_late":0,"la_source_late":0,"raidillon_power":0},"kemmel_kmh":160.030025868004,"lap":302.441666666474,"off_steps":0,"peak_slip_deg":5.4897035956833,"top_kmh":160.410981437034,"valid":true}
-SHOWCASE LAP {"case":"Simcade-pad","contacts":0,"interventions":{"bus_stop_late":0,"la_source_late":0,"raidillon_power":0},"kemmel_kmh":160.030901594411,"lap":302.070833333141,"off_steps":0,"peak_slip_deg":5.39903846296066,"top_kmh":160.416591111649,"valid":true}
-SHOWCASE LAP {"case":"Simcade-keyboard","contacts":0,"interventions":{"bus_stop_late":0,"la_source_late":0,"raidillon_power":0},"kemmel_kmh":161.958329336259,"lap":303.666666666473,"off_steps":0,"peak_slip_deg":5.28334608490548,"top_kmh":162.177123248591,"valid":true}
-SHOWCASE LAP {"case":"Simcade-human","contacts":0,"interventions":{"bus_stop_late":2053,"la_source_late":2396,"raidillon_power":801},"kemmel_kmh":162.025607851428,"lap":301.745833333141,"off_steps":0,"peak_slip_deg":5.0620928528524,"top_kmh":162.174119525619,"valid":true}
-SHOWCASE LAPS PASS []
