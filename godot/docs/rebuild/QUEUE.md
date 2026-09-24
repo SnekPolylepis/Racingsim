@@ -17,14 +17,15 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 
 | ID | Task | Who | Needs | Status | Branch / notes |
 |---|---|---|---|---|---|
-| M-TRAIN | Merge train into main: workflow-gates (P4-03 + workflow), F-P2-08 (P2-08), F-P3-02c (P3-02c), P3-03-terrain (F-P3-03), scenery-kit, P4-07-bot-laps, P6-01-spa, P4-01-game-port | owner (GitHub PR) | | review: owner | rb/merge-train; Claude reviewed all but its own; read "MERGE train" |
-| R-P4-03 | Review P4-03 car-vs-wall contact (WallQuery, WallContact) | Sol | M-TRAIN | open | read "DONE P4-03"; merged before review (Sol out of usage) |
-| R-WF | Review the workflow change: tools/run_gates.ps1, tools/gates.json, §9 rules 2/5/6/10/11, suite cuts | Sol | M-TRAIN | open | read "NOTE workflow" |
-| R-P4-07 | Review P4-07 bot driver and laps gate | Sol | M-TRAIN | open | read "DONE P4-07" and "REVIEW P6-01" |
-| F-P4-01 | P4-01 follow-ups (Claude's review): Esc on the v2 path quits the app instead of returning to the front end; WallContact not yet called after car.step(); game.gd and track_drive.gd preload trackgen/*.gd but export_presets.cfg excludes trackgen/* so an exported exe breaks | Sol | M-TRAIN | open | fold into P4-core |
+| M-TRAIN | Merge train into main: workflow-gates (P4-03 + workflow), F-P2-08 (P2-08), F-P3-02c (P3-02c), P3-03-terrain (F-P3-03), scenery-kit, P4-07-bot-laps, P6-01-spa, P4-01-game-port | owner (GitHub PR) | | done | merged on main; read "MERGE train" |
+| R-P4-03 | Review P4-03 car-vs-wall contact (WallQuery, WallContact) | Sol | M-TRAIN | done | corner-contact fix queued as F-P4-03-corners |
+| F-P4-03-corners | WallQuery.contacts() assigns the first hit body's kind and one face normal to all collide_shape pairs; split simultaneous contacts by collider/face and test a two-wall corner | Claude | R-P4-03 | open | scripts/surface/wall_query.gd, tests/v2/barrier.gd |
+| R-WF | Review the workflow change: tools/run_gates.ps1, tools/gates.json, §9 rules 2/5/6/10/11, suite cuts | Sol | M-TRAIN | done | reviewed on main; no fix row |
+| R-P4-07 | Review P4-07 bot driver and laps gate, including P4-07b | Sol | M-TRAIN | done | reviewed on main; no fix row |
+| F-P4-01 | P4-01 follow-ups (Claude's review): Esc on the v2 path quits the app instead of returning to the front end; WallContact not yet called after car.step(); game.gd and track_drive.gd preload trackgen/*.gd but export_presets.cfg excludes trackgen/* so an exported exe breaks | Sol | M-TRAIN | review: owner | folded into P4-core; branch `rb/P4-06-front-end` awaits owner merge; export checked |
 | F-P6-01 | Spa v0 fixes per Claude's review (bank twist, scene size, s 6125) | Gemini | | done | Gemini's bank blend + scatter, Claude's terrain trench fix, landed as rb/F-P6-01b; read "REVIEW F-P6-01" |
 | F-CI | CI tolerance scoped to the two legacy suites that differ on Linux, measured; obsolete Spa allowance removed | Claude | | review: Sol | rb/F-CI; read "DONE F-CI" |
-| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking, smooth Spa BotLine; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | review: Sol | rb/P4-07b; read "DONE P4-07b" |
+| P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking, smooth Spa BotLine; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | done | reviewed on main; read "DONE P4-07b" |
 | F-terrain-perf | tests/v2/terrain.gd's "car step" timing check (300 µs budget) ignores GatesEnv.perf(): under the parallel runner it read 671 µs and failed (168 µs alone). Route it through GatesEnv.perf()/perf_note() like the other timing gates | Claude | | review: Sol | small |
 
 ## Build
@@ -34,8 +35,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P2-08 | Debug scene to drive CarBody on the analytic test surfaces | Gemini | | done | rb/P2-08-test-surfaces 3b0143c |
 | P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | done | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
 | scenery-kit | Trackside scenery kit (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding) and proving ground placement | Gemini | | done | rb/scenery-kit; 34/34 gates pass (147 s), 11/11 scenery checks |
-| P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | | claimed: Sol (P4-01 merged; P4-02 done by Claude on rb/P4-02-race; P4-06 remains) | rb/P4-01-game-port; one task: these share the game loop (§9 rule 11) |
-| P4-02 | race.gd on TrackAssets: 3D gates, checkpoints in order, sectors, schema-2 ghosts (5.4 pose); live timing in the v2 game path | Claude | | review: Sol | rb/P4-02-race; read "DONE P4-02"; saving records on the v2 path is P4-06 (the path has no storage yet) |
+| P4-core | P4-01 game.gd loads a TrackAsset, CarBody replaces CarModel, §5.4 interpolation, WallContact after each step; P4-02 race.gd 3D gates and new ghost format; P4-06 front_end lists TrackAssets, loading screen, bake-on-load cache for generated tracks | Sol | | review: owner | P4-06 complete on `rb/P4-06-front-end`, branch awaits owner merge; 42/42 full gates, 212/0 features, export PASS |
+| P4-02 | race.gd on TrackAssets: 3D gates, checkpoints in order, sectors, schema-2 ghosts (5.4 pose); live timing in the v2 game path | Claude | | done | reviewed on main; persistence is P4-06 |
 | P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | done (review R-P4-07) | merged in M-TRAIN |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Claude | P4-02 | review: Sol | rb/P4-vis; read "DONE P4-04/P4-05"; left: night lamps from Lights/ (no track has them yet), wall-impact audio (needs F-P4-01's WallContact on the v2 path), menus (P4-06) |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
@@ -47,10 +48,10 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 |---|---|---|---|---|---|
 | D-kerb | Should Simcade kerbs feel softer than Simulation (car.gd's curb_scale 0.55 has no direct 3D equivalent)? | owner | | done: no (2026-09-23) | same kerbs in both handling models |
 | D-compliance | Add tyre radial stiffness + unsprung mass so kerb strikes are realistic (changes ride height baselines) | owner | | done: yes (2026-09-23) | P2-comp |
-| P2-comp | Tyre compliance / unsprung mass model | Claude | | review: Sol | rb/P2-comp; read "DONE P2-comp" |
-| P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | review: Sol | rb/P2-comp-b (on rb/P2-comp); read "DONE P2-comp-b" |
+| P2-comp | Tyre compliance / unsprung mass model | Claude | | done | reviewed on main |
+| P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | done | reviewed on main |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-02 | Nordschleife in sections | Gemini (content/tools only), Claude review | P6-01 | open | |
 | P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
-| props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | review: Sol | claude/racing-sim-props-cones-v69o5c (on rb/P2-comp-b); read "DONE props". For P4-core: PropSet in the game loop |
+| props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | done | reviewed on main; PropSet in P4-06 game loop |
 | P7 | Delete the legacy model and tracks, rewrite docs, Windows + macOS export | Sol, Gemini | P5-04, P6-01 | open | split when it's reached |

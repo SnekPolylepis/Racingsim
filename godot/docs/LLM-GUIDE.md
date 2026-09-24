@@ -48,7 +48,7 @@ All paths below are relative to `godot/`.
 | `tests/karussell.gd` | Drives the Caracciola-Karussell against a flat control: road deviation, chassis roll and corner unloading | Suspension travel, cross-section or profile changes |
 | `tests/validation.gd`, `tests/showcase_laps.gd` | Spatial validation equivalence and 296/Spa laps, including digital intervention | Track validation and showcase regression |
 | `scripts/retro_renderer.gd` | World/UI, glow, GPU history and field-composition viewports | Authentic UI shares output filtering; Sharp UI optional |
-| `scripts/front_end.gd` | Boot/title/attract, race/car/circuit/loading/grid, pause/results/replay | Console screen flow and input focus |
+| `scripts/front_end.gd` | Legacy console pages and v2 car/TrackAsset choice, loading and drive/menu flow | Keep v2 pages independent of legacy `track.data` and `Interface` |
 | `scripts/showcase_driver.gd`, `scripts/showcase_benchmark.gd`, `scripts/showcase_review.gd` | Input-only driving, full flow/performance and repeatable comparison captures | Isolated source/export acceptance |
 | `scripts/record_writer.gd` | Serial background atomic record/sector saves | Flush before read/import/delete/shutdown; immutable completed samples |
 | `scripts/retro_assets.gd`, `scripts/retro_flare.gd` | Generated small art textures, painted sky, occluded flare | Procedural presentation |

@@ -1317,3 +1317,41 @@ Not done yet:
 - night lamps from `Lights/` (no TrackAsset has lamps yet)
 - wall-impact audio (`sound.impact` needs WallContact on this path: F-P4-01)
 - menus and pause (P4-06)
+
+## 2026-09-23  CLAIM P4-06 / P4-core  (GPT-6 Sol)
+Branch `rb/P4-06-front-end` from current main. The owner requested a branch-only push and GitHub merge, overriding §9's self-merge rule. Scope: v2 front end, TrackAsset cache loading, records, F-P4-01 integration, export and tests.
+
+## 2026-09-23  NOTE R-P4-03  (GPT-6 Sol)
+Reviewed `wall_query.gd`, `wall_contact.gd`, and the P4-03 DONE evidence on merged main. Swept box motion, penetration correction and per-kind impulses cover the single-wall 300 km/h case. **Fix queued:** `WallQuery.contacts()` calls `collide_shape()` for up to four contact pairs but assigns every pair one normal and `wall_kind` taken from the first `intersect_shape()` hit. At a two-wall corner, distinct faces or kinds receive the wrong impulse direction/friction. `F-P4-03-corners` requests per-face contact attribution and a corner regression. This does not invalidate the recorded straight-wall barrier gate.
+
+## 2026-09-23  NOTE R-WF  (GPT-6 Sol)
+Approved the merged workflow runner and §9 rules 2/5/6/10/11. The runner selects suites from `gates.json`, applies timeouts to Godot processes, checks exit/stderr and RESULTS (or exact legacy baseline), suppresses parallel timing budgets and provides serial `-Perf`. The user's branch-only GitHub handoff supersedes its self-merge rule for this task. The required full `-All` run follows P4-06 implementation.
+
+## 2026-09-23  NOTE R-P4-07  (GPT-6 Sol)
+Approved the merged P4-07 bot/laps gate and P4-07b correction. Reviewed distance-based curvature, measured skidpad `grip_curve()` cache, braking/yaw control, per-track isolated physics worlds, all car/model rows, baseline comparison and wall/prop/off-track checks. The gate exercises both shipped generators and fails laps outside 2% of recorded times. No fix row.
+
+## 2026-09-23  NOTE P2-comp  (GPT-6 Sol)
+Approved the merged compliance and unsprung-mass work. `CarBody.travel()` takes spring/damper/tyre stiffness implicitly, clamps droop and mount travel, and uses tyre load at contact while applying suspension force to the body. The added preset parameters, rest seating and flat/kerb gates match the DONE evidence. No fix row.
+
+## 2026-09-23  NOTE P2-comp-b  (GPT-6 Sol)
+Approved the merged kerb-edge normal. `TyreFootprint.tread_normal()` returns the ground normal at zero edge slope and leans only in the rolling direction, scaled by the detected edge crossing; massless-wheel contacts keep ground normals. The footprint gate covers climbing speed and parked edge stability. No fix row.
+
+## 2026-09-23  NOTE props  (GPT-6 Sol)
+Approved the merged `PropBody`/`PropSet` work and contract. Reviewed authored prop loading, ground/car/wall impulses, sleep/grid handling and reset/sync behavior; the props gate covers rest, impacts, momentum, determinism and performance. Prop-to-prop collision remains explicitly outside this task. P4-06 now calls PropSet in the game loop. No fix row.
+
+## 2026-09-23  NOTE P4-02  (GPT-6 Sol)
+Approved the merged TrackAsset timing work. `update_asset()` consumes ordered 3D gates, invalidates missed checkpoints/off-track/contact, records 9-number §5.4 samples, and updates sectors. `tests/v2/race.gd` covers valid/missed/reverse/reset/ghost cases. Persistence on the v2 path is part of P4-06, with schema-2 records and sectors tested there. Its missing `.uid` sidecar was generated and included in this review branch after Godot warned during export. No fix row.
+
+## 2026-09-23  DONE P4-06 / F-P4-01  (GPT-6 Sol) — branch `rb/P4-06-front-end`
+The normal v2 path initializes settings from `user://v2/settings.json`, connected storage (default `user://v2`), the serial record writer, presentation, and the front end. The menu picks one of three cars and either Proving Ground or Spa, shows a loading screen before a synchronous bake, then enters drive; Esc returns to the main menu. `load_v2_track()` reuses `track_drive.gd::load_asset()` so generated scenes are cached in `user://tracks3d/` by source revision. `change_v2_car()`, `start_v2_drive()`, and `return_v2_menu()` own respectively selection, a fresh grid/session, and safe record flush. `physics_v2()` now steps `WallContact` and `PropSet` after the car, before race timing; resets return props home. `render_v2()` synchronizes authored prop markers.
+
+V2 `record_path()` hashes `track.record_key()` with effective setup, car, handling, wear and invalidation rules. It loads only matching schema-2 ghosts, writes 9-number pose samples through the existing record writer without a legacy exchange ghost, and writes/reloads the companion `.sectors.json`. The v2 save subdirectory keeps legacy user files separate. The Windows and macOS export presets include both generators and Spa's three runtime data inputs; `--v2-export-check` checks them from a packaged executable.
+
+Verification on the branch: `tests/v2/front_end.gd` 11/0 (menu choices, Spa cache, drive, schema-2 record/sector round trip, return), empty stderr; `tools/run_gates.ps1 -All` **42/42**, 0 failures, 175 s (single full run); windowed `-- --features` **212/0**, empty stderr; headless `-- --v2-smoke` PASS, empty stderr. A real Windows release export (`--export-release "Windows Desktop" build/P4-06-test.exe`) succeeded with empty stderr, and the exported executable's `--headless -- --v2-export-check` printed `V2 EXPORT PASS`, exit 0, empty stderr after loading both assets. `gdformat -l 110` on touched scripts and test: clean; `git diff --check`: clean. The owner merges this pushed branch on GitHub. The separate wall-corner issue remains queued as F-P4-03-corners.
+
+## 2026-09-23  NOTE P4-06 final verification  (GPT-6 Sol)
+After the first full pass, diff review found that normal startup still baked Proving Ground before showing the menu. `setup_v2()` now leaves normal play at the menu with no asset; only smoke/presentation/export probes preload one. The first asset is built behind the circuit loading page. `change_v2_car()` now works before any asset exists, and `draw_v2()` waits for an asset before reading its length. The front-end test explicitly checks that the menu opens before the first bake. Godot also reported a missing `tests/v2/race.gd.uid` during export; the sidecar is included with this review branch.
+
+New P4-06 functions: `check_exported_v2_assets()` verifies bundled generators and Spa source data from the exported executable; `load_v2_track()` swaps and validates the active asset and rebuilds its surface/wall/prop services; `change_v2_car()` rebuilds the selected car and visuals; `start_v2_drive()` begins a fresh grid and timing session; `return_v2_menu()` flushes records and returns to selection. In `front_end.gd`, `show_v2_page()` builds the v2 pages, `cycle_v2_car()` and `cycle_v2_track()` move choices, `prepare_v2_race()` displays loading before baking, and `draw_v2()` draws only TrackAsset-safe menu data.
+
+Final code tree checks: `tools/run_gates.ps1 -All` **42/42**, 0 failures, 154 s (repeated only because startup changed after the initial pass); windowed `-- --features` **212/0**, exit 0, empty stderr; `--headless -- --v2-smoke` PASS, empty stderr. The final Windows release export exited 0 with empty stderr; its executable loaded Proving Ground and Spa and printed `V2 EXPORT PASS`, exit 0, empty stderr. No code changes followed these checks.

@@ -32,6 +32,7 @@ var rim_index = 0
 var navigation_log = []
 var ui_player: AudioStreamPlayer
 var ui_sounds = {}
+const V2_TRACKS = {"proving_ground": "Proving Ground", "spa": "Spa-Francorchamps"}
 
 
 func initialize(owner_app):
@@ -74,8 +75,9 @@ func initialize(owner_app):
 	add_child(ui_player)
 	for kind in ["move", "confirm", "back", "error"]:
 		ui_sounds[kind] = make_tone(kind)
-	demo_driver = preload("res://scripts/showcase_driver.gd").new()
-	show_page("boot")
+	if not app.v2_mode:
+		demo_driver = preload("res://scripts/showcase_driver.gd").new()
+		show_page("boot")
 
 
 func make_tone(kind):
@@ -140,6 +142,9 @@ func add_option(caption, action, index, position = Vector2(24, 154), width = 264
 
 
 func show_page(next):
+	if app.v2_mode:
+		show_v2_page(next)
+		return
 	page = next
 	age = 0
 	idle = 0
@@ -279,13 +284,28 @@ func focus_first():
 		not buttons.is_empty()
 		and is_instance_valid(buttons[0])
 		and buttons[0].is_inside_tree()
-		and not app.ui.is_open()
+		and (app.ui == null or not app.ui.is_open())
 		and page != "drive"
 	):
 		buttons[0].grab_focus()
 
 
 func back():
+	if app.v2_mode:
+		match page:
+			"drive":
+				app.return_v2_menu()
+			"loading":
+				loading = false
+				loading_serial += 1
+				show_page("circuit")
+			"circuit":
+				show_page("car")
+			"car":
+				show_page("main")
+			_:
+				show_page("main")
+		return
 	tone("back")
 	if app.ui.is_open():
 		if app.ui.dialogs > 0:
@@ -329,6 +349,19 @@ func back():
 
 
 func handle(event):
+	if app.v2_mode:
+		if (
+			event is InputEventKey
+			and event.pressed
+			and not event.echo
+			and event.physical_keycode == KEY_ESCAPE
+		):
+			back()
+			return true
+		if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B:
+			back()
+			return true
+		return false
 	if event is InputEventKey or event is InputEventMouseButton:
 		pad_prompts = false
 	elif event is InputEventJoypadButton or event is InputEventJoypadMotion:
@@ -580,6 +613,9 @@ func draw_map(rect):
 func _draw():
 	if app == null:
 		return
+	if app.v2_mode:
+		draw_v2()
+		return
 	draw_set_transform(Vector2.ZERO, 0, size / Vector2(640, 448))
 	if page == "drive":
 		return
@@ -743,6 +779,13 @@ func _draw():
 func _process(dt):
 	if app == null:
 		return
+	if app.v2_mode:
+		age += dt
+		choices.visible = page != "drive"
+		prompt.visible = page != "drive"
+		prompt.text = "ARROWS  Move     ENTER  Select     ESC  Back"
+		queue_redraw()
+		return
 	age += dt
 	idle += dt
 	visible = true
@@ -797,3 +840,110 @@ func _process(dt):
 func drive_track_asset(id: String) -> void:
 	app.get_tree().set_meta("dev_track_id", id)
 	app.get_tree().change_scene_to_file("res://scenes/proving/track_drive.tscn")
+
+
+## P4-06 pages use the same front-end controls with TrackAsset choices and no legacy track data.
+func show_v2_page(next: String) -> void:
+	page = next
+	age = 0.0
+	if app.instruments:
+		app.instruments.visible = next == "drive"
+	for child in choices.get_children():
+		choices.remove_child(child)
+		child.queue_free()
+	buttons.clear()
+	app.in_menu = next != "drive"
+	match next:
+		"main":
+			add_option("Race", func(): show_page("car"), 0)
+			add_option("Quit", app.request_quit, 1)
+		"car":
+			add_option("Continue to circuit", func(): show_page("circuit"), 0)
+			add_option("Car: " + app.car.p.name, cycle_v2_car, 1)
+			add_option("Back", back, 2)
+		"circuit":
+			add_option("Load circuit", prepare_v2_race, 0)
+			add_option(
+				V2_TRACKS.get(selected_track, "Proving Ground") + "  >",
+				cycle_v2_track,
+				1,
+				Vector2(24, 154),
+				355
+			)
+			add_option("Back", back, 2)
+	if selected_track.is_empty():
+		selected_track = app.v2_track_id
+	if not buttons.is_empty():
+		call_deferred("focus_first")
+	queue_redraw()
+
+
+func cycle_v2_car() -> void:
+	var keys = app.presets.keys()
+	app.change_v2_car(keys[(keys.find(app.preset_key) + 1) % keys.size()])
+	show_page("car")
+
+
+func cycle_v2_track() -> void:
+	selected_track = "spa" if selected_track == "proving_ground" else "proving_ground"
+	show_page("circuit")
+
+
+## Show loading before the generator bakes; the loader validates and caches by source revision.
+func prepare_v2_race() -> void:
+	if loading:
+		return
+	loading = true
+	loading_serial += 1
+	var serial = loading_serial
+	loading_stage = "Preparing " + V2_TRACKS[selected_track]
+	loading_progress = 0.1
+	show_page("loading")
+	if DisplayServer.get_name() == "headless":
+		await get_tree().process_frame
+	else:
+		await RenderingServer.frame_post_draw
+	if serial != loading_serial:
+		return
+	var ok = app.load_v2_track(selected_track)
+	if serial != loading_serial:
+		return
+	loading = false
+	if not ok:
+		show_page("circuit")
+		return
+	loading_progress = 1.0
+	app.start_v2_drive()
+
+
+## Menu copy uses the asset's public identity and lap length, including before the new asset loads.
+func draw_v2() -> void:
+	if page == "drive":
+		return
+	draw_set_transform(Vector2.ZERO, 0, size / Vector2(640, 448))
+	draw_rect(Rect2(0, 0, 640, 448), Color(.025, .045, .065, .95))
+	draw_line(Vector2(24, 72), Vector2(615, 72), Color("d8b04b"), 2)
+	text_at(Vector2(24, 30), "CIRCUIT CLUB", 18, Color("e2c477"), true)
+	text_at(
+		Vector2(24, 60),
+		{"main": "HOME", "car": "SELECT CAR", "circuit": "SELECT CIRCUIT", "loading": "LOADING"}.get(
+			page, page.to_upper()
+		),
+		28,
+		Color.WHITE,
+		true
+	)
+	if page == "main":
+		text_at(Vector2(24, 125), app.car.p.name, 20)
+		text_at(Vector2(24, 150), V2_TRACKS.get(app.v2_track_id, app.v2_track_id), 18)
+	elif page == "car":
+		text_at(Vector2(24, 125), app.car.p.name, 24, Color.WHITE, true)
+	elif page in ["circuit", "loading"]:
+		text_at(Vector2(24, 125), V2_TRACKS.get(selected_track, selected_track), 24, Color.WHITE, true)
+		if selected_track == app.v2_track_id and app.track is Node3D:
+			text_at(Vector2(24, 152), "%.3f km" % (app.track.length / 1000.0), 18)
+			text_at(Vector2(24, 179), "BEST  " + app.RaceModel.time_text(app.race.best), 18, Color("e2c477"))
+	if page == "loading":
+		draw_rect(Rect2(24, 275, 340, 10), Color("293942"))
+		draw_rect(Rect2(24, 275, loading_progress * 340, 10), Color("e6bd52"))
+		text_at(Vector2(24, 264), loading_stage, 18)
