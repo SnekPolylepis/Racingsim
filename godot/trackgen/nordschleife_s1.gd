@@ -9,6 +9,13 @@ const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const TerrainPatch = preload("res://scripts/track/terrain.gd")
+const CatchFence = preload("res://scripts/track/catch_fence.gd")
+const Grandstand = preload("res://scripts/track/grandstand.gd")
+const Gantry = preload("res://scripts/track/gantry.gd")
+const Billboards = preload("res://scripts/track/billboards.gd")
+const PitBuilding = preload("res://scripts/track/pit_building.gd")
+const MarshalPost = preload("res://scripts/track/marshal_post.gd")
+const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
@@ -281,6 +288,58 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 	return {"patch": terrain, "grid": grid}
 
 
+static func terrain_height(terrain: Dictionary, point: Vector3) -> float:
+	var patch = terrain.patch
+	var grid = terrain.grid
+	var x = clampf((point.x - patch.origin_offset.x) / patch.metres_per_pixel, 0.0, grid.width - 1.001)
+	var z = clampf((point.z - patch.origin_offset.y) / patch.metres_per_pixel, 0.0, grid.height - 1.001)
+	var ix = int(x)
+	var iz = int(z)
+	var fx = x - ix
+	var fz = z - iz
+	var a = float(grid.data[iz * grid.width + ix])
+	var b = float(grid.data[iz * grid.width + ix + 1])
+	var c = float(grid.data[(iz + 1) * grid.width + ix])
+	var d = float(grid.data[(iz + 1) * grid.width + ix + 1])
+	return (
+		a + fx * (b - a) + fz * (c - a) if fx + fz <= 1.0 else d + (1.0 - fx) * (c - d) + (1.0 - fz) * (b - d)
+	)
+
+
+static func add_forest(
+	asset: Node3D,
+	terrain: Dictionary,
+	title: String,
+	from_m: float,
+	to_m: float,
+	density: float,
+	offset_min: float,
+	offset_max: float,
+	seed_value: int
+) -> void:
+	var trees = RoadScatter.new()
+	trees.name = title
+	trees.follow_road = NodePath("../Main")
+	trees.sides = RoadScatter.Sides.BOTH
+	trees.random_seed = seed_value
+	trees.from_m = from_m
+	trees.to_m = to_m
+	trees.per_100m = density
+	trees.offset_min = offset_min
+	trees.offset_max = offset_max
+	trees.scale_min = 1.0
+	trees.scale_max = 2.0
+	asset.add_child(trees)
+	trees.owner = asset
+	trees.bake()
+	if not terrain.is_empty():
+		var multimesh = asset.get_node("Scenery/" + title).multimesh
+		for i in multimesh.instance_count:
+			var xf = multimesh.get_instance_transform(i)
+			xf.origin.y = terrain_height(terrain, xf.origin)
+			multimesh.set_instance_transform(i, xf)
+
+
 static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 	var stations = road.last_bake.stations
 	var center = road.last_bake.center
@@ -337,13 +396,273 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 	path.owner = asset
 
 
-## Look-2 sodium lamps (scripts/track/track_lights.gd): every 72 m on alternating sides, both sides
-## every 26 m through the T13 start and pit area. Poles stand 3.5 m beyond the verge, outside the
-## 1.2 m armco.
-static func add_lighting(asset: Node3D, road: RoadPath) -> void:
-	var length = road.last_bake.length
-	var zones = [{"from_m": length - 240.0, "to_m": 160.0, "spacing": 26.0, "sides": "both"}]
-	TrackLights.build(asset, road, TrackLights.place(road, 72.0, zones, 3.5))
+## Lamp placements (Look-4) lit as sodium lamps (Look-2, scripts/track/track_lights.gd). The Marker3D
+## placements under Lights/ become poles; the road-following fill adds lamps every 72 m where they leave
+## the road dark, and both sides every 26 m through the T13 start. Paddock lamps stand 16 m off the
+## road and light the paddock, not the tarmac.
+static func add_lighting(asset: Node3D, road: RoadPath, corners: Dictionary, measured: float) -> void:
+	var lights = Node3D.new()
+	lights.name = "Lights"
+	asset.add_child(lights)
+	lights.owner = asset
+	var stations = road.last_bake.stations
+	var total_stations = stations.size()
+
+	# 1. Paddock area lamps at T13 (12 sodium posts)
+	for i in range(12):
+		var fraction = float(i) / 12.0
+		var s = fposmod(measured - 200.0 + fraction * 400.0, measured)
+		var index = int(s / measured * total_stations) % total_stations
+		var st = stations[index]
+		var paddock = SceneryBuilder.add_light_placement(
+			lights,
+			asset,
+			"PaddockLamp%02d" % i,
+			st.pos + st.tangent.cross(Vector3.UP) * 16.0,
+			st.tangent,
+			"pit",
+			8.0,
+			Color("#F2A14A")
+		)
+		paddock.set_meta("road_glow", false)
+
+	# 2. Trackside lamp markers (sodium_mast, flood, pit) spaced 40-70 m on alternating sides
+	var lamp_ranges = [
+		{
+			"from": measured - 250.0,
+			"to": corners.get("Sabine-Schmitz-Kurve", 280.0) + 60.0,
+			"step": 50.0,
+			"type": "t13"
+		},
+		{
+			"from": corners.get("Hatzenbach 1", 820.0) - 60.0,
+			"to": corners.get("Hocheichen exit", 1490.0),
+			"step": 60.0,
+			"type": "hatzenbach"
+		},
+		{
+			"from": corners.get("Quiddelbacher Hoehe", 2000.0) - 60.0,
+			"to": corners.get("Flugplatz exit", 2440.0) + 60.0,
+			"step": 60.0,
+			"type": "flugplatz"
+		},
+		{
+			"from": corners.get("Schwedenkreuz", 3030.0) - 60.0,
+			"to": corners.get("Aremberg exit", 4150.0),
+			"step": 70.0,
+			"type": "aremberg"
+		}
+	]
+
+	var lamp_idx = 0
+	for rng in lamp_ranges:
+		var s = rng["from"]
+		var s_end = rng["to"]
+		var step = rng["step"]
+		var side_toggle = 1
+		while s <= s_end if s_end >= s else (s <= measured or s <= s_end):
+			var s_cur = fposmod(s, measured)
+			var idx = int(s_cur / measured * total_stations) % total_stations
+			var st = stations[idx]
+			var right = st.tangent.cross(Vector3.UP).normalized()
+			var side_sign = side_toggle
+			side_toggle = -side_toggle
+
+			var kind = "sodium_mast"
+			var h = 10.0
+			var off = 9.0
+			if rng["type"] == "t13":
+				if s_cur > measured - 200.0 or s_cur < 20.0:
+					if side_sign > 0:
+						kind = "pit"
+						h = 8.0
+						off = 12.0
+					else:
+						kind = "flood"
+						h = 12.0
+						off = 12.0
+				elif s_cur >= 20.0 and s_cur <= 120.0:
+					kind = "flood"
+					h = 12.0
+					off = 12.0
+			elif rng["type"] == "hatzenbach" or rng["type"] == "flugplatz":
+				kind = "flood"
+				h = 12.0
+
+			var lamp_pos = st.pos + right * (side_sign * off)
+			var fwd = st.tangent
+			lamp_idx += 1
+			SceneryBuilder.add_light_placement(
+				lights, asset, "TrackLamp%03d" % lamp_idx, lamp_pos, fwd, kind, h, Color("#F2A14A")
+			)
+			s += step
+			if s_end < rng["from"] and s >= measured and fposmod(s, measured) > s_end:
+				break
+
+	# 3. Poles, heads and halos for the placements, plus the fill (outside the 1.2 m armco).
+	var lamps = TrackLights.from_markers(asset, road, 3.5)
+	var start = {"from_m": measured - 240.0, "to_m": 160.0, "spacing": 26.0, "sides": "both"}
+	lamps.append_array(TrackLights.fill(road, 72.0, [start], 3.5, lamps))
+	TrackLights.build(asset, road, lamps)
+	asset.lighting = {"night_lamps": lamps.size()}
+
+
+static func add_scenery_kit(asset: Node3D, road: RoadPath, corners: Dictionary, measured: float) -> void:
+	# 1. Start/Finish Gantry at T13
+	var gantry = Gantry.new()
+	gantry.name = "StartGantry"
+	gantry.follow_road = NodePath("../Main")
+	gantry.station = 0.0
+	gantry.clearance_height = 6.0
+	gantry.extra_width = 3.5
+	gantry.light_panel = true
+	asset.add_child(gantry)
+	gantry.owner = asset
+	gantry.bake()
+
+	# 2. Pit building at T13
+	var pits = PitBuilding.new()
+	pits.name = "PitBuilding"
+	pits.follow_road = NodePath("../Main")
+	pits.side = PitBuilding.Side.RIGHT
+	pits.station = measured - 110.0
+	pits.length_m = 90.0
+	pits.offset = 12.0
+	pits.has_pit_wall = false
+	asset.add_child(pits)
+	pits.owner = asset
+	pits.bake()
+
+	# 3. Grandstands at real Nordschleife locations: T13, Hatzenbach, Flugplatz
+	var gs_t13 = Grandstand.new()
+	gs_t13.name = "T13Grandstand"
+	gs_t13.follow_road = NodePath("../Main")
+	gs_t13.side = Grandstand.Side.LEFT
+	gs_t13.station = 60.0
+	gs_t13.length_m = 90.0
+	gs_t13.rows = 10
+	gs_t13.offset = 10.0
+	gs_t13.has_roof = true
+	gs_t13.solid_front = true
+	asset.add_child(gs_t13)
+	gs_t13.owner = asset
+	gs_t13.bake()
+
+	var gs_hatz = Grandstand.new()
+	gs_hatz.name = "HatzenbachGrandstand"
+	gs_hatz.follow_road = NodePath("../Main")
+	gs_hatz.side = Grandstand.Side.RIGHT
+	gs_hatz.station = corners.get("Hatzenbach 1", 820.0) - 30.0
+	gs_hatz.length_m = 50.0
+	gs_hatz.rows = 6
+	gs_hatz.offset = 8.0
+	gs_hatz.has_roof = false
+	gs_hatz.solid_front = true
+	asset.add_child(gs_hatz)
+	gs_hatz.owner = asset
+	gs_hatz.bake()
+
+	var gs_flug = Grandstand.new()
+	gs_flug.name = "FlugplatzGrandstand"
+	gs_flug.follow_road = NodePath("../Main")
+	gs_flug.side = Grandstand.Side.RIGHT
+	gs_flug.station = corners.get("Flugplatz", 2340.0) - 40.0
+	gs_flug.length_m = 60.0
+	gs_flug.rows = 8
+	gs_flug.offset = 8.0
+	gs_flug.has_roof = false
+	gs_flug.solid_front = true
+	asset.add_child(gs_flug)
+	gs_flug.owner = asset
+	gs_flug.bake()
+
+	# 4. Catch fences
+	var fence_t13 = CatchFence.new()
+	fence_t13.name = "T13CatchFence"
+	fence_t13.follow_road = NodePath("../Main")
+	fence_t13.side = CatchFence.Side.LEFT
+	fence_t13.from_m = measured - 150.0
+	fence_t13.to_m = 120.0
+	fence_t13.offset = 5.0
+	fence_t13.fence_height = 3.5
+	fence_t13.solid = true
+	asset.add_child(fence_t13)
+	fence_t13.owner = asset
+	fence_t13.bake()
+
+	var fence_hatz = CatchFence.new()
+	fence_hatz.name = "HatzenbachCatchFence"
+	fence_hatz.follow_road = NodePath("../Main")
+	fence_hatz.side = CatchFence.Side.RIGHT
+	fence_hatz.from_m = corners.get("Hatzenbach 1", 820.0) - 30.0
+	fence_hatz.to_m = corners.get("Hatzenbach 4", 1250.0) + 30.0
+	fence_hatz.offset = 5.0
+	fence_hatz.fence_height = 3.5
+	fence_hatz.solid = true
+	asset.add_child(fence_hatz)
+	fence_hatz.owner = asset
+	fence_hatz.bake()
+
+	var fence_flug = CatchFence.new()
+	fence_flug.name = "FlugplatzCatchFence"
+	fence_flug.follow_road = NodePath("../Main")
+	fence_flug.side = CatchFence.Side.RIGHT
+	fence_flug.from_m = corners.get("Flugplatz", 2340.0) - 80.0
+	fence_flug.to_m = corners.get("Flugplatz exit", 2440.0) + 40.0
+	fence_flug.offset = 5.0
+	fence_flug.fence_height = 3.5
+	fence_flug.solid = true
+	asset.add_child(fence_flug)
+	fence_flug.owner = asset
+	fence_flug.bake()
+
+	# 5. Billboards
+	var boards_t13 = Billboards.new()
+	boards_t13.name = "T13Billboards"
+	boards_t13.follow_road = NodePath("../Main")
+	boards_t13.side = Billboards.Side.RIGHT
+	boards_t13.from_m = 40.0
+	boards_t13.to_m = 180.0
+	boards_t13.offset = 7.0
+	boards_t13.spacing = 40.0
+	asset.add_child(boards_t13)
+	boards_t13.owner = asset
+	boards_t13.bake()
+
+	var boards_quid = Billboards.new()
+	boards_quid.name = "QuiddelbachBillboards"
+	boards_quid.follow_road = NodePath("../Main")
+	boards_quid.side = Billboards.Side.LEFT
+	boards_quid.from_m = corners.get("Quiddelbacher Hoehe", 2000.0) - 100.0
+	boards_quid.to_m = corners.get("Flugplatz", 2340.0) - 100.0
+	boards_quid.offset = 7.0
+	boards_quid.spacing = 50.0
+	asset.add_child(boards_quid)
+	boards_quid.owner = asset
+	boards_quid.bake()
+
+	# 6. Marshal posts
+	var marshals = MarshalPost.new()
+	marshals.name = "MarshalPosts"
+	marshals.follow_road = NodePath("../Main")
+	marshals.side = MarshalPost.Side.RIGHT
+	marshals.offset = 6.0
+	marshals.spacing = 300.0
+	asset.add_child(marshals)
+	marshals.owner = asset
+	marshals.bake()
+
+	# 7. Spectator crowd banks at T13, Hatzenbach, Flugplatz, Schwedenkreuz
+	SceneryBuilder.build_crowd_bank(asset, road, "T13CrowdBank", measured - 50.0, 80.0, -1, 14.0)
+	SceneryBuilder.build_crowd_bank(
+		asset, road, "HatzenbachCrowdBank", corners.get("Hatzenbach 2", 950.0), 100.0, 1, 14.0
+	)
+	SceneryBuilder.build_crowd_bank(
+		asset, road, "FlugplatzCrowdBank", corners.get("Flugplatz", 2340.0) + 40.0, 100.0, 1, 14.0
+	)
+	SceneryBuilder.build_crowd_bank(
+		asset, road, "SchwedenkreuzCrowdBank", corners.get("Schwedenkreuz", 3030.0), 90.0, -1, 14.0
+	)
 
 
 static func build_asset() -> Node3D:
@@ -419,7 +738,9 @@ static func build_asset() -> Node3D:
 				0.3
 			)
 
-	add_lighting(asset, road)
+	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 5.0, 10.0, 40.0, 713)
+	add_scenery_kit(asset, road, positions, measured)
+	add_lighting(asset, road, positions, measured)
 	return asset
 
 

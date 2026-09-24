@@ -19,6 +19,12 @@ func run() -> void:
 	var app = load("res://main.tscn").instantiate()
 	root.add_child(app)
 	await process_frame
+	# Start from no saved records, as a fresh machine (CI) does: a record left by an earlier run must not
+	# stand in for one this run failed to write. Only ever inside the isolated test storage.
+	var records = app.storage.path("records")
+	if records.begins_with("user://native-tests/") and DirAccess.dir_exists_absolute(records):
+		for file in DirAccess.get_files_at(records):
+			DirAccess.remove_absolute(records.path_join(file))
 	check(
 		app.frontend.page == "main" and app.in_menu and not (app.track is Node3D),
 		"front end opens before the first track bake"
@@ -55,6 +61,7 @@ func run() -> void:
 	check(
 		(
 			app.settings_path == "user://native-tests/v2/settings.json"
+			and saved_settings is Dictionary
 			and is_equal_approx(saved_settings.volume, .35)
 			and saved_settings.output_mode == 1
 		),
@@ -98,7 +105,11 @@ func run() -> void:
 	var setup_file = app.storage.path("setups", "Front end test.json")
 	var saved_setup = app.storage.read_json(setup_file)
 	check(
-		saved_setup.car == app.preset_key and is_equal_approx(saved_setup.setup.tireMu, original_grip + .02),
+		(
+			saved_setup is Dictionary
+			and saved_setup.car == app.preset_key
+			and is_equal_approx(saved_setup.setup.tireMu, original_grip + .02)
+		),
 		"named setup document round trip"
 	)
 	app.car.setup.tireMu = original_grip
@@ -122,10 +133,12 @@ func run() -> void:
 	app.save_record()
 	app.save_sectors()
 	app.record_writer.flush()
-	var saved = app.storage.read_json(spa_path)
+	# save_record() writes the active (tuned-setup) record, not the untuned spa_path.
+	var saved = app.storage.read_json(app.active_record_path)
 	check(
 		(
-			saved.get("schema") == 2
+			saved is Dictionary
+			and saved.get("schema") == 2
 			and saved.get("track") == app.track.record_key()
 			and app.storage.validate_ghost(saved).is_empty()
 		),

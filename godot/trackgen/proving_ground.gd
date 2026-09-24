@@ -15,6 +15,7 @@ const Gantry = preload("res://scripts/track/gantry.gd")
 const Billboards = preload("res://scripts/track/billboards.gd")
 const PitBuilding = preload("res://scripts/track/pit_building.gd")
 const MarshalPost = preload("res://scripts/track/marshal_post.gd")
+const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const PropBody = preload("res://scripts/props/prop_body.gd")
 const OUTPUT = "res://tracks3d/proving_ground/proving_ground.scn"
 const ARC = PI / 2.0
@@ -277,14 +278,25 @@ static func elevation(curve: Curve3D, length: float) -> PackedVector2Array:
 	return out
 
 
-static func add_wall(asset: Node3D, title: String, road: RoadPath, side: int, kind: int) -> void:
+static func add_wall(
+	asset: Node3D,
+	title: String,
+	road: RoadPath,
+	side: int,
+	kind: int,
+	from_m: float = 0.0,
+	to_m: float = -1.0,
+	offset: float = 4.0
+) -> void:
 	var wall = WallPath.new()
 	wall.name = title
 	wall.follow_road = NodePath("../Main")
 	wall.side = side
 	wall.kind = kind
-	wall.offset = 4.0
+	wall.offset = offset
 	wall.step_m = 5.0
+	wall.from_m = from_m
+	wall.to_m = to_m
 	asset.add_child(wall)
 	wall.owner = asset
 	wall.bake()
@@ -333,8 +345,10 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 
 
 ## Look-2 sodium lamps (scripts/track/track_lights.gd): every 50 m on alternating sides, both sides
-## every 25 m along the start/finish and the pits (left, 40-110 m), and on the right every 22 m past
-## the bowl grandstand (225-275 m). Poles stand 5.5 m beyond the verge, outside the 4 m armco.
+## every 25 m along the start/finish and the pits (left, 40-110 m), and both sides every 22 m past the
+## bowl grandstand (right, 225-275 m). Poles stand 5.5 m beyond the verge, outside the 4 m armco. Look-4's
+## 18 lights here hung over the road centreline rather than being Marker3D placements, so they are not
+## kept.
 static func add_lighting(asset: Node3D, road: RoadPath) -> void:
 	var length = road.last_bake.length
 	var zones = [
@@ -511,6 +525,10 @@ static func add_scenery_kit(asset: Node3D, _road: RoadPath) -> void:
 	asset.add_child(marshals)
 	marshals.owner = asset
 	marshals.bake()
+
+	# 7. Spectator crowd banks at bowl and crest
+	SceneryBuilder.build_crowd_bank(asset, _road, "BowlCrowdBank", 260.0, 70.0, 1, 14.0)
+	SceneryBuilder.build_crowd_bank(asset, _road, "CrestCrowdBank", 1190.0, 60.0, 1, 12.0)
 
 
 func _initialize() -> void:

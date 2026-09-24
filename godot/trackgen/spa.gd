@@ -8,6 +8,13 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
 const TerrainPatch = preload("res://scripts/track/terrain.gd")
+const CatchFence = preload("res://scripts/track/catch_fence.gd")
+const Grandstand = preload("res://scripts/track/grandstand.gd")
+const Gantry = preload("res://scripts/track/gantry.gd")
+const Billboards = preload("res://scripts/track/billboards.gd")
+const PitBuilding = preload("res://scripts/track/pit_building.gd")
+const MarshalPost = preload("res://scripts/track/marshal_post.gd")
+const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
@@ -424,17 +431,305 @@ static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
 	path.owner = asset
 
 
-## Look-2 sodium lamps (scripts/track/track_lights.gd): every 64 m on alternating sides, both sides
-## every 26 m from the pit straight through La Source, denser through Eau Rouge and Raidillon and at the
-## Bus Stop. Poles stand 4 m beyond the verge, outside the 2 m armco.
-static func add_lighting(asset: Node3D, road: RoadPath, positions: Dictionary) -> void:
-	var length = road.last_bake.length
-	var zones = [
-		{"from_m": length - 420.0, "to_m": positions["La Source"] + 70.0, "spacing": 26.0, "sides": "both"},
-		{"from_m": positions["Eau Rouge"] - 70.0, "to_m": positions["Raidillon"] + 140.0, "spacing": 30.0},
-		{"from_m": positions["Bus Stop"] - 160.0, "to_m": positions["Bus Stop"] + 90.0, "spacing": 32.0},
+## Lamp placements (Look-4) lit as sodium lamps (Look-2, scripts/track/track_lights.gd). The Marker3D
+## placements under Lights/ become poles; the road-following fill adds lamps every 64 m where they leave
+## the road dark, and both sides every 26 m from the pit straight through La Source. Paddock lamps
+## stand 18 m off the road and light the paddock, not the tarmac.
+static func add_lighting(asset: Node3D, road: RoadPath, corners: Dictionary, measured: float) -> void:
+	var lights = Node3D.new()
+	lights.name = "Lights"
+	asset.add_child(lights)
+	lights.owner = asset
+	var stations = road.last_bake.stations
+	var total_stations = stations.size()
+
+	# 1. Paddock area lamps (12 sodium posts)
+	for i in range(12):
+		var fraction = float(i) / 12.0
+		var s = fposmod(measured - 420.0 + fraction * 1050.0, measured)
+		var index = int(s / measured * total_stations) % total_stations
+		var st = stations[index]
+		var paddock = SceneryBuilder.add_light_placement(
+			lights,
+			asset,
+			"PaddockLamp%02d" % i,
+			st.pos + st.tangent.cross(Vector3.UP) * 18.0,
+			st.tangent,
+			"pit",
+			10.0,
+			Color("#F2A14A")
+		)
+		paddock.set_meta("road_glow", false)
+
+	# 2. Trackside lamp markers (sodium_mast, flood, pit) spaced 40-70 m on alternating sides
+	var lamp_ranges = [
+		# Pit straight & La Source
+		{
+			"from": measured - 450.0,
+			"to": corners.get("La Source", 350.0) + 120.0,
+			"step": 50.0,
+			"type": "pit_straight"
+		},
+		# Eau Rouge & Raidillon
+		{
+			"from": corners.get("Eau Rouge", 950.0) - 80.0,
+			"to": corners.get("Raidillon", 1100.0) + 140.0,
+			"step": 50.0,
+			"type": "raidillon"
+		},
+		# Kemmel Straight
+		{
+			"from": corners.get("Raidillon", 1100.0) + 140.0,
+			"to": corners.get("Les Combes", 2250.0),
+			"step": 65.0,
+			"type": "kemmel"
+		},
+		# Blanchimont to Bus Stop
+		{
+			"from": corners.get("Blanchimont", 5750.0) - 100.0,
+			"to": measured - 450.0,
+			"step": 60.0,
+			"type": "blanchimont"
+		}
 	]
-	TrackLights.build(asset, road, TrackLights.place(road, 64.0, zones, 4.0))
+
+	var lamp_idx = 0
+	for rng in lamp_ranges:
+		var s = rng["from"]
+		var s_end = rng["to"]
+		var step = rng["step"]
+		var side_toggle = 1
+		while s <= s_end if s_end >= s else (s <= measured or s <= s_end):
+			var s_cur = fposmod(s, measured)
+			var idx = int(s_cur / measured * total_stations) % total_stations
+			var st = stations[idx]
+			var right = st.tangent.cross(Vector3.UP).normalized()
+			var side_sign = side_toggle
+			side_toggle = -side_toggle
+
+			var kind = "sodium_mast"
+			var h = 10.0
+			var off = 10.0
+			if rng["type"] == "pit_straight":
+				if s_cur > measured - 300.0 or s_cur < 30.0:
+					if side_sign > 0:
+						kind = "pit"
+						h = 8.0
+						off = 14.0
+					else:
+						kind = "flood"
+						h = 12.0
+						off = 12.0
+				elif (
+					s_cur >= corners.get("La Source", 350.0) - 60.0
+					and s_cur <= corners.get("La Source", 350.0) + 60.0
+				):
+					kind = "flood"
+					h = 12.0
+			elif rng["type"] == "raidillon":
+				kind = "flood"
+				h = 12.0
+				off = 12.0
+
+			var lamp_pos = st.pos + right * (side_sign * off)
+			var fwd = st.tangent
+			lamp_idx += 1
+			SceneryBuilder.add_light_placement(
+				lights, asset, "TrackLamp%03d" % lamp_idx, lamp_pos, fwd, kind, h, Color("#F2A14A")
+			)
+			s += step
+			if s_end < rng["from"] and s >= measured and fposmod(s, measured) > s_end:
+				break
+
+	# 3. Poles, heads and halos for the placements, plus the fill (outside the 2 m armco).
+	var lamps = TrackLights.from_markers(asset, road, 4.0)
+	var pits = {
+		"from_m": measured - 420.0,
+		"to_m": corners.get("La Source", 350.0) + 70.0,
+		"spacing": 26.0,
+		"sides": "both"
+	}
+	lamps.append_array(TrackLights.fill(road, 64.0, [pits], 4.0, lamps))
+	TrackLights.build(asset, road, lamps)
+	asset.lighting = {"night_lamps": lamps.size()}
+
+
+static func add_scenery_kit(asset: Node3D, road: RoadPath, corners: Dictionary, measured: float) -> void:
+	# 1. Start/Finish Gantry
+	var gantry = Gantry.new()
+	gantry.name = "StartGantry"
+	gantry.follow_road = NodePath("../Main")
+	gantry.station = 0.0
+	gantry.clearance_height = 6.0
+	gantry.extra_width = 4.0
+	gantry.light_panel = true
+	asset.add_child(gantry)
+	gantry.owner = asset
+	gantry.bake()
+
+	# 2. Pit building at F1 straight
+	var pits = PitBuilding.new()
+	pits.name = "PitBuilding"
+	pits.follow_road = NodePath("../Main")
+	pits.side = PitBuilding.Side.RIGHT
+	pits.station = measured - 160.0
+	pits.length_m = 130.0
+	pits.offset = 12.0
+	pits.has_pit_wall = false
+	asset.add_child(pits)
+	pits.owner = asset
+	pits.bake()
+
+	# 3. Grandstands at real Spa locations
+	# Pit straight grandstand (left, opposite pits)
+	var gs_pit = Grandstand.new()
+	gs_pit.name = "PitGrandstand"
+	gs_pit.follow_road = NodePath("../Main")
+	gs_pit.side = Grandstand.Side.LEFT
+	gs_pit.station = measured - 120.0
+	gs_pit.length_m = 90.0
+	gs_pit.rows = 8
+	gs_pit.offset = 8.0
+	gs_pit.has_roof = true
+	gs_pit.solid_front = true
+	asset.add_child(gs_pit)
+	gs_pit.owner = asset
+	gs_pit.bake()
+
+	# La Source grandstand (left / outside of hairpin)
+	var gs_source = Grandstand.new()
+	gs_source.name = "LaSourceGrandstand"
+	gs_source.follow_road = NodePath("../Main")
+	gs_source.side = Grandstand.Side.LEFT
+	gs_source.station = corners.get("La Source", 350.0) + 20.0
+	gs_source.length_m = 60.0
+	gs_source.rows = 8
+	gs_source.offset = 9.0
+	gs_source.has_roof = true
+	gs_source.solid_front = true
+	asset.add_child(gs_source)
+	gs_source.owner = asset
+	gs_source.bake()
+
+	# Eau Rouge grandstand (right, foot of the hill)
+	var gs_er = Grandstand.new()
+	gs_er.name = "EauRougeGrandstand"
+	gs_er.follow_road = NodePath("../Main")
+	gs_er.side = Grandstand.Side.RIGHT
+	gs_er.station = corners.get("Eau Rouge", 950.0) - 40.0
+	gs_er.length_m = 50.0
+	gs_er.rows = 6
+	gs_er.offset = 8.0
+	gs_er.has_roof = false
+	gs_er.solid_front = true
+	asset.add_child(gs_er)
+	gs_er.owner = asset
+	gs_er.bake()
+
+	# Raidillon grandstand (left, crest of the hill)
+	var gs_raid = Grandstand.new()
+	gs_raid.name = "RaidillonGrandstand"
+	gs_raid.follow_road = NodePath("../Main")
+	gs_raid.side = Grandstand.Side.LEFT
+	gs_raid.station = corners.get("Raidillon", 1100.0) + 40.0
+	gs_raid.length_m = 90.0
+	gs_raid.rows = 10
+	gs_raid.offset = 12.0
+	gs_raid.has_roof = true
+	gs_raid.solid_front = true
+	asset.add_child(gs_raid)
+	gs_raid.owner = asset
+	gs_raid.bake()
+
+	# Bus Stop grandstand (right, chicane exit)
+	var gs_bus = Grandstand.new()
+	gs_bus.name = "BusStopGrandstand"
+	gs_bus.follow_road = NodePath("../Main")
+	gs_bus.side = Grandstand.Side.RIGHT
+	gs_bus.station = corners.get("Bus Stop", 6720.0) - 30.0
+	gs_bus.length_m = 70.0
+	gs_bus.rows = 8
+	gs_bus.offset = 8.0
+	gs_bus.has_roof = true
+	gs_bus.solid_front = true
+	asset.add_child(gs_bus)
+	gs_bus.owner = asset
+	gs_bus.bake()
+
+	# 4. Catch fences
+	var fence_pit = CatchFence.new()
+	fence_pit.name = "PitCatchFence"
+	fence_pit.follow_road = NodePath("../Main")
+	fence_pit.side = CatchFence.Side.LEFT
+	fence_pit.from_m = measured - 200.0
+	fence_pit.to_m = 50.0
+	fence_pit.offset = 5.0
+	fence_pit.fence_height = 3.5
+	fence_pit.solid = true
+	asset.add_child(fence_pit)
+	fence_pit.owner = asset
+	fence_pit.bake()
+
+	var fence_raid = CatchFence.new()
+	fence_raid.name = "RaidillonCatchFence"
+	fence_raid.follow_road = NodePath("../Main")
+	fence_raid.side = CatchFence.Side.LEFT
+	fence_raid.from_m = corners.get("Eau Rouge", 950.0)
+	fence_raid.to_m = corners.get("Raidillon", 1100.0) + 120.0
+	fence_raid.offset = 6.0
+	fence_raid.fence_height = 3.5
+	fence_raid.solid = true
+	asset.add_child(fence_raid)
+	fence_raid.owner = asset
+	fence_raid.bake()
+
+	var fence_bl = CatchFence.new()
+	fence_bl.name = "BlanchimontCatchFence"
+	fence_bl.follow_road = NodePath("../Main")
+	fence_bl.side = CatchFence.Side.RIGHT
+	fence_bl.from_m = corners.get("Blanchimont", 5750.0) - 100.0
+	fence_bl.to_m = corners.get("Blanchimont", 5750.0) + 100.0
+	fence_bl.offset = 5.0
+	fence_bl.fence_height = 3.5
+	fence_bl.solid = true
+	asset.add_child(fence_bl)
+	fence_bl.owner = asset
+	fence_bl.bake()
+
+	# 5. Billboards on Kemmel straight
+	var boards = Billboards.new()
+	boards.name = "KemmelBillboards"
+	boards.follow_road = NodePath("../Main")
+	boards.side = Billboards.Side.LEFT
+	boards.from_m = corners.get("Raidillon", 1100.0) + 250.0
+	boards.to_m = corners.get("Les Combes", 2250.0) - 200.0
+	boards.offset = 7.0
+	boards.spacing = 60.0
+	asset.add_child(boards)
+	boards.owner = asset
+	boards.bake()
+
+	# 6. Marshal posts
+	var marshals = MarshalPost.new()
+	marshals.name = "MarshalPosts"
+	marshals.follow_road = NodePath("../Main")
+	marshals.side = MarshalPost.Side.RIGHT
+	marshals.offset = 6.0
+	marshals.spacing = 350.0
+	asset.add_child(marshals)
+	marshals.owner = asset
+	marshals.bake()
+
+	# 7. Spectator crowd banks at Pouhon, Kemmel, Raidillon
+	SceneryBuilder.build_crowd_bank(
+		asset, road, "PouhonCrowdBank", corners.get("Pouhon", 3600.0), 140.0, 1, 14.0
+	)
+	SceneryBuilder.build_crowd_bank(
+		asset, road, "KemmelCrowdBank", corners.get("Raidillon", 1100.0) + 400.0, 120.0, -1, 14.0
+	)
+	SceneryBuilder.build_crowd_bank(
+		asset, road, "RaidillonCrowdBank", corners.get("Raidillon", 1100.0) + 140.0, 80.0, -1, 16.0
+	)
 
 
 static func build_asset() -> Node3D:
@@ -550,7 +845,8 @@ static func build_asset() -> Node3D:
 		80.0,
 		603
 	)
-	add_lighting(asset, road, positions)
+	add_scenery_kit(asset, road, positions, measured)
+	add_lighting(asset, road, positions, measured)
 	return asset
 
 

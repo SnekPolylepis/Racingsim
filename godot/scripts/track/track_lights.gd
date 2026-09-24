@@ -1,9 +1,11 @@
 extends RefCounted
-## Look-2 sodium lamps for TrackAssets ("Afterhours", docs/ART-DIRECTION.md). A road-following
-## placement helper that generators (and Look-4's scenery dressing) call with a RoadPath, a base
-## spacing and denser zones:
+## Look-2 sodium lamps for TrackAssets ("Afterhours", docs/ART-DIRECTION.md). Lamps come from Look-4's
+## Marker3D placements under Lights/ (`from_markers`), from a road-following walk with denser zones
+## (`place`), or both (`fill` places only where the markers leave the road dark):
 ##
-##   var lamps = TrackLights.place(road, 60.0, [{"from_m": 6800.0, "to_m": 200.0, "spacing": 24.0}])
+##   var lamps = TrackLights.from_markers(asset, road, 4.0)
+##   var pits = {"from_m": 6600.0, "to_m": 200.0, "spacing": 26.0, "sides": "both"}
+##   lamps.append_array(TrackLights.fill(road, 64.0, [pits], 4.0, lamps))
 ##   TrackLights.build(asset, road, lamps)
 ##
 ## `build` bakes Lights/ under the asset: poles, arms and emissive heads as one MultiMesh per ~400 m
@@ -36,8 +38,8 @@ const POOL_RANGE = 32.0
 ## is "alternate" (default), "both", "left" or "right". `extra` is how far beyond the verge edge the
 ## pole stands (keep it outside the walls; a zone may override it). `height_at` (Callable(Vector3) ->
 ## float) drops the pole base onto terrain. Lamps that would stand on another part of the road are
-## dropped. Returns [{s, side, base, basis, head, strength}] with `side` -1 left, +1 right and
-## `strength` the lamp's share of the road glow (lower in dense zones, whose streaks overlap).
+## dropped. Returns lamps {s, side (-1 left, +1 right), base, basis, head, height, kind, glow (lights the
+## road), strength (share of the road glow; lower in dense zones, whose streaks overlap), step}.
 static func place(
 	road: Node, spacing: float, zones: Array = [], extra = 5.5, height_at = Callable()
 ) -> Array:
@@ -65,8 +67,9 @@ static func place(
 		for sign in signs:
 			var lamp = _lamp(road, curve, keys, spline, s, sign, float(zone.get("extra", extra)), height_at)
 			# Dense rows overlap their streaks, so each lamp there is dimmer on the road.
-			lamp["strength"] = clampf(step / 50.0, .4, 1.0) / (1.4 if signs.size() > 1 else 1.0)
-			if _clear(clearance, lamp.base, s, length, road.closed):
+			lamp.strength = clampf(step / 50.0, .4, 1.0) / (1.4 if signs.size() > 1 else 1.0)
+			lamp.step = step
+			if _clear(road, clearance, lamp.base, s, length, road.closed):
 				out.append(lamp)
 		if road.closed and length - s < step * .5:
 			break
@@ -90,41 +93,156 @@ static func _lamp(road, curve, keys, spline, s, sign, extra, height_at) -> Dicti
 	var base = road.transform * e.point
 	if height_at.is_valid():
 		base.y = height_at.call(base)
-	var inward = -(road.transform.basis * e.outward)
+	return _fixture(s, sign, base, -(road.transform.basis * e.outward), HEIGHT, "sodium_mast", true)
+
+
+## One lamp: pole base, a basis whose +Z points at the road, and the head ARM along it at `height`.
+static func _fixture(s, side, base, inward, height, kind, glow) -> Dictionary:
 	inward.y = 0.0
 	inward = inward.normalized()
 	var basis = Basis(Vector3.UP.cross(inward), Vector3.UP, inward)
-	var head = base + Vector3.UP * (HEIGHT - .32) + inward * ARM
-	return {"s": s, "side": sign, "base": base, "basis": basis, "head": head}
+	var head = base + Vector3.UP * (height - .32) + inward * ARM
+	return {
+		"s": s,
+		"side": side,
+		"base": base,
+		"basis": basis,
+		"head": head,
+		"height": height,
+		"kind": kind,
+		"glow": glow,
+		"strength": 1.0,
+		"step": 0.0,
+	}
 
 
-## Road centre points bucketed on a 24 m grid, with their stations, for the lamp clearance test.
+## Road centre point indices bucketed on a 24 m grid, for the clearance test and marker projection.
 static func _clearance_grid(road) -> Dictionary:
 	var grid = {}
 	var center = road.last_bake.get("center", PackedVector3Array())
-	var stations = road.last_bake.get("stations", [])
-	for i in mini(center.size(), stations.size()):
+	for i in mini(center.size(), road.last_bake.get("stations", []).size()):
 		var p = road.transform * center[i]
 		var key = Vector2i(floori(p.x / 24.0), floori(p.z / 24.0))
 		if not grid.has(key):
-			grid[key] = []
-		grid[key].append(Vector3(p.x, p.z, stations[i].s))
+			grid[key] = PackedInt32Array()
+		grid[key].append(i)
 	return grid
 
 
+## The road centre point nearest `p` in plan within the 3 x 3 grid cells around it, or -1.
+static func _nearest(road, grid: Dictionary, p: Vector3) -> int:
+	var best = -1
+	var best_d = INF
+	var cx = floori(p.x / 24.0)
+	var cz = floori(p.z / 24.0)
+	for dx in range(-1, 2):
+		for dz in range(-1, 2):
+			for i in grid.get(Vector2i(cx + dx, cz + dz), PackedInt32Array()):
+				var c = road.transform * road.last_bake.center[i]
+				var d = Vector2(c.x - p.x, c.z - p.z).length_squared()
+				if d < best_d:
+					best_d = d
+					best = i
+	return best
+
+
 ## A lamp is clear unless a part of the road more than 80 m away along it passes within 13 m.
-static func _clear(grid: Dictionary, base: Vector3, s: float, length: float, closed: bool) -> bool:
+static func _clear(road, grid: Dictionary, base: Vector3, s: float, length: float, closed: bool) -> bool:
 	var cx = floori(base.x / 24.0)
 	var cz = floori(base.z / 24.0)
 	for dx in range(-1, 2):
 		for dz in range(-1, 2):
-			for p in grid.get(Vector2i(cx + dx, cz + dz), []):
-				var ds = absf(p.z - s)
+			for i in grid.get(Vector2i(cx + dx, cz + dz), PackedInt32Array()):
+				var ds = absf(road.last_bake.stations[i].s - s)
 				if closed:
 					ds = minf(ds, length - ds)
-				if ds > 80.0 and Vector2(p.x - base.x, p.y - base.z).length() < 13.0:
+				var c = road.transform * road.last_bake.center[i]
+				if ds > 80.0 and Vector2(c.x - base.x, c.z - base.z).length() < 13.0:
 					return false
 	return true
+
+
+## Lamps for the Marker3D placements under the asset's Lights/ (Look-4's
+## SceneryBuilder.add_light_placement: metadata kind "sodium_mast" | "flood" | "pit", height, colour).
+## Each marker is a pole base whose head reaches ARM towards the nearest road station. With `beyond` >= 0
+## a pole nearer the road than `beyond` metres past the verge edge (keep it outside the walls) is moved
+## out to that line; otherwise only one standing on the tarmac or kerb is moved clear of it. Metadata
+## road_glow = false (paddock lamps) gives a fixture and halo but no streak on the road. The markers stay
+## in place.
+static func from_markers(asset: Node3D, road: Node, beyond = -1.0) -> Array:
+	var lights = asset.get_node_or_null("Lights")
+	if lights == null:
+		return []
+	var grid = _clearance_grid(road)
+	var curve = road.working_curve()
+	var length = curve.get_baked_length()
+	var keys = road.sections.duplicate()
+	keys.sort_custom(func(a, b): return a.at < b.at)
+	var spline = (
+		RoadBuilder.elevation_spline(road.elevation_keys, length, road.closed)
+		if not road.elevation_keys.is_empty()
+		else []
+	)
+	var out = []
+	for marker in lights.get_children():
+		if not (marker is Marker3D):
+			continue
+		var base: Vector3 = marker.position
+		var i = _nearest(road, grid, base)
+		if i < 0:
+			push_warning("Lights/%s is over 24 m from the road; it gets no lamp" % marker.name)
+			continue
+		var station = road.last_bake.stations[i]
+		var right = (road.transform.basis * station.tangent).cross(Vector3.UP)
+		right.y = 0.0
+		right = right.normalized()
+		var lateral = (base - road.transform * road.last_bake.center[i]).dot(right)
+		var side = 1 if lateral >= 0.0 else -1
+		if beyond >= 0.0:
+			var e = RoadBuilder.beyond_edge(curve, keys, road.closed, spline, station.s, side, beyond)
+			if absf(lateral) < absf(e.lat):
+				base = road.transform * e.point
+		else:
+			var sec = RoadBuilder.section_at(keys, station.s, length, road.closed)
+			var edge = (sec.width_right if side > 0 else sec.width_left) + sec.kerb_width + 1.5
+			if absf(lateral) < edge:
+				base += right * side * (edge - absf(lateral))
+		(
+			out
+			. append(
+				_fixture(
+					station.s,
+					side,
+					base,
+					-right * side,
+					float(marker.get_meta("height", HEIGHT)),
+					str(marker.get_meta("kind", "sodium_mast")),
+					bool(marker.get_meta("road_glow", true)),
+				)
+			)
+		)
+	return out
+
+
+## Road-following lamps (`place`) only where `lamps` leave the road dark: a candidate is kept when no
+## lamp of `lamps` that lights the road is within three quarters of the candidate's own spacing.
+static func fill(
+	road: Node, spacing: float, zones: Array, extra: float, lamps: Array, height_at = Callable()
+) -> Array:
+	var length = float(road.last_bake.length)
+	var out = []
+	for lamp in place(road, spacing, zones, extra, height_at):
+		var clear = true
+		for other in lamps:
+			var d = absf(other.s - lamp.s)
+			if road.closed:
+				d = minf(d, length - d)
+			if other.get("glow", true) and d < lamp.step * .75:
+				clear = false
+				break
+		if clear:
+			out.append(lamp)
+	return out
 
 
 ## Bake `lamps` into the asset's Lights/ node (created if missing; later calls add to it) and write the
@@ -145,7 +263,7 @@ static func build(asset: Node3D, road: Node, lamps: Array, streaks = true) -> No
 		chunks[key].append(lamp)
 		heads.append(lamp.head)
 	var first = lights.get_child_count()
-	var fixture = fixture_mesh()
+	var fixtures = {}
 	var halo = QuadMesh.new()
 	halo.size = Vector2(6.0, 6.0)
 	halo.material = halo_material()
@@ -155,12 +273,21 @@ static func build(asset: Node3D, road: Node, lamps: Array, streaks = true) -> No
 		group.name = "Lamps%03d" % (first + index)
 		lights.add_child(group)
 		group.owner = asset
-		var xforms = []
+		# One MultiMesh per fixture style (kind and height) in the chunk, and one for all its halos.
+		var styles = {}
 		var halos = []
 		for lamp in chunks[key]:
-			xforms.append(Transform3D(lamp.basis, lamp.base))
+			var kind = lamp.get("kind", "sodium_mast")
+			var height = float(lamp.get("height", HEIGHT))
+			var style = "%s_%d" % [kind, roundi(height * 10.0)]
+			if not fixtures.has(style):
+				fixtures[style] = fixture_mesh(height, kind)
+			if not styles.has(style):
+				styles[style] = []
+			styles[style].append(Transform3D(lamp.basis, lamp.base))
 			halos.append(Transform3D(Basis.IDENTITY, lamp.head - Vector3.UP * .12))
-		_multimesh(group, "Fixtures", fixture, xforms, asset)
+		for style in styles:
+			_multimesh(group, "Fixtures_" + style, fixtures[style], styles[style], asset)
 		_multimesh(group, "Halos", halo, halos, asset)
 		index += 1
 	lights.set_meta("lamp_heads", heads)
@@ -169,7 +296,8 @@ static func build(asset: Node3D, road: Node, lamps: Array, streaks = true) -> No
 		var meta = "streaks_" + str(road.name)
 		var packed: PackedVector3Array = lights.get_meta(meta, PackedVector3Array())
 		for lamp in lamps:
-			packed.append(Vector3(lamp.s, lamp.side, lamp.get("strength", 1.0)))
+			if lamp.get("glow", true):
+				packed.append(Vector3(lamp.s, lamp.side, lamp.get("strength", 1.0)))
 		lights.set_meta(meta, packed)
 		apply_streaks(asset, road, packed)
 	return lights
@@ -192,15 +320,18 @@ static func _multimesh(parent: Node3D, title: String, mesh: Mesh, xforms: Array,
 	node.owner = owner_node
 
 
-## One lamp in its local frame (origin at the verge point, +Y up, +Z towards the road): a galvanised
-## pole reaching 6 m below the verge so it meets falling ground, an arm, and the sodium lens under the head as a second, emissive surface.
-static func fixture_mesh() -> ArrayMesh:
+## One lamp in its local frame (origin at the pole base, +Y up, +Z towards the road): a galvanised pole
+## reaching 6 m below the base so it meets falling ground, an arm, and the sodium lens under the head as a
+## second, emissive surface. A "flood" carries a wide bank of lenses; a "pit" post is lighter.
+static func fixture_mesh(height = HEIGHT, kind = "sodium_mast") -> ArrayMesh:
 	var mesh = ArrayMesh.new()
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	_box(st, Vector3(0, (HEIGHT - 6.0) * .5, 0), Vector3(.22, HEIGHT + 6.0, .22))
-	_box(st, Vector3(0, HEIGHT - .08, ARM * .5), Vector3(.13, .15, ARM + .2))
-	_box(st, Vector3(0, HEIGHT - .16, ARM), Vector3(.62, .2, 1.05))
+	var pole = .16 if kind == "pit" else .22
+	var head = Vector3(1.9, .26, .5) if kind == "flood" else Vector3(.62, .2, 1.05)
+	_box(st, Vector3(0, (height - 6.0) * .5, 0), Vector3(pole, height + 6.0, pole))
+	_box(st, Vector3(0, height - .08, ARM * .5), Vector3(.13, .15, ARM + .2))
+	_box(st, Vector3(0, height - .16, ARM), head)
 	st.generate_normals()
 	var metal = StandardMaterial3D.new()
 	metal.albedo_color = Color("2a2c33")
@@ -210,7 +341,7 @@ static func fixture_mesh() -> ArrayMesh:
 	st.commit(mesh)
 	st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	_box(st, Vector3(0, HEIGHT - .3, ARM), Vector3(.5, .08, .88))
+	_box(st, Vector3(0, height - .3, ARM), Vector3(head.x - .12, .08, head.z - .17))
 	st.generate_normals()
 	var lens = StandardMaterial3D.new()
 	lens.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
