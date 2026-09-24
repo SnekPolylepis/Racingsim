@@ -1,41 +1,57 @@
-RACING SIM - WINDOWS
+RACING SIM - REBUILD PREVIEW 1 (2026-09-23)
 
-Double-click RacingSim.exe. No installation, browser or Godot editor needed.
+A preliminary build of the rebuilt game: a full 3-D car on hand-built 3-D circuits. It is a
+preview for testing, not a finished release. No installation, browser or Godot editor needed.
 
-WASD/arrows: drive. Space: handbrake. R: reset. Q/E: shift. C: clutch.
-M: automatic/manual. V: camera. B/Y: debug/telemetry. F11: fullscreen.
-G: garage. Esc: close menu or pause.
-Hold brake at rest in automatic mode to switch forward/reverse.
+START
+  Windows: double-click RacingSim.exe.   macOS: open Racing Sim.app (see MACOS below).
+  In the menu choose Race, then a car and a circuit, then Load circuit. The first time a circuit is opened it is built
+  (Spa takes about half a minute) and cached, so later loads are quick.
 
-Controller: left stick steering, RT/LT pedals, LB clutch, X handbrake,
-A/B shift, Back reset, Start pause. Remap controls in Settings.
+CIRCUITS
+  Proving Ground  - an invented test circuit: a banked bowl, a crest you can take off from
+                    at ~150 km/h, a compression, off-camber turns, a concrete ditch and every
+                    kind of kerb.
+  Spa-Francorchamps - built from real survey data: the OpenStreetMap centreline, SPW LiDAR
+                    elevation and road banking, and road widths and kerbs measured from SPW's
+                    2023 aerial photos.
 
-All three bundled circuits, three cars, 42 tuning fields, lap ghosts, minimap,
-telemetry, recorded engine audio and procedural driving effects.
-Settings includes audio volume and mute controls.
+CARS
+  Mazda MX-5 (NA 1.6), GT (high downforce) and the Ferrari 296 GT3, chosen in the menu
+  (Race > Car). This preview drives with Simcade (assisted) handling; the settings menu with
+  Simulation handling, aids, garage and controls comes to the new front end later.
 
-Garage saves named setups. Best laps save ghost telemetry.
-Default saves: %APPDATA%/Godot/app_userdata/Racing Sim/
+DRIVING
+  W/Up throttle, S/Down brake, A/D or Left/Right steer, Space handbrake, C clutch,
+  E/Shift and Q/Ctrl shift up/down, R reset to the grid.
+  V change camera (chase, high chase, bonnet, two overhead), Y telemetry, B debug.
+  Esc returns to the menu. Controllers work too (left stick, triggers, bumpers).
 
-Godot engine license and dependency notices accompany this executable.
+WHAT'S NEW IN THE REBUILD
+  - The car is a true 3-D body on four suspension corners, with tyre flex and wheel mass:
+    it can crest, fly, land, roll over and ride kerbs realistically.
+  - Walls, barriers and knock-over cones; lap timing through 3-D gates with sectors and a
+    live delta; best-lap ghost; minimap; tyre temperatures; telemetry; engine and tyre audio.
+  - Best laps, ghosts and sector times save per car, setup and handling model.
 
-HELP: choose a chapter in the in-game Player handbook for detailed driving,
-garage, files and troubleshooting instructions. Source maintainers
-and LLMs should start with AGENTS.md, then godot/docs/LLM-GUIDE.md.
+KNOWN LIMITS OF THIS PREVIEW
+  - Only the Proving Ground and Spa. The Nordschleife is in progress.
+  - Placeholder car models, sparse scenery, no night lighting on the new circuits yet.
+  - No wall-impact sounds yet. Runoff areas at Spa are approximations.
+  - No settings, garage or pause menu on the new front end yet (Esc goes back to the menu).
+  - Records from the old game do not carry over (they live in a separate folder).
 
-CONSOLE PRESENTATION: Default pairing is Spa-Francorchamps and Ferrari 296 GT3,
-with Simcade, Afternoon and 640x448 Authentic UI. Press Start/Enter on the title,
-then choose Race, car and circuit. D-pad/arrows move; A/Enter selects; B/Esc backs
-out. Shoulder buttons or Page Up/Down switch settings/garage tabs. Mouse works
-too, including the HUD Pause button. The idle title runs a driving demonstration.
+SAVES
+  %APPDATA%/Godot/app_userdata/Racing Sim/v2/   (macOS: ~/Library/Application Support/
+  Godot/app_userdata/Racing Sim/v2/). The old game's saves are left untouched.
 
-Settings offers 480p component, optional 480i fields, CRT/composite, 4:3/16:9,
-Sharp UI, 720p/Native, speed blur and Simulation handling.
-TCS 0-10, ASM 0-10 and ABS On/Off; Simcade defaults to 3/3/On. Handling models
-keep separate best laps; lighting is cosmetic. Pause > Time sheet shows lap
-results and last-lap replay. All assets are local; no runtime internet access.
+MACOS
+  The app is not notarized: the first time, right-click Racing Sim.app, choose Open, then
+  Open again in the dialog.
 
-Rajdhani OFL and Poly Haven CC0 license texts accompany the engine notices.
-CC0 Ferrari engine recordings by jtvdb and biholao are edited into RPM/load loops.
-Recorded models are unspecified; these are not exact 296 GT3 engine recordings.
-The source docs/PS2-FOLLOWUP-REPORT.md records tests and comparison evidence.
+CREDITS AND LICENCES
+  Godot Engine (MIT, GODOT-LICENSE.txt and GODOT-THIRD-PARTY-NOTICES.txt). Rajdhani font (OFL,
+  RAJDHANI-OFL.txt). Poly Haven assets (CC0, CC0-1.0.txt). Engine recordings: see
+  THIRD-PARTY.md. Spa: (c) OpenStreetMap contributors, ODbL 1.0 (ODbL-1.0.txt); elevation and
+  orthophotos (c) Service public de Wallonie (SPW), CC BY 4.0 (CC-BY-4.0.txt). Full titles,
+  sources and modifications are in THIRD-PARTY.md.
