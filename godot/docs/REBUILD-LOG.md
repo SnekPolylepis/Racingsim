@@ -1755,3 +1755,8 @@ Sol's P4-03 review found that `WallQuery.contacts()` took the wall kind from the
 - **Tried and dropped:** a per-face split inside one wall body (a sharp freehand bend). A ray to every contact point hits a rail's top or end faces, which broke the glancing (rebound 1.38 of closing speed) and resting (0.058 m/s creep) checks. A guarded version needed eight pairs per body and still missed faces, at 183 µs a tick. A single body keeps one normal (PHYSICS.md). No track has a sharp bend inside one wall; road-following walls bend in 2 m steps.
 
 Single-wall results are identical to main: head-on, glancing rebound 0.06, resting creep 0.012 m/s. Cost touching one wall, same machine, alternating runs, three each: main 119.7-130.8 µs (mean 124.5), branch 125.7-138.4 µs (mean 131.4), against a 150 µs budget; clear of walls 4 µs either way. These are Linux cloud numbers; the Windows `-Perf` pass is owed.
+
+Gates (Linux cloud, Godot 4.6.2):
+- `python tools/ci_gates.py`: **34/34**, stderr empty (`barrier` 9/0, `props` 13/0, all three `laps` suites).
+- Windowed `--v2-present`: V2 PRESENT PASS, FEATURE RESULTS 77/0, stderr empty.
+- Parse check and `gdformat -l 110 --check` clean.
