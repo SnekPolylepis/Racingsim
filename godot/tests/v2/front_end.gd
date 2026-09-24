@@ -23,6 +23,43 @@ func run() -> void:
 		app.v2_mode and app.frontend.page == "main" and app.in_menu and not (app.track is Node3D),
 		"front end opens before the first track bake"
 	)
+	app.frontend.open_v2_panel("settings")
+	check(app.frontend.v2_panels.is_open(), "v2 settings panel opens")
+	check(
+		(
+			app.frontend.get_parent() == app.get_node("V2UIRoot")
+			and app.frontend.v2_panels.get_parent() == app.frontend
+		),
+		"settings and front end share the v2 UI root"
+	)
+	check(
+		app.frontend.v2_panels.find_children("*", "OptionButton", true, false).size() >= 10,
+		"legacy presentation choices are present in v2 settings"
+	)
+	app.controls.listening = "throttle"
+	app.controls.listen_pad = false
+	var binding = InputEventKey.new()
+	binding.physical_keycode = KEY_T
+	binding.pressed = true
+	check(
+		app.frontend.handle(binding) and app.controls.keys.throttle[0] == KEY_T,
+		"v2 control remapping captures key"
+	)
+	app.controls.keys = app.Controls.DEFAULT_KEYS.duplicate(true)
+	app.save_settings()
+	app.frontend.back()
+	check(not app.frontend.v2_panels.is_open(), "settings close returns to menu")
+	app.set_v2_setting("volume", .35)
+	app.set_v2_setting("output_mode", 1)
+	var saved_settings = app.storage.read_json(app.settings_path)
+	check(
+		(
+			app.settings_path == "user://native-tests/v2/settings.json"
+			and is_equal_approx(saved_settings.volume, .35)
+			and saved_settings.output_mode == 1
+		),
+		"v2 settings round trip stays outside legacy settings"
+	)
 	app.frontend.show_page("car")
 	app.frontend.cycle_v2_car()
 	check(
@@ -41,8 +78,42 @@ func run() -> void:
 		app.v2_track_id == "spa" and app.frontend.page == "drive" and not app.in_menu, "Spa loads into drive"
 	)
 	check(FileAccess.file_exists("user://tracks3d/spa.scn"), "Spa generator cache saved")
+	check(FileAccess.file_exists("user://tracks3d/spa.scn.revision"), "cache revision saved before reuse")
 	var spa_path = app.record_path()
 	check(spa_path.find("records") >= 0, "asset configuration has a record path")
+	app.frontend.open_v2_panel("garage")
+	check(
+		app.frontend.v2_panels.is_open() and app.setup_fields.size() == 42, "garage exposes 42 setup fields"
+	)
+	app.frontend.back()
+	var original_grip = app.car.setup.tireMu
+	app.car.setup.tireMu = original_grip + .02
+	app.apply_v2_setup()
+	var tuned_path = app.record_path()
+	check(
+		tuned_path != spa_path and is_equal_approx(app.car.setup.tireMu, original_grip + .02),
+		"setup applies to CarBody and changes record"
+	)
+	check(app.save_v2_setup("Front end test"), "named v2 setup saved")
+	var setup_file = app.storage.path("setups", "Front end test.json")
+	var saved_setup = app.storage.read_json(setup_file)
+	check(
+		saved_setup.car == app.preset_key and is_equal_approx(saved_setup.setup.tireMu, original_grip + .02),
+		"named setup document round trip"
+	)
+	app.car.setup.tireMu = original_grip
+	app.apply_v2_setup()
+	check(
+		app.load_v2_setup(setup_file) and is_equal_approx(app.car.setup.tireMu, original_grip + .02),
+		"named setup loads into CarBody"
+	)
+	app.set_v2_setting("handling_model", 1)
+	check(
+		not app.car.simcade_enabled and app.record_path() != tuned_path,
+		"simulation handling selects separate record"
+	)
+	app.set_v2_setting("handling_model", 0)
+	check(app.car.simcade_enabled and app.record_path() == tuned_path, "simcade handling and record restore")
 	app.race.best = 12.5
 	app.race.ghost = [
 		[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0], [12.5, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 100.0]
@@ -64,6 +135,17 @@ func run() -> void:
 	check(
 		app.race.best == 12.5 and app.race.ghost.size() == 2 and app.race.best_sectors[2] == 4.5,
 		"ghost and sectors reload"
+	)
+	app.frontend.back()
+	check(app.frontend.page == "pause" and app.paused and not app.in_menu, "Esc pauses in-drive")
+	app.frontend.back()
+	check(app.frontend.page == "drive" and not app.paused, "Esc resumes from pause")
+	app.frontend.show_page("pause")
+	app.race.lap_time = 7.0
+	app.restart_v2_lap()
+	check(
+		app.frontend.page == "drive" and app.race.lap_time == 0.0 and not app.paused,
+		"restart lap resets timing and resumes"
 	)
 	app.return_v2_menu()
 	check(app.frontend.page == "main" and app.in_menu, "return to menu")

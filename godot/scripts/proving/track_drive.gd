@@ -64,7 +64,14 @@ static func load_asset(id: String = "spa", scene_path: String = "") -> Node3D:
 		return null
 	var revision = _cache_revision(id, generator_path)
 	var cache_path = "user://tracks3d/%s.scn" % id
-	if FileAccess.file_exists(cache_path):
+	var revision_path = cache_path + ".revision"
+	# Older packed scenes can reference resources removed from an export. Read the plain-text
+	# revision first so Godot never tries to load an incompatible scene just to inspect its meta.
+	if (
+		FileAccess.file_exists(cache_path)
+		and FileAccess.file_exists(revision_path)
+		and FileAccess.get_file_as_string(revision_path) == revision
+	):
 		var packed = ResourceLoader.load(cache_path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE)
 		if packed is PackedScene:
 			var cached = packed.instantiate()
@@ -93,6 +100,10 @@ static func load_asset(id: String = "spa", scene_path: String = "") -> Node3D:
 	if save_error != OK:
 		push_warning("Track cache could not be saved (%d); driving the generated asset" % save_error)
 	else:
+		var revision_file = FileAccess.open(revision_path, FileAccess.WRITE)
+		if revision_file:
+			revision_file.store_string(revision)
+			revision_file.close()
 		print("TRACK CACHE saved ", cache_path)
 	return built
 
@@ -100,7 +111,7 @@ static func load_asset(id: String = "spa", scene_path: String = "") -> Node3D:
 ## Include authoring tools and acquired inputs so a data/tool update cannot reuse stale geometry.
 static func _cache_revision(id: String, generator_path: String) -> String:
 	var files: Array[String] = [generator_path]
-	var directories: Array[String] = ["res://scripts/track", "res://trackgen/data/" + id]
+	var directories: Array[String] = ["res://scripts/track", "res://shaders", "res://trackgen/data/" + id]
 	while not directories.is_empty():
 		var directory = directories.pop_back()
 		if not DirAccess.dir_exists_absolute(directory):

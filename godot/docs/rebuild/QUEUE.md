@@ -39,6 +39,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P4-02 | race.gd on TrackAssets: 3D gates, checkpoints in order, sectors, schema-2 ghosts (5.4 pose); live timing in the v2 game path | Claude | | done | reviewed on main; persistence is P4-06 |
 | P4-07 | Bot driver follows BotLine on TrackAssets; tests/v2/laps.gd (both handling models, valid laps, zero off-track, zero wall contacts, lap baseline) | Claude | | done (review R-P4-07) | merged in M-TRAIN |
 | P4-vis | P4-04 visuals pose from Transform3D + per-wheel data, free attitude in flight; P4-05 cameras, instruments (minimap from the lap line, telemetry), audio surface ids, skid marks from contact_hits | Claude | P4-02 | review: Sol | rb/P4-vis; read "DONE P4-04/P4-05"; left: night lamps from Lights/ (no track has them yet), wall-impact audio (needs F-P4-01's WallContact on the v2 path), menus (P4-06) |
+| P4-menus | V2 settings, 42-field garage, named setups and pause menu; retro presentation settings persisted for the upcoming renderer port | Sol | Rebuild Preview 1 | review: owner | `rb/P4-menus`; [open PR](https://github.com/SnekPolylepis/Racingsim/pull/new/rb/P4-menus); read "DONE P4-menus" |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
 
