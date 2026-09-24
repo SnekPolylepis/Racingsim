@@ -16,6 +16,7 @@ extends RefCounted
 ## Optional elevation keys (s, y) replace the curve's own heights with an interpolating cubic spline
 ## over arc distance s, so an author can draw the plan flat and key the elevation by station.
 
+const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const RoadSection = preload("res://scripts/track/road_section.gd")
 const MAX_STEP = 1.5
 const DEFAULT_ROAD_STATIONS = 9
@@ -708,6 +709,12 @@ static func mesh(faces: Dictionary, uvs: Dictionary) -> ArrayMesh:
 			st.set_uv(uvs[sid][i])
 			st.add_vertex(faces[sid][i])
 		st.generate_normals()
+		# PS2-era surfaces (ps2_materials.gd); kerbs keep their pixel-art stripe texture below.
+		var ps2 = Ps2Materials.surface(sid)
+		if ps2 != null:
+			st.set_material(ps2)
+			st.commit(out)
+			continue
 		var mat = StandardMaterial3D.new()
 		if sid == 1:
 			mat.albedo_texture = kerb_texture()

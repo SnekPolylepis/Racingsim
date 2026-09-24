@@ -1471,3 +1471,16 @@ Owner asked for cleanup after Rebuild Preview 1. P7 is staged so it does not col
 - **Correction:** Rebuild Preview 1's notes, PLAY.txt and the changelog said there was no wall-impact audio. P4-06 plays impacts on the v2 path. The published release notes were edited, and PLAY.txt and the changelog are fixed here.
 
 Gates: `run_gates.ps1 -All` 42/42; windowed `--features` 212/0, stderr empty.
+## 2026-09-23  DONE Look-1 PS2 surfaces on TrackAssets  (Claude Opus 5.5) — branch `rb/look-1-surfaces`
+Owner art direction (2026-09-23): a PS2-era look, between NFS Underground (amber sodium nights, glow, streaks) and Gran Turismo 4 (clean daylight). Private use, so branding and licences are no constraint. The legacy game already has this pipeline: `retro_renderer.gd`, `night_style.gd`, the road and ground shaders, and the palette-reduced `assets/ps2` textures. The v2 circuits used flat StandardMaterial colours and untextured white terrain. The look is planned in five steps (QUEUE Look-1 to Look-5); this is the first.
+
+- **`scripts/track/ps2_materials.gd`:** cached, shared materials per road-tool surface id.
+  - **Tarmac:** new `shaders/road_v2.gdshader`, the legacy road shader's graphic tones, rubbered band and after-hours amber lamp streaks, adapted to RoadBuilder's metre UVs. The lateral fraction uses a nominal 5 m half-width, Spa's measured median; a per-station UV2 fraction is a later refinement.
+  - **Grass, gravel, tarmac runoff:** the legacy `ground.gdshader`, which projects textures from world position, with a constant 1x1 paint mask selecting each surface.
+  - **Kerbs:** keep their pixel-art stripes.
+  - Textures come from `assets/ps2`, falling back to `assets/textures`.
+  - `set_afterhours()` switches the roads to night (wired in Look-2).
+- **Wiring:** `road_builder.gd` `mesh()` uses those materials, and `terrain.gd` chunks use the grass material (they had none). Track caches rebuild by themselves, since the cache revision covers `scripts/track`.
+- **Check:** the windowed `--v2-present` run passes. Its screenshot shows textured tarmac and palette grass, runoff and terrain on the proving ground.
+
+Gates: `run_gates.ps1 -All` 42/42; `--features` 212/0, stderr empty.
