@@ -4,7 +4,13 @@
 
 This is a native Godot 4.6.2 game. `main.tscn` instantiates `scripts/main.gd`, which extends `scripts/game.gd`. The project uses the Forward+ renderer (Vulkan/D3D12 on Windows, Metal on macOS) with automatic fallback to OpenGL when a GPU lacks it, and custom vehicle equations, not Godot VehicleBody3D or RigidBody3D dynamics. There is no server, package manager, runtime download, plugin, or browser dependency.
 
-The project began as a port of a single-file browser simulator (`racing-sim.html`), which was removed on 2026-09-22 and survives only in git history. It is not a compatibility target and not a physics reference. `scripts/car.gd` is authoritative for native physics, and the native model is free to evolve on its own terms.
+The project began as a port of a single-file browser simulator (`racing-sim.html`), removed on 2026-09-22 and kept only in git history. It is not a compatibility target and not a physics reference.
+
+Since the rebuild (REBUILD-PLAN.md, first release v0.1.0-preview.1), normal launch runs the **v2 game**:
+- `CarBody` (`scripts/vehicle/car_body.gd`, the authoritative car) on authored 3-D TrackAssets;
+- the v2 front end, records and presentation in `game.gd` (`*_v2` functions).
+
+The **legacy game** (CarModel in `scripts/car.gd` on JSON tracks, plus the retro UI) remains only for the windowed feature suite and the legacy baseline suites until P7-01 removes it. `car.gd` also stays as CarBody's base class for shared state. Put new gameplay on the v2 path.
 
 Read these documents according to the task:
 
@@ -23,16 +29,16 @@ All paths below are relative to `godot/`.
 | File | Owns | Common edits |
 |---|---|---|
 | `project.godot` | Main scene, 240 Hz clock, renderer, viewport | Engine configuration; keep native scope explicit |
-| `scripts/game.gd` | Models, modes, physics/render orchestration, camera, file workflows, records | New settings, mode transitions, application services |
+| `scripts/game.gd` | Orchestration. v2: `setup_v2`, `load_v2_track`, `change_v2_car`, `start_v2_drive`, `return_v2_menu`, `physics_v2` (tick order in ARCHITECTURE.md), `render_v2`, v2 `record_path`, probe modes (`--v2-smoke`, `--v2-present`, `--v2-export-check`). Legacy: the planar game loop | New settings, mode transitions, application services. Keep v2 code off the legacy path |
 | `scripts/main.gd` | Entry adapter | Usually leave as a one-line extension |
 | `scripts/car.gd` | Vehicle state, tire forces, chassis, drivetrain | Vehicle behavior; preserve solver clamps |
 | `scripts/track.gd` | Superseded plan-view model, retained only for `tests/validation.gd` | Do not extend; the game runs on `track3d.gd` |
 | `scripts/track3d.gd` | The circuit: 3-space ribbon geometry, frames, true banking, cross-section profiles, 3-D projection, barriers, validation | Geometry/query behaviour. This is the live model |
 | `scripts/collisions.gd` | Planar contact response and moving cones | Barrier/cone physics |
-| `scripts/race.gd` | Start/checkpoints, validity, time, ghost recording/playback/delta | Timing and ghost logic |
+| `scripts/race.gd` | Timing: `update_asset()` for TrackAssets (3-D gates, gates in order, sectors, schema-2 5.4 ghost samples, `ghost_xform()`); legacy `update()` for JSON tracks | Timing and ghost logic; `tests/v2/race.gd` |
 | `scripts/controls.gd` | Bindings, held inputs, ramps, controller polling | Input behavior/remapping |
 | `scripts/interface.gd` | Modal screens, dialogs, Help | Menus/layout and player-facing actions |
-| `scripts/instruments.gd` | HUD, minimap, debug, 600-sample graph | Instrument presentation |
+| `scripts/instruments.gd` | HUD, minimap, debug, 600-sample graph; `on_asset()` switches the minimap, ghost dot and checkpoint count to TrackAssets | Instrument presentation |
 | `scripts/visuals.gd` | Procedural meshes/materials/scenery and model poses | 3D appearance without changing physics |
 | `scripts/ferrari_296.gd` | Dedicated 296 GT3 body, aero, glazing, livery and racing wheels | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
 | `scripts/audio.gd`, `scripts/audio_review.gd` | Recorded engine RPM/load bank, synthesized effects and focused mixer checks | Engine/tire/road/shift/impact sound; offline assets in `assets/audio/` |
@@ -56,8 +62,8 @@ All paths below are relative to `godot/`.
 | `scripts/night_style.gd` | After-dark floodlights, depth-tested halos/streaks and pit accents | PS2-inspired circuit presentation only |
 | `scripts/circuit_world.gd` | Heightfield terrain, textured road/verge/curb meshes, gravel mask, barriers, furniture and named landmarks | Circuit look |
 | `shaders/*.gdshader`, `assets/textures/` | Road, ground and painted-concrete shaders; CC0 texture sets | Surface look |
-| `.github/workflows/macos-native.yml` | CI: macOS universal export, headless regressions and ZIP artifact | Mac packaging/test automation |
-| `.github/workflows/native-tests.yml` | CI: formatting, headless suites and the rendered feature suite on Linux | Test automation |
+| `.github/workflows/gates.yml`, `tools/ci_gates.py` | CI on every push: gdformat check, parse check and the headless suites from `tools/gates.json` on Linux; exact legacy baselines except the two with measured platform tolerance (`PLATFORM_TOLERANCE`) | Test automation |
+| `tools/run_gates.ps1`, `tools/gates.json` | Local parallel gate runner: affected suites by default, `-All`, `-Perf`, `-Features` | Register every new suite in `gates.json` |
 | `export_presets.cfg`, `tools/`, `packaging/` | Windows/macOS templates, local engines and reproducible Mac packaging | Packaging |
 | `build/` | Executable, play instructions, engine notices | Generated deliverable plus notices |
 | | | |
@@ -68,7 +74,9 @@ All paths below are relative to `godot/`.
 | `scripts/vehicle/aids.gd` | Shared aids: TC, ABS, ASM, steering assist, Simcade layer | Moved from `car.gd` in P2-01; ASM uses body-frame yaw rate on CarBody |
 | `scripts/vehicle/tyre_footprint.gd` | Rigid-tyre envelope: 9 fixed samples per wheel (5 on smooth ground) plus edge bisection; returns the centre ray bit-for-bit on smooth surfaces | Do not change `SMOOTH_TOL` or `FACE_COS` without re-running `footprint.gd` on real kerbs |
 | `scripts/vehicle/wall_contact.gd` | WallContact: swept hull box on layer 2, 3D impulses with friction, Simcade arcade response | Call after `car.step()` inside the physics frame; the planar `collisions.gd` is kept for CarModel until P7 |
-| `scripts/vehicle/bot_driver.gd` | BotDriver: drives CarBody along a TrackAsset's BotLine at a fraction of grip with a banked-turn speed plan, pure-pursuit steering and cross-track correction | Do not change the `pace` constant (0.85) without re-recording `laps-v2-baseline.json`; see REBUILD-LOG P4-07 |
+| `scripts/vehicle/bot_driver.gd` | BotDriver: drives CarBody along a TrackAsset's BotLine at a fraction of the car's grip, measured on a virtual skidpad (`grip_curve()`, cached). Banked-turn speed plan over a ±8 m curvature chord, friction-circle braking, pure pursuit, cross-track correction and yaw damping, slip-aware pedals | Re-record `laps-v2-baseline.json` after any change that moves laps; see REBUILD-LOG P4-07, P4-07b |
+| `scripts/props/prop_body.gd`, `scripts/props/prop_set.gd` | Knock-over props (`data/props.json` kinds): small rigid bodies, sleeping until touched, with impulses against car hull, ground and walls | `PropSet.from_asset()` reads an asset's `Props/`; call `step()` after WallContact |
+| `scripts/proving/track_drive.gd` | `load_asset(id)`: builds a TrackAsset from its generator or loads the bake cached in `user://tracks3d/`, keyed on the generator revision. Used by the v2 game; also a dev drive scene | Generator or data changes invalidate the cache by themselves |
 | | | |
 | **Rebuild: surface** | | |
 | `scripts/surface/track_surface.gd` | TrackSurface: §5.2 contract on PhysicsServer3D rays (layer 1, GodotPhysics3D), normal always faces back along the ray | Must run inside a physics frame; errors once if called outside one |
@@ -78,7 +86,7 @@ All paths below are relative to `godot/`.
 | **Rebuild: track** | | |
 | `scripts/track/track_asset.gd` | TrackAsset root (§5.3): validation, timing line, gates, sectors, grid, minimap, record identity, `surface()` → TrackSurface | Do not change `record_key()` without understanding ghost/record compatibility; see REBUILD-PLAN §5.3 |
 | `scripts/track/road_path.gd` | RoadPath (@tool Path3D): cross-section keys (RoadSection), elevation spline, `@export_tool_button` bake; bakes road/kerb/verge meshes and collision via RoadBuilder | Re-bake replaces only its own tagged output; do not delete foreign Grid children. See REBUILD-LOG P3-02 |
-| `scripts/track/terrain.gd` | TerrainPatch (@tool Node3D): heightmap import (GeoTIFF/raw), chunked mesh with collision on layer 1 (surface = grass), road-stitch blending | Terrain vertices under the road are dropped 0.3 m; do not raise them above the road surface |
+| `scripts/track/terrain.gd` | TerrainPatch (@tool Node3D): heightmap import (GeoTIFF/raw), chunked mesh with collision on layer 1 (surface = grass), road-stitch blending | Terrain under the road is buried `under_road_drop_m`, tapering to `EDGE_DROP_M` (5 cm) at the footprint's edge so no trench opens beside the road (REVIEW F-P6-01). Never raise it above the road |
 | `scripts/track/road_builder.gd` | Pure baking code for RoadPath: tessellation, strip winding, UV, kerb types (ramp/sausage/ribbed), ditch profile, dense ranges | See REBUILD-LOG P3-02 for tessellation limits (≤ 1.5 m along, w/8 across) |
 | `scripts/track/road_section.gd` | RoadSection resource: one cross-section key (width, bank, crown, kerbs, verge, runoff, ditch, surface ids) | |
 | `scripts/track/wall_builder.gd` | Builds wall geometry for WallPath | |
@@ -94,7 +102,7 @@ All paths below are relative to `godot/`.
 | | | |
 | **Rebuild: generators and scenes** | | |
 | `trackgen/proving_ground.gd` | Deterministic generator for the ~2.5 km invented proving ground (bowl, crest, compression, ditch, kerbs, scenery); saves `tracks3d/proving_ground/proving_ground.scn` | Scene is > 5 MB so not committed; baked on demand. Do not change without re-running `proving_ground.gd` (25 checks) |
-| `trackgen/spa.gd` | Spa-Francorchamps generator from OSM/LiDAR data: road, terrain, barriers, scenery, BotLine; saves `tracks3d/spa/spa.scn` | The bank-twist warning at s 2398 m is a known issue (F-P6-01). See REBUILD-LOG P6-01 for data sources |
+| `trackgen/spa.gd` | Spa-Francorchamps generator: OSM centreline, SPW LiDAR elevation, measured widths, kerbs and banking (`measured()` reads `trackgen/data/spa/road-profile.json`), authored runoffs and verges, terrain, barriers, scenery, BotLine | Data scripts and provenance are in `trackgen/data/spa/README.md`. Any file the generator reads must be in the export `include_filter` and `check_exported_v2_assets()` |
 | `scenes/proving/test_surfaces.tscn` | Drive scene: CarBody on all 8 analytic TestSurface shapes with chase camera, car cycling, teleport, HUD telemetry | Launch with `Godot.exe --path . res://scenes/proving/test_surfaces.tscn` or from the main menu |
 | `scenes/proving/track_drive.tscn` | Drive scene: CarBody on any TrackAsset (proving ground or Spa) with lap/sector HUD and free-fly camera | Launch with `Godot.exe --path . res://scenes/proving/track_drive.tscn` or from the main menu |
 
@@ -108,14 +116,20 @@ All paths below are relative to `godot/`.
 
 **New graphics:** ground, road, verges, curbs, barriers and trackside furniture are built by `circuit_world.gd`; cars, trees, labels and user objects by `visuals.gd`. Place anything on the ground with `world.ground_height(x,y)` (road plane on the road, verge blend, then terrain). Camera/environment and lighting presets live in `game.gd`; world rendering and glow/dither/history live in `retro_renderer.gd`. The same screen shaders run under OpenGL. Medium and High quality enable directional shadows; Native alone can opt into MSAA. SSAO/SSR/FXAA are disabled. Textures live in `assets/textures` (CC0, see its README) and are sampled by the shaders in `shaders/`. Use MultiMesh for anything repeated per metre of track. In a rotated `Basis`, scale with `basis*Basis.from_scale(v)`; `Basis.scaled(v)` scales in the parent frame and shears rotated shapes. Keep asset generation outside the physics step.
 
+**New TrackAsset (v2):** write a generator in `trackgen/<id>.gd` with a static `build_asset()` returning a validated TrackAsset (§5.3: Surfaces on layer 1, Walls on layer 2, TimingLine, Grid, BotLine with smooth handles, optional Props/Scenery/Lights). Keep the RoadPath bank change under 0.20°/m (it warns above that) and leave the terrain's under-road drop tapered. Commit source data under `trackgen/data/<id>/` with its licence and rebuild scripts, and cache raw downloads outside git. Add the id to `tests/v2/laps.gd` TRACKS, record its baseline (`-- --record`) and add a probe like Spa's: racing line on tarmac, no trenches beside the road. Add it to the v2 front end's track list, the export presets' `include_filter` and `check_exported_v2_assets()`, and attribute its data in `THIRD-PARTY.md` and `build/THIRD-PARTY.md`.
+
+**Car behaviour (v2):** change `car_body.gd` or the shared `scripts/vehicle/` modules. Run `run_gates.ps1 -All`: suspension statics, flat equivalence, aids and Simcade bands, footprint, walls, props, proving ground and laps all gate it. If laps move deliberately, re-record `laps-v2-baseline.json` and say why in the log.
+
 **Player documentation:** edit `docs/PLAYER-GUIDE.md`. In-game Help reads its `##` chapters directly; keep chapters plain paragraphs and readable bullet text. This small reader does not implement general Markdown tables, links or code fences. Other technical documents can use full Markdown normally. `export_presets.cfg` must continue to include `docs/*.md`.
 
 ## High-risk assumptions to avoid
 
-- `car.z` is suspension heave, not track altitude. `car.elev` is terrain elevation.
+- `car.z` is suspension heave on the legacy CarModel, not track altitude. On CarBody use `pos_y` and each wheel's `roadZ` (contact height). `car.elev` is terrain elevation.
+- TrackSurface queries only work inside a physics frame (`_physics_process`). In `_process`, use values sampled in the last physics tick (see `camera_ground`).
+- Bank convention: positive lowers the right side (RoadSection, measured road data, the bot's `bank_right`).
 - `car.parity` is retired. The browser-parity path is no longer a project constraint and is no longer gated by a test; the current car model has no parity property. Native physics is authoritative and may evolve freely. New vehicle behaviour goes on the normal native path and is covered by `tests/handling.gd` and `tests/dynamics.gd`.
 - The car contact-patch shadow (`shaders/blob_shadow.gdshader`) renders in the opaque pass with an ordered dither. A transparent material on that mesh is never composited by the world SubViewport, so switching it back to alpha blending silently removes the shadow instead of failing loudly.
-- `visuals.pose_car()` takes a `CarModel.snapshot()` dictionary, not the live car. Add any new animated state to `snapshot()`/`blend()` or it will not interpolate.
+- Legacy `visuals.pose_car()` takes a `CarModel.snapshot()` dictionary. The v2 path poses the model from `snapshot_v2()`/`blend_v2()`; add new animated state there, or it will not interpolate.
 - Control-point bank is degrees; sampled bank and car heading are radians.
 - Body lateral/right is positive. Do not flip all signs to match a generic 3D tutorial.
 - Tire `wear` starts at zero and grows; it is not remaining tread fraction.
@@ -130,7 +144,7 @@ All paths below are relative to `godot/`.
 
 ## Known boundaries
 
-Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. The 296 has dedicated reference-built procedural geometry (`ferrari_296.gd`); other cars use generic lofts in `visuals.gd::BODIES`. These are not licensed manufacturer models. The car leaves the ground when a crest demands a negative normal force, flies ballistically with no tyre force, and lands into its suspension; in flight the rendered attitude still follows the road beneath rather than rotating freely. Planar barriers ignore elevation. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
+Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. The 296 has dedicated reference-built procedural geometry (`ferrari_296.gd`); other cars use generic lofts in `visuals.gd::BODIES`. These are not licensed manufacturer models. On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. The legacy game's planar barriers ignore elevation. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
 
 ## PS2-era art direction (2026-09-21)
 

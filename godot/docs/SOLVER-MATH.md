@@ -1,5 +1,7 @@
 # Vehicle physics model
 
+> **Status (2026-09-23):** this derivation was written for the planar CarModel (`scripts/car.gd`). The tyre, drivetrain and aids equations are still current: they live in the shared modules `scripts/vehicle/tyre.gd`, `drivetrain.gd` and `aids.gd`, which the 6-DOF CarBody calls per contact patch. The chassis, suspension, road-following and flight sections describe the legacy planar model only. For the 6-DOF car see PHYSICS.md and the REBUILD-LOG DONE entries P2-00 to P2-08 and P2-comp.
+
 > **Provenance.** This is the full derivation of the vehicle model, written for the original
 > single-file implementation that was removed on 2026-09-22. The mathematics, step order,
 > coordinate conventions and the reasoning behind each clamp all still describe the native

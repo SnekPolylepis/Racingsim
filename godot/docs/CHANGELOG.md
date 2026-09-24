@@ -15,7 +15,7 @@ automated suites until P7.
 - Tests: 42 headless suites (tools/run_gates.ps1, and GitHub Actions on Linux), the windowed feature
   suite (212 checks) and the windowed --v2-present check.
 - Known limits: two circuits; placeholder cars; Simcade handling only (no settings, garage or pause
-  menu on the new front end yet); no night lighting or wall-impact audio on the new path.
+  menu on the new front end yet); no night lighting on the new path.
 
 ## 2026-09-22 — real 3-D circuits
 

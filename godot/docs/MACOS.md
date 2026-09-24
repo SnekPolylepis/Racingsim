@@ -1,5 +1,7 @@
 # macOS build and validation
 
+> **Rebuild note (2026-09-23):** the macOS preset exports the v2 game. `tools/macos.zip` is the template, and the release zip keeps the app binary executable. The flows below (Circuits, Choose folder, the feature suite) describe the legacy game. The v2 game saves under `Racing Sim/v2/` and has not yet been run on a Mac.
+
 The native Godot game has a universal macOS export containing arm64 (Apple Silicon) and x86_64 (Intel). It uses Forward+ with Metal and retains the project's OpenGL fallback. The browser game is separate and unchanged.
 
 ## Play

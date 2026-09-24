@@ -8,6 +8,29 @@ Completed ghost sample arrays are immutable and shared by best-lap and last-lap 
 
 ## Paths and ownership
 
+**The v2 game (normal launch).**
+- **Settings:** `user://v2/settings.json`, with the same keys as the legacy settings. Unknown or
+  mistyped keys keep their defaults.
+- **Racing data:** Storage roots at `user://v2`, with `setups/`, `ghosts/` and `records/` beneath it.
+  Records are schema-2 ghosts plus `.sectors.json` (see Ghosts and records).
+- **Track bakes:** cached in `user://tracks3d/<id>.scn`. The cache key includes the generator's
+  revision (scripts/proving/track_drive.gd), so a changed generator or data file rebuilds it on the
+  next load. Deleting the folder is always safe.
+- **Test and probe modes:** `--v2-smoke`, `--v2-present`, `--v2-export-check` and the front-end flow
+  test use `user://native-tests/v2/`.
+- **Separation:** the v2 game never reads or writes the legacy files below, and legacy records do not
+  carry over.
+
+**TrackAsset source data** lives in `trackgen/data/<id>/`: centreline, elevation, measured road
+profile, licences, and the scripts that rebuild each file from its public source (see that folder's
+README).
+- **Committed:** only derived data plus the request records.
+- **Git-ignored caches:** raw responses and downloaded images.
+- **Exports:** they ship what the generator reads at runtime, via the export presets'
+  `include_filter`. `check_exported_v2_assets()` in the exported build must list every such file.
+
+**Legacy game** (`--features` and the other legacy modes, until P7-01):
+
 `res://` is the Godot project/package root. Bundled `tracks/`, `data/`, scripts and documentation are resources, not save destinations. `user://` normally resolves on Windows to `%APPDATA%/Godot/app_userdata/Racing Sim/`, and on macOS to `~/Library/Application Support/Godot/app_userdata/Racing Sim/`.
 
 Settings always use local `user://settings.json`. Racing data defaults to `user://` but can be redirected through Circuits → Choose folder. Storage initializes `tracks/`, `setups/`, `ghosts/` and `records/` beneath that selected root. Connecting a folder does not copy browser localStorage or automatically populate it with bundled circuits. Libraries combine protected bundled circuits and saved circuits.
@@ -20,7 +43,10 @@ Settings always use local `user://settings.json`. Racing data defaults to `user:
 
 `safe_name()` validates filename characters, strips trailing dots/spaces, limits length to 80 and handles Windows reserved basenames. Apply it to user-chosen names. Unknown document fields generally survive track load/save; this is not strict schema-version migration. Validate required values before model construction. The importer allows drafts; drive/save validation is separate.
 
-## Track, schema 1
+## Track, schema 1 (legacy JSON circuits, until P7-01)
+
+The v2 game uses TrackAssets (REBUILD-PLAN.md §5.3, ARCHITECTURE.md). This schema describes the legacy
+circuits under `godot/tracks/` and the root `tracks/` user folder, read only by the legacy path.
 
 ```json
 {
