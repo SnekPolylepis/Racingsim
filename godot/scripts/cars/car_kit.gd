@@ -225,7 +225,7 @@ func finish(root, nose):
 	brake_mat.emission = Color("ff2018")
 	brake_mat.emission_energy_multiplier = 1.25
 	for node in body.find_children("*", "MeshInstance3D", true, false):
-		if node.name == "GTTailCluster" or node.name == "RoundTailLamp":
+		if node.name.begins_with("GTTailCluster") or node.name.begins_with("RoundTailLamp"):
 			node.material_override = brake_mat
 	var model = v.finish_car(root, body, p, ghost, brake_mat, nose)
 	replace_wheels(model, "road" if p.get("body", "") == "roadster" else "race")

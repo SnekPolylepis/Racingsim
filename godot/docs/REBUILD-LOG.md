@@ -1509,9 +1509,9 @@ Mesh budgets, measured by `tests/v2/car_models.gd` on one complete car (mesh tri
 
 | Car | Triangles | Mesh draws |
 | --- | ---: | ---: |
-| Mazda MX-5 NA 1.6 | 4,360 | 54 |
+| Mazda MX-5 NA 1.6 | 5,032 | 58 |
 | GT high-downforce | 3,744 | 58 |
-| Ferrari 296 GT3 | 8,346 | 177 |
+| Ferrari 296 GT3 | 8,466 | 187 |
 
 The model suite checks all three pose contracts, preset axle/track/radius measurements, four complete wheels, ghost creation and lamps switching with day/night: **51 checks, 0 failures**. Windowed review captures on the proving ground, taken in a close chase framing by `tests/v2/car_screenshots.gd`:
 

@@ -60,6 +60,18 @@ func build(visuals, preset, ghost):
 			)
 			node.name = "RoundTailLamp"
 			node.material_override = visuals.material("b31c23", .1, .22)
+			if not ghost:
+				var glow = node.duplicate()
+				glow.name = "RoundTailNightGlow"
+				glow.position.x -= .012
+				var glow_mat = visuals.material("e62722", .08, .2).duplicate()
+				glow_mat.emission_enabled = true
+				glow_mat.emission = Color("ff321e")
+				glow_mat.emission_energy_multiplier = 1.4
+				glow.material_override = glow_mat
+				glow.visible = visuals.night
+				k.body.add_child(glow)
+				visuals.headlights.append(weakref(glow))
 		k.box("RearReflector", Vector3(xr - .025, .25, side * .46), Vector3(.02, .055, .17), "8b1716")
 	k.glass_panel(
 		"Windscreen",
