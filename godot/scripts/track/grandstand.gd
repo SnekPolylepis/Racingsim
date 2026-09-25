@@ -10,6 +10,7 @@ enum Side { LEFT, RIGHT }
 const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const WallBuilder = preload("res://scripts/track/wall_builder.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const NightGlow = preload("res://scripts/track/night_glow.gd")
 
 @export_group("Placement")
 @export var follow_road: NodePath
@@ -172,10 +173,7 @@ func bake() -> void:
 			)
 
 	st.generate_normals()
-	var mat = StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.cull_mode = BaseMaterial3D.CULL_BACK
-	st.set_material(mat)
+	st.set_material(NightGlow.facade_material())
 	var grandstand_mesh = st.commit()
 
 	if has_crowd:

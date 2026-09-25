@@ -10,6 +10,7 @@ enum Side { LEFT, RIGHT }
 const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const WallBuilder = preload("res://scripts/track/wall_builder.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const NightGlow = preload("res://scripts/track/night_glow.gd")
 
 @export_group("Placement")
 @export var follow_road: NodePath
@@ -136,10 +137,7 @@ func bake() -> void:
 			SceneryBuilder.add_quad(st, p_back, p_front, p_roof_f, p_roof_b, col_concrete)
 
 	st.generate_normals()
-	var mat = StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.cull_mode = BaseMaterial3D.CULL_BACK
-	st.set_material(mat)
+	st.set_material(NightGlow.facade_material())
 	var building_mesh = st.commit()
 
 	var prep = SceneryBuilder.prepare_container(self, "Scenery")

@@ -7,6 +7,7 @@ shader_type spatial;
 // nominal half-width. The streaks sit
 // under the TrackAsset's real lamps: scripts/track/track_lights.gd writes `lamp_data`, texel x covering
 // `lamp_cell` metres of station, each row two lamps as (station, side * strength), nearest first.
+// Look-9 adds a camera-proximity streak standing in for the car's own headlights on wet tarmac.
 render_mode cull_disabled;
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D rough_tex : hint_default_white, filter_linear_mipmap, repeat_enable;
@@ -127,6 +128,19 @@ void fragment() {
 				reflected += neon * (fall * lateral * (.06 + reflection * 1.2) + pool * .12);
 			}
 		}
+	}
+	// Wet camera-proximity streak (Look-9, ART-DIRECTION "Nights"): a cheap PS2-style stand-in for the
+	// car's own headlights reflecting on wet tarmac (nfsu-night-wet-street-reflections.jpg) — no per-frame
+	// uniform needed, since CAMERA_POSITION_WORLD already tracks wherever the chase/bonnet camera (and so
+	// the car) is. Narrow across the road (reuses `lat`) and fades over about 26 m, so it reads as a
+	// streak running down the lane toward the camera rather than a puddle centred on it.
+	if (afterhours) {
+		float cam_dist = length(world_pos - CAMERA_POSITION_WORLD);
+		float near_cam = pow(max(0.0, 1.0 - cam_dist / 26.0), 2.2);
+		float head_lat = exp(-pow(lat * 2.0, 2.0));
+		float head_glow = near_cam * head_lat;
+		glow += head_glow * 0.4;
+		reflected += vec3(1.0, 0.96, 0.88) * head_glow * 0.5;
 	}
 	glow = min(glow, 1.2);
 	reflected = min(reflected, vec3(1.1));

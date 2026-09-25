@@ -17,6 +17,7 @@ const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
+const NightGlow = preload("res://scripts/track/night_glow.gd")
 const RetroRenderer = preload("res://scripts/retro_renderer.gd")
 ## Settings > Display choices the Look-3 presentation chain reads (RetroRenderer.apply_settings).
 const PRESENTATION_SETTINGS = [
@@ -1118,8 +1119,10 @@ func apply_time_of_day():
 
 
 ## Look-2: the loaded TrackAsset's sodium lamps and the road_v2 amber streaks follow Afterhours.
+## Look-9: trackside structures (pit building, grandstand, gantry, billboards) glow too.
 func apply_track_night() -> void:
 	var night = settings.time_of_day == 1
 	Ps2Materials.set_afterhours(night, track if track is Node3D else null)
 	if track is Node3D:
 		TrackLights.set_night(track, night)
+		NightGlow.set_night(track, night)
