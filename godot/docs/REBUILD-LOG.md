@@ -11,6 +11,9 @@ KIND is one of `CLAIM`, `DONE`, `PAUSED`, `FAILED`, `CONTRACT`, `DECISION`, `NOT
 
 ---
 
+## 2026-09-24  CLAIM Look-7  (Luna)
+Claimed the armco rail-and-post rendering task on `rb/look-7-armco` per the owner's branch-only PR instruction.
+
 ## 2026-09-22  DECISION D1–D4  (owner)
 Editor removed; 6-DOF chassis; authored 3D tracks; old track format, records and ghosts not carried forward. The CLAUDE.md "don't replace the custom solver" rule is withdrawn. D5–D10 proceed on the plan's defaults until the owner says otherwise.
 
@@ -1969,3 +1972,13 @@ Gaps 1 and 2 of ART-DIRECTION.md, judged against the GT4 Nordschleife frames.
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
 
+## 2026-09-24  DONE Look-7  (Luna)
+Implemented only the kind-0 visible wall mesh: double 0.31 m corrugated rails with tops at 0.45 m and 0.75 m, a third rail for barriers taller than 0.9 m, and dark posts at no more than 3 m spacing. Rails use the existing galvanized armco texture and rails/posts share one material and one mesh per wall. `WallBuilder.faces()` and `wall_path.gd` collision generation are unchanged. Triangle count: 396 triangles for a 10 m open double-rail wall sampled every 2 m (280 rail, 56 end-cap, 60 post); generally `28 × segment_count × rail_count + 28 × rail_count` for open-end rails, plus `12 × post_count`.
+
+Formatting/parser: `python -m gdtoolkit.formatter -l 110 scripts tests` reformatted only `scripts/track/scenery_builder.gd` (86 other files unchanged); `python -m gdtoolkit.parser scripts/track/scenery_builder.gd` passed. Verification is blocked by this Windows host's Godot 4.6.2 executable crashing with signal 11 / exit `-1073741819`: `--check-only` and all 35 gates from `run_gates.ps1 -All -Features` failed before RESULTS output, including unrelated suites. The requested windowed `track_screenshots.gd -- --v2-flow-test --out=...` also crashed before producing shots, so the two Nordschleife PR screenshots are not attached. Sent to Claude review without claiming those checks or captures passed.
+
+## 2026-09-24  REVIEW Look-7 (Luna): accepted with one fix  (Claude Opus 5.5)
+Luna's host could not run Godot (it crashed with signal 11), so nothing had been verified. Run here on Windows with main merged in:
+- **Gates:** 34/35 passed. `road_density` failed: the proving-ground scene was 5.37 MB, over the 5 MB budget. The cause was the closed 14-point rail profile, front and back, on every 5 m segment.
+- **Fix:** the rail is now the open 7-point corrugated face only. `armco_material()` is double-sided, so it looks the same. The scene is 4.78 MB and `road_density` passes.
+- **Checks:** collision is unchanged, and barrier and walls pass. The Hatzenbach capture shows rails on posts, matching the GT4 frame. `run_gates.ps1 -All -Features` gave 34 plus features 77/0 before the fix; the fix touches only the visible mesh, and `road_density` was re-run.
