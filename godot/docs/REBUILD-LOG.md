@@ -11,6 +11,9 @@ KIND is one of `CLAIM`, `DONE`, `PAUSED`, `FAILED`, `CONTRACT`, `DECISION`, `NOT
 
 ---
 
+## 2026-09-24  CLAIM Look-7  (Luna)
+Claimed the armco rail-and-post rendering task on `rb/look-7-armco` per the owner's branch-only PR instruction.
+
 ## 2026-09-22  DECISION D1–D4  (owner)
 Editor removed; 6-DOF chassis; authored 3D tracks; old track format, records and ghosts not carried forward. The CLAUDE.md "don't replace the custom solver" rule is withdrawn. D5–D10 proceed on the plan's defaults until the owner says otherwise.
 
@@ -1833,6 +1836,152 @@ From the owner's Mac check: a TrackAsset baked by a headless run (the gates) was
 - Merged today: #25 F-track-picker, #26 F-P4-03-corners, #28 F-ci-ui, #27 Look-tracks, #29 Look-5. Only docs conflicted; a duplicated LLM-GUIDE paragraph was merged into one.
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0. After the run, `tracks3d-headless/` holds the gate bakes and `tracks3d/` only windowed ones.
+
+## 2026-09-24  DONE NS-section part 1: a narrow, enclosed Nordschleife  (Claude Opus 5.5)
+Owner feedback: the Nordschleife felt flat and open, not planted in the landscape. Causes: tarmac runoff of 2.5–10.5 m plus a 6 m flat verge each side, armco about 9.7 m from the tarmac, no tree within 24 m of the centreline, and terrain blended to road level over 30 m.
+- **Roadside (trackgen/nordschleife_s1.gd):**
+  - A 0.5 m grass shoulder, growing to 2.5 m on corner outsides; the paddock keeps its tarmac.
+  - A 1.5 m verge, with the armco 0.3 m beyond it, about 2.3 m from the tarmac.
+  - The forest's near band starts 1.5 m past the verge (34 per 100 m), and the deep band runs 18–120 m.
+  - Trees are cleared only within 9.5 m of any centreline.
+  - Terrain mesh 10 → 5 m. CACHE_REVISION 3.
+- **Terrain stitch (scripts/track/terrain.gd):** under a road footprint the ground is now raised into an embankment as well as lowered (up to `EMBANK_MAX_M` 6 m; deeper hollows are left, as bridges). Before, a road above the ground left a hollow under the verge. With the narrow verges this appeared as a 2–5 m ditch behind the armco at s 1880–1950, which the trench probe caught.
+- **Result (windowed captures):** Hatzenbach and Flugplatz now show armco close on both sides, a forest wall behind it and no bare horizon.
+- **Not fixed:** banks and cuttings. `dem.raw` is DGM1 resampled to 20 m per pixel, and the elevation keys are every 20 m, so the data holds no roadside relief. NS-section part 2 needs the 20 DGM1 1 m tiles re-fetched and a corridor DEM at 1–2 m (owner approval for the download pending).
+
+Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
+
+## 2026-09-24  DONE NS-section part 2: real DGM1 relief beside the Nordschleife  (Claude Opus 5.5)
+Owner approved re-downloading the 20 LVermGeo DGM1 1 m tiles (32 MB, git-ignored in `trackgen/data/nordschleife/raw-dgm1/`).
+- **Terrain data:** `build_data.py` `SPACING` 20 → 5 m. `dem.raw` is now 761×841 at 5 m (2.5 MB, was 191×211 at 20 m), resampled from the 1 m mosaic, so roadside banks and cuttings survive. The centreline content is unchanged (checked field by field); README and sources.json were regenerated.
+- **Generator:** `terrain.blend_m` 30 → 6 m, so the relief meets the verge instead of being levelled over 30 m. CACHE_REVISION 4. The terrain mesh was already 5 m (part 1).
+- **Capture:** Hatzenbach now shows the real bank rising behind the right-hand armco.
+- **Not yet:** the road's own elevation keys are still every 20 m and smoothed, so road micro-undulation is next if the owner wants it. Tree cards and textures are Look-0's scope.
+
+Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
+
+## 2026-09-25  CLAIM Look-0  (Claude Sonnet 5)
+Art bible and reference board on branch `rb/look-0-art-bible`: `godot/docs/art/reference/` (real PS2/GT4/NFSU and real-world Nordschleife photos), an extended `tests/v2/track_screenshots.gd` with a `--compare` mode, `godot/docs/art/baseline/` captures, and a rewritten `ART-DIRECTION.md` with a measured gap table. This is a new team slot ("Sonnet" added to QUEUE.md's model roster); the owner assigned it directly rather than via the queue's claim protocol.
+
+## 2026-09-25  DONE Look-0 Art bible and reference board  (Claude Sonnet 5) — branch `rb/look-0-art-bible`
+The owner's "devbox, not a game" complaint, checked against code and measurement rather than eyeballed:
+the road texture, the sky, and the tree canopy are each confirmed gaps with a specific cause; the
+overall colour grade is not.
+
+**Reference board (`docs/art/reference/`, README.md there has full attribution).** Two infrastructure
+walls cut this short of the 20-30 frame target: MobyGames/GameFAQs return a Cloudflare JS challenge to
+non-browser requests, so the working path was the Wayback Machine's archived copies of MobyGames'
+screenshot galleries — and partway through, `web.archive.org` itself went "temporarily offline" (their
+own status page), before NFS Underground, a confirmed-Nordschleife GT4 shot, a second GT4 European
+circuit (Circuit de la Sarthe — GT4 has no Spa, confirmed by search) and any close-up texture shot were
+reached. What's collected (8 frames, real, verified, properly licensed/attributed, 1.4 MB total):
+- 6 real-world Nordschleife photos via the Openverse API (Flickr, CC-licensed, fetched directly, no
+  Wayback needed): confirmed Flugplatz, Adenauer Forst, Brünnchen, plus two honestly-labelled
+  unidentified overviews and one unidentified banked corner (kept because their enclosure/horizon
+  information is real and useful, not because the corner is known).
+- 2 verified GT4 (PS2) screenshots via MobyGames-through-Wayback: a cockpit/HUD view (track not
+  identified — MobyGames' default contributor set captions by UI screen, not by track) and a photo-mode
+  car render (confirms the warm-key/cool-fill daylight balance `game.gd` already implements).
+Queued as `Look-0-refs` (`needs owner`) in QUEUE.md for the rest, with exact reproduction steps.
+
+**Capture set.** `tests/v2/track_screenshots.gd` gained 9 Proving Ground stations, a per-shot camera
+override (chase/bonnet — `helper.pose()` hardcodes chase, so the camera is set again with
+`update_camera()` after posing), and a `--compare` mode that composites each shot against its matched
+reference into a labelled side-by-side PNG via an offscreen SubViewport/Control layout. Only
+`ns-flugplatz` has a confirmed match today. Run windowed (Godot 4.6.2, xvfb + opengl3/llvmpipe on the
+Linux cloud): the first attempt hit a 300 s timeout mid-Nordschleife-bake; a second run reused the cached
+Proving Ground/Spa bakes (`user://tracks3d`) and finished in under 15 minutes. 26 PNGs committed to
+`docs/art/baseline/` — trees are present (checked visually; this was a windowed run, not the headless
+cache path CLAUDE.md warns about).
+
+**Measured colour stats** (`docs/art/reference/color_stats.py`: HSV saturation, Rec. 709 luminance, full
+frame thumbnailed to 512 px):
+
+| Set | mean saturation | mean luminance | luminance std-dev |
+|---|---:|---:|---:|
+| Reference (9 frames) | 0.251 | 0.379 | 0.219 |
+| Ours, Proving Ground (9) | 0.192 | 0.485 | 0.217 |
+| Ours, Spa (9) | 0.229 | 0.421 | 0.206 |
+| Ours, Nordschleife (8) | 0.304 | 0.319 | 0.223 |
+
+Whole-frame, we're close to the reference — not the "everything reads as one flat value" a global
+tonemap bug would produce. A road-surface-only crop tells the real story: our road patch measures
+saturation 0.157 / contrast (luminance std-dev) 0.036, against the reference road patch's 0.072 / 0.078.
+Our road is **more tinted and less than half the contrast** of real asphalt. The flatness is in specific
+surfaces, not the global grade.
+
+**Five biggest gaps, ranked by how much they read as a devbox:**
+1. **No white edge line anywhere on the road** — confirmed absent from `road_v2.gdshader` and
+   `road_builder.gd` by direct inspection; every reference frame with a road edge has one.
+2. **Road contrast and tint** — measured above: half the real luminance variance, more saturated
+   (tinted) than real near-neutral asphalt. `asphalt_track_diff.png` (256x256, indexed) is itself
+   near-uniform noise with no patches, seams or rubber line to give the shader anything to work with.
+3. **No distant horizon silhouette** — `scripts/retro_assets.gd::panorama()` generates the sky as a
+   flat procedural gradient with no hill/tree-line layer at all; `pg-start.png` shows the resulting hard
+   flat sky/ground cut. (This also corrects a stale ART-DIRECTION.md claim that the sky was "downsampled
+   CC0 photographs".)
+4. **Tree canopy doesn't close overhead** even where density is now reasonable (34/100 m on the
+   Nordschleife's near band, after today's NS-section part 1 fix) — `ns-flugplatz-compare.png` shows
+   visible sky gaps between individual cone-shaped cards that the reference's unbroken canopy doesn't
+   have.
+5. **Nordschleife sits on the terrain, not in it** — NS-section part 1's own log entry already states
+   this isn't fixed: the 20 m/pixel DEM can't carry roadside bank/cutting relief. Needs a 1-2 m corridor
+   DEM re-fetch (owner approval pending), not a rendering change.
+
+Root cause of the "256 px palette-reduced" framing this replaces: a small, palette-reduced texture is
+not inherently flat — GT4's own screenshots show real contrast in a similarly small, similarly
+palette-constrained texture. `asphalt_track_diff.png` is flat because nothing authored variation into
+it, not because of its resolution or colour count. ART-DIRECTION.md now says this explicitly.
+
+**Gates** (Linux cloud, Godot 4.6.2): `--check-only` clean; `gdformat -l 110 --check scripts tests`
+clean (85 files); `python tools/ci_gates.py` **34/34**, 476 s wall clock. Capture script: `TRACK SHOTS
+RESULTS {"failures":[]}`; stderr carries only the container's expected ALSA/dummy-audio-driver warnings
+and Godot's normal RID-leak-at-exit noise, not script errors. Not run: `-Perf`, a Windows GPU pass, or
+an export check (docs/tests-only change, already excluded from every preset's `include_filter`).
+
+Left for later Look tasks, per the gap table above and `Look-0-refs`. I looked at every baseline capture
+and reference frame myself before writing this.
+
+## 2026-09-24  REVIEW Look-0 (Sonnet): accepted with fixes  (Claude Opus 5.5)
+Sonnet's measurements and gaps 1-4 (edge lines, road contrast, horizon silhouette, canopy gaps) held up. Fixed in review:
+- **Reference board completed:** 7 GT4 Nordschleife frames (including an official Oct 2004 press image) and 6 NFS Underground night frames. They were found through Bing Images in a real browser, which avoids the Cloudflare block; sources are in `docs/art/reference/README.md`.
+  - GT4 road patches measure luminance std-dev 0.056-0.143, against ours at 0.036. That is now an acceptance number: ≥ 0.07.
+- **Rules corrected against the references and the owner's direction:**
+  - Road texture density *is* a problem: 1024-2048 px photo sources plus a non-repeating macro layer.
+  - The 128/256 px budget is superseded; the console look comes from Look-3's output chain.
+  - Cars *are* a gap (CAR-01).
+  - Armco: rails on posts.
+  - Day fog end about 1-1.2 km plus a hill silhouette.
+  - NFSU night rules: wet specular streaks, coloured ambient, no black void.
+  - Nordschleife banks marked fixed (NS-section 2).
+- **Gap table:** gaps 5-8 added (trees, cars, armco, fog).
+- **Captures:** `track_screenshots.gd` pairs three Nordschleife shots with GT4 "look target" frames. The baseline was recaptured on current main, including NS-section 1-2: 26 shots and 4 comparison strips.
+
+## 2026-09-24  DONE Look-8 Road surface and edge lines  (Claude Opus 5.5)
+Gaps 1 and 2 of ART-DIRECTION.md, judged against the GT4 Nordschleife frames.
+- **Texture:** Poly Haven `asphalt_pit_lane` 2K (albedo, roughness and normal; CC0) in `assets/textures_hd/`. Imported with mipmaps and VRAM compression; the first import had no mipmaps, and the resulting aliasing looked like gravel.
+- **`shaders/road_v2.gdshader`:**
+  - The texture tiles every 3.5 m in both directions; it used to be stretched across the width.
+  - A second rotated sample, blended by noise, hides the repeat.
+  - 18 % of the sharp grain is kept over a softer mip, and the colour is pulled to near-neutral grey.
+  - Macro layer: broad drift, irregular stains and repair patches with tar seams.
+  - A normal map. Matte by day (metallic 0, roughness 0.72-0.95); wet-looking at night. The lamp streaks are unchanged.
+- **Edge lines:** `RoadBuilder.build()` writes UV2.x = metres to the nearer tarmac edge (the widths come from each station's section, keyed through 32-bit rounding to match the UVs), and `road_path.gd` passes it to `mesh()`. The shader paints a 0.12 m white line 0.25 m inside each edge, on every circuit.
+- **Measured road crops:** luminance std-dev 0.078-0.097 in three of four views, where the target is ≥ 0.07 (it was 0.036). The bonnet crop is 0.052, being mostly the car's shadow. Saturation is 0.21-0.27, a little over the 0.20 target.
+- **Baseline:** `docs/art/baseline/` recaptured.
+
+Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
+
+## 2026-09-24  DONE Look-7  (Luna)
+Implemented only the kind-0 visible wall mesh: double 0.31 m corrugated rails with tops at 0.45 m and 0.75 m, a third rail for barriers taller than 0.9 m, and dark posts at no more than 3 m spacing. Rails use the existing galvanized armco texture and rails/posts share one material and one mesh per wall. `WallBuilder.faces()` and `wall_path.gd` collision generation are unchanged. Triangle count: 396 triangles for a 10 m open double-rail wall sampled every 2 m (280 rail, 56 end-cap, 60 post); generally `28 × segment_count × rail_count + 28 × rail_count` for open-end rails, plus `12 × post_count`.
+
+Formatting/parser: `python -m gdtoolkit.formatter -l 110 scripts tests` reformatted only `scripts/track/scenery_builder.gd` (86 other files unchanged); `python -m gdtoolkit.parser scripts/track/scenery_builder.gd` passed. Verification is blocked by this Windows host's Godot 4.6.2 executable crashing with signal 11 / exit `-1073741819`: `--check-only` and all 35 gates from `run_gates.ps1 -All -Features` failed before RESULTS output, including unrelated suites. The requested windowed `track_screenshots.gd -- --v2-flow-test --out=...` also crashed before producing shots, so the two Nordschleife PR screenshots are not attached. Sent to Claude review without claiming those checks or captures passed.
+
+## 2026-09-24  REVIEW Look-7 (Luna): accepted with one fix  (Claude Opus 5.5)
+Luna's host could not run Godot (it crashed with signal 11), so nothing had been verified. Run here on Windows with main merged in:
+- **Gates:** 34/35 passed. `road_density` failed: the proving-ground scene was 5.37 MB, over the 5 MB budget. The cause was the closed 14-point rail profile, front and back, on every 5 m segment.
+- **Fix:** the rail is now the open 7-point corrugated face only. `armco_material()` is double-sided, so it looks the same. The scene is 4.78 MB and `road_density` passes.
+- **Checks:** collision is unchanged, and barrier and walls pass. The Hatzenbach capture shows rails on posts, matching the GT4 frame. `run_gates.ps1 -All -Features` gave 34 plus features 77/0 before the fix; the fix touches only the visible mesh, and `road_density` was re-run.
 
 ## 2026-09-24  CLAIM CAR-01  (GPT-6 Sol) — branch `rb/CAR-01-miata`
 Owner-assigned real Mazda MX-5 NA body replacement. Source and licence to be recorded with the asset; Claude will review the branch PR.
