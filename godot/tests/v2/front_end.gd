@@ -1,5 +1,6 @@
 extends SceneTree
 ## Headless P4-06 flow: menu selection, generator cache, drive, records, return to menu.
+const TrackDrive = preload("res://scripts/proving/track_drive.gd")
 var checks = 0
 var failures = []
 
@@ -92,8 +93,11 @@ func run() -> void:
 	check(
 		app.v2_track_id == "spa" and app.frontend.page == "drive" and not app.in_menu, "Spa loads into drive"
 	)
-	check(FileAccess.file_exists("user://tracks3d/spa.scn"), "Spa generator cache saved")
-	check(FileAccess.file_exists("user://tracks3d/spa.scn.revision"), "cache revision saved before reuse")
+	check(FileAccess.file_exists(TrackDrive.cache_dir().path_join("spa.scn")), "Spa generator cache saved")
+	check(
+		FileAccess.file_exists(TrackDrive.cache_dir().path_join("spa.scn.revision")),
+		"cache revision saved before reuse"
+	)
 	var spa_path = app.record_path()
 	check(spa_path.find("records") >= 0, "asset configuration has a record path")
 	app.frontend.open_v2_panel("garage")

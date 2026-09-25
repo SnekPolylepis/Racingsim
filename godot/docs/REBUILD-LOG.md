@@ -1823,3 +1823,13 @@ Gates (Linux cloud, Godot 4.6.2):
 - all stderr empty; parse and gdformat clean.
 
 For Sol (Look-5): `ground.gdshader` and `road_v2.gdshader` changed their grades here. `trackgen/spa.gd` and `nordschleife_s1.gd` `add_forest()` now filter and ground trees after `RoadScatter.bake()`; keep that if batching moves the trees.
+
+## 2026-09-24  DONE F-headless-cache  (Claude Opus 5.5)
+From the owner's Mac check: a TrackAsset baked by a headless run (the gates) was cached with every MultiMesh instance at the origin (trees, lamps, posts, billboards), because the dummy renderer keeps no instance transforms. The windowed game then loaded that treeless scene.
+- `TrackDrive.cache_dir()`: headless runs cache in `user://tracks3d-headless`, and the windowed game uses `user://tracks3d`.
+- `_cache_revision()` now also hashes `track_drive.gd`, so every existing (possibly broken) bake rebuilds once.
+- `tests/v2/front_end.gd` checks the cache in `cache_dir()`.
+- Added the six missing `.png.import` files for the look-tracks screenshots.
+- Merged today: #25 F-track-picker, #26 F-P4-03-corners, #28 F-ci-ui, #27 Look-tracks, #29 Look-5. Only docs conflicted; a duplicated LLM-GUIDE paragraph was merged into one.
+
+Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0. After the run, `tracks3d-headless/` holds the gate bakes and `tracks3d/` only windowed ones.
