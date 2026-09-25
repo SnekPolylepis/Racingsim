@@ -76,3 +76,13 @@ Four Poly Haven models, all **CC0 1.0** ([legal text](assets/licenses/CC0-1.0.tx
 `tree_atlas.png` was regenerated (still through `tools/bake_tree_cards.gd` and `tools/finish_tree_cards.py`, same 4 MB budget) to add two more Poly Haven models, both **CC0 1.0**: [island_tree_02](https://polyhaven.com/a/island_tree_02) and [island_tree_03](https://polyhaven.com/a/island_tree_03) (Rob Tuytel scanning, Rico Cilliers cleanup). Poly Haven has no model literally named oak or birch; these are the closest broadleaf/multi-stem CC0 renders by inspection, used as generic deciduous stand-ins (`scripts/track/road_scatter.gd`'s `CARDS`/`SPECIES` calls them `oak` and `birch`). The atlas is now ten cards: three spruce, two fir, three deciduous (beech, oak, birch), two bush.
 
 A second atlas, `assets/undergrowth/undergrowth_atlas.png` (1.8 MB), holds low vegetation for the band between and under the trees (ART-DIRECTION.md "Trackside enclosure"): five more Poly Haven CC0 1.0 models, [fern_02](https://polyhaven.com/a/fern_02) (Rob Tuytel scanning, Rico Cilliers modelling), [wild_rooibos_bush](https://polyhaven.com/a/wild_rooibos_bush) (James Ray Cock modelling, Jenelle van Heerden photography), [grass_medium_01](https://polyhaven.com/a/grass_medium_01) (Rob Tuytel photography, Rico Cilliers modelling), [shrub_04](https://polyhaven.com/a/shrub_04) (Rico Cilliers) and [pine_sapling_small](https://polyhaven.com/a/pine_sapling_small) (Rob Tuytel photography, Rico Cilliers modelling), rendered and packed the same way into 14 cards (2 fern, 3 bramble, 3 long grass, 3 flowering shrub, 3 conifer sapling). `scripts/track/road_scatter.gd`'s new `atlas_kind` export picks this atlas; `trackgen/nordschleife_s1.gd`, `trackgen/spa.gd` and `trackgen/proving_ground.gd` scatter it as `add_undergrowth()`/an `Undergrowth` RoadScatter node. Total new download for both atlases: about 155 MB of source glTF/textures, never committed.
+
+## Chicago circuit (CHI-01)
+
+Road scaffold © OpenStreetMap contributors, ODbL 1.0 (https://www.openstreetmap.org/copyright;
+https://opendatacommons.org/licenses/odbl/1-0/). The source and edited geographic data are available
+in `godot/trackgen/data/chicago/` in https://github.com/SnekPolylepis/Racingsim .
+Acquired 2026-09-25; widths, heights, corner easing and two game-only ramp connectors are authored.
+Buildings, Bean interpretation, Willis Tower silhouette and Navy Pier geometry are original procedural
+low-poly art; no third-party landmark model or photograph is used. See that folder's README for
+the exact query, limitations and attribution.

@@ -18,6 +18,7 @@ const GatesEnv = preload("res://tests/v2/gates_env.gd")
 const DT = 1.0 / 240
 const BASELINE = "res://docs/rebuild/laps-v2-baseline.json"
 const TRACKS = {
+	"chicago": "res://trackgen/chicago.gd",
 	"proving_ground": "res://trackgen/proving_ground.gd",
 	"spa": "res://trackgen/spa.gd",
 	"nordschleife_s1": "res://trackgen/nordschleife_s1.gd"
@@ -40,7 +41,17 @@ func check(ok, what):
 
 func _initialize():
 	presets = GatesEnv.only_car(JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json")))
+	var selected = ""
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--track="):
+			selected = arg.trim_prefix("--track=")
+	if selected != "" and not TRACKS.has(selected):
+		push_error("Unknown lap track: " + selected)
+		quit(1)
+		return
 	for id in TRACKS:
+		if selected != "" and id != selected:
+			continue
 		if not ResourceLoader.exists(TRACKS[id]):
 			continue
 		var asset = load(TRACKS[id]).build_asset()

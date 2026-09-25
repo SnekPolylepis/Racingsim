@@ -138,3 +138,12 @@ Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac
 Start with [ART-DIRECTION.md](ART-DIRECTION.md) for the shared world/UI output chain, resolution modes, palettes, materials and budgets; ARCHITECTURE.md "Presentation chain" describes the v2 implementation (Look-3). Out of the box the game is Authentic-leaning: 640x448 raster, 16:9 anamorphic, soft upscale, colour dithering, low speed blur, Authentic UI. `--v2-present` (and `--features`) ends with the presentation check, which times every display mode and screenshots drive, title and settings pages into `user://look-3/`; `--v2-look --v2-track=spa` runs it alone on another circuit. The legacy `--compare` and `--performance` matrices went with the legacy game.
 
 `car.simcade_enabled` selects the handling model. Models instantiated by historical headless tests default to Simulation; game settings default to Simcade. Always set the intended model explicitly in new harnesses. Handling enters record identity; time of day and renderer settings do not.
+
+## Chicago circuit (CHI-01)
+
+`trackgen/chicago.gd` builds the Chicago road, both Wacker decks, city and landmarks from
+`trackgen/data/chicago/route.json`. Read that directory's README before changing geography.
+Registration is in `FrontEnd.V2_TRACKS` and `TrackDrive.GENERATORS`; the data is included by every
+export preset and checked by `check_exported_v2_assets()`. Chicago uses a flat sky and its own
+fog range so the lake/skyline remain visible. Probes: `tests/v2/chicago.gd`; visual review:
+`tests/v2/chicago_screenshots.gd`. All-car/mode laps are in the normal lap suite.

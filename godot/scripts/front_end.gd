@@ -25,7 +25,8 @@ var v2_panels: Control
 const V2_TRACKS = {
 	"proving_ground": "Proving Ground",
 	"spa": "Spa-Francorchamps",
-	"nordschleife_s1": "Nordschleife (T13 - Aremberg)"
+	"nordschleife_s1": "Nordschleife (T13 - Aremberg)",
+	"chicago": "Chicago — River & Lake"
 }
 
 
