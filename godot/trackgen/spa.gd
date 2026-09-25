@@ -5,6 +5,7 @@ const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const RoadPath = preload("res://scripts/track/road_path.gd")
 const RoadSection = preload("res://scripts/track/road_section.gd")
 const KerbMap = preload("res://trackgen/kerb_map.gd")
+const TrackBoards = preload("res://scripts/track/track_boards.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
@@ -19,7 +20,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 3
+const CACHE_REVISION = 4
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -892,6 +893,8 @@ static func build_asset() -> Node3D:
 		604
 	)
 	add_scenery_kit(asset, road, positions, measured)
+	# Braking countdown and corner name boards (Look-11).
+	asset.set_meta("boards", TrackBoards.build(asset, road, corners, scale_s))
 	add_lighting(asset, road, positions, measured)
 	return asset
 
