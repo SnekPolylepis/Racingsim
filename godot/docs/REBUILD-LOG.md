@@ -2106,3 +2106,6 @@ Frame spikes: on the RTX 4080, `--v2-look --v2-track=nordschleife_s1` shows a wo
 
 ## 2026-09-24  DONE DOC-01 release docs and queue tidy (GPT-6 Luna)
 Updated PLAY.txt and CHANGELOG.md with Preview 3–5 features, Preview 5 known limits and credits. No queue rows changed: P6-02a was already done. The other merged candidates (P4-core, P4-vis, P4-menus, Look-1, P6-01-polish, P7-02, CI, F-CI, F-P4-01, F-P4-03-corners and F-track-picker) remain `review:*` and were left untouched as required.
+
+## 2026-09-24  REVIEW DOC-01 (Luna): accepted with two fixes  (Claude Opus 5.5)
+Restored two known limits that are still true (the Spa runoff approximations; old-game records don't carry over). The QUEUE tidy (item 3) was not done and stays open.

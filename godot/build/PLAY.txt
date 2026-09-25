@@ -67,6 +67,8 @@ KNOWN LIMITS OF THIS PREVIEW
   - The Miata's night tail-glow sits slightly low on the bumper.
   - Kerb positions are approximate; a traced kerb map is in progress.
   - Only the first Nordschleife section is included.
+  - Runoff areas at Spa are approximations.
+  - Records from the old game do not carry over (they live in a separate folder).
 
 SAVES
   %APPDATA%/Godot/app_userdata/Racing Sim/v2/   (macOS: ~/Library/Application Support/
