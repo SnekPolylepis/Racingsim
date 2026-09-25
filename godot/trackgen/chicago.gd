@@ -11,7 +11,9 @@ const NightGlow = preload("res://scripts/track/night_glow.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
 const DATA = "res://trackgen/data/chicago/route.json"
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 3
+const CACHE_REVISION = 4
+const TEXTURE_ROOT = "res://assets/textures/chicago/"
+const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
 
 static func data() -> Dictionary:
@@ -90,6 +92,26 @@ static func box(
 	return mesh_node(asset, parent, title, m, pos)
 
 
+static func multimesh_boxes(
+	asset: Node3D, parent: Node, title: String, mat: Material, entries: Array
+) -> void:
+	if entries.is_empty():
+		return
+	var mesh = BoxMesh.new()
+	mesh.material = mat
+	var instances = MultiMesh.new()
+	instances.transform_format = MultiMesh.TRANSFORM_3D
+	instances.mesh = mesh
+	instances.instance_count = entries.size()
+	for i in entries.size():
+		var entry = entries[i]
+		var basis: Basis = entry[2] if entry.size() > 2 else Basis.IDENTITY
+		instances.set_instance_transform(i, Transform3D(basis.scaled(entry[1]), entry[0]))
+	var node = MultiMeshInstance3D.new()
+	node.multimesh = instances
+	attach(asset, parent, node, title)
+
+
 static func solid_box(asset: Node3D, title: String, xform: Transform3D, size: Vector3) -> void:
 	var body = StaticBody3D.new()
 	body.collision_layer = 2
@@ -109,7 +131,7 @@ static func build_asset() -> Node3D:
 	asset.name = "Chicago"
 	asset.id = "chicago"
 	asset.display_name = "Chicago — River & Lake"
-	asset.version = 1
+	asset.version = 2
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
 	road.name = "Main"
@@ -159,6 +181,7 @@ static func build_asset() -> Node3D:
 	add_water_and_parks(asset, scenery)
 	add_city(asset, scenery, road)
 	add_landmarks(asset, scenery)
+	add_river_bridges(asset, scenery)
 	add_lower_deck(asset, scenery, road)
 	add_road_details(asset, scenery, road)
 	add_night_details(asset, scenery, road)
@@ -188,14 +211,26 @@ static func build_asset() -> Node3D:
 	return asset
 
 
+static func pbr_texture_set(folder: String, stem: String, albedo_suffix: String) -> StandardMaterial3D:
+	var mat = material(Color.WHITE)
+	mat.albedo_texture = load(TEXTURE_ROOT + folder + "/" + stem + "_" + albedo_suffix + "_1k.jpg")
+	mat.normal_enabled = true
+	mat.normal_texture = load(TEXTURE_ROOT + folder + "/" + stem + "_nor_gl_1k.jpg")
+	mat.roughness_texture = load(TEXTURE_ROOT + folder + "/" + stem + "_rough_1k.jpg")
+	mat.uv1_scale = Vector3(5, 5, 1)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	return mat
+
+
 static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	var concrete = material(Color("686b68"))
 	var lawn = material(Color("526744"))
-	var water = material(Color("285760"))
-	water.roughness = .3
-	water.metallic = .35
+	var water = ShaderMaterial.new()
+	water.shader = WATER_SHADER
+	var pier_walk = pbr_texture_set("large_square_pattern_01", "large_square_pattern_01", "diff")
 	box(asset, parent, "CityBase", Vector3(-500, -3.8, 0), Vector3(4000, 1, 4000), concrete)
-	box(asset, parent, "LakeMichigan", Vector3(2600, -3, 0), Vector3(3900, .2, 6500), water)
+	var lake = box(asset, parent, "LakeMichigan", Vector3(2600, -3, 0), Vector3(3900, .2, 6500), water)
+	lake.material_override = water
 	# River ribbon follows the main and south branches; 80 m wide, below both Wacker decks.
 	var river = [
 		[41.8893, -87.606, -3],
@@ -211,13 +246,15 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 		var a = world(river[i])
 		var b = world(river[i + 1])
 		var n = box(
-			asset, parent, "River%d" % i, (a + b) * .5, Vector3(130, .2, a.distance_to(b) + 40), water
+			asset, parent, "River%d" % i, (a + b) * .5, Vector3(105, .2, a.distance_to(b) + 40), water
 		)
 		n.rotation.y = atan2(b.x - a.x, b.z - a.z)
+		n.material_override = water
 	box(asset, parent, "MillenniumPark", world([41.8821, -87.6226, 7.6]), Vector3(210, .6, 380), lawn)
 	box(asset, parent, "GrantPark", world([41.8800, -87.6210, 7.3]), Vector3(440, .5, 260), lawn)
-	# Lakefront promenade, remaining east of the race surface.
-	box(asset, parent, "Lakefront", world([41.8800, -87.6166, 6.8]), Vector3(65, .5, 470), lawn)
+	box(asset, parent, "Lakefront", world([41.8800, -87.6166, 6.8]), Vector3(65, .5, 470), pier_walk)
+	box(asset, parent, "RiverwalkPromenade", world([41.8871, -87.6261, 8.2]), Vector3(22, .3, 170), pier_walk)
+	box(asset, parent, "RiverwalkPromenadeWest", world([41.8870, -87.6309, 8.2]), Vector3(16, .3, 135), pier_walk)
 
 
 static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
@@ -248,6 +285,9 @@ static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
 			var d = rng.randf_range(35, 65)
 			var h = rng.randf_range(35, 150)
 			var shade = rng.randf_range(.22, .46)
+			# Brick commercial blocks fill the older near-river west side; high-rises frame the Loop.
+			if p.x < -450 and p.z > -200 and p.z < 500 and h < 90:
+				continue
 			facade_box(
 				st,
 				p + Vector3(0, h * .5 - 5, 0),
@@ -266,6 +306,38 @@ static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	facade.set_shader_parameter("glow_energy", .45)
 	mesh.surface_set_material(0, facade)
 	mesh_node(asset, parent, "LoopSkyline", mesh, Vector3.ZERO)
+
+
+	var brick = pbr_texture_set("red_brick_03", "red_brick_03", "diff")
+	var tan_brick = pbr_texture_set("brick_wall_003", "brick_wall_003", "diffuse")
+	var pavement = pbr_texture_set("concrete_floor_damaged_01", "concrete_floor_damaged_01", "diff")
+	var iron = material(Color("4c5353"))
+	var iron_boxes: Array = []
+	# Small masonry street wall with deep window openings and steel fire escapes.
+	for block in [Vector3(-780, 0, 170), Vector3(-890, 0, 280), Vector3(-670, 0, 390)]:
+		textured_building(asset, parent, "NearRiverBrickStreetfront", block, Vector3(58, 46, 50), brick)
+		for floor_i in range(3):
+			var y = 7.0 + floor_i * 12.0
+			iron_boxes.append([block + Vector3(30, y, 0), Vector3(9, .4, 2), Basis(Vector3.UP, .12)])
+			for side in [-1, 1]:
+				iron_boxes.append([block + Vector3(30, y + .9, side * .9), Vector3(9, .12, .12)])
+				iron_boxes.append([block + Vector3(30 + side * 3, y + 5.7, 0), Vector3(.12, 11.5, .12), Basis(Vector3.FORWARD, -.45)])
+	for block in [Vector3(-560, 0, 610), Vector3(-350, 0, 720)]:
+		textured_building(asset, parent, "LoopTerraCottaStreetfront", block, Vector3(72, 58, 48), tan_brick)
+	# Broadly repeated sidewalk slabs stay outside the unchanged road surface.
+	var walk = box(asset, parent, "LoopStoneSidewalk", Vector3(-350, 1.1, 520), Vector3(460, .24, 18), pavement)
+	walk.material_override = pavement
+	multimesh_boxes(asset, parent, "FireEscapeMetalwork", iron, iron_boxes)
+
+
+static func textured_building(
+	asset: Node3D, parent: Node, title: String, pos: Vector3, size: Vector3, mat: Material
+) -> void:
+	var building = BoxMesh.new()
+	building.size = size
+	building.material = mat
+	building.material.uv1_scale = Vector3(4.0, 3.0, 1.0)
+	mesh_node(asset, parent, title, building, pos + Vector3(0, size.y * .5, 0))
 
 
 static func add_landmarks(asset: Node3D, parent: Node) -> void:
@@ -368,14 +440,89 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 			asset, parent, "WheelSupport%d" % side, pier + Vector3(side * 7, 15, 0), Vector3(2, 33, 2), silver
 		)
 		support.rotation.z = side * .4
-	# Michigan bridgehouse silhouettes and riverfront towers mark the transition into the Loop.
-	for offset in [-35, 35]:
-		var p = world([41.88865, -87.6245, 8]) + Vector3(offset, 0, 0)
-		box(asset, parent, "Bridgehouse%d" % offset, p + Vector3(0, 7, 0), Vector3(15, 14, 15), stone)
-		var roof = PrismMesh.new()
-		roof.size = Vector3(18, 6, 18)
-		roof.material = dark
-		mesh_node(asset, parent, "BridgeRoof%d" % offset, roof, p + Vector3(0, 17, 0))
+	add_loop_landmarks(asset, parent, stone, dark, silver)
+
+
+static func add_loop_landmarks(asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material) -> void:
+	# Wrigley Building: twin cream glazed-terra-cotta towers and clock crown.
+	var wrigley = world([41.8882, -87.6246, 8])
+	var terra_cotta_bands: Array = []
+	for tower in [[-31.0, 138.0, 35.0], [27.0, 91.0, 31.0]]:
+		var center = wrigley + Vector3(tower[0], tower[1] * .5, 0)
+		box(asset, parent, "WrigleyTower", center, Vector3(24, tower[1], 28), stone)
+		for floor_i in range(4, int(tower[1] / 4.0), 4):
+			terra_cotta_bands.append([wrigley + Vector3(tower[0], floor_i, 0), Vector3(25, .65, 29)])
+		var cap = PrismMesh.new()
+		cap.size = Vector3(28, 8, 32)
+		cap.material = stone
+		mesh_node(asset, parent, "WrigleyCrown", cap, wrigley + Vector3(tower[0], tower[1] + 4, 0))
+	multimesh_boxes(asset, parent, "WrigleyTerraCottaBands", material(Color("e5ddc7")), terra_cotta_bands)
+	box(asset, parent, "WrigleyClock", wrigley + Vector3(-30, 112, 15), Vector3(7, 7, .8), night_material(Color("f0dfb1"), .75))
+	# Tribune Tower: pale neo-Gothic vertical piers with a steep central spire.
+	var tribune = world([41.8905, -87.6230, 8])
+	var tribune_piers: Array = []
+	var tribune_spandrels: Array = []
+	box(asset, parent, "TribuneTower", tribune + Vector3(0, 61, 0), Vector3(42, 122, 50), stone)
+	for x in [-19.0, 19.0]:
+		for z in [-23.0, 23.0]:
+			tribune_piers.append([tribune + Vector3(x, 64, z), Vector3(4, 128, 4)])
+	for floor_i in range(8, 112, 12):
+		tribune_spandrels.append([tribune + Vector3(0, floor_i, 0), Vector3(44, 2, 52)])
+	multimesh_boxes(asset, parent, "TribuneGothicPiers", material(Color("d8d3c5")), tribune_piers)
+	multimesh_boxes(asset, parent, "TribuneSpandrels", material(Color("dcd6c8")), tribune_spandrels)
+	var spire = PrismMesh.new()
+	spire.size = Vector3(27, 40, 32)
+	spire.material = dark
+	mesh_node(asset, parent, "TribuneSpire", spire, tribune + Vector3(0, 139, 0))
+	# Board of Trade at LaSalle: symmetrical Art Deco setbacks and pyramid crown.
+	var board = world([41.8787, -87.6325, 8])
+	var tiers = [[0.0, 100.0, 84.0], [100.0, 48.0, 66.0], [148.0, 36.0, 44.0]]
+	for tier in tiers:
+		box(asset, parent, "BoardOfTradeSetback", board + Vector3(0, tier[1] * .5 + tier[0], 0), Vector3(tier[2], tier[1], tier[2] * .78), material(Color("b9aa8e")))
+		box(asset, parent, "BoardOfTradeCornice", board + Vector3(0, tier[1] + tier[0], 0), Vector3(tier[2] + 2, 1.8, tier[2] * .78 + 2), stone)
+	var pyramid = PrismMesh.new()
+	pyramid.size = Vector3(39, 34, 32)
+	pyramid.material = material(Color("8f7959"))
+	mesh_node(asset, parent, "BoardOfTradePyramid", pyramid, board + Vector3(0, 169, 0))
+
+
+static func add_river_bridges(asset: Node3D, parent: Node) -> void:
+	var steel = material(Color("36474b"))
+	steel.metallic = .7
+	steel.roughness = .36
+	var stone = material(Color("d1c3a6"))
+	var spans = [
+		["MichiganAvenueBridge", 41.88865, -87.6245, 90.0],
+		["StateStreetBridge", 41.8888, -87.6270, 60.0],
+		["LaSalleStreetBridge", 41.8888, -87.6290, 58.0]
+	]
+	var steel_boxes: Array = []
+	var deck_boxes: Array = []
+	var house_boxes: Array = []
+	for span in spans:
+		var anchor = world([span[1], span[2], 8])
+		var length: float = span[3]
+		deck_boxes.append([anchor, Vector3(length, 2.4, 23)])
+		for side in [-1, 1]:
+			steel_boxes.append([anchor + Vector3(0, 8, side * 10.4), Vector3(length, 1.1, 1.1)])
+			for i in range(0, int(length), 8):
+				var x = -length * .5 + i
+				steel_boxes.append([anchor + Vector3(x, 5.0, side * 10.4), Vector3(.75, 7.0, .75)])
+				steel_boxes.append([anchor + Vector3(x + 4, 5.0, side * 10.4), Vector3(8.5, .55, .55), Basis(Vector3.UP, -0.74)])
+		for side in [-1, 1]:
+			var house = anchor + Vector3(0, 0, side * 26)
+			house_boxes.append([house + Vector3(0, 8, 0), Vector3(18, 16, 21)])
+			house_boxes.append([house + Vector3(0, 16.5, 0), Vector3(20, 1.2, 23)])
+			var roof = PrismMesh.new()
+			roof.size = Vector3(20, 7, 23)
+			roof.material = steel
+			mesh_node(asset, parent, span[0] + "BridgeHouseRoof", roof, house + Vector3(0, 20, 0))
+			steel_boxes.append([house + Vector3(0, 26, 0), Vector3(4, 13, 4)])
+			for y in [20.0, 25.0, 31.0]:
+				steel_boxes.append([house + Vector3(0, y, 0), Vector3(11, .65, .65)])
+	multimesh_boxes(asset, parent, "ChicagoBridgeDecks", material(Color("4b5352")), deck_boxes)
+	multimesh_boxes(asset, parent, "ChicagoBridgeSteel", steel, steel_boxes)
+	multimesh_boxes(asset, parent, "ChicagoBridgeHouses", stone, house_boxes)
 
 
 static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:

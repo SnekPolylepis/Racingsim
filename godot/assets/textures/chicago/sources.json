@@ -1,0 +1,79 @@
+{
+  "downloaded": "2026-09-25",
+  "resolution": "1K",
+  "license": "CC0 1.0",
+  "assets": {
+    "brick_wall_003": {
+      "page": "https://polyhaven.com/a/brick_wall_003",
+      "cc0": "https://polyhaven.com/license",
+      "maps": [
+        {
+          "file": "brick_wall_003_diffuse_1k.jpg",
+          "sha256": "cb691df78201bd292c1004a796b76ef8ee9895548fb545a4a4d6d77903eeec01"
+        },
+        {
+          "file": "brick_wall_003_nor_gl_1k.jpg",
+          "sha256": "9bca29b5277b4d5be16ed2198ab705f2d754dfba509e9aec567ab4d2ed8a0981"
+        },
+        {
+          "file": "brick_wall_003_rough_1k.jpg",
+          "sha256": "7fc63700443845bd6065bc47aa79e6782ba555870c23c0e6426638ac15133752"
+        }
+      ]
+    },
+    "red_brick_03": {
+      "page": "https://polyhaven.com/a/red_brick_03",
+      "cc0": "https://polyhaven.com/license",
+      "maps": [
+        {
+          "file": "red_brick_03_diff_1k.jpg",
+          "sha256": "9c58254c099b2d211478f50a427fcdde622af24249ff2e94da41fb836f8c857f"
+        },
+        {
+          "file": "red_brick_03_nor_gl_1k.jpg",
+          "sha256": "9bfd45e24720d851017c1e1678b70219c72239b2ac6b25e11d57d458bdab8503"
+        },
+        {
+          "file": "red_brick_03_rough_1k.jpg",
+          "sha256": "cd865623c1422926848024e877103e9dfe857b2ca8221fce49264b74c9ff48b1"
+        }
+      ]
+    },
+    "concrete_floor_damaged_01": {
+      "page": "https://polyhaven.com/a/concrete_floor_damaged_01",
+      "cc0": "https://polyhaven.com/license",
+      "maps": [
+        {
+          "file": "concrete_floor_damaged_01_diff_1k.jpg",
+          "sha256": "9b41f6e1f66804c3cface2365a7d246618ad8814a5864be43bb9349fc3fb6db6"
+        },
+        {
+          "file": "concrete_floor_damaged_01_nor_gl_1k.jpg",
+          "sha256": "9f6d4282857b23daf2d9c87e567047a8f6ede4cc9eb8ec35ebd053bab4e457a0"
+        },
+        {
+          "file": "concrete_floor_damaged_01_rough_1k.jpg",
+          "sha256": "72da2f16f2e716cfa552779dc1f04ff8b6951acd9a624539439d603190e0d39d"
+        }
+      ]
+    },
+    "large_square_pattern_01": {
+      "page": "https://polyhaven.com/a/large_square_pattern_01",
+      "cc0": "https://polyhaven.com/license",
+      "maps": [
+        {
+          "file": "large_square_pattern_01_diff_1k.jpg",
+          "sha256": "a66708a5f098d2663811e8b16b17092ac68bbaa040ef198b47ddb595ca535cf7"
+        },
+        {
+          "file": "large_square_pattern_01_nor_gl_1k.jpg",
+          "sha256": "5021b03b163b3435ca5c92a510469563e49a439e7e2465ec2587e2070ea17044"
+        },
+        {
+          "file": "large_square_pattern_01_rough_1k.jpg",
+          "sha256": "6ad75fb54420f740f9ab0bfcf25180eef5c4866aa14505c33aa7296b29df8845"
+        }
+      ]
+    }
+  }
+}

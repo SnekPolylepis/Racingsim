@@ -18,6 +18,8 @@
     [41.88820,-87.6224,0,"Lower Wacker"],
     [41.88825,-87.6245,0,"Lower Michigan crossing"],
     [41.88802,-87.6257,0,"Lower Wacker"],
+    [41.88742,-87.62621,0,"Lower Wacker river bend west"],
+    [41.88709,-87.62660,0,"Lower Wacker river bend"],
     [41.88690,-87.6273,0,"Lower Wacker"],
     [41.88690,-87.6348,0,"Lower Wacker west"],
     [41.88640,-87.6361,0,"Lower Wacker bend"],
@@ -32,7 +34,10 @@
     [41.88640,-87.6361,8,"Upper Wacker bend"],
     [41.88690,-87.6348,8,"Upper Wacker riverfront"],
     [41.88690,-87.6273,8,"Upper Wacker riverfront"],
-    [41.88802,-87.6257,8,"Upper Wacker"],
+    [41.88715,-87.62633,8,"Upper Wacker river bend west"],
+    [41.88768,-87.62586,8,"Upper Wacker river bend"],
+    [41.88817,-87.62536,8,"Upper Wacker river bend east"],
+    [41.88823,-87.62496,8,"Upper Wacker Michigan approach"],
     [41.88825,-87.6245,8,"Michigan turn"],
     [41.8873,-87.6244,8,"Michigan Avenue"]
   ],
@@ -41,6 +46,12 @@
     "Willis Tower": [41.87888,-87.63592,8],
     "Navy Pier": [41.8917,-87.6059,2],
     "Chicago River": [41.8877,-87.6310,-3],
-    "Lake Michigan": [41.883,-87.609,-3]
+    "Lake Michigan": [41.883,-87.609,-3],
+    "Wrigley Building": [41.8882,-87.6246,8],
+    "Tribune Tower": [41.8905,-87.6230,8],
+    "Chicago Board of Trade": [41.8787,-87.6325,8],
+    "Michigan Avenue Bridge": [41.88865,-87.6245,8],
+    "State Street Bridge": [41.8888,-87.6270,8],
+    "LaSalle Street Bridge": [41.8888,-87.6290,8]
   }
 }
