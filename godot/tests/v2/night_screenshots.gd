@@ -1,12 +1,13 @@
 extends SceneTree
-## Look-2 windowed review captures of Afterhours (sodium lamps, road streaks, headlights) and their cost.
-## Run windowed (never --headless), with the flow-test flag so the user's settings file is untouched:
+## Windowed review captures of Afterhours (sodium lamps, road streaks, headlights, Look-9 structure glow)
+## and their cost. Run windowed (never --headless), with the flow-test flag so the user's settings file
+## is untouched:
 ##   tools/Godot.exe --path . --script tests/v2/night_screenshots.gd -- --v2-flow-test
-## Writes docs/rebuild/screenshots/look-2/<shot>.png and prints one NIGHT SHOT line per view with the
+## Writes docs/rebuild/screenshots/look-9/<shot>.png and prints one NIGHT SHOT line per view with the
 ## frame's draw calls and GPU time, with the lamps shown and hidden, then NIGHT SHOTS RESULTS.
 
 const TrackLights = preload("res://scripts/track/track_lights.gd")
-const FOLDER = "res://docs/rebuild/screenshots/look-2"
+const FOLDER = "res://docs/rebuild/screenshots/look-9"
 
 var failures = []
 var results = {}

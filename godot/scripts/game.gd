@@ -17,6 +17,7 @@ const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
+const NightGlow = preload("res://scripts/track/night_glow.gd")
 const RetroRenderer = preload("res://scripts/retro_renderer.gd")
 ## Settings > Display choices the Look-3 presentation chain reads (RetroRenderer.apply_settings).
 const PRESENTATION_SETTINGS = [
@@ -125,6 +126,7 @@ var record_writer
 var settings_path = "user://settings.json"
 var skid_root: MultiMeshInstance3D
 var skid_multi: MultiMesh
+var particles = null
 var skid_cursor = 0
 var skid_retire_cursor = 0
 var skid_timer = 0.0
@@ -451,7 +453,8 @@ func setup_v2():
 		call_deferred("check_exported_v2_assets")
 
 
-## A packaged-build probe: both generators, Spa's raw heightmap and the tree atlas must be inside the PCK.
+## A packaged-build probe: both generators, Spa's raw heightmap and the tree/undergrowth atlases must be
+## inside the PCK.
 func check_exported_v2_assets() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -460,13 +463,16 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
+		and FileAccess.file_exists("res://trackgen/data/spa/kerbs.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem_full.raw")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/kerbs.json")
 		and ResourceLoader.exists("res://assets/trees/tree_atlas.png")
+		and ResourceLoader.exists("res://assets/undergrowth/undergrowth_atlas.png")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
@@ -886,6 +892,9 @@ func render_v2(dt):
 		message(record_writer.errors.pop_front())
 	if v2_props:
 		v2_props.sync_nodes()
+	if particles and not paused and not in_menu:
+		particles.night = settings.time_of_day == 1
+		particles.update_car(car, dt)
 	var pose = blend_v2(prev_pose, snapshot_v2(), Engine.get_physics_interpolation_fraction())
 	var xf: Transform3D = pose.xform
 	model.root.transform = Transform3D(xf.basis, xf.origin - xf.basis.y * car.setup.cgHeight)
@@ -1014,6 +1023,10 @@ func setup_skids():
 	skid_root.multimesh = skid_multi
 	skid_root.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(skid_root)
+	# Tyre smoke, grass, gravel, sparks and backfires (Look-12), beside the skid marks.
+	particles = preload("res://scripts/particles.gd").new()
+	particles.name = "Particles"
+	add_child(particles)
 
 
 func add_skids():
@@ -1097,9 +1110,13 @@ func apply_time_of_day():
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient
 		# was close enough to the sun energy that afternoon read as overcast: everything sat in
 		# one mid value and nothing had a shaded side. Afterhours (Look-2) keeps the moon and fill low so
-		# the amber sodium lamps carry the scene, NFS Underground style.
-		environment.ambient_light_color = Color("56628c") if night else Color("9db7d6")
-		environment.ambient_light_energy = .34 if night else .42
+		# the amber sodium lamps carry the scene, NFS Underground style. Look-9: measured against
+		# docs/art/reference/nfsu-night-*.jpg (mean saturation 0.28, luminance 0.20) with
+		# docs/art/reference/color_stats.py, the night captures ran oversaturated (0.36) and a touch dark
+		# (0.17): 56628c (sat 0.39) is now 656e8c (sat 0.28, same value), and the energy is up slightly
+		# for luminance.
+		environment.ambient_light_color = Color("656e8c") if night else Color("9db7d6")
+		environment.ambient_light_energy = .40 if night else .42
 		environment.tonemap_exposure = 1.0
 		# Daylight aerial perspective (GT4): a haze toward the sky's horizon blue that clears the middle
 		# distance (curve > 1) and closes at 1.15 km, where the painted hill silhouette in the sky takes over
@@ -1112,7 +1129,9 @@ func apply_time_of_day():
 		environment.fog_depth_curve = 1.0 if night else 1.8
 		environment.fog_density = 1.0
 		environment.fog_sky_affect = .15
-		sun.light_color = Color("8ca6df") if night else Color("ffd79a")
+		# Look-9: the moon was 8ca6df (sat 0.37); the Nordschleife's dense forest reads it directly on the
+		# tree cards and stayed oversaturated after the sky/ambient passes. a1b4df keeps the hue at 0.28.
+		sun.light_color = Color("a1b4df") if night else Color("ffd79a")
 		sun.light_energy = .32 if night else 1.5
 		camera.far = 650 if night else 1250
 		visuals.set_time(night)
@@ -1122,8 +1141,10 @@ func apply_time_of_day():
 
 
 ## Look-2: the loaded TrackAsset's sodium lamps and the road_v2 amber streaks follow Afterhours.
+## Look-9: trackside structures (pit building, grandstand, gantry, billboards) glow too.
 func apply_track_night() -> void:
 	var night = settings.time_of_day == 1
 	Ps2Materials.set_afterhours(night, track if track is Node3D else null)
 	if track is Node3D:
 		TrackLights.set_night(track, night)
+		NightGlow.set_night(track, night)

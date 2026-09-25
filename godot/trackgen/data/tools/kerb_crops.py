@@ -13,6 +13,11 @@ import math
 import time
 import urllib.parse
 import urllib.request
+import re
+import argparse
+import unicodedata
+import ast
+import io
 import requests
 from PIL import Image, ImageDraw, ImageFont
 
@@ -22,6 +27,8 @@ DATA_DIR = os.path.dirname(SCRIPT_DIR)
 CROP_M = 80.0
 CROP_PX = 800
 STEP_M = 40.0
+APEX_CROP_M = 40.0
+APEX_CROP_PX = 1200
 
 R_MERC = 6378137.0
 R_EARTH_MEAN = 6371008.8
@@ -118,6 +125,149 @@ def fetch_image_with_retry(url, params, headers=None, max_retries=4, timeout=45)
                 raise e
             time.sleep(1.0 + attempt * 2.0)
     raise RuntimeError(f"Failed to fetch {url}")
+
+
+def read_corner_apexes(track_id, centre_data):
+    """Read the authored corner_specs defaults, including Spa's generated exit apexes."""
+    source_name = "spa.gd" if track_id == "spa" else "nordschleife_s1.gd"
+    source_path = os.path.join(os.path.dirname(DATA_DIR), source_name)
+    source = open(source_path, encoding="utf-8").read()
+    match = re.search(r"var defaults = \[(.*?)\n\s*\]", source, re.S)
+    if not match:
+        raise RuntimeError(f"Could not find corner defaults in {source_path}")
+    rows = []
+    for line in match.group(1).splitlines():
+        candidate = line.strip().rstrip(",")
+        if not candidate.startswith('["'):
+            continue
+        row = ast.literal_eval(candidate)
+        name, station, direction = row[0], float(row[1]), int(row[4])
+        if direction == 0:
+            continue
+        sections = centre_data.get("sections", {})
+        if name in sections:
+            station = float(sections[name])
+        elif track_id == "spa":
+            station *= sum(
+                math.hypot(centre_data["points"][i][0] - centre_data["points"][i-1][0],
+                           centre_data["points"][i][1] - centre_data["points"][i-1][1])
+                for i in range(1, len(centre_data["points"]))
+            ) / 6994.566584
+        rows.append([name, station, direction])
+
+    if track_id == "spa":
+        for base_name, offset in (("Les Combes", 90.0), ("Fagnes", 95.0),
+                                  ("Bus Stop", 55.0), ("Raidillon", 115.0)):
+            base = next((row for row in rows if row[0] == base_name), None)
+            if base:
+                rows.append([base_name + " exit", base[1] + offset, -base[2]])
+    # The Nordschleife table also has return-road shape controls; S1 ends at Aremberg exit.
+    if track_id == "nordschleife":
+        rows = [row for row in rows if row[1] <= 4220.0]
+    return sorted(rows, key=lambda row: row[1])
+
+
+def slug(text):
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def generate_apex_crops(track_id, station_crops=None):
+    track_dir = os.path.join(DATA_DIR, track_id)
+    with open(os.path.join(track_dir, "centreline.json"), encoding="utf-8") as f:
+        centre_data = json.load(f)
+    points = centre_data["points"]
+    origin = centre_data["origin"]
+    lat0, lon0 = origin["lat"], origin["lon"]
+    open_len = sum(math.hypot(points[i][0] - points[i-1][0], points[i][1] - points[i-1][1])
+                   for i in range(1, len(points)))
+    total_len = open_len + math.hypot(points[0][0] - points[-1][0], points[0][1] - points[-1][1])
+    _, sample_at = build_resampled_polyline(points, total_len, step_m=0.5)
+    apexes = read_corner_apexes(track_id, centre_data) if station_crops is None else []
+    out_dir = os.path.join(track_dir, "kerb-crops")
+    os.makedirs(out_dir, exist_ok=True)
+
+    if track_id == "spa":
+        ky = math.pi * R_EARTH_MEAN / 180.0
+        kx = ky * math.cos(math.radians(lat0))
+        url = "https://geoservices.wallonie.be/arcgis/rest/services/IMAGERIE/ORTHO_2023_ETE/MapServer/export"
+        headers = {"User-Agent": "RacingSim/1.0 (public circuit authoring)"}
+        def projection(cx, cz):
+            lon, lat = lon0 + cx / kx, lat0 - cz / ky
+            mx, my = mercator(lon, lat)
+            half = (APEX_CROP_M / 2.0) / math.cos(math.radians(lat))
+            return ((mx-half, my-half, mx+half, my+half),
+                    lambda x, z: ((mercator(lon0+x/kx, lat0-z/ky)[0]-(mx-half))/(2*half)*APEX_CROP_PX,
+                                  ((my+half)-mercator(lon0+x/kx, lat0-z/ky)[1])/(2*half)*APEX_CROP_PX))
+    else:
+        e0, n0 = latlon_to_utm32(lat0, lon0)
+        url = "https://geo4.service24.rlp.de/wms/rp_dop20.fcgi"
+        headers = {"User-Agent": "RacingSim/1.0"}
+        def projection(cx, cz):
+            east, north = e0 + cx, n0 - cz
+            half = APEX_CROP_M / 2.0
+            return ((east-half, north-half, east+half, north+half),
+                    lambda x, z: ((e0+x-(east-half))/APEX_CROP_M*APEX_CROP_PX,
+                                  ((north+half)-(n0-z))/APEX_CROP_M*APEX_CROP_PX))
+
+    work = ([(name, station, station + offset) for name, station, _ in apexes
+             for offset in (-60.0, 0.0, 60.0)] if station_crops is None else
+            [("Kerb trace", station, station) for station in station_crops])
+    print(f"Generating {len(work)} apex crops for {track_id} ({len(apexes)} corner apexes, "
+          f"{APEX_CROP_M:g} m, {APEX_CROP_PX}px)...", flush=True)
+    try:
+        font = ImageFont.truetype("arial.ttf", 28)
+        small_font = ImageFont.truetype("arial.ttf", 20)
+    except Exception:
+        font = small_font = ImageFont.load_default()
+
+    for index, (corner, apex_s, s) in enumerate(work, 1):
+        station = s % total_len
+        cx, cz = sample_at(station)
+        bbox, to_pixel = projection(cx, cz)
+        if track_id == "spa":
+            params = {"bbox": ",".join(f"{v:.3f}" for v in bbox), "bboxSR": 3857,
+                      "imageSR": 3857, "size": f"{APEX_CROP_PX},{APEX_CROP_PX}",
+                      "format": "jpg", "transparent": "false", "f": "image"}
+        else:
+            params = {"SERVICE":"WMS", "VERSION":"1.3.0", "REQUEST":"GetMap",
+                      "LAYERS":"rp_dop20", "STYLES":"", "CRS":"EPSG:25832",
+                      "BBOX": ",".join(f"{v:.3f}" for v in bbox),
+                      "WIDTH":str(APEX_CROP_PX), "HEIGHT":str(APEX_CROP_PX),
+                      "FORMAT":"image/jpeg"}
+        raw = fetch_image_with_retry(url, params, headers=headers)
+        img = Image.open(io.BytesIO(raw)).convert("RGB")
+        draw = ImageDraw.Draw(img)
+
+        # Draw the centreline and calibrated 5 m perpendicular ticks over the 40 m crop.
+        line = [to_pixel(*sample_at((station + d) % total_len)) for d in
+                [i / 2.0 for i in range(-40, 41)]]
+        draw.line(line, fill=(0, 255, 255), width=3)
+        for offset in range(-20, 21, 5):
+            at = (station + offset) % total_len
+            px, py = to_pixel(*sample_at(at))
+            before = to_pixel(*sample_at((at - 0.5) % total_len))
+            after = to_pixel(*sample_at((at + 0.5) % total_len))
+            dx, dy = after[0]-before[0], after[1]-before[1]
+            length = max(1e-6, math.hypot(dx, dy))
+            nx, ny = -dy/length, dx/length
+            half_tick = 14 if offset % 10 == 0 else 8
+            draw.line([(px-nx*half_tick, py-ny*half_tick), (px+nx*half_tick, py+ny*half_tick)],
+                      fill=(255, 255, 0), width=3)
+            if offset % 10 == 0:
+                draw.text((px+nx*20+3, py+ny*20+3), f"{int(round(station+offset))}m",
+                          fill=(255,255,255), font=small_font, stroke_width=2, stroke_fill=(0,0,0))
+        draw.rectangle([12, 12, 440, 66], fill=(0,0,0), outline=(0,255,255), width=2)
+        title = f"Kerb trace | s {s:.0f} m" if corner == "Kerb trace" else f"{corner} | apex {apex_s:.0f} m | s {s:.0f} m"
+        draw.text((22, 18), title, fill=(255,255,255), font=font)
+        draw.text((20, APEX_CROP_PX-35), f"{track_id.upper()} | 40 m square | 5 m ticks | N up",
+                  fill=(255,255,255), font=small_font, stroke_width=2, stroke_fill=(0,0,0))
+        prefix = "trace" if corner == "Kerb trace" else f"apex-{slug(corner)}"
+        name = f"{prefix}-{int(round(s)):05d}.jpg"
+        img.save(os.path.join(out_dir, name), quality=94, subsampling=0)
+        if index % 10 == 0 or index == len(work):
+            print(f"[{track_id}] {index}/{len(work)} ({corner}, s={s:.0f})", flush=True)
+    print(f"Finished apex crops in {out_dir}")
 
 
 def generate_crops(track_id):
@@ -352,13 +502,17 @@ def generate_crops(track_id):
 
 
 def main():
-    if len(sys.argv) < 2 or sys.argv[1] not in ("spa", "nordschleife", "all"):
-        print("Usage: python kerb_crops.py [spa|nordschleife|all]")
-        sys.exit(1)
-
-    tracks = ["spa", "nordschleife"] if sys.argv[1] == "all" else [sys.argv[1]]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("track", choices=("spa", "nordschleife", "all"))
+    parser.add_argument("--apex", action="store_true", help="generate 40 m corner-apex crops")
+    parser.add_argument("--stations", nargs="+", type=float, help="generate 40 m trace crops at selected stations")
+    args = parser.parse_args()
+    tracks = ["spa", "nordschleife"] if args.track == "all" else [args.track]
     for t in tracks:
-        generate_crops(t)
+        if args.stations:
+            generate_apex_crops(t, args.stations)
+        else:
+            (generate_apex_crops if args.apex else generate_crops)(t)
 
 
 if __name__ == "__main__":

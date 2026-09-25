@@ -34,7 +34,9 @@ static func hills_panorama(night: bool, style: String):
 	img.resize(w, h, Image.INTERPOLATE_BILINEAR)
 	var par = HILLS[style]
 	var fog = Color("56506b") if night else Color("a9bfd3")
-	var forest = Color("0b121c") if night else Color("22402f")
+	# Look-9: 0b121c was saturation 0.61. First pass (141a22, sat 0.41) still measured overall frame
+	# saturation 0.32 against the 0.28 target; 181c22 (sat 0.30) is the second pass.
+	var forest = Color("181c22") if night else Color("22402f")
 	var mix = [.55, .78, .95] if night else [.5, .68, .84]
 	var rng = RandomNumberGenerator.new()
 	rng.seed = par[2]
@@ -79,7 +81,10 @@ static func panorama(night = false, reflection = false):
 		for x in 256:
 			var u = float(x) / 256
 			var v = float(y) / 128
-			var top = Color("0b1035") if night else Color("3278b5")
+			# Look-9: the night top colour was 0b1035, saturation 0.79 — much more saturated purple than
+			# the NFSU frames' dark blue-grey sky. First pass (1f2233, sat 0.39) still measured overall
+			# frame saturation 0.32 against the 0.28 target; 242733 (sat 0.30) is the second pass.
+			var top = Color("242733") if night else Color("3278b5")
 			var horizon = Color("56506b") if night else Color("a3c3d4")
 			var c = top.lerp(horizon, pow(clampf(v * 2, 0, 1), .65))
 			var clouds = sin(u * 37 + sin(u * 18) * 2) * .015 + .33

@@ -98,32 +98,39 @@ crossfall is hand authored, and bridges are not supplied by this terrain model.
 
 ## Kerbs
 
-`kerbs.json` records 13 visibly striped red/white kerb stretches traced from the
-SPW Orthophotos 2023 Été crops (`kerb-crops/`, 80 m square at 40 m spacing).
-Intervals are approximate; type is marked `unsure` because the overhead imagery
-does not establish kerb profile. Shadows and nearby runoff reduce confidence in
-the Fagnes and Paul Frere observations. Run
-`python godot/trackgen/data/tools/kerb_report.py` for counts and comparison with
-the LiDAR-derived `road-profile.json` kerb detections.
+`kerbs.json` traces 30 individual continuous painted or ribbed runs. Boundaries are traced to 2 m from the 5 m crop ticks.
 
-- Original OSM GP polyline: 6,994.566584 m, 0.135% below nominal 7,004 m.
-- 699 planar points at roughly 10 m: polyline 6,989.813501 m.
-- 350 elevation keys spaced 19.984476 m along the **original** OSM arc.
-- Smoothed road elevation range: 102.075339 m; max sampled gradient 14.7992%.
-- Conservative minimum radius from the periodic C2 spline's maximum absolute
-  second derivative: 470.329 m, including outside Raidillon (target >=150 m).
-- Final Godot spline/lap length is measured by the generator, not these source metrics.
+| Corner | Side | Length | Type |
+|---|---|---:|---|
+| La Source | left | 114 m | flat |
+| La Source | right | 18 m | flat |
+| Straight | left | 38 m | flat |
+| Eau Rouge | left | 56 m | flat |
+| Eau Rouge | right | 42 m | flat |
+| Raidillon | left | 234 m | flat |
+| Raidillon | right | 232 m | flat |
+| Straight | right | 40 m | flat |
+| Straight | left | 54 m | flat |
+| Les Combes–Malmedy | left | 248 m | flat |
+| Les Combes–Malmedy | right | 248 m | flat |
+| Bruxelles | left | 60 m | flat |
+| Bruxelles–No Name | left | 316 m | flat |
+| Bruxelles–No Name | right | 256 m | flat |
+| Straight | right | 42 m | flat |
+| Pouhon | left | 198 m | flat |
+| Pouhon | right | 198 m | flat |
+| Fagnes | left | 220 m | flat |
+| Fagnes | right | 220 m | flat |
+| Stavelot | left | 44 m | flat |
+| Paul Frere | left | 148 m | flat |
+| Paul Frere | right | 148 m | flat |
+| Straight | right | 52 m | flat |
+| Straight | left | 154 m | flat |
+| Straight | left | 130 m | flat |
+| Straight | left | 34 m | flat |
+| Straight | right | 32 m | flat |
+| Straight | right | 38 m | flat |
+| Bus Stop | left | 104 m | flat |
+| Bus Stop | right | 104 m | flat |
 
-`centreline.json` contains `points: [[x,z],...]`, `elevation_keys:
-[{s,height},...]`, `sections: {name:s}`, `origin`, `attribution`, and measurements.
-The loop is closed implicitly. Keys and corner stations use the original OSM
-arc; the generator scales them by its own curve length divided by
-`measurements.source_polyline_length_m`. Corner stations are OSM way midpoint
-approximations, not surveyed turn apexes.
-
-Run `python build_data.py` using Python 3 with NumPy from this directory or any
-working directory. Committed raw responses allow an offline rebuild; only a
-missing raw LiDAR response triggers its network request. Source file hashes and
-retrieval metadata are in `sources.json`. The unused Copernicus fallback tile
-was briefly downloaded while service discovery ran, then discarded; it is not
-an input or distributed asset.
+Colour is recorded as seen (red-cream). Continuous edge stripes are consolidated across overlapping apex and between-corner crops; inside and outside strips remain separate. Boundaries and widths are approximate; the low-resolution orthophoto softens some endpoints.

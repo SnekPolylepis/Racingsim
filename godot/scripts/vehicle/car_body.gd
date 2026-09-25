@@ -161,6 +161,11 @@ var footprint_rays = 0
 ## Last tick's contact per wheel (the Surface contract dictionary, {} when off the ground), for
 ## telemetry, skid marks and tests.
 var contact_hits = []
+## Presentation telemetry for particle effects (scripts/particles.gd); physics never reads these.
+## Last tick's wall contacts (WallContact.step: point, normal, kind, depth) and body scrapes
+## ([world point, sliding speed m/s] per body point touching the ground).
+var wall_hits = []
+var scrape_hits = []
 ## Chassis hull box for car-vs-wall contact (P4-03), body frame: the body contact points' box.
 var hull_center = Vector3.ZERO
 var hull_half = Vector3.ONE
@@ -761,6 +766,7 @@ func step(dt, surface, automatic = true):
 ## past ~60°. Returns [force, torque] in world axes about the CG.
 func body_contact(surface, b, up, v, w_world, here, dt):
 	body_contacts = 0
+	scrape_hits.clear()
 	var total_f = Vector3.ZERO
 	var total_t = Vector3.ZERO
 	var bottomed = false
@@ -790,6 +796,7 @@ func body_contact(surface, b, up, v, w_world, here, dt):
 		total_f += f
 		total_t += arm.cross(f)
 		body_contacts += 1
+		scrape_hits.append([hit.point, slide])
 	return [total_f, total_t]
 
 
