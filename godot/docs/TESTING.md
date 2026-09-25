@@ -156,3 +156,27 @@ For the night integration check against an exported Mac pack, run the Godot edit
 It loads the shipped resources, switches night/day/night, and saves a windowed capture in
 `user://native-tests/chicago-export-night.png`. Use the editor's script runner for this harness;
 the release executable is tested separately with `--v2-export-check` and `--v2-smoke`.
+
+## Visual review (graphics only, not a gate)
+
+`tests/visual/track_review.gd` is kept apart from the physics and drivability gates. It judges nothing about
+handling, lap times or collision; it only captures what each track looks like, so graphics and scenery changes
+can be checked shot by shot. It is windowed (never `--headless`) and not listed in `tools/gates.json`.
+
+    powershell -ExecutionPolicy Bypass -File tools/visual_review.ps1 [-Tracks spa,nordschleife] [-Label look-13] [-Night] [-Bonnet]
+
+- **What it captures, per track:**
+  - every corner at approach (-120 m), apex and exit (+80 m);
+  - every straight longer than 300 m (another frame every 400 m on long ones);
+  - the scenic spots listed in `SCENIC`.
+- **Where runs go:** `godot/visual-review/<stamp>[-label]/` (gitignored), with one PNG per shot,
+  `<track>-sheet.png` contact sheets and `manifest.json`.
+- **Comparison:** each run is diffed against the previous run, or the one named with `-Baseline`. Every shot gets
+  a change score and a before/after `-diff.png`, and shots scoring above 6 are listed as changed.
+- **Determinism:** the same build reruns at 0.0 on every shot, so any score means the image really changed.
+
+Workflow for a graphics change:
+1. Run a baseline.
+2. Make the change.
+3. Run again.
+4. Review the changed list and its diffs, plus the contact sheets for anything the change missed.

@@ -1,0 +1,15 @@
+{
+  "file": "dem_full.raw",
+  "format": "RF",
+  "width": 1306,
+  "height": 1045,
+  "metres_per_pixel": 5.0,
+  "origin_offset": [
+    -2350.0,
+    -4985.0
+  ],
+  "height_offset": 0.0,
+  "absolute_height_offset_m": 619.3788,
+  "min_height": -318.02,
+  "max_height": 60.93
+}

@@ -80,7 +80,7 @@ func run() -> void:
 		app.frontend.cycle_v2_track()
 		picked.append(app.frontend.selected_track)
 	check(
-		picked == ["spa", "nordschleife_s1", "chicago", "proving_ground"],
+		picked == ["spa", "nordschleife_s1", "nordschleife", "chicago", "proving_ground"],
 		"circuit picker cycles every circuit: " + str(picked)
 	)
 	app.frontend.cycle_v2_track()
