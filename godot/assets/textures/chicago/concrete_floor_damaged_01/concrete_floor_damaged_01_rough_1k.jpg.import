@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://hlpluw0hpmyn"
-path="res://.godot/imported/concrete_floor_damaged_01_rough_1k.jpg-faa3e43604a67e25e14b586c315cf62b.ctex"
+path.s3tc="res://.godot/imported/concrete_floor_damaged_01_rough_1k.jpg-faa3e43604a67e25e14b586c315cf62b.s3tc.ctex"
+path.etc2="res://.godot/imported/concrete_floor_damaged_01_rough_1k.jpg-faa3e43604a67e25e14b586c315cf62b.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/chicago/concrete_floor_damaged_01/concrete_floor_damaged_01_rough_1k.jpg"
-dest_files=["res://.godot/imported/concrete_floor_damaged_01_rough_1k.jpg-faa3e43604a67e25e14b586c315cf62b.ctex"]
+dest_files=["res://.godot/imported/concrete_floor_damaged_01_rough_1k.jpg-faa3e43604a67e25e14b586c315cf62b.s3tc.ctex", "res://.godot/imported/concrete_floor_damaged_01_rough_1k.jpg-faa3e43604a67e25e14b586c315cf62b.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

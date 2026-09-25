@@ -124,6 +124,10 @@ static func cache_dir() -> String:
 static func _cache_revision(id: String, generator_path: String) -> String:
 	# This file too: a change to how the cache is written (e.g. the headless split) invalidates old bakes.
 	var files: Array[String] = [generator_path, "res://scripts/proving/track_drive.gd"]
+	# Generator-side helpers beside the generators (kerb_map.gd, chicago_city.gd, ...) shape the bake too.
+	for file in DirAccess.get_files_at("res://trackgen"):
+		if file.ends_with(".gd"):
+			files.append("res://trackgen/" + file)
 	var directories: Array[String] = ["res://scripts/track", "res://shaders", "res://trackgen/data/" + id]
 	while not directories.is_empty():
 		var directory = directories.pop_back()

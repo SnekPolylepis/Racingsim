@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://blp3qlpt22wsn"
-path="res://.godot/imported/brick_wall_003_diffuse_1k.jpg-bf04d40afa2b1b79cf84657f81a8466d.ctex"
+path.s3tc="res://.godot/imported/brick_wall_003_diffuse_1k.jpg-bf04d40afa2b1b79cf84657f81a8466d.s3tc.ctex"
+path.etc2="res://.godot/imported/brick_wall_003_diffuse_1k.jpg-bf04d40afa2b1b79cf84657f81a8466d.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/chicago/brick_wall_003/brick_wall_003_diffuse_1k.jpg"
-dest_files=["res://.godot/imported/brick_wall_003_diffuse_1k.jpg-bf04d40afa2b1b79cf84657f81a8466d.ctex"]
+dest_files=["res://.godot/imported/brick_wall_003_diffuse_1k.jpg-bf04d40afa2b1b79cf84657f81a8466d.s3tc.ctex", "res://.godot/imported/brick_wall_003_diffuse_1k.jpg-bf04d40afa2b1b79cf84657f81a8466d.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -3,27 +3,29 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ngjy0ob60s46"
-path="res://.godot/imported/Granite002A_normal.jpg-a228866b5b5949b50d6f9a681c26000a.ctex"
+path.s3tc="res://.godot/imported/Granite002A_normal.jpg-a228866b5b5949b50d6f9a681c26000a.s3tc.ctex"
+path.etc2="res://.godot/imported/Granite002A_normal.jpg-a228866b5b5949b50d6f9a681c26000a.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/chicago/Granite002A/Granite002A_normal.jpg"
-dest_files=["res://.godot/imported/Granite002A_normal.jpg-a228866b5b5949b50d6f9a681c26000a.ctex"]
+dest_files=["res://.godot/imported/Granite002A_normal.jpg-a228866b5b5949b50d6f9a681c26000a.s3tc.ctex", "res://.godot/imported/Granite002A_normal.jpg-a228866b5b5949b50d6f9a681c26000a.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
-compress/normal_map=0
+compress/normal_map=1
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

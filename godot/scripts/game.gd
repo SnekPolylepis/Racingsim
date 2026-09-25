@@ -462,6 +462,7 @@ func check_exported_v2_assets() -> void:
 	await get_tree().process_frame
 	var inputs = (
 		FileAccess.file_exists("res://trackgen/data/chicago/route.json")
+		and FileAccess.file_exists("res://trackgen/data/chicago/city.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")

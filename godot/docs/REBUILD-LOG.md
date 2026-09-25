@@ -2369,3 +2369,25 @@ The corrected harness uses the editor binary with the shipped PCK; actual releas
 Chicago driving smoke checks remain separate PASS results. This is not a full night driving lap.
 
 Final nighttime decision: **Jev gate COMPLETE 0.93**. MEDIUM (gpt-6-luna medium) lane sufficient.
+
+## 2026-09-25  WIP CHI-02 Real downtown Chicago from OpenStreetMap  (Claude Opus 5.5)
+Owner: "a legit Chicago, but the track only is the drivable part."
+- **`trackgen/data/chicago/build_city.py`:** reads the staged OSM extracts and writes `city.json` (1.2 MB) in CHI-01's frame.
+  - 3,962 buildings: footprints, with heights from tags; landmark towers have known roof heights (Willis 442 m); the rest get a stable heuristic.
+  - Facade classes, and 4,386 roads with widths by class; tunnels are dropped.
+  - River and lake polygons are stitched from relation segments and clipped to the area; 606 parks. Douglas-Peucker simplification throughout.
+- **`trackgen/chicago_city.gd`:**
+  - Buildings are extruded from y 0 to street level (8 m) plus their height, with photo facades (`shaders/chicago_facade.gdshader`, windows lit at night; `NightGlow.set_night` toggles it) and flat roofs.
+  - Every street is an asphalt carriageway on a sidewalk, cut back 10.5 m from the circuit.
+  - 20 m concrete ground tiles, left open over water and around the lower level and ramps.
+  - River and lake use the water shader, with river walls. Parks are grass.
+  - Batched per 600 m chunk and material: about 199k triangles and 501 surfaces; the build takes 2.8 s. Nothing collides.
+  - It replaces `add_city()` (procedural skyline) and the prelim street walls. CHI-01 keeps its own Willis, Wrigley, Tribune and Board of Trade models; OSM outlines near them are skipped.
+- **Textures:** Concrete034, Bricks097 and GlazedTerracotta001 copied to runtime. All Chicago textures now import with mipmaps and VRAM compression.
+- **Fix, `track_drive.gd` cache revision:** it now also hashes every `trackgen/*.gd`. Before, edits to generator helpers (`chicago_city.gd`, `kerb_map.gd`) reused stale caches.
+- **Captures:** day shows a dense street canyon along Wacker and Michigan; night shows the skyline lit window by window. Busiest view: about 1,130 draw calls (Lake Shore).
+- **Gates:** `run_gates.ps1 -All -Features` 38/38.
+- **Open:**
+  - street furniture (Kenney roads kit), the L tracks, and the bridge decks over the river;
+  - LOD for draw calls;
+  - comparison against real photos (CHI-03, Sol).

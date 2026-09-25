@@ -10,11 +10,12 @@ const TrackLights = preload("res://scripts/track/track_lights.gd")
 const NightGlow = preload("res://scripts/track/night_glow.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
 const DATA = "res://trackgen/data/chicago/route.json"
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 5
+const CACHE_REVISION = 6
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -182,7 +183,10 @@ static func build_asset() -> Node3D:
 	var scenery = Node3D.new()
 	attach(asset, asset, scenery, "Scenery")
 	add_water_and_parks(asset, scenery)
-	add_city(asset, scenery, road)
+	# CHI-02: the real downtown from OpenStreetMap (buildings, every street, water, parks) replaces the
+	# procedural skyline. add_city() stays for reference but is no longer called.
+	var city = ChicagoCity.build(asset, scenery, road, data().landmarks, world)
+	asset.set_meta("city", city)
 	add_landmarks(asset, scenery)
 	add_river_bridges(asset, scenery)
 	add_lower_deck(asset, scenery, road)
@@ -190,7 +194,6 @@ static func build_asset() -> Node3D:
 	add_night_details(asset, scenery, road)
 	add_park_trees(asset)
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
-	add_street_walls(asset, scenery, road)
 	add_parked_cars(asset, scenery, road)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
 	var lamps = TrackLights.place(road, 42.0, [], 1.2)
