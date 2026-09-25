@@ -25,6 +25,8 @@ Both are CC0 1.0. Original bytes and hashes are recorded in `assets/cc0-source/s
 
 ## Previously present assets
 
+Poly Haven CC0 texture set `asphalt_pit_lane` (2K albedo, roughness and OpenGL normal; https://polyhaven.com/a/asphalt_pit_lane) in `assets/textures_hd/asphalt_pit_lane/`, albedo desaturated to 35 %: the TrackAsset road surface (Look-8).
+
 Poly Haven CC0 texture sets `asphalt_track`, `grass_ground`, `gravel_floor`, `concrete_floor_02`: source links and uses remain in `assets/textures/README.md`. Existing Godot engine MIT license and third-party notices remain beside the executable. New build outputs derived from the CC0 textures retain their source provenance.
 
 No addon or Blender has been downloaded or incorporated at this stage. Any subsequent download must extend this ledger and include its license text before shipping.
@@ -67,6 +69,12 @@ Exact requests, SHA-256 hashes, source limitations, the heightmap header and sou
 - **Elevation:** Landesamt für Vermessung und Geobasisinformation Rheinland-Pfalz (LVermGeo RLP) - **Digitales Geländemodell 1 m (DGM1)**, 2025 survey, [source catalogue](https://geoshop.rlp.de/opendata-dgm1.html), [dl-de/by-2-0](licenses/dl-de-by-2.0.txt). Licence rechecked on download day. 20 tiles of 1 m LiDAR DGM1 (UTM Zone 32, E 351..354, N 5577..5581) were acquired. Road elevations were sampled directly from the 1 m LiDAR DEM with median and Gaussian smoothing. Crossfall bankings (+6.9° at Aremberg to -5.6° at Hatzenbogen) and tarmac widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections. Surrounding terrain is exported as a 20 m grid in `dem.raw` referenced to the start line elevation (619.38 m). Raw GeoTIFF downloads are kept outside git.
 - **Attribution:** `© GeoBasis-DE / LVermGeoRP 2026, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`.
 - Hashes and file metadata are recorded in `trackgen/data/nordschleife/sources.json`. Unmodified ODbL and dl-de/by-2-0 license texts are vendored under `trackgen/data/nordschleife/licenses/`.
+
+## CAR-01 Mazda MX-5 / Miata NA exterior (2026-09-24)
+
+**Mazda Miata MX-5 NA** by **Lexyc16**, [Sketchfab source](https://sketchfab.com/3d-models/mazda-miata-mx-5-na-d51fcd44b74f4daf8012c41e0400c041), is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The author-supplied attribution and license details are preserved in `assets/cars/mx5na/license.txt`. Source glTF ZIP SHA-256: `69438fb7e708c1c0c42b9ab89e1d82125a19196caf86dbfe008215c4a99b3c5f`.
+
+Modifications: fitted and reoriented the body to the roadster preset and 3970 × 1675 × 1230 mm NA dimensions; removed the source display plane, wheels, and an unneeded interior mesh; rebuilt normals; replaced the paint material with preset-driven colour; added night lamp glow meshes and game wheel assemblies. The source and fitted glTF are in `assets/cars/mx5na/`; `prepare.py` records the fit. The author does not endorse this game.
 
 ## Tree cards and horizon (Look-6; downloaded 2026-09-24)
 

@@ -35,6 +35,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 
 | ID | Task | Who | Needs | Status | Branch / notes |
 |---|---|---|---|---|---|
+| CAR-01 | Replace the roadster's procedural body with a credited Mazda MX-5 NA model | Sol | P4-cars | done (PR #35, reviewed) | `rb/CAR-01-miata`; owner-assigned, review by Claude |
+| F-CAR-01-tail | Miata Afterhours tail-glow quads sit low on the rear bumper, below the lamp housings; move them into the housings (docs/rebuild/screenshots/car-01/chase-afterhours.png) | Sol | CAR-01 | open | |
 | P2-08 | Debug scene to drive CarBody on the analytic test surfaces | Gemini | | done | rb/P2-08-test-surfaces 3b0143c |
 | P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | done | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
 | scenery-kit | Trackside scenery kit (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding) and proving ground placement | Gemini | | done | rb/scenery-kit; 34/34 gates pass (147 s), 11/11 scenery checks |
@@ -48,6 +50,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | Look-3 | PS2 renderer on the v2 path: retro_renderer.gd (640x448, ordered dither, glow, motion persistence, console output), v2 HUD and menus in the Authentic UI viewport | Claude | P4-menus | done (PR #23; Windows GPU review 2026-09-24) | |
 | Look-4 | Dress proving ground, Spa and Nordschleife per ART-DIRECTION.md: crowd cards, fences, painted tyre walls, billboards, marshal posts, lamp placement support for Look-2 | Gemini (content only), Claude review | Look-1 | done (reviewed by Claude 2026-09-24) | rb/look-4-dressing |
 | Look-5 | Scenery kit and walls in PS2 materials (armco, tyre and concrete textures from assets/ps2; crowd cards; tree cards) | Claude | Look-1 | open | |
+| Look-7 | Armco rails on posts: replace only kind 0 visible mesh with double/triple W rails and posts; preserve collision | Luna | Look-5 | review: Claude | rb/look-7-armco |
 | Look-0 | Art bible and reference board: godot/docs/art/reference, extended track_screenshots.gd capture/compare set, godot/docs/art/baseline, rewritten ART-DIRECTION.md | Sonnet | | done (PR #32, reviewed with fixes) | rb/look-0-art-bible; read "DONE Look-0" |
 | Look-0-refs | Finish the Look-0 reference board: mobygames.com/gamefaqs.gamespot.com block non-browser requests (Cloudflare), and the Wayback Machine workaround went offline mid-session ("Internet Archive services are temporarily offline") before NFS Underground night shots, a confirmed-Nordschleife GT4 shot, Circuit de la Sarthe (GT4 has no Spa), and any close-up asphalt/kerb/armco texture were reached | owner | Look-0 | done (completed in the Look-0 review, 2026-09-24) | see godot/docs/art/reference/README.md "Reproducing this board" |
 | Look-tracks | Spa and Nordschleife daylight look outside the Look-5 kit: forest cache bug, terrain grass, haze and view distance, road/runoff grade, forest density | Claude (owner-assigned) | Look-1 | review: Sol | rb/look-tracks; read "DONE Look-tracks" |

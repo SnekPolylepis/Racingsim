@@ -288,7 +288,51 @@ func shape(parent, mesh, pos, scale, color, metallic = 0.0, rough = .6):
 	return node
 
 
-## Procedural car: lofted body and cabin with wheel arches, lights, aero parts and livery number.
+## Merge compatible static surfaces in the car body before it reaches the renderer.
+## Animated wheels and registered night lamps stay outside each merged group.
+func merge_static(body):
+	var dynamic = {}
+	for ref in headlights:
+		var node = ref.get_ref()
+		if node != null:
+			dynamic[node.get_instance_id()] = true
+	var groups = {}
+	for part in body.find_children("*", "MeshInstance3D", true, false):
+		if not part.visible or dynamic.has(part.get_instance_id()) or part.mesh == null:
+			continue
+		if part.mesh.get_surface_count() != 1:
+			continue
+		var mat = part.material_override
+		if mat == null:
+			mat = part.mesh.surface_get_material(0)
+		if mat == null:
+			continue
+		var key = mat.get_instance_id()
+		if not groups.has(key):
+			groups[key] = {"material": mat, "parts": []}
+		groups[key].parts.append(part)
+	for group in groups.values():
+		if group.parts.size() < 2:
+			continue
+		var surface = SurfaceTool.new()
+		for part in group.parts:
+			var relative = Transform3D.IDENTITY
+			var cursor = part
+			while cursor != body:
+				relative = cursor.transform * relative
+				cursor = cursor.get_parent()
+			surface.append_from(part.mesh, 0, relative)
+		var merged = MeshInstance3D.new()
+		merged.name = "MergedStatic"
+		merged.mesh = surface.commit()
+		merged.material_override = group.material
+		body.add_child(merged)
+		for part in group.parts:
+			part.get_parent().remove_child(part)
+			part.free()
+
+
+## Car visuals: imported NA roadster and procedural race bodies.
 ## The returned dictionary interface (root/body/pivots/spins/brakes/wheel_r) is posed by game.gd.
 func make_car(p, ghost = false):
 	match p.get("body", ""):
