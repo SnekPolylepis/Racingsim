@@ -398,7 +398,7 @@ static func build_asset() -> Node3D:
 	trees.follow_road = NodePath("../Main")
 	trees.sides = RoadScatter.Sides.BOTH
 	trees.random_seed = 503
-	trees.per_100m = 4.0
+	trees.per_100m = 9.0
 	trees.offset_min = 8.0
 	trees.offset_max = 30.0
 	asset.add_child(trees)

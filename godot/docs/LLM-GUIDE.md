@@ -85,7 +85,7 @@ All paths below are relative to `godot/`.
 | `scripts/track/billboards.gd` | Billboards: advertising boards on posts, seeded placement, single MultiMesh, no collision | |
 | `scripts/track/marshal_post.gd` | MarshalPost: small cabins spaced behind barriers, single MultiMesh, no collision | |
 | `scripts/track/pit_building.gd` | PitBuilding: garage block with recessed bays, front concrete pit wall on layer 2 | |
-| `scripts/track/road_scatter.gd` | RoadScatter: seeded MultiMesh instances (default: conifers) in a band beyond the verge, no collision | |
+| `scripts/track/road_scatter.gd` | RoadScatter: seeded MultiMesh instances (default: photographic tree cards from assets/trees/tree_atlas.png) in a band beyond the verge, no collision | |
 | `scripts/track/track_lights.gd` | Look-2 sodium lamps: `from_markers()` lights Look-4's `Lights/` Marker3D placements (kind/height/road_glow), `place(road, spacing, zones, extra)` walks a RoadPath (denser zones, alternate/both sides), `fill()` places only where markers leave the road dark; `build()` bakes Lights/ (per-400 m MultiMesh fixtures and `sodium_halo.gdshader` halos, no light nodes) and the road's per-lamp streak texture; `make_pool`/`update_pool` move 4 real SpotLight3Ds to the lamps nearest the camera; `set_night` hides Lights/ by day | The road_v2 streaks come from this texture, so a lamp added any other way has no glow on the road. Add a lamp as a Marker3D placement (SceneryBuilder.add_light_placement) before the generator's `from_markers` call; `build` also appends |
 | | | |
 | **Rebuild: generators and scenes** | | |
