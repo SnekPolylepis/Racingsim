@@ -1938,3 +1938,18 @@ an export check (docs/tests-only change, already excluded from every preset's `i
 
 Left for later Look tasks, per the gap table above and `Look-0-refs`. I looked at every baseline capture
 and reference frame myself before writing this.
+
+## 2026-09-24  REVIEW Look-0 (Sonnet): accepted with fixes  (Claude Opus 5.5)
+Sonnet's measurements and gaps 1-4 (edge lines, road contrast, horizon silhouette, canopy gaps) held up. Fixed in review:
+- **Reference board completed:** 7 GT4 Nordschleife frames (including an official Oct 2004 press image) and 6 NFS Underground night frames. They were found through Bing Images in a real browser, which avoids the Cloudflare block; sources are in `docs/art/reference/README.md`.
+  - GT4 road patches measure luminance std-dev 0.056-0.143, against ours at 0.036. That is now an acceptance number: ≥ 0.07.
+- **Rules corrected against the references and the owner's direction:**
+  - Road texture density *is* a problem: 1024-2048 px photo sources plus a non-repeating macro layer.
+  - The 128/256 px budget is superseded; the console look comes from Look-3's output chain.
+  - Cars *are* a gap (CAR-01).
+  - Armco: rails on posts.
+  - Day fog end about 1-1.2 km plus a hill silhouette.
+  - NFSU night rules: wet specular streaks, coloured ambient, no black void.
+  - Nordschleife banks marked fixed (NS-section 2).
+- **Gap table:** gaps 5-8 added (trees, cars, armco, fog).
+- **Captures:** `track_screenshots.gd` pairs three Nordschleife shots with GT4 "look target" frames. The baseline was recaptured on current main, including NS-section 1-2: 26 shots and 4 comparison strips.

@@ -13,12 +13,28 @@ const NightShots = preload("res://tests/v2/night_screenshots.gd")
 const CAM_CHASE = 0
 const CAM_BONNET = 2
 
-## shot id -> [reference file in docs/art/reference/, one-line note on the match]. Only pairs where
-## the reference frame's corner is actually confirmed AND the game models that section belong here;
-## see docs/art/reference/README.md for which frames are confirmed vs. kept as generic overviews.
+## shot id -> [reference file in docs/art/reference/, one-line note on the match]. A pair is either a
+## confirmed corner match or, where marked "look target", a GT4 Nordschleife frame of the same camera type
+## whose corner is not identified: compare the look (road, armco, forest, sky), not the geometry. See
+## docs/art/reference/README.md.
 const REFERENCE_MAP = {
 	"ns-flugplatz":
 	["real-nordschleife-flugplatz.jpg", "Confirmed Flugplatz, both photographed crest-on from the approach."],
+	"ns-hatzenbach":
+	[
+		"gt4-nordschleife-chase-kerbs-armco.jpg",
+		"Look target: GT4 Nordschleife chase view, corner not identified."
+	],
+	"ns-hatzenbach-bonnet":
+	[
+		"gt4-nordschleife-bonnet-forest-wall.jpg",
+		"Look target: GT4 Nordschleife bonnet view, corner not identified."
+	],
+	"ns-schwedenkreuz":
+	[
+		"gt4-nordschleife-chase-edge-lines.jpg",
+		"Look target: GT4 Nordschleife chase view, edge lines and armco."
+	],
 }
 const REFERENCE_DIR = "res://docs/art/reference/"
 

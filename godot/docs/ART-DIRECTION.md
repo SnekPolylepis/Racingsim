@@ -13,7 +13,11 @@ grass plain, a bare empty horizon, no white edge lines, a Nordschleife that feel
 into the landscape — is confirmed by direct code inspection and fresh captures (`docs/art/baseline/`,
 taken 2026-09-25 through the real presentation chain, `tests/v2/track_screenshots.gd`), compared against
 real reference frames in `docs/art/reference/` (see that folder's README for what's there and what
-isn't yet: collection was cut short mid-session by an infrastructure outage, not by choice).
+isn't: collection was cut short mid-session by an infrastructure outage). **Review (Claude Opus 5.5,
+2026-09-24):** the board was completed with seven GT4 Nordschleife frames, including an official October
+2004 press shot, and six NFS Underground night frames (`gt4-nordschleife-*`, `gt4-car-detail-slr.jpg`,
+`nfsu-night-*`). Several rules below were corrected against them and against the owner's direction:
+sharp, photographic textures; detailed cars; no empty horizon.
 
 **Every rule below is checkable against a screenshot and cites the reference or measurement it came
 from.** Where a rule cites a baseline file, re-run `tests/v2/track_screenshots.gd --compare` after a
@@ -31,8 +35,11 @@ in-game captures (`docs/art/reference/gt4-unidentified-*.jpg`) show **high-contr
 sourced** surfaces with real tonal range, and a 256-colour palette can hold plenty of that contrast — the
 lost detail from indexing is in colour *count*, not in luminance variation or apparent sharpness. Low
 resolution and a reduced palette are console-era production constraints, not an instruction to paint
-everything one flat mid-grey. The fix is photographic source detail quantized to a small palette, not a
-blur.
+everything one flat mid-grey. The fix is photographic source detail, not a
+blur. **Owner direction (2026-09-24):** textures must be sharp. Road, grass, kerb, armco, tree and
+building textures are authored at 1024-2048 px from photographic sources. The console character comes
+from the output chain (Look-3's 640x448 raster, dither, optional RGB555), not from shrinking source
+textures. Palette-reducing a texture is allowed only when it does not visibly soften it.
 
 ## Road
 
@@ -41,8 +48,13 @@ blur.
 3.1 m` of road, giving **≈82 texels/m longitudinally**. Laterally, `UV.x` is clamped to `±1.3 ×
 half_width` and scaled by 2.5, so one repeat covers roughly `0.4 × half_width` metres — **≈128
 texels/m** across a typical 10 m-wide road (`scripts/track/ps2_materials.gd`, `shaders/road_v2.gdshader`
-lines 12, 29-31). That density is not the problem (GT4's own in-cockpit shot shows comparably soft road
-detail at typical driving distance — `gt4-unidentified-cockpit-view.jpg`). The problem, measured directly
+lines 12, 29-31). **That density is too low.** It comes from one 256 px tile repeated every 3 m, so the road has no
+large-scale structure. GT4's Nordschleife road (`gt4-nordschleife-chase-kerbs-armco.jpg`,
+`-bonnet-forest-wall.jpg`, `-official-press-overview.jpg`) shows repair patches several metres long,
+tar seams, darker tyre lines and even painted fan graffiti, all readable at driving distance. **Rule:**
+a photo-sourced asphalt set (albedo, roughness, normal) of at least 1024 px (2048 preferred), about 250+
+texels/m at the camera, plus a second, non-repeating macro layer (patches and repairs at 5-30 m scale)
+so the road never visibly tiles. The measured problem, measured directly
 (`docs/art/reference/../color_stats` methodology, cropped to the road surface only, avoiding
 sky/car/grass so the road's own contrast isn't diluted by the rest of the frame):
 
@@ -50,6 +62,10 @@ sky/car/grass so the road's own contrast isn't diluted by the rest of the frame)
 |---|---:|---:|
 | Reference road patch (`real-nordschleife-flugplatz.jpg`, tarmac only) | 0.072 | 0.078 |
 | Our road patch (`baseline/ns-flugplatz.png`, tarmac only) | 0.157 | 0.036 |
+| GT4 road patches (`gt4-nordschleife-chase-kerbs-armco`, `-bonnet-forest-wall`, `-chase-edge-lines`, `-official-press-overview`) | 0.14-0.37 | 0.056-0.143 |
+
+**Acceptance number:** a road-only crop of any baseline shot must reach luminance std-dev ≥ 0.07 (GT4's
+lower range) without raising mean saturation above 0.20.
 
 Real asphalt is close to neutral grey (low saturation) with real luminance variance (patches, rubber,
 wear). Ours is **more saturated than real asphalt** (picking up ambient/sun tint the flat texture can't
@@ -115,13 +131,13 @@ none is in the reference board yet (`Look-0-refs`, QUEUE.md).
 walls or concrete walls are visible in the current Nordschleife/Spa captures; GT4 and real photos show
 tyre walls at some corners (not captured here) — out of scope for this rewrite, flagged for Look-5.
 
-**Nordschleife banks and cuttings.** NS-section part 1's own log entry is explicit that this is **not
-fixed**: `dem.raw` is DGM1 resampled to 20 m/pixel with elevation keys every 20 m, so the terrain data
-holds no roadside relief — the road can be enclosed by trees now, but it still sits *on* the terrain
-rather than *in* a cutting or on a bank the way real Flugplatz/Hatzenbach do
-(`real-nordschleife-flugplatz.jpg` shows the road on a raised crest with the ground falling away past the
-armco; `real-nordschleife-brunnchen.jpg` shows it in a shallow cutting). Getting this right needs a
-1-2 m corridor DEM (owner approval pending per the NS-section log), not a shader or generator change.
+**Nordschleife banks and cuttings.** Fixed by NS-section part 2 (2026-09-24): the terrain is
+rebuilt from the 1 m DGM1 tiles at 5 m, and it blends to the road over 6 m instead of 30 m, so real
+banks and cuttings meet the verge (`real-nordschleife-flugplatz.jpg`, `-brunnchen.jpg` are the
+check). The road's own elevation keys are still 20 m apart. **Barriers** (GT4 frames): double or
+triple armco rails on dark posts, about 0.75-1 m tall, 1-3 m from the tarmac, continuous through most
+corners (`gt4-nordschleife-chase-kerbs-armco.jpg`, `-bonnet-forest-wall.jpg`). Ours is a single
+ribbed band; make it rails on posts.
 
 ## Horizon and enclosure
 
@@ -136,10 +152,12 @@ tree-line or hill silhouette breaking the sky. Rule: add a distant silhouette (a
 painted-into-the-sky-texture tree/hill line) at the world's edge, even a single flat colour band, so the
 horizon isn't a hard sky/ground cut.
 
-**Fog** (day: `a9bfd3` from 150 m to 2.4 km, curve 1.8; night: `2a2433` from 60 m to 520 m,
-`game.gd::apply_time_of_day()`) already gives aerial perspective toward the sky's own horizon colour —
-this is correct and matches GT4's blue-grey distant-hill read where hills exist; it just has nothing to
-fade *into* yet, per the silhouette gap above.
+**Fog.** Day fog currently runs from 150 m to 2.4 km (`game.gd::apply_time_of_day()`, look-tracks),
+which exposes the bare horizon the owner objects to. The old game's roughly 1 km closed the world in.
+**Rule:** day fog should end at about 1-1.2 km, and a forested-hill silhouette layer should sit at the
+fog distance, so from track level there is always treeline or hills against the sky, never a flat
+cut. GT4's overview (`gt4-nordschleife-official-press-overview.jpg`) shows forested hills filling the
+distance.
 
 ## Colour and light
 
@@ -167,19 +185,27 @@ this matches the GT4 photo-mode reference (`gt4-unidentified-photomode-car.jpg`)
 car against a distinctly cooler, flatter background. No change needed here; it's already right and now
 has a reference frame confirming it.
 
-**Nights (NFS Underground):** not measured this round — no NFSU reference frame was collected before the
-outage (`Look-0-refs`). Look-2's existing amber-lamp/streak/glow implementation
-(`scripts/track/track_lights.gd`, `road_v2.gdshader` night branch) is unchanged and un-reassessed here;
-re-run this section once NFSU night references land.
+**Nights (NFS Underground)**, from `nfsu-night-*.jpg` (mean saturation 0.28, luminance 0.20,
+std-dev 0.15 over three frames):
+- The road is wet-looking: long specular streaks of every light source run down the tarmac towards
+  the camera (`-wet-street-reflections`, `-wet-start-grid`). That is the signature look.
+- Building walls with lit windows, signs and neon enclose the road on both sides, and the sky is a
+  dark blue-grey with a skyline, never black and never empty.
+- Colour is teal/blue ambient against orange/amber lamps. Lane markings are bright yellow and white.
+- Motion blur and a light bloom at speed (`-motion-blur-native`, a native PS2 frame).
+Our circuits aren't cities, so the rules to carry over are: the wet specular road with light streaks
+(Look-2 has the start of this), coloured ambient against amber lamps, glowing trackside structures,
+and no black void beyond the lit area.
 
 ## Cars
 
-Current mesh budgets (`tests/v2/car_models.gd`, 2026-09-24, includes shadow and wheel meshes): Mazda
-MX-5 NA 5,032 triangles / 58 draws, GT high-downforce 3,744 / 58, Ferrari 296 GT3 8,466 / 187. Chase-view
-review (`docs/rebuild/screenshots/P4-cars/f296gt3.png`) shows a legible, detailed silhouette — wing,
-diffuser, mirrors, exhaust — comparable to what GT4's own chase view resolves at similar distance. Cars
-are not the problem this document is chasing; the owner's complaint and every gap above is about the
-environment around the car, not the car itself.
+Current mesh budgets (`tests/v2/car_models.gd`): MX-5 NA 5,032 triangles, GT 3,744, 296 GT3 8,466. The
+bodies are procedural lofts (`scripts/cars/`). **Correction:** the first draft said cars were "not the
+problem". The owner disagrees and has asked for a real Miata body model (CAR-01). GT4's cars are
+showpieces: `gt4-car-detail-slr.jpg` shows smooth curved panels, panel gaps, glass with reflections,
+detailed lamps and wheels. **Rule:** each car uses a proper modelled body (15-40k triangles is fine on
+current hardware), with correct proportions, real glass, lamp and wheel detail, and a paint material with
+clear-coat reflection. Judge it at chase distance and in a 3/4 garage view against the GT4 frame.
 
 ## Gap table
 
@@ -192,7 +218,11 @@ baseline captures and the measurements above:
 | 2 | Road surface has less than half the real luminance contrast, and is more saturated (tinted) than real asphalt | Measured: contrast 0.036 vs reference 0.078; saturation 0.157 vs reference 0.072 | Author luminance variation (patches, rubber line, paving seams) into `asphalt_track_diff.png`; desaturate the base tone |
 | 3 | No distant horizon silhouette; sky is a flat procedural gradient | Confirmed in `retro_assets.gd::panorama()`; `pg-start.png` shows a hard flat sky/ground cut | Add a cheap distant tree-line/hill silhouette at the world edge |
 | 4 | Tree canopy doesn't close overhead even where density is now reasonable (34/100 m near-band on the Nordschleife) | `ns-flugplatz-compare.png` shows visible sky gaps between individual cone-shaped cards, vs. the reference's unbroken canopy | Vary card height/width so adjacent canopies overlap; consider a second, shorter card layer |
-| 5 | Nordschleife sits on the terrain rather than in it (no banks/cuttings) | NS-section part 1 log states this explicitly as not fixed; DEM resolution (20 m) can't carry roadside relief | Needs a 1-2 m corridor DEM re-fetch (owner approval pending), not a shader/generator fix |
+| 5 | Trees are flat single-colour cone cards | Measured canopy gaps; GT4 uses photographic deciduous and spruce cards of varied height and shape (`gt4-nordschleife-bonnet-forest-wall.jpg`) | Photographic tree cards (several species, 512-1024 px), mixed heights, overlapping |
+| 6 | Cars are procedural low-poly lofts | Owner verdict; `gt4-car-detail-slr.jpg` | Modelled bodies (CAR-01 Miata first) |
+| 7 | Armco is a single ribbed band | GT4: double or triple rails on dark posts | Rails on posts, 0.75-1 m |
+| 8 | Day fog to 2.4 km exposes a bare horizon | Owner verdict; old game about 1 km | Fog end about 1-1.2 km plus a hill-silhouette layer (merges with gap 3) |
+| — | Nordschleife sat on the terrain (no banks/cuttings) | **Fixed** by NS-section part 2: DGM1 at 5 m, 6 m blend | — |
 
 Not ranked (out of this round's evidence): NFS Underground night presentation (no reference collected
 yet), barrier-type variety (tyre walls), Spa's far-forest density against a real photo, kerb visibility
@@ -208,7 +238,7 @@ Default 480p component retains 24-bit colour. Optional RGB555 framebuffer quanti
 
 ## Materials, art and budgets
 
-Twenty-one 128/256-pixel build outputs use CLUT4/CLUT8 or RGB555-expanded colours (`assets/ps2/*.png`). The manifest records dimensions, palette counts, nominal GS-style bytes and hashes. Godot expands them on import; mip chains and bilinear filtering remain enabled. Raw CC0/source art and reference imagery are excluded from export. THIRD-PARTY records Rajdhani OFL typography and existing surface textures. **What "128/256-pixel, palette-reduced" should mean** is covered above (Road, "What was wrong with the old guidance"): photographic source detail quantized to a small palette, not flat colour at low resolution.
+Twenty-one 128/256-pixel build outputs use CLUT4/CLUT8 or RGB555-expanded colours (`assets/ps2/*.png`). The manifest records dimensions, palette counts, nominal GS-style bytes and hashes. Godot expands them on import; mip chains and bilinear filtering remain enabled. Raw CC0/source art and reference imagery are excluded from export. THIRD-PARTY records Rajdhani OFL typography and existing surface textures. **This 128/256 px set is superseded** (see "What was wrong with the old guidance"): new surface textures are 1024-2048 px photographic sources, and the console look comes from the output chain.
 
 Ground, road and painted surfaces shade per pixel, which is what makes their normal maps contribute at all; under the previous vertex lighting those maps were loaded and sampled but could not affect the image. Alpha-tested card geometry (foliage, fences) stays vertex-lit deliberately: crossed cards carry no meaningful normals, and shading them per pixel washes the canopy out to tan. Daylight bloom stays restrained and night glare stronger. Road UVs preserve lateral/arc-distance, rubber line, texture grain and authored lamp pools/reflection streaks; night appearance never changes grip. The runoff/gravel/grass paint mask (`ps2_materials.gd`, `ground.gdshader`) is unfiltered data shared with physics — it is a surface-*type* mask, not a visible line (see Road, "Edge lines: absent", above). Check colour-space handling on both Forward+ and Compatibility after changing multipliers.
 

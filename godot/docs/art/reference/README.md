@@ -5,7 +5,7 @@ owner-approved. No game geometry, font, logo, texture, sound or code is extracte
 game; these are for visual comparison only (texel density, contrast, enclosure, colour) and are
 excluded from export (`docs/*` is in every export preset's `exclude_filter`).
 
-**This board is incomplete relative to the Look-0 brief.** Two things blocked collection mid-session:
+**This board was incomplete when first pushed; see "Added in review" at the end for the GT4 Nordschleife and NFSU frames that complete it.** Two things blocked collection mid-session:
 mobygames.com and gamefaqs.gamespot.com serve a Cloudflare JS challenge to non-browser requests (curl
 gets a "Just a moment..." page, not the screenshot), so the working path was the Wayback Machine's
 archived copies of those galleries — and partway through, `web.archive.org` itself went temporarily
@@ -66,3 +66,25 @@ and any close-up asphalt/kerb/armco texture shot.
 3. For NFS Underground specifically: `https://www.mobygames.com/game/11175/need-for-speed-underground/screenshots/ps2/`.
 4. For a confirmed-Nordschleife GT4 shot: search MobyGames' *other* contributor screenshot sets for this
    game (the default set on the gallery's first page is one contributor's UI/menu tour, not a lap).
+
+## Added in review (Claude Opus 5.5, 2026-09-24): GT4 Nordschleife and NFS Underground
+
+This closes the gaps listed above. Found through Bing Images in a real browser, which avoids the Cloudflare block. The frames are YouTube video thumbnails (1280x720 captures of the video), plus one official GT4 press screenshot. For private reference only, owner-approved. Frames marked "upscaled" come from PCSX2 emulator footage rendered above native resolution, so judge texture *content* from them, not sharpness. The frames marked "native" are native PS2 captures.
+
+| File | Source | What it teaches |
+|---|---|---|
+| `gt4-nordschleife-official-press-overview.jpg` | [Kikizo GT4 screenshot blowout, Oct 2004](https://games.kikizo.com/news/200410/014m.asp) (official Polyphony press image) | From above: a narrow road with white edge lines on both sides, fan graffiti painted on the tarmac, grass strips, armco each side, dense mixed forest to the verge, forested hills filling the horizon. |
+| `gt4-nordschleife-chase-kerbs-armco.jpg` | [YouTube ClrK0DIC7BI](https://www.youtube.com/watch?v=ClrK0DIC7BI), GT4 Special Licence Nordschleife | Double and triple armco rails on dark posts right beside a narrow grass strip. Flat red/white kerb blocks. Matte grey road with visible repairs. Tall mixed trees overhead. |
+| `gt4-nordschleife-chase-edge-lines.jpg` | [YouTube UJR5cvpC3s4](https://www.youtube.com/watch?v=UJR5cvpC3s4), PS2 online GT4 | A continuous white edge line and a white line on the inside of the bend. Long armco. A forest band at the far edge; bright photographic sky. |
+| `gt4-nordschleife-bonnet-forest-wall.jpg` | [YouTube rzsapliZMcU](https://www.youtube.com/watch?v=rzsapliZMcU), GT4 AC 427 (PCSX2) | Bonnet view: a matte road with large darker repair patches and tyre marks, armco on both sides, and a continuous photographic forest wall. No horizon visible. |
+| `gt4-nordschleife-bonnet-straight-upscaled.jpg` | [YouTube AncHuQLMZHY](https://www.youtube.com/watch?v=AncHuQLMZHY), GT4 4K (PCSX2, upscaled) | A straight with a grass slope rising on the left, armco, and distant forested hills. |
+| `gt4-nordschleife-chase-kerb-apex.jpg` | [YouTube 1ITKCYROfmQ](https://www.youtube.com/watch?v=1ITKCYROfmQ) | Split chase view: kerb placement at the apex, road width relative to the car. |
+| `gt4-car-detail-slr.jpg` | [YouTube g9YY5l_8Mjc](https://www.youtube.com/watch?v=g9YY5l_8Mjc), GT4 driving mission | GT4 car detail (Mercedes SLR): smooth panels, glass reflections, wheel and lamp detail. The standard our car bodies are judged against. |
+| `nfsu-night-wide-road-barriers.jpg` | [GameRant, "Best PS2 racing games"](https://gamerant.com/) (article image) | A night highway: concrete barriers with chevrons, lit stadium and buildings, a blue-black sky, and light reflections on the road. |
+| `nfsu-night-wet-street-reflections.jpg` | [YouTube 1KNuEdvLu8Y](https://www.youtube.com/watch?v=1KNuEdvLu8Y), NFSU Underground mode (PS2) | The signature NFSU look: a wet road with long specular light streaks, lit tower skyline, teal/orange palette. |
+| `nfsu-night-start-city-native.jpg` | [MobyGames NFSU PS2 demo screenshot](https://www.mobygames.com/game/11175/need-for-speed-underground/screenshots/ps2/) (native) | Native PS2 resolution: dense lit city wall, neon, palm trees, the start line. |
+| `nfsu-night-neon-street.jpg` | [YouTube 4w1OV_TkRFU](https://www.youtube.com/watch?v=4w1OV_TkRFU), NFSU (PS2) | A street enclosed by lit buildings and neon signs; road markings. |
+| `nfsu-night-motion-blur-native.jpg` | [MobyGames NFSU PS2 demo screenshot](https://www.mobygames.com/game/11175/need-for-speed-underground/screenshots/ps2/) (native) | Speed: heavy motion blur and streaking of lights, native PS2. |
+| `nfsu-night-wet-start-grid.jpg` | [YouTube 6qFj7UtP4eE](https://www.youtube.com/watch?v=6qFj7UtP4eE), NFSU demo (PCSX2) | Wet start grid: reflections of the cars and lamps in the road, a city wall, a tree-lined avenue. |
+
+Still missing: a GT4 Spa or Le Mans frame (GT4 has no Spa), and close-up texture shots. Spa is judged against the real-world photos and the GT4 Nordschleife rules above.
