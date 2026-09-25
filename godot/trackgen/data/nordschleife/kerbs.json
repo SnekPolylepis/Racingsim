@@ -3,17 +3,161 @@
   "track": "nordschleife",
   "source": "LVermGeoRP DOP20 2025",
   "kerbs": [
-    {"corner":"T13","side":"left","s_start":0,"s_end":120,"type":"unsure","colours":"red-white","width_m":0.8,"position":"outside","confidence":"medium","crop":"s00040.jpg"},
-    {"corner":"Sabine-Schmitz-Kurve","side":"right","s_start":200,"s_end":360,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00240.jpg"},
-    {"corner":"Hatzenbogen","side":"left","s_start":360,"s_end":560,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00400.jpg"},
-    {"corner":"Hatzenbach 1","side":"right","s_start":760,"s_end":880,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00800.jpg"},
-    {"corner":"Hatzenbach 2","side":"left","s_start":880,"s_end":1040,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00960.jpg"},
-    {"corner":"Hatzenbach 3","side":"right","s_start":1040,"s_end":1200,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s01120.jpg"},
-    {"corner":"Hatzenbach 4","side":"left","s_start":1200,"s_end":1360,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s01240.jpg"},
-    {"corner":"Hocheichen","side":"right","s_start":1360,"s_end":1480,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"low","crop":"s01400.jpg"}
+    {
+      "corner": "Sabine-Schmitz-Kurve",
+      "side": "left",
+      "s_start": 260,
+      "s_end": 300,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.7,
+      "position": "inside",
+      "confidence": "high",
+      "crop": "apex-sabine-schmitz-kurve-00280.jpg"
+    },
+    {
+      "corner": "Hatzenbogen",
+      "side": "right",
+      "s_start": 322,
+      "s_end": 360,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.8,
+      "position": "outside",
+      "confidence": "high",
+      "crop": "apex-hatzenbogen-00340.jpg"
+    },
+    {
+      "corner": "Hatzenbach 2",
+      "side": "left",
+      "s_start": 964,
+      "s_end": 982,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.6,
+      "position": "inside",
+      "confidence": "medium",
+      "crop": "apex-hatzenbach-2-00950.jpg"
+    },
+    {
+      "corner": "Hatzenbach 3",
+      "side": "left",
+      "s_start": 1088,
+      "s_end": 1126,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.7,
+      "position": "outside",
+      "confidence": "medium",
+      "crop": "apex-hatzenbach-3-01120.jpg"
+    },
+    {
+      "corner": "Hatzenbach 4",
+      "side": "left",
+      "s_start": 1218,
+      "s_end": 1242,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.6,
+      "position": "inside",
+      "confidence": "medium",
+      "crop": "apex-hatzenbach-4-01250.jpg"
+    },
+    {
+      "corner": "Hocheichen",
+      "side": "left",
+      "s_start": 1378,
+      "s_end": 1398,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.6,
+      "position": "outside",
+      "confidence": "medium",
+      "crop": "apex-hocheichen-01400.jpg"
+    },
+    {
+      "corner": "Hocheichen",
+      "side": "right",
+      "s_start": 1404,
+      "s_end": 1436,
+      "type": "ribbed",
+      "colours": "red-white",
+      "width_m": 0.8,
+      "position": "inside",
+      "confidence": "low",
+      "crop": "apex-hocheichen-01400.jpg"
+    },
+    {
+      "corner": "Hocheichen exit",
+      "side": "right",
+      "s_start": 1540,
+      "s_end": 1560,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.6,
+      "position": "outside",
+      "confidence": "low",
+      "crop": "apex-hocheichen-exit-01550.jpg"
+    },
+    {
+      "corner": "Flugplatz",
+      "side": "left",
+      "s_start": 2320,
+      "s_end": 2360,
+      "type": "ribbed",
+      "colours": "white-grey",
+      "width_m": 0.8,
+      "position": "outside",
+      "confidence": "high",
+      "crop": "apex-flugplatz-02340.jpg"
+    },
+    {
+      "corner": "Flugplatz",
+      "side": "right",
+      "s_start": 2344,
+      "s_end": 2360,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.6,
+      "position": "inside",
+      "confidence": "medium",
+      "crop": "trace-02352.jpg"
+    },
+    {
+      "corner": "Flugplatz exit",
+      "side": "left",
+      "s_start": 2420,
+      "s_end": 2460,
+      "type": "ribbed",
+      "colours": "white-grey",
+      "width_m": 0.8,
+      "position": "inside",
+      "confidence": "high",
+      "crop": "apex-flugplatz-exit-02440.jpg"
+    },
+    {
+      "corner": "Schwedenkreuz",
+      "side": "left",
+      "s_start": 2980,
+      "s_end": 3070,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.7,
+      "position": "inside",
+      "confidence": "high",
+      "crop": "apex-schwedenkreuz-03030.jpg"
+    }
   ],
   "edge_lines": [
-    {"side":"left","s_start":0,"s_end":4220},
-    {"side":"right","s_start":0,"s_end":4220}
+    {
+      "side": "left",
+      "s_start": 0,
+      "s_end": 4220
+    },
+    {
+      "side": "right",
+      "s_start": 0,
+      "s_end": 4220
+    }
   ]
 }

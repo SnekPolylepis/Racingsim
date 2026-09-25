@@ -58,7 +58,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
 | K-01 | Kerb reference data for Spa-Francorchamps and Nordschleife section 1 | Gemini | | done (coarse draft, PR #38) | rb/K-01-kerbs |
-| K-01b | Retrace kerbs at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb with type; Spa and Nordschleife S1. K-01 data is too coarse to place kerbs from | GPT Luna or Sonnet | K-01 | claimed: Luna | rb/K-01b-kerbs |
+| K-01b | Retrace kerbs at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb with type; Spa and Nordschleife S1. K-01 data is too coarse to place kerbs from | GPT Luna or Sonnet | K-01 | review: Claude | rb/K-01b-kerbs |
 
 
 ## Decisions and later

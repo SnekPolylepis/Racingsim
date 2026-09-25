@@ -22,3 +22,24 @@ widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections.
 
 Surrounding terrain is exported as a 5 m grid in `dem.raw` (761 columns × 841 rows,
 2560004 bytes) referenced to start line elevation 619.38 m.
+
+## Kerbs
+
+`kerbs.json` traces 12 separate painted runs from LVermGeoRP DOP20 2025 apex crops (40 m square, 1200 px, 5 m station ticks).
+
+| Corner | Side | Length | Type |
+|---|---|---:|---|
+| Sabine-Schmitz-Kurve | left | 40 m | flat |
+| Hatzenbogen | right | 38 m | flat |
+| Hatzenbach 2 | left | 18 m | flat |
+| Hatzenbach 3 | left | 38 m | flat |
+| Hatzenbach 4 | left | 24 m | flat |
+| Hocheichen | left | 20 m | flat |
+| Hocheichen | right | 32 m | ribbed |
+| Hocheichen exit | right | 20 m | flat |
+| Flugplatz | left | 40 m | ribbed |
+| Flugplatz | right | 16 m | flat |
+| Flugplatz exit | left | 40 m | ribbed |
+| Schwedenkreuz | left | 90 m | flat |
+
+The S1 imagery often shows only a white edge line, while canopy and shadows cover the edge at other corners; those locations are omitted unless a painted kerb is visible. The 12 listed runs are fewer than the anticipated 20–40 because this photo set does not resolve a striped kerb on most surveyed bends.

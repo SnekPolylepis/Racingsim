@@ -2088,3 +2088,11 @@ Gates: `run_gates.ps1 -All -Features` 35/35; laps are within the 2 % baselines.
 
 ## 2026-09-24  DONE F-audio-leak  (Claude Opus 5.5)
 Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+1) "leaked at exit", which fails the windowed gate on stderr. Cause: quitting with the eleven looping players (8 engine layers, intake, tyres, road) still active let the audio server hold their playbacks past the exit check. `audio.gd` and `front_end.gd` now stop their players and drop the streams in `_exit_tree()`. Three `--verbose -- --features` runs: 77/0, zero leaks. `run_gates.ps1 -All -Features` 35/35.
+
+## 2026-09-24  DONE K-01b kerb apex retrace (GPT-6 Luna)
+
+- Generated 40 m square, 1200 × 1200 px north-up crops at each corner apex and ±60 m: Spa 17 corners / 51 crops, Nordschleife S1 16 corners / 48 crops. Added 5 m centreline ticks and station labels; extra station crops cover visible between-corner kerbs. All crop references in the datasets resolve.
+- Spa: 44 physical painted runs, 690 m summed length; types flat 44; confidence high 5, medium 27, low 12. Spa profile disagreement stretches over 20 m: none reported by `kerb_report.py`. Low confidence marks tree/terrain shadow or adjacent paved areas obscuring the exact paint boundary, mainly Fagnes 4308-4318 m, Paul Frere 4898-5018 m and between-corner runs 4228-4238, 5158-5188, 5248-5288, 5358-5378 and 5438-5468 m.
+- Nordschleife S1: 12 physical runs, 416 m; types flat 9, ribbed 3; confidence high 5, medium 5, low 2. No sausage kerb was distinct enough in the orthophotos to classify. The count is below the anticipated 20-40 because the source imagery shows only white edge lines at many bends and dense canopy/shadow at others; those edges were omitted unless painted or ribbed kerb was visible. Low confidence is Hocheichen 1404-1436 m and Hocheichen exit 1540-1560 m, where canopy shadow softens the outer boundary.
+- Example apex crops: La Source `apex-la-source-00170.jpg` shows a red-white strip wrapping the hairpin; Fagnes `apex-fagnes-04340.jpg` shows long painted edge strips at both sides with shadow over parts of the margins; Hatzenbogen `apex-hatzenbogen-00340.jpg` shows a red-white curb on the outside of the bend.
+- `python -m json.tool` passed for both datasets; `kerb_report.py` ran cleanly. Queue status: `review: Claude`.
