@@ -53,7 +53,21 @@ func run():
 			)
 		var budget = count_meshes(model.root)
 		print("CAR MODEL ", key, " ", JSON.stringify(budget))
-		check(budget.tris < 18000 and budget.draws < 200, key + " raster budget")
+		# CAR-01's authored NA shell is 23,264 triangles; the four shared kit
+		# wheels and lamps bring the roadster to 25,658. Other cars keep P4's cap.
+		var triangle_cap = 28000 if key == "roadster" else 18000
+		check(budget.tris < triangle_cap and budget.draws < 200, key + " raster budget")
+		if key == "roadster":
+			check(
+				model.body.find_child("MX5NAExterior", true, false) != null, "roadster imported NA exterior"
+			)
+			var source_scene = load("res://assets/cars/mx5na/mx5na.gltf").instantiate()
+			var shell = source_scene.get_node("PaintedBody")
+			var bounds = shell.get_aabb()
+			check(absf(bounds.size.x - 3.970) < .02, "roadster NA length")
+			check(absf(bounds.size.z - 1.675) < .02, "roadster NA width")
+			check(absf(bounds.end.y - 1.230) < .02, "roadster NA height")
+			source_scene.free()
 		check(
 			model.root.find_children("TyreSidewallAndRim", "MeshInstance3D", true, false).size() == 4,
 			key + " complete rims and sidewalls"
@@ -70,6 +84,15 @@ func run():
 		check(lamps.all(func(lamp): return not lamp.visible), key + " lamps dim by day")
 		var ghost = v.make_car(cars[key], true)
 		check(ghost.root != null and ghost.pivots.size() == 4, key + " ghost contract")
+		if key == "roadster":
+			var ghost_parts = ghost.body.find_children("*", "MeshInstance3D", true, false)
+			var ghost_material_ok = true
+			for part in ghost_parts:
+				if not part.material_override is StandardMaterial3D:
+					ghost_material_ok = false
+				elif part.material_override.transparency != BaseMaterial3D.TRANSPARENCY_ALPHA:
+					ghost_material_ok = false
+			check(ghost_material_ok, "roadster ghost material")
 		model.root.free()
 		ghost.root.free()
 	print("CAR_MODELS RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))

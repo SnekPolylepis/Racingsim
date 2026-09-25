@@ -1982,3 +1982,21 @@ Luna's host could not run Godot (it crashed with signal 11), so nothing had been
 - **Gates:** 34/35 passed. `road_density` failed: the proving-ground scene was 5.37 MB, over the 5 MB budget. The cause was the closed 14-point rail profile, front and back, on every 5 m segment.
 - **Fix:** the rail is now the open 7-point corrugated face only. `armco_material()` is double-sided, so it looks the same. The scene is 4.78 MB and `road_density` passes.
 - **Checks:** collision is unchanged, and barrier and walls pass. The Hatzenbach capture shows rails on posts, matching the GT4 frame. `run_gates.ps1 -All -Features` gave 34 plus features 77/0 before the fix; the fix touches only the visible mesh, and `road_density` was re-run.
+
+## 2026-09-24  CLAIM CAR-01  (GPT-6 Sol) — branch `rb/CAR-01-miata`
+Owner-assigned real Mazda MX-5 NA body replacement. Source and licence to be recorded with the asset; Claude will review the branch PR.
+
+## 2026-09-24  DONE CAR-01  (GPT-6 Sol) — branch `rb/CAR-01-miata`
+
+- Replaced the P4 procedural roadster body with **"Mazda Miata MX-5 NA" by Lexyc16**, [Sketchfab source](https://sketchfab.com/3d-models/mazda-miata-mx-5-na-d51fcd44b74f4daf8012c41e0400c041), **CC BY 4.0**. The owner supplied the glTF ZIP; SHA-256 `69438fb7e708c1c0c42b9ab89e1d82125a19196caf86dbfe008215c4a99b3c5f`. Source license is `assets/cars/mx5na/license.txt`; source, fitted glTF and deterministic fit script total about 2.7 MB. Credits and modifications are in both `THIRD-PARTY.md` files.
+- Fitted the authored NA body to **3.970 × 1.675 × 1.230 m**, +X forward, +Y up, +Z right, with source axle anchors mapped to the roadster preset (`a=1.087`, `b=1.178`, `track=1.415`, `wheelR=.289`). Removed the source display plane, source wheels and an unneeded interior black mesh; retained separate glass, chrome, trim and lamp geometry. The imported exterior is **23,264 triangles**. The game's 4 pivot/spin wheel assemblies, preset colour, ghost material and day/Afterhours lamp switching use the existing `make_car()` contract. Static surfaces go through `visuals.merge_static()`.
+- `car_models.gd` measures the assembled roadster at **25,658 triangles / 23 draw surfaces**. Its roadster-only triangle cap rises from 18,000 to 28,000 to accommodate the authored exterior; the GT and 296 GT3 remain under the original 18,000 cap and the 200-draw cap is unchanged. The roadster stays below the cap with 2,342 triangles of margin. The test also checks the fitted NA length, width and height.
+- Saved six in-game [CAR-01 screenshots](rebuild/screenshots/car-01/) from the proving ground: chase, bonnet and front three-quarter, each by day and Afterhours. Inspected all six; the daytime bonnet panels close, the night pop-up lenses and tail lamps illuminate, and paint/trim/glass remain visually distinct. `docs/art/reference/` was absent on this main baseline, so no Look-0 comparison panel could be made.
+- Verification in the isolated worktree with the main checkout's Godot 4.6.2 binary: `scripts/game.gd --check-only` exit 0, empty stderr; `run_gates.ps1 -All -Features -Godot <Godot.exe>` **35/35 gates**, features **77/0**; dedicated `car_models.gd` after the dimension and ghost assertions **56/56**; `gdformat -l 110 scripts tests` then `gdformat --check -l 110 scripts tests` clean (86 unchanged); `git diff --check` clean. Screenshot helper exit 0 with no failures. Queue status: **review: Claude**.
+
+## 2026-09-24  REVIEW CAR-01 (Sol): accepted  (Claude Opus 5.5)
+- **Merge:** main merged in (Look-5's `merge_static()` was already on the branch; only the log conflicted).
+- **Gates:** `run_gates.ps1 -All -Features` 35/35 after importing the new glTF; car_models 56/0 and features 77/0.
+- **Export:** presets now exclude the untouched source model (`assets/cars/*/scene.*`, about 1.8 MB) and `prepare.py`. The runtime loads only the fitted `mx5na.gltf`.
+- **Look:** a clearly recognisable NA with correct proportions, pop-up lamps and proper wheels; a large step towards the GT4 car rule.
+- **Follow-up F-CAR-01-tail (Sol):** at Afterhours the red tail-glow quads sit low on the rear bumper, below the tail-lamp housings (`docs/rebuild/screenshots/car-01/chase-afterhours.png`). They should sit in the lamp housings.

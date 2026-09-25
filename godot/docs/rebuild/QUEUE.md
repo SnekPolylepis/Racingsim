@@ -35,6 +35,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 
 | ID | Task | Who | Needs | Status | Branch / notes |
 |---|---|---|---|---|---|
+| CAR-01 | Replace the roadster's procedural body with a credited Mazda MX-5 NA model | Sol | P4-cars | done (PR #35, reviewed) | `rb/CAR-01-miata`; owner-assigned, review by Claude |
+| F-CAR-01-tail | Miata Afterhours tail-glow quads sit low on the rear bumper, below the lamp housings; move them into the housings (docs/rebuild/screenshots/car-01/chase-afterhours.png) | Sol | CAR-01 | open | |
 | P2-08 | Debug scene to drive CarBody on the analytic test surfaces | Gemini | | done | rb/P2-08-test-surfaces 3b0143c |
 | P3-02c | Variable road station density (dense ranges, zipper stitching); proving ground to coarse 9 + dense ditch | Gemini | | done | rb/P3-02c-road-density 01b1fe1; scene 8.95 → 3.87 MB compressed |
 | scenery-kit | Trackside scenery kit (CatchFence, Grandstand, Gantry, Billboards, MarshalPost, PitBuilding) and proving ground placement | Gemini | | done | rb/scenery-kit; 34/34 gates pass (147 s), 11/11 scenery checks |
