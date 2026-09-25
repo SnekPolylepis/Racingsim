@@ -11,6 +11,7 @@ const NightGlow = preload("res://scripts/track/night_glow.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
+const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
 const DATA = "res://trackgen/data/chicago/route.json"
@@ -33,7 +34,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 7
+const CACHE_REVISION = 8
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -214,6 +215,8 @@ static func build_asset() -> Node3D:
 	add_lower_deck(asset, scenery, road)
 	add_road_details(asset, scenery, road)
 	add_night_details(asset, scenery, road)
+	# CHI-LOOK-01: signals, crosswalks and stop lines at the cross streets.
+	ChicagoFurniture.build(asset, scenery, road.last_bake.stations, facade_box, night_material, attach)
 	add_park_trees(asset)
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
 	add_parked_cars(asset, scenery, road)
