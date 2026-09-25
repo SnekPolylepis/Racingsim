@@ -25,7 +25,8 @@ var v2_panels: Control
 const V2_TRACKS = {
 	"proving_ground": "Proving Ground",
 	"spa": "Spa-Francorchamps",
-	"nordschleife_s1": "Nordschleife (T13 - Aremberg)"
+	"nordschleife_s1": "Nordschleife (T13 - Aremberg)",
+	"nordschleife": "Nürburgring Nordschleife"
 }
 
 
@@ -101,7 +102,7 @@ func make_tone(kind):
 
 
 func tone(kind):
-	if app.settings.mute or ui_player == null:
+	if app.settings.mute or ui_player == null or not ui_sounds.has(kind):
 		return
 	ui_player.stream = ui_sounds[kind]
 	ui_player.volume_db = linear_to_db(maxf(.0001, app.settings.volume * app.settings.effects_volume))

@@ -83,6 +83,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | LOOK-NIGHT-01 | Reduce the excessively shiny appearance of night road surfaces while preserving the intended PS2-era lighting and amber lamp look | Claude | Look-2 | open | Owner-requested; target 2026-09-26 |
 | GREEN-HELL-01 | Add a Nordschleife “Green Hell” night mode with track lamps disabled and illumination from the player's headlights only | Sol | P6-02b, Look-2 | open | Owner-requested; target 2026-09-26 |
 | OPS-01 | Find and deliver high-impact speedups to development workflows and runtime/process bottlenecks; measure before/after and prioritize repeatable wins | Sol (workflow), Claude review | | open | Owner-requested; target 2026-09-26; start with a short bottleneck audit and scope fixes from evidence |
+| P6-02b | Nordschleife remaining sections | Gemini (content/tools only), Claude review | P6-02a | claimed: Gemini | |
 | P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | done | reviewed on main; PropSet in P4-06 game loop |
 | P7-02 | Docs rewritten for the v2 game: ARCHITECTURE, PHYSICS, LLM-GUIDE, TESTING, PLAYER-GUIDE, DATA-CONTRACTS; SOLVER-MATH and MACOS marked where they describe the legacy game | Claude | | review: Sol | rb/P7-02-docs; read "DONE P7-02" |

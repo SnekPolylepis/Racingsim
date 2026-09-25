@@ -41,6 +41,7 @@
     {"name": "scenery", "script": "tests/v2/scenery.gd", "groups": ["vehicle", "track"]},
     {"name": "test_surfaces_scene", "script": "tests/v2/test_surfaces_scene.gd", "groups": ["vehicle"], "deps": ["scripts/proving/", "scenes/proving/"]},
     {"name": "nordschleife_s1", "script": "tests/v2/nordschleife_s1.gd", "groups": ["track"], "deps": ["trackgen/nordschleife_s1.gd", "trackgen/data/nordschleife/"]},
+    {"name": "nordschleife", "script": "tests/v2/nordschleife.gd", "groups": ["track"], "deps": ["trackgen/nordschleife.gd", "trackgen/data/nordschleife/"]},
     {"name": "parse check", "kind": "parse", "script": "scripts/game.gd", "groups": ["game"]},
     {"name": "features", "kind": "features", "window": true, "groups": ["game"]}
   ]
