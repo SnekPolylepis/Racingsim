@@ -18,7 +18,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 2
+const CACHE_REVISION = 3
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -847,7 +847,7 @@ static func build_asset() -> Node3D:
 		"ArdennesNear",
 		positions["Raidillon"] + 180.0,
 		positions["Blanchimont"] + 120.0,
-		18.0,
+		28.0,
 		12.0,
 		65.0,
 		601
@@ -858,7 +858,7 @@ static func build_asset() -> Node3D:
 		"ArdennesDeep",
 		positions["Raidillon"] + 200.0,
 		positions["Blanchimont"] + 100.0,
-		24.0,
+		34.0,
 		70.0,
 		180.0,
 		602

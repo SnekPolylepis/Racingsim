@@ -11,6 +11,9 @@ KIND is one of `CLAIM`, `DONE`, `PAUSED`, `FAILED`, `CONTRACT`, `DECISION`, `NOT
 
 ---
 
+## 2026-09-24  CLAIM Look-7  (Luna)
+Claimed the armco rail-and-post rendering task on `rb/look-7-armco` per the owner's branch-only PR instruction.
+
 ## 2026-09-22  DECISION D1–D4  (owner)
 Editor removed; 6-DOF chassis; authored 3D tracks; old track format, records and ghosts not carried forward. The CLAUDE.md "don't replace the custom solver" rule is withdrawn. D5–D10 proceed on the plan's defaults until the owner says otherwise.
 
@@ -1968,6 +1971,53 @@ Gaps 1 and 2 of ART-DIRECTION.md, judged against the GT4 Nordschleife frames.
 - **Baseline:** `docs/art/baseline/` recaptured.
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
+
+## 2026-09-24  DONE Look-7  (Luna)
+Implemented only the kind-0 visible wall mesh: double 0.31 m corrugated rails with tops at 0.45 m and 0.75 m, a third rail for barriers taller than 0.9 m, and dark posts at no more than 3 m spacing. Rails use the existing galvanized armco texture and rails/posts share one material and one mesh per wall. `WallBuilder.faces()` and `wall_path.gd` collision generation are unchanged. Triangle count: 396 triangles for a 10 m open double-rail wall sampled every 2 m (280 rail, 56 end-cap, 60 post); generally `28 × segment_count × rail_count + 28 × rail_count` for open-end rails, plus `12 × post_count`.
+
+Formatting/parser: `python -m gdtoolkit.formatter -l 110 scripts tests` reformatted only `scripts/track/scenery_builder.gd` (86 other files unchanged); `python -m gdtoolkit.parser scripts/track/scenery_builder.gd` passed. Verification is blocked by this Windows host's Godot 4.6.2 executable crashing with signal 11 / exit `-1073741819`: `--check-only` and all 35 gates from `run_gates.ps1 -All -Features` failed before RESULTS output, including unrelated suites. The requested windowed `track_screenshots.gd -- --v2-flow-test --out=...` also crashed before producing shots, so the two Nordschleife PR screenshots are not attached. Sent to Claude review without claiming those checks or captures passed.
+
+## 2026-09-24  REVIEW Look-7 (Luna): accepted with one fix  (Claude Opus 5.5)
+Luna's host could not run Godot (it crashed with signal 11), so nothing had been verified. Run here on Windows with main merged in:
+- **Gates:** 34/35 passed. `road_density` failed: the proving-ground scene was 5.37 MB, over the 5 MB budget. The cause was the closed 14-point rail profile, front and back, on every 5 m segment.
+- **Fix:** the rail is now the open 7-point corrugated face only. `armco_material()` is double-sided, so it looks the same. The scene is 4.78 MB and `road_density` passes.
+- **Checks:** collision is unchanged, and barrier and walls pass. The Hatzenbach capture shows rails on posts, matching the GT4 frame. `run_gates.ps1 -All -Features` gave 34 plus features 77/0 before the fix; the fix touches only the visible mesh, and `road_density` was re-run.
+
+## 2026-09-24  CLAIM CAR-01  (GPT-6 Sol) — branch `rb/CAR-01-miata`
+Owner-assigned real Mazda MX-5 NA body replacement. Source and licence to be recorded with the asset; Claude will review the branch PR.
+
+## 2026-09-24  DONE CAR-01  (GPT-6 Sol) — branch `rb/CAR-01-miata`
+
+- Replaced the P4 procedural roadster body with **"Mazda Miata MX-5 NA" by Lexyc16**, [Sketchfab source](https://sketchfab.com/3d-models/mazda-miata-mx-5-na-d51fcd44b74f4daf8012c41e0400c041), **CC BY 4.0**. The owner supplied the glTF ZIP; SHA-256 `69438fb7e708c1c0c42b9ab89e1d82125a19196caf86dbfe008215c4a99b3c5f`. Source license is `assets/cars/mx5na/license.txt`; source, fitted glTF and deterministic fit script total about 2.7 MB. Credits and modifications are in both `THIRD-PARTY.md` files.
+- Fitted the authored NA body to **3.970 × 1.675 × 1.230 m**, +X forward, +Y up, +Z right, with source axle anchors mapped to the roadster preset (`a=1.087`, `b=1.178`, `track=1.415`, `wheelR=.289`). Removed the source display plane, source wheels and an unneeded interior black mesh; retained separate glass, chrome, trim and lamp geometry. The imported exterior is **23,264 triangles**. The game's 4 pivot/spin wheel assemblies, preset colour, ghost material and day/Afterhours lamp switching use the existing `make_car()` contract. Static surfaces go through `visuals.merge_static()`.
+- `car_models.gd` measures the assembled roadster at **25,658 triangles / 23 draw surfaces**. Its roadster-only triangle cap rises from 18,000 to 28,000 to accommodate the authored exterior; the GT and 296 GT3 remain under the original 18,000 cap and the 200-draw cap is unchanged. The roadster stays below the cap with 2,342 triangles of margin. The test also checks the fitted NA length, width and height.
+- Saved six in-game [CAR-01 screenshots](rebuild/screenshots/car-01/) from the proving ground: chase, bonnet and front three-quarter, each by day and Afterhours. Inspected all six; the daytime bonnet panels close, the night pop-up lenses and tail lamps illuminate, and paint/trim/glass remain visually distinct. `docs/art/reference/` was absent on this main baseline, so no Look-0 comparison panel could be made.
+- Verification in the isolated worktree with the main checkout's Godot 4.6.2 binary: `scripts/game.gd --check-only` exit 0, empty stderr; `run_gates.ps1 -All -Features -Godot <Godot.exe>` **35/35 gates**, features **77/0**; dedicated `car_models.gd` after the dimension and ghost assertions **56/56**; `gdformat -l 110 scripts tests` then `gdformat --check -l 110 scripts tests` clean (86 unchanged); `git diff --check` clean. Screenshot helper exit 0 with no failures. Queue status: **review: Claude**.
+
+## 2026-09-24  REVIEW CAR-01 (Sol): accepted  (Claude Opus 5.5)
+- **Merge:** main merged in (Look-5's `merge_static()` was already on the branch; only the log conflicted).
+- **Gates:** `run_gates.ps1 -All -Features` 35/35 after importing the new glTF; car_models 56/0 and features 77/0.
+- **Export:** presets now exclude the untouched source model (`assets/cars/*/scene.*`, about 1.8 MB) and `prepare.py`. The runtime loads only the fitted `mx5na.gltf`.
+- **Look:** a clearly recognisable NA with correct proportions, pop-up lamps and proper wheels; a large step towards the GT4 car rule.
+- **Follow-up F-CAR-01-tail (Sol):** at Afterhours the red tail-glow quads sit low on the rear bumper, below the tail-lamp housings (`docs/rebuild/screenshots/car-01/chase-afterhours.png`). They should sit in the lamp housings.
+
+## 2026-09-24  CLAIM Look-6  (Claude Sonnet 5)
+Enclosure: gaps 3, 4, 5, 8 in ART-DIRECTION.md. Photographic tree cards, hill silhouette ring, day fog. Branch `rb/look-6-enclosure`. Not touching road_v2/road_builder (edge lines), the wall mesh, scripts/cars or kerbs.
+
+## 2026-09-24  DONE Look-6 Enclosure  (Claude Sonnet 5)
+ART-DIRECTION gaps 3, 4, 5 and 8. Branch `rb/look-6-enclosure`; PR open, not merged.
+
+- **Trees (gaps 4, 5):** the flat cone card is gone. `RoadScatter` now scatters photographic cards from one 2048 px atlas (`assets/trees/tree_atlas.png`, 4 MB): three spruce, two tall fir, one deciduous, two bush, cut from four CC0 Poly Haven models (`fir_tree_01`, `fir_sapling_medium`, `tree_small_02`, `shrub_02`) rendered to alpha by `tools/bake_tree_cards.gd` and packed by `tools/finish_tree_cards.py`. Downloads (about 640 MB) stay outside the repo; the new assets are 4 MB, well under the 60 MB budget, recorded in both THIRD-PARTY.md files. Each forest band is still **one MultiMesh, one material**: the mesh is three crossed quads (6 triangles), `INSTANCE_CUSTOM` picks the atlas cell, `INSTANCE_COLOR` a near-white tint. Species mix 32% spruce, 22% fir, 26% deciduous, 20% bush; heights 8-30 m (bush 2.5-5.5 m), widths jittered up to 1.4x so canopies overlap; feet sunk 11% into the ground; normals up so cards take even light; alpha-scissored at 0.34. Densities raised where the old cones left gaps: Nordschleife near 34 to 56/100 m, deep 22 to 34; Spa near 18 to 28, deep 24 to 34; Proving Ground 4 to 9.
+- **Horizon (gap 3):** `RetroAssets.hills_panorama(night, style)` paints three wooded ridges (hazy far, darker near, tree-top serration on the near ones) into a 1024x512 copy of the sky, one style per circuit (`ardennes`, `eifel`, `generic`; `game.gd` `HORIZON_STYLES`). By day the far ridge sits close to the fog colour; at night all three are dark against the lit horizon, never a black void. The sky rebuilds when the circuit changes.
+- **Fog (gap 8):** day fog end 2400 to 1150 m, density 1.0 at the end, `camera.far` 3000 to 1250 (night unchanged, 520/650).
+- **CACHE_REVISION:** Nordschleife 4 to 5, Spa 2 to 3 (Proving Ground has none and always rebakes). `check_exported_v2_assets()` now also requires the atlas.
+- **Draw calls** (`track_screenshots.gd` now prints `TRACK SHOT DRAWS`, whole-frame `RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME` including the presentation chain), before to after, average/max over the shots: Proving Ground 482/559 to 482/559; Spa 575/608 to 573/602; Nordschleife 471/599 to 440/590. No increase: same MultiMesh count, and the Nordschleife dropped because the taller cards cull differently.
+- **Screenshots:** baseline recaptured in `docs/art/baseline/` (all 26 shots plus the four `-compare` strips against the GT4 and real frames); night frames in `docs/rebuild/screenshots/look-6/` (the night script still writes to look-2; I copied and restored those). I looked at every compare strip and the night shots: `ns-hatzenbach` and `ns-hatzenbach-bonnet` now read as a forest wall against the GT4 frames, and the horizon carries a ridge line at every circuit. Honest gaps: trunks and undergrowth are thin at ground level between the cards, only one deciduous species exists so the Eifel is spruce-heavy, the ridges are blocky at 640x448 and the Nordschleife trees are a touch too bright at night (up-facing normals catch the moon).
+- **Gates:** `--check-only` clean; `gdformat -l 110 scripts tests trackgen tools` clean; `run_gates.ps1 -All` 34/34 and `-All -Features` 35/35 (Windows, RTX 4080, 297 s). Not run: export build (no export templates in this worktree); the atlas sits outside the export filters' excludes.
+
+
+## 2026-09-24  REVIEW Look-6 (Sonnet): accepted  (Claude Opus 5.5)
+Merged with main (Look-8 road, Look-7 armco, CAR-01). Doc conflicts resolved: gap rows 1-2 from Look-8, rows 3-5 and 8 from Look-6. `run_gates.ps1 -All -Features` 35/35, features 77/0, car_models 56/0. Baseline recaptured on the merged tree: Hatzenbach now reads as the GT4 forest wall, and Spa shows photo trees, a hill skyline, edge lines and armco on posts.
 
 
 ## 2026-09-24  CLAIM K-01  (Gemini)

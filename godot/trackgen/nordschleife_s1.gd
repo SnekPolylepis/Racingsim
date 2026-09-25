@@ -19,7 +19,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
-const CACHE_REVISION = 4
+const CACHE_REVISION = 5
 
 
 static func read_json(path: String) -> Dictionary:
@@ -776,8 +776,8 @@ static func build_asset() -> Node3D:
 
 	# The Nordschleife runs through Eifel forest: a near row and a deep band behind it.
 	# The Eifel forest stands right behind the armco: a dense near wall, then a deep band.
-	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 34.0, 1.5, 18.0, 713)
-	add_forest(asset, terrain, "EifelDeep", 0.0, -1.0, 22.0, 18.0, 120.0, 714)
+	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 56.0, 1.5, 18.0, 713)
+	add_forest(asset, terrain, "EifelDeep", 0.0, -1.0, 34.0, 18.0, 120.0, 714)
 	add_scenery_kit(asset, road, positions, measured)
 	add_lighting(asset, road, positions, measured)
 	return asset
