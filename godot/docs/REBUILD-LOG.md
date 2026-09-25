@@ -2088,3 +2088,7 @@ Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+
 
 ## 2026-09-24  DONE F-audio-leak-2  (Claude Opus 5.5)
 The cleanup in `audio.gd` and `front_end.gd` moves from `_exit_tree()` to `_notification(NOTIFICATION_PREDELETE)`, so it runs only when the node is freed and not when it is re-parented. Three `--verbose -- --features` runs gave 77/0 with no leaks and no script errors. `run_gates.ps1 -All -Features` 35/35.
+
+
+## 2026-09-24  DONE DOC-01 release docs and queue tidy (GPT-6 Luna)
+Updated PLAY.txt and CHANGELOG.md with Preview 3–5 features, Preview 5 known limits and credits. No queue rows changed: P6-02a was already done. The other merged candidates (P4-core, P4-vis, P4-menus, Look-1, P6-01-polish, P7-02, CI, F-CI, F-P4-01, F-P4-03-corners and F-track-picker) remain `review:*` and were left untouched as required.
