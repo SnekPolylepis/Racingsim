@@ -12,6 +12,7 @@ extends RefCounted
 ##   Water      the river and lake at y -2.8 in the circuit's water shader, with concrete river walls
 ##   Parks      parks, gardens and lawns in grass
 ## Geometry is batched per 600 m chunk and material, so the whole city is a few hundred draw calls at most.
+const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const FACADE_SHADER = preload("res://shaders/chicago_facade.gdshader")
 const DATA = "res://trackgen/data/chicago/city.json"
@@ -78,6 +79,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	parent.add_child(holder)
 	holder.owner = asset
 	# Buildings.
+	var near_route = []
 	var i = 0
 	for b in doc.buildings:
 		var ring = _ring(b.f)
@@ -94,6 +96,10 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			fmod(i * 0.6180339, 1.0)
 		)
 		stats.buildings += 1
+		var centre = _centroid(ring)
+		if ChicagoKit.nearest_route(route, centre, ChicagoKit.RANGE_M + 40.0).x != INF:
+			near_route.append([ring, float(b.h), i])
+	stats.merge(ChicagoKit.build(asset, holder, near_route, route))
 	# Streets: sidewalk ribbon under the carriageway.
 	for r in doc.roads:
 		var pts = _ring(r.p)
