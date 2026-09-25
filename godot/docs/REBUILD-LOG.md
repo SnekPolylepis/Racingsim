@@ -2298,3 +2298,6 @@ Rebuilt v0.1.0-preview.6 from main with NFSU nights and replaced both zips and t
 
 ## 2026-09-25  CI on pushes only  (Claude Opus 5.5; owner decision)
 `.github/workflows/gates.yml` no longer triggers on `pull_request`. A PR's branch is already tested by its own pushes, so the second run only cost Actions minutes. TESTING.md updated.
+
+## 2026-09-25 CLAIM CHI-01 (Codex)
+Owner assigned the complete Chicago circuit; branch `rb/CHI-01-chicago`. All work, including this claim, stays on the branch; no main changes or merge, overriding the queue default. Scope: Chicago generator/data/scenery, track registration and export integration, probes/laps/screenshots, and corresponding documentation. Jev route HIGH 0.37.
