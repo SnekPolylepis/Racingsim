@@ -2295,3 +2295,6 @@ Sonnet paused this with verification owed. Finished here:
 
 ## 2026-09-25  RELEASE Preview 6 updated with Look-9  (Claude Opus 5.5)
 Rebuilt v0.1.0-preview.6 from main with NFSU nights and replaced both zips and the release notes. The exported exe gave V2 EXPORT PASS and features 77/0 with empty stderr.
+
+## 2026-09-25  CI on pushes only  (Claude Opus 5.5; owner decision)
+`.github/workflows/gates.yml` no longer triggers on `pull_request`. A PR's branch is already tested by its own pushes, so the second run only cost Actions minutes. TESTING.md updated.
