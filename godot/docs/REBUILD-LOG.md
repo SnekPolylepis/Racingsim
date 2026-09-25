@@ -2069,3 +2069,14 @@ Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71
 - Text readable at 480p; car size and shape consistent across modes including 4:3 RGB555; no black or garbled frames.
 
 **Repo hygiene (#27):** the six `docs/rebuild/screenshots/look-tracks/*-before-after.png` are committed without `.png.import`, so `--import` leaves six untracked files.
+
+## 2026-09-25  CLAIM Look-9  (Claude Sonnet 5)
+NFSU nights on branch `rb/look-9-nights`, per ART-DIRECTION.md's "Nights (NFS Underground)" rules and
+`docs/art/reference/nfsu-night-*.jpg`: wet-road specular streaks from lamps and the car's own headlights
+(`shaders/road_v2.gdshader`), teal/blue-vs-amber colour tuned and measured against the NFSU frames
+(`apply_time_of_day()`), glowing trackside structures so nothing reads as a black void (new
+`scripts/track/night_glow.gd`/`shaders/night_glow.gdshader`, wired into `pit_building.gd`,
+`grandstand.gd`, `gantry.gd`, `billboards.gd`), and speed blur (already generic in Look-3's
+`retro_renderer.gd` history chain — verified active, not rebuilt). Not touching kerbs
+(`trackgen/data/*/kerbs.json`), car bodies (`scripts/cars/`, `assets/cars/`), or
+`trackgen/nordschleife_s1.gd`'s elevation keys, per the task's stated scope.
