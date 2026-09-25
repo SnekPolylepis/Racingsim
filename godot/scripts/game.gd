@@ -1113,7 +1113,9 @@ func apply_time_of_day():
 		environment.fog_depth_curve = 1.0 if night else 1.8
 		environment.fog_density = 1.0
 		environment.fog_sky_affect = .15
-		sun.light_color = Color("8ca6df") if night else Color("ffd79a")
+		# Look-9: the moon was 8ca6df (sat 0.37); the Nordschleife's dense forest reads it directly on the
+		# tree cards and stayed oversaturated after the sky/ambient passes. a1b4df keeps the hue at 0.28.
+		sun.light_color = Color("a1b4df") if night else Color("ffd79a")
 		sun.light_energy = .32 if night else 1.5
 		camera.far = 650 if night else 1250
 		visuals.set_time(night)
