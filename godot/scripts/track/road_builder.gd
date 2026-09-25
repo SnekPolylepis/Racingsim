@@ -626,9 +626,30 @@ static func bake(
 				)
 			)
 		)
+	# UV2.x on the tarmac: metres to the nearer tarmac edge at that station (0 on the edge), so the road
+	# shader can paint edge lines and edge wear however each section's width varies. Every tarmac vertex
+	# sits on a station row, so its V (arc distance) picks the row's widths exactly.
+	# Keyed through Vector2 so the station distance is rounded to 32 bits, as the UVs are.
+	var widths = {}
+	for i in rows.size():
+		widths[Vector2(0.0, st[i].s).y] = Vector2(secs[i].width_left, secs[i].width_right)
+	if closed:
+		widths[Vector2(0.0, length).y] = widths[Vector2(0.0, st[0].s).y]
+	var uv2s = {}
+	for sid in uvs:
+		if sid != 0:  # SURF 0, tarmac
+			continue
+		var out2 = PackedVector2Array()
+		out2.resize(uvs[sid].size())
+		for n in uvs[sid].size():
+			var uv = uvs[sid][n]
+			var w = widths.get(uv.y, Vector2(1e3, 1e3))
+			out2[n] = Vector2(minf(uv.x + w.x, w.y - uv.x), 0.0)
+		uv2s[sid] = out2
 	return {
 		"faces": faces,
 		"uvs": uvs,
+		"uv2s": uv2s,
 		"center": center,
 		"stations": st,
 		"length": length,
@@ -693,7 +714,7 @@ static func kerb_texture() -> ImageTexture:
 
 
 ## Render mesh: one surface per surface type, UVs in metres (u across, v along) for tiling textures.
-static func mesh(faces: Dictionary, uvs: Dictionary) -> ArrayMesh:
+static func mesh(faces: Dictionary, uvs: Dictionary, uv2s: Dictionary = {}) -> ArrayMesh:
 	var out = ArrayMesh.new()
 	var colors = {
 		0: Color(.22, .22, .24),
@@ -705,8 +726,11 @@ static func mesh(faces: Dictionary, uvs: Dictionary) -> ArrayMesh:
 	for sid in faces:
 		var st = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var edge = uv2s.get(sid, PackedVector2Array())
 		for i in faces[sid].size():
 			st.set_uv(uvs[sid][i])
+			if not edge.is_empty():
+				st.set_uv2(edge[i])
 			st.add_vertex(faces[sid][i])
 		st.generate_normals()
 		# PS2-era surfaces (ps2_materials.gd); kerbs keep their pixel-art stripe texture below.

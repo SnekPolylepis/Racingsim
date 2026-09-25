@@ -19,7 +19,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
-const CACHE_REVISION = 2
+const CACHE_REVISION = 5
 
 
 static func read_json(path: String) -> Dictionary:
@@ -137,11 +137,13 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		"kerb_height": 0.045,
 		"rib_height": 0.006,
 		"rib_pitch": 0.75,
-		"runoff_left": 4.0 if paddock else 2.5,
-		"runoff_right": 4.0 if paddock else 2.5,
-		"runoff_surface": 4,
-		"verge_left": 6.0,
-		"verge_right": 6.0,
+		# The Nordschleife is narrow and hemmed in: a grass shoulder of about half a metre, a short verge,
+		# then armco (NS-section; it was 2.5 m of tarmac runoff plus a 6 m flat verge each side).
+		"runoff_left": 4.0 if paddock else 0.5,
+		"runoff_right": 4.0 if paddock else 0.5,
+		"runoff_surface": 4 if paddock else 2,
+		"verge_left": 1.5,
+		"verge_right": 1.5,
 		"verge_slope_deg": 0.0,
 		"verge_surface": 2,
 		"verge_surface_left": -1,
@@ -161,8 +163,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		total_bank_weight += weight
 		var inside = "right" if corner[4] > 0 else "left"
 		var outside = "left" if corner[4] > 0 else "right"
-		values["runoff_" + outside] = maxf(values["runoff_" + outside], 2.5 + 8.0 * weight)
-		values["runoff_" + inside] = maxf(values["runoff_" + inside], 2.5 + 3.0 * weight)
+		values["runoff_" + outside] = maxf(values["runoff_" + outside], 0.5 + 2.0 * weight)
+		values["runoff_" + inside] = maxf(values["runoff_" + inside], 0.5 + 0.5 * weight)
 		if delta >= -40.0 and delta < 25.0:
 			if corner[5] == 1:
 				values["kerb_" + inside] = RoadSection.Kerb.SAUSAGE
@@ -239,7 +241,9 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 		push_warning("Nordschleife DEM dimensions do not match float32 payload; skipping terrain")
 		return {}
 	var pixel = float(header.metres_per_pixel)
-	var mesh_spacing = 10.0
+	# 5 m, not 10: with the narrow NS-section verges a 10 m triangle reaching under the road dragged a
+	# trench into the ground just behind the armco.
+	var mesh_spacing = 5.0
 	var w = int((width - 1) * pixel / mesh_spacing) + 1
 	var h = int((height - 1) * pixel / mesh_spacing) + 1
 	var reduced = PackedFloat32Array()
@@ -262,17 +266,14 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 	terrain.origin_offset = Vector2(header.origin_offset[0], header.origin_offset[1])
 	terrain.height_offset = float(header.get("height_offset", 0.0))
 	terrain.road_paths.append(NodePath("../Main"))
-	terrain.blend_m = 30.0
+	# 6 m (was 30): with DGM1 at 5 m the real banks and cuttings meet the verge instead of being levelled.
+	terrain.blend_m = 6.0
 	terrain.under_road_drop_m = 2.0
 	terrain.chunk_size = 64
 	asset.add_child(terrain)
 	terrain.owner = asset
 	terrain.bake()
-	var material = StandardMaterial3D.new()
-	material.albedo_color = Color(0.24, 0.36, 0.16)
-	material.roughness = 1.0
-	for chunk in asset.get_node("Terrain/Eifel").get_children():
-		chunk.material_override = material
+	# The chunks keep terrain.gd's PS2 grass (Look-1); a flat colour override here predated it.
 	var heights = PackedFloat64Array()
 	heights.resize(w * h)
 	for chunk in asset.get_node("Terrain/Eifel").get_children():
@@ -332,12 +333,47 @@ static func add_forest(
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
-	if not terrain.is_empty():
-		var multimesh = asset.get_node("Scenery/" + title).multimesh
-		for i in multimesh.instance_count:
-			var xf = multimesh.get_instance_transform(i)
+	var multimesh = asset.get_node("Scenery/" + title).multimesh
+	var clear = road_clearance(asset.get_node("Main"))
+	# Ground each tree from the scatter's own layout: reading the MultiMesh back returns zeros under
+	# the headless renderer, which baked every tree at the origin into the shared track cache. A tree
+	# that lands near another part of the circuit (a far offset on a winding closed road) is dropped.
+	for i in multimesh.instance_count:
+		var xf: Transform3D = trees.last_bake.xforms[i]
+		if near_road(clear, xf.origin):
+			xf = Transform3D(Basis.from_scale(Vector3.ZERO), xf.origin)
+		elif not terrain.is_empty():
 			xf.origin.y = terrain_height(terrain, xf.origin)
-			multimesh.set_instance_transform(i, xf)
+		multimesh.set_instance_transform(i, xf)
+
+
+## Road centre points hashed into CLEAR_M cells (plan view) for near_road().
+const CLEAR_M = 24.0
+## No tree closer than this to any road centreline: the widest half-road plus shoulder, verge and armco.
+const TREE_CLEAR_M = 9.5
+
+
+static func road_clearance(road) -> Dictionary:
+	var cells = {}
+	for p in road.last_bake.center:
+		var key = Vector2i(floori(p.x / CLEAR_M), floori(p.z / CLEAR_M))
+		if not cells.has(key):
+			cells[key] = []
+		cells[key].append(Vector2(p.x, p.z))
+	return cells
+
+
+## True when `point` is within TREE_CLEAR_M of the road's centreline anywhere on the circuit.
+static func near_road(cells: Dictionary, point: Vector3) -> bool:
+	var at = Vector2(point.x, point.z)
+	var cx = floori(point.x / CLEAR_M)
+	var cz = floori(point.z / CLEAR_M)
+	for dx in [-1, 0, 1]:
+		for dz in [-1, 0, 1]:
+			for p in cells.get(Vector2i(cx + dx, cz + dz), []):
+				if at.distance_squared_to(p) < TREE_CLEAR_M * TREE_CLEAR_M:
+					return true
+	return false
 
 
 static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
@@ -720,8 +756,8 @@ static func build_asset() -> Node3D:
 	var terrain = add_terrain(asset)
 
 	# Barriers: Armco along track, pit concrete at T13
-	add_wall(asset, "LeftArmco", WallPath.Side.LEFT, 0, 0.0, -1.0, 1.2)
-	add_wall(asset, "RightArmco", WallPath.Side.RIGHT, 0, 0.0, -1.0, 1.2)
+	add_wall(asset, "LeftArmco", WallPath.Side.LEFT, 0, 0.0, -1.0, 0.3)
+	add_wall(asset, "RightArmco", WallPath.Side.RIGHT, 0, 0.0, -1.0, 0.3)
 	add_wall(asset, "PitConcrete", WallPath.Side.RIGHT, 2, measured - 200.0, 120.0, 0.5)
 
 	# Tyre walls at key heavy-impact outside runoffs
@@ -738,7 +774,10 @@ static func build_asset() -> Node3D:
 				0.3
 			)
 
-	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 5.0, 10.0, 40.0, 713)
+	# The Nordschleife runs through Eifel forest: a near row and a deep band behind it.
+	# The Eifel forest stands right behind the armco: a dense near wall, then a deep band.
+	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 56.0, 1.5, 18.0, 713)
+	add_forest(asset, terrain, "EifelDeep", 0.0, -1.0, 34.0, 18.0, 120.0, 714)
 	add_scenery_kit(asset, road, positions, measured)
 	add_lighting(asset, road, positions, measured)
 	return asset

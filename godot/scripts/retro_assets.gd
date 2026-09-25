@@ -10,6 +10,63 @@ static func baked(key):
 	return load(path) if not generating and ResourceLoader.exists(path) else null
 
 
+## Ridge parameters per circuit, in degrees above the horizon: [base, amplitude, seed]. The Ardennes roll
+## low and lumpy, the Eifel rise a little higher, the Proving Ground gets generic wooded hills.
+const HILLS = {"generic": [3.0, 3.6, 3], "ardennes": [3.2, 4.2, 11], "eifel": [4.0, 4.6, 23]}
+
+
+## The sky with a wooded-hill silhouette painted into its horizon (ART-DIRECTION.md gap 3): three ridges from a
+## pale, hazy far layer to a dark near one, so the fog's blue fades into hills and the sky never meets flat
+## ground. By day the far ridge sits close to the fog colour; at night all three are dark against the lit
+## horizon, never a black void. `style` is a HILLS key; anything else returns the plain sky.
+static func hills_panorama(night: bool, style: String):
+	if not HILLS.has(style):
+		return panorama(night)
+	var key = "hills" + str(night) + style
+	if cache.has(key):
+		return cache[key]
+	var img: Image = panorama(night).get_image()
+	if img.is_compressed():
+		img.decompress()
+	img.convert(Image.FORMAT_RGB8)
+	var w = 1024
+	var h = 512
+	img.resize(w, h, Image.INTERPOLATE_BILINEAR)
+	var par = HILLS[style]
+	var fog = Color("56506b") if night else Color("a9bfd3")
+	var forest = Color("0b121c") if night else Color("22402f")
+	var mix = [.55, .78, .95] if night else [.5, .68, .84]
+	var rng = RandomNumberGenerator.new()
+	rng.seed = par[2]
+	# Periodic sine sums, integer cycles per turn, so the ridge closes at the panorama seam.
+	var phases = []
+	for k in 3:
+		var layer = []
+		for i in 4:
+			layer.append(rng.randf() * TAU)
+		phases.append(layer)
+	for k in 3:
+		var colour = fog.lerp(forest, mix[k])
+		var lift = par[0] * (1.0 - .32 * k) + k * .35
+		var amp = par[1] * (1.0 - .18 * k)
+		for x in w:
+			var u = float(x) / w
+			var n = (
+				.5 * sin(TAU * (3 + k) * u + phases[k][0])
+				+ .3 * sin(TAU * (7 + 2 * k) * u + phases[k][1])
+				+ .2 * sin(TAU * (17 + 3 * k) * u + phases[k][2])
+				+ .12 * sin(TAU * (41 + 5 * k) * u + phases[k][3])
+			)
+			# Tree tops: fine, irregular serration on the near ridges only.
+			var tops = (fposmod(sin(x * 12.9898 + k * 78.233) * 43758.5453, 1.0) - .5) * .28 * k
+			var elev = lift + amp * (.55 + .45 * n) + tops
+			var top = clampi(int((.5 - elev / 180.0) * h), 0, h - 1)
+			img.fill_rect(Rect2i(x, top, 1, h - top), colour)
+	img.generate_mipmaps()
+	cache[key] = ImageTexture.create_from_image(img)
+	return cache[key]
+
+
 static func panorama(night = false, reflection = false):
 	var key = "sky" + str(night) + str(reflection)
 	var texture = baked(key)

@@ -15,6 +15,7 @@ godot/build/*.exe
 godot/build/*.zip
 godot/build/*.log
 godot/build/macos/
+godot/build/linux/
 godot/build/legacy/
 
 # Generated test evidence: screenshots, logs, result JSON, capture rounds
@@ -46,7 +47,12 @@ godot/tracks3d/spa/spa.scn
 # Spa polish caches (rebuilt by trackgen/data/spa/fetch_sections.py and fetch_ortho.py)
 godot/trackgen/data/spa/raw-lidar/xsec/
 godot/trackgen/data/spa/ortho-cache/
+godot/trackgen/data/spa/kerb-crops/
 
 # Nordschleife Section 1 bake and raw DGM1 downloads; regenerate from godot/trackgen/nordschleife_s1.gd
 godot/tracks3d/nordschleife_s1/nordschleife_s1.scn
 godot/trackgen/data/nordschleife/raw-dgm1/
+godot/trackgen/data/nordschleife/kerb-crops/
+godot/trackgen/data/tools/__pycache__/
+
+\n

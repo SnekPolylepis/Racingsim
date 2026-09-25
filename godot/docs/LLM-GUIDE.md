@@ -85,7 +85,7 @@ All paths below are relative to `godot/`.
 | `scripts/track/billboards.gd` | Billboards: advertising boards on posts, seeded placement, single MultiMesh, no collision | |
 | `scripts/track/marshal_post.gd` | MarshalPost: small cabins spaced behind barriers, single MultiMesh, no collision | |
 | `scripts/track/pit_building.gd` | PitBuilding: garage block with recessed bays, front concrete pit wall on layer 2 | |
-| `scripts/track/road_scatter.gd` | RoadScatter: seeded MultiMesh instances (default: conifers) in a band beyond the verge, no collision | |
+| `scripts/track/road_scatter.gd` | RoadScatter: seeded MultiMesh instances (default: photographic tree cards from assets/trees/tree_atlas.png) in a band beyond the verge, no collision | |
 | `scripts/track/track_lights.gd` | Look-2 sodium lamps: `from_markers()` lights Look-4's `Lights/` Marker3D placements (kind/height/road_glow), `place(road, spacing, zones, extra)` walks a RoadPath (denser zones, alternate/both sides), `fill()` places only where markers leave the road dark; `build()` bakes Lights/ (per-400 m MultiMesh fixtures and `sodium_halo.gdshader` halos, no light nodes) and the road's per-lamp streak texture; `make_pool`/`update_pool` move 4 real SpotLight3Ds to the lamps nearest the camera; `set_night` hides Lights/ by day | The road_v2 streaks come from this texture, so a lamp added any other way has no glow on the road. Add a lamp as a Marker3D placement (SceneryBuilder.add_light_placement) before the generator's `from_markers` call; `build` also appends |
 | | | |
 | **Rebuild: generators and scenes** | | |
@@ -131,7 +131,7 @@ All paths below are relative to `godot/`.
 
 ## Known boundaries
 
-Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. The 296 has dedicated reference-built procedural geometry (`ferrari_296.gd`); other cars use generic lofts in `visuals.gd::BODIES`. These are not licensed manufacturer models. On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. The legacy game's planar barriers ignore elevation. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
+Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. All three cars have dedicated procedural models (`ferrari_296.gd`, `scripts/cars/mx5.gd`, `scripts/cars/gt.gd`); These are not licensed manufacturer models. On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
 
 ## PS2-era art direction (2026-09-21)
 
