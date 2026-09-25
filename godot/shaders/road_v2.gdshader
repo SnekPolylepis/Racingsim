@@ -29,6 +29,9 @@ uniform float lamp_cell = 4.0;
 uniform float lamp_reach = 29.0;
 // Closed roads wrap station distance at their length; 0 for an open road.
 uniform float road_length = 0.0;
+// A concrete-slab band (the Nordschleife's Karussell bowl), set per road instance: (from, to) station
+// metres along UV.y and (min, max) metres across UV.x. Unused (from == to) everywhere else.
+instance uniform vec4 concrete_band = vec4(0.0);
 varying vec3 world_pos;
 
 varying float edge_dist;
@@ -96,6 +99,20 @@ void fragment() {
 	// Day: near-neutral grey (ART-DIRECTION: saturation <= 0.20); night: darker, slightly cool.
 	// LOOK-NIGHT-01: night asphalt stays dark (GT4/NFSU nights): at 0.95 it lit to a cream sheet.
 	vec3 col = afterhours ? base * 0.6 * shade + vec3(.003, .004, .006) : base * 1.55 * shade;
+	// Concrete bowl: pale, slightly warm slabs 2.5 m long with dark joints and a joint down the trough.
+	float concrete = 0.0;
+	if (concrete_band.y > concrete_band.x) {
+		concrete = smoothstep(concrete_band.x, concrete_band.x + 4.0, UV.y)
+			* (1.0 - smoothstep(concrete_band.y - 4.0, concrete_band.y, UV.y))
+			* smoothstep(concrete_band.z, concrete_band.z + 0.25, UV.x)
+			* (1.0 - smoothstep(concrete_band.w - 0.25, concrete_band.w, UV.x));
+		float joint_along = smoothstep(0.47, 0.49, abs(fract(UV.y / 2.5) - 0.5));
+		float joint_across = 1.0 - smoothstep(0.02, 0.06, abs(UV.x - (concrete_band.z + concrete_band.w) * 0.5));
+		float slab = 0.9 + 0.2 * hash(vec2(floor(UV.y / 2.5), floor(UV.x)));
+		vec3 conc = vec3(0.47, 0.46, 0.43) * slab * mix(1.0, 0.55, max(joint_along, joint_across));
+		conc = mix(conc, conc * 0.8, smoothstep(0.55, 0.8, blot));
+		col = mix(col, afterhours ? conc * 0.6 : conc, concrete);
+	}
 	// White edge lines, `edge_line_inset` inside each tarmac edge, softened a little and worn by grain.
 	float line_d = abs(edge_dist - (edge_line_inset + edge_line_width * 0.5));
 	float aa = max(fwidth(edge_dist), 0.01);
@@ -157,4 +174,5 @@ void fragment() {
 	METALLIC = afterhours ? 0.04 : 0.0;
 	SPECULAR = afterhours ? 0.3 : 0.5;
 	ROUGHNESS = afterhours ? mix(0.55, 0.75, wear) : mix(0.72, 0.95, wear) - seam * 0.1 + paint * 0.05;
+	ROUGHNESS = mix(ROUGHNESS, 0.9, concrete);
 }

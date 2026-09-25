@@ -19,7 +19,11 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife/nordschleife.scn"
-const CACHE_REVISION = 6
+const CACHE_REVISION = 7
+## Caracciola-Karussell apex station (source metres): the concrete bowl on the inside of the right-hander.
+const KARUSSELL_S = 12115.0
+## The bowl's reach either side of the apex (source metres); no kerbs anywhere in it.
+const KARUSSELL_REACH = 60.0
 
 
 static func read_json(path: String) -> Dictionary:
@@ -103,9 +107,10 @@ static func corner_specs(data: Dictionary) -> Array:
 		["Kesselchen", 10380.0, -2.0, 10.0, -1, 0],
 		["Klostertal", 11330.0, 3.0, 9.5, 1, 0],
 		["Steilstrecke", 11750.0, 3.5, 9.5, 1, 0],
-		["Karussell approach", 12050.0, 3.0, 9.5, 1, 0],
-		["Karussell", 12115.0, 6.0, 10.5, 1, 0],
-		["Karussell exit", 12180.0, 2.0, 9.5, 1, 0],
+		# The Karussell is a left-hand hairpin (inside banked down to the left).
+		["Karussell approach", 12050.0, -3.0, 9.5, -1, 0],
+		["Karussell", 12115.0, -6.0, 11.5, -1, 0],
+		["Karussell exit", 12180.0, -2.0, 9.5, -1, 0],
 		["Hohe Acht", 12750.0, 4.0, 9.5, 1, 2],
 		["Hedwigshoehe", 13150.0, -2.5, 9.5, -1, 0],
 		["Wippermann", 13620.0, 3.5, 9.5, 1, 2],
@@ -167,9 +172,18 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		"ditch_fillet": 0.2
 	}
 
-	# Caracciola-Karussell banked concrete bowl between 12075m and 12155m
-	var kar_delta = circular_delta(s, 12115.0, length)
+	# Caracciola-Karussell: a banked concrete bowl on the inside (left) of the left-hander, about 0.6 m
+	# deep with a 27-degree outer wall, tapered in and out over 15 m. (It was a 0.18 m dip before, which
+	# read as a normal corner.)
+	var kar_delta = circular_delta(s, KARUSSELL_S, length)
 	if absf(kar_delta) <= 55.0:
+		# Centred 1.9 m left with a 1.1 m floor: the outer wall tops out ~1.2 m inside the tarmac edge, so the
+		# 5 m terrain grid's triangles can't poke through the wall.
+		values.ditch_offset = -1.9
+		values.ditch_floor = 1.1
+		values.ditch_wall = 1.2
+		values.ditch_angle_deg = 27.0
+		values.ditch_fillet = 0.3
 		if absf(kar_delta) <= 40.0:
 			values.ditch = 1.0
 		elif kar_delta < 0.0:
@@ -205,6 +219,10 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 			values["kerb_" + outside] = RoadSection.Kerb.RIBBED
 
 	values.bank_deg = total_bank / maxf(total_bank_weight, 1.0)
+	# The Karussell has no kerbs: the bowl is the inside edge.
+	if absf(kar_delta) <= KARUSSELL_REACH:
+		values.kerb_left = RoadSection.Kerb.NONE
+		values.kerb_right = RoadSection.Kerb.NONE
 	return values
 
 
@@ -219,8 +237,8 @@ static func sections(data: Dictionary, measured: float, corners: Array) -> Array
 		for offset in [-110.0, -40.0, -35.0, 0.0, 25.0, 30.0, 80.0, 120.0]:
 			marks.append(fposmod(corner[1] + offset, length))
 	# Karussell transition keys
-	for offset in [-55.0, -40.0, -20.0, 0.0, 20.0, 40.0, 55.0]:
-		marks.append(fposmod(12115.0 + offset, length))
+	for offset in [-KARUSSELL_REACH, -55.0, -40.0, -20.0, 0.0, 20.0, 40.0, 55.0, KARUSSELL_REACH]:
+		marks.append(fposmod(KARUSSELL_S + offset, length))
 	marks.sort()
 	var keys: Array[RoadSection] = []
 	var previous = -1.0
@@ -818,6 +836,16 @@ static func build_asset() -> Node3D:
 	road.owner = asset
 	road.bake()
 	asset.prepare()
+	# Concrete slabs in the Karussell bowl: road_v2's per-instance band, in the road's UV metres
+	# (UV.y along the working curve, UV.x across it, + right).
+	var kar_s = KARUSSELL_S * scale_s
+	var band = Vector4(kar_s - 55.0 * scale_s, kar_s + 55.0 * scale_s, -4.7, -0.2)
+	# The render mesh is the asset's Road/Main (built by prepare()), not a child of the RoadPath.
+	var road_mesh = asset.get_node_or_null("Road/Main") as GeometryInstance3D
+	if road_mesh:
+		road_mesh.set_instance_shader_parameter("concrete_band", band)
+	else:
+		push_warning("Nordschleife: Road/Main render mesh not found; Karussell concrete skipped")
 
 	var positions = {}
 	for corner in corners:
