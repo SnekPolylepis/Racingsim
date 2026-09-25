@@ -25,6 +25,8 @@ Both are CC0 1.0. Original bytes and hashes are recorded in `assets/cc0-source/s
 
 ## Previously present assets
 
+Poly Haven CC0 texture set `asphalt_pit_lane` (2K albedo, roughness and OpenGL normal; https://polyhaven.com/a/asphalt_pit_lane) in `assets/textures_hd/asphalt_pit_lane/`, albedo desaturated to 35 %: the TrackAsset road surface (Look-8).
+
 Poly Haven CC0 texture sets `asphalt_track`, `grass_ground`, `gravel_floor`, `concrete_floor_02`: source links and uses remain in `assets/textures/README.md`. Existing Godot engine MIT license and third-party notices remain beside the executable. New build outputs derived from the CC0 textures retain their source provenance.
 
 No addon or Blender has been downloaded or incorporated at this stage. Any subsequent download must extend this ledger and include its license text before shipping.
