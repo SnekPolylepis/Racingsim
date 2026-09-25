@@ -27,6 +27,7 @@ static func armco_material() -> StandardMaterial3D:
 		mat.albedo_color = Color(0.72, 0.74, 0.76)
 	mat.roughness = 0.5
 	mat.metallic = 0.6
+	mat.vertex_color_use_as_albedo = true
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_mat_cache["armco"] = mat
@@ -243,6 +244,8 @@ static func wall_mesh(
 	var dist = [0.0]
 	for i in range(1, n):
 		dist.append(dist[-1] + base[i - 1].distance_to(base[i]))
+	if kind == 0:
+		return armco_rail_mesh(base, outward, height, thickness, closed, dist)
 
 	var repeat_x = 3.0 if kind == 0 else (2.0 if kind == 1 else 4.0)
 	var footing = WallBuilder.WALL_FOOTING
@@ -360,6 +363,145 @@ static func wall_mesh(
 	var mat = armco_material() if kind == 0 else (tyre_material() if kind == 1 else concrete_material())
 	st.set_material(mat)
 	return st.commit()
+
+
+## One render surface: corrugated rails and their dark support posts share armco_material().
+static func armco_rail_mesh(
+	base: PackedVector3Array,
+	outward: PackedVector3Array,
+	height: float,
+	thickness: float,
+	closed: bool,
+	dist: Array
+) -> ArrayMesh:
+	# The corrugated face only (open, bottom to top): armco_material() renders both sides, so a closed
+	# profile doubled the triangles for nothing and pushed the proving ground past its 5 MB scene budget.
+	const PROFILE = [
+		Vector2(0.0, 0.0),
+		Vector2(0.035, 0.045),
+		Vector2(0.005, 0.09),
+		Vector2(0.045, 0.145),
+		Vector2(0.005, 0.20),
+		Vector2(0.04, 0.255),
+		Vector2(0.0, 0.31)
+	]
+	const RAIL_TOPS = [0.45, 0.75]
+	const RAIL_SPAN = 0.31
+	const POST_SPACING = 3.0
+	const RAIL_U_REPEAT = 3.0
+	var up = Vector3.UP
+	var total_length: float = dist[-1] + (base[-1].distance_to(base[0]) if closed else 0.0)
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var tops = RAIL_TOPS.duplicate()
+	if height > 0.9:
+		tops = [0.35, 0.65, minf(0.95, height)]
+	var segment_count = base.size() if closed else base.size() - 1
+	for rail_top in tops:
+		var rail_bottom = rail_top - RAIL_SPAN
+		for i in segment_count:
+			var j = (i + 1) % base.size()
+			var seg_len = base[i].distance_to(base[j])
+			var outward0 = outward[i].normalized()
+			var outward1 = outward[j].normalized()
+			for k in PROFILE.size() - 1:
+				var k2 = k + 1
+				var q0 = PROFILE[k]
+				var q1 = PROFILE[k2]
+				var a0 = base[i] + outward0 * q0.x + up * (rail_bottom + q0.y)
+				var a1 = base[i] + outward0 * q1.x + up * (rail_bottom + q1.y)
+				var b0 = base[j] + outward1 * q0.x + up * (rail_bottom + q0.y)
+				var b1 = base[j] + outward1 * q1.x + up * (rail_bottom + q1.y)
+				add_uv_quad(
+					st,
+					a0,
+					b0,
+					b1,
+					a1,
+					Vector2(dist[i] / RAIL_U_REPEAT, q0.y / RAIL_SPAN),
+					Vector2((dist[i] + seg_len) / RAIL_U_REPEAT, q0.y / RAIL_SPAN),
+					Vector2((dist[i] + seg_len) / RAIL_U_REPEAT, q1.y / RAIL_SPAN),
+					Vector2(dist[i] / RAIL_U_REPEAT, q1.y / RAIL_SPAN)
+				)
+		if not closed:
+			for end_i in [0, base.size() - 1]:
+				var cap_out = outward[end_i].normalized()
+				var cap_points = []
+				for p in PROFILE:
+					cap_points.append(base[end_i] + cap_out * p.x + up * (rail_bottom + p.y))
+				var cap_center = base[end_i] + up * (rail_bottom + RAIL_SPAN * 0.5)
+				for k in PROFILE.size():
+					add_uv_triangle(st, cap_center, cap_points[k], cap_points[(k + 1) % PROFILE.size()])
+	# Supports sit behind the inner rail face and repeat every 3 m along the same base line.
+	var post_count = maxi(1, int(ceil(total_length / POST_SPACING)))
+	if not closed:
+		post_count += 1
+	for post_i in post_count:
+		var station = total_length * float(post_i) / float(post_count if closed else post_count - 1)
+		var sample = sample_wall_line(base, outward, dist, station, closed)
+		var post_top = minf(height, tops[-1])
+		var post_height = post_top + WallBuilder.WALL_FOOTING
+		var center = sample.point - up * WallBuilder.WALL_FOOTING * 0.5 + up * post_top * 0.5
+		center += sample.outward * minf(thickness * 0.55, 0.075)
+		var tangent = sample.tangent
+		add_armco_post(st, center, tangent, sample.outward, post_height, Color(0.18, 0.20, 0.21))
+	st.generate_normals()
+	st.set_material(armco_material())
+	return st.commit()
+
+
+static func sample_wall_line(
+	base: PackedVector3Array, outward: PackedVector3Array, dist: Array, station: float, closed: bool
+) -> Dictionary:
+	var total = dist[-1] + (base[-1].distance_to(base[0]) if closed else 0.0)
+	var s = fposmod(station, total) if closed else clampf(station, 0.0, total)
+	for i in base.size() if closed else base.size() - 1:
+		var j = (i + 1) % base.size()
+		var length = base[i].distance_to(base[j])
+		var start = dist[i]
+		if s <= start + length or i == (base.size() - 1 if closed else base.size() - 2):
+			var t = clampf((s - start) / maxf(length, 0.0001), 0.0, 1.0)
+			var o = outward[i].lerp(outward[j], t).normalized()
+			return {
+				"point": base[i].lerp(base[j], t), "outward": o, "tangent": (base[j] - base[i]).normalized()
+			}
+	return {
+		"point": base[-1], "outward": outward[-1].normalized(), "tangent": (base[-1] - base[-2]).normalized()
+	}
+
+
+static func add_armco_post(
+	st: SurfaceTool, center: Vector3, tangent: Vector3, outward: Vector3, height: float, col: Color
+) -> void:
+	var half_tangent = tangent.normalized() * 0.055
+	var half_outward = outward.normalized() * 0.045
+	var half_up = Vector3.UP * height * 0.5
+	var corners = [
+		center - half_tangent - half_up - half_outward,
+		center + half_tangent - half_up - half_outward,
+		center + half_tangent - half_up + half_outward,
+		center - half_tangent - half_up + half_outward,
+		center - half_tangent + half_up - half_outward,
+		center + half_tangent + half_up - half_outward,
+		center + half_tangent + half_up + half_outward,
+		center - half_tangent + half_up + half_outward
+	]
+	var quads = [[3, 2, 6, 7], [1, 0, 4, 5], [4, 5, 6, 7], [0, 1, 2, 3], [0, 3, 7, 4], [2, 1, 5, 6]]
+	st.set_color(col)
+	for q in quads:
+		for idx in [q[0], q[1], q[2], q[0], q[2], q[3]]:
+			st.set_uv(Vector2(float(idx % 2), float(idx / 4)))
+			st.add_vertex(corners[idx])
+
+
+static func add_uv_triangle(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3) -> void:
+	st.set_color(Color.WHITE)
+	st.set_uv(Vector2.ZERO)
+	st.add_vertex(a)
+	st.set_uv(Vector2(0.05, 0.0))
+	st.add_vertex(b)
+	st.set_uv(Vector2(0.025, 0.31))
+	st.add_vertex(c)
 
 
 ## Adds a lamp placement marker under a Lights node with kind, height, and colour metadata.

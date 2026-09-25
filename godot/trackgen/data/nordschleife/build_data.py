@@ -318,7 +318,8 @@ sections = {
 # 7. Generate dem.raw for surrounding terrain
 # Bounding box in local metres:
 # X in [-2800, 1000], Z in [-3200, 1000]
-SPACING = 20.0
+# 5 m (was 20): the terrain mesh is 5 m, and 20 m threw away every roadside bank and cutting (NS-section 2).
+SPACING = 5.0
 X_MIN = -2800.0
 X_MAX = 1000.0
 Z_MIN = -3200.0
@@ -435,7 +436,7 @@ from the 1 m LiDAR DEM with a 3-sample median filter and Gaussian smoothing (sig
 Road crossfall banking (ranging from +6.9° at Aremberg apex to -5.6° at Hatzenbogen) and tarmac
 widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections.
 
-Surrounding terrain is exported as a 20 m grid in `dem.raw` ({W_TERRAIN} columns × {H_TERRAIN} rows,
+Surrounding terrain is exported as a {SPACING:g} m grid in `dem.raw` ({W_TERRAIN} columns × {H_TERRAIN} rows,
 {os.path.getsize(dem_raw_path)} bytes) referenced to start line elevation {H0:.2f} m.
 """
 with open(os.path.join(SCRIPT_DIR, "README.md"), "w", encoding="utf-8") as f:

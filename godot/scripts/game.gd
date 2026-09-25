@@ -97,6 +97,9 @@ var sun: DirectionalLight3D
 var environment: Environment
 var retro
 var applied_time = -1
+var applied_horizon = ""
+## Which wooded-hill silhouette each circuit's sky carries (RetroAssets.HILLS).
+const HORIZON_STYLES = {"proving_ground": "generic", "spa": "ardennes", "nordschleife_s1": "eifel"}
 var ui
 var instruments
 var sound
@@ -448,7 +451,7 @@ func setup_v2():
 		call_deferred("check_exported_v2_assets")
 
 
-## A packaged-build probe: both generators and Spa's raw heightmap must be inside the PCK.
+## A packaged-build probe: both generators, Spa's raw heightmap and the tree atlas must be inside the PCK.
 func check_exported_v2_assets() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -460,6 +463,7 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
+		and ResourceLoader.exists("res://assets/trees/tree_atlas.png")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
@@ -489,6 +493,8 @@ func load_v2_track(id: String) -> bool:
 	add_child(track)
 	apply_track_night()
 	v2_track_id = id
+	if environment != null:
+		apply_time_of_day()
 	v2_surface = track.surface()
 	v2_walls = WallQuery.new(track, car.hull_half)
 	v2_props = PropSet.from_asset(track)
@@ -1067,7 +1073,7 @@ func setup_environment():
 	camera = Camera3D.new()
 	camera.fov = 64
 	camera.near = .15
-	camera.far = 1100
+	camera.far = 3000
 	add_child(camera)
 	camera.make_current()
 	lamp_pool = TrackLights.make_pool(self)
@@ -1075,11 +1081,13 @@ func setup_environment():
 
 func apply_time_of_day():
 	var night = settings.time_of_day == 1
-	if applied_time != int(settings.time_of_day):
+	var horizon = HORIZON_STYLES.get(v2_track_id, "generic")
+	if applied_time != int(settings.time_of_day) or applied_horizon != horizon:
 		applied_time = int(settings.time_of_day)
+		applied_horizon = horizon
 		var sky = Sky.new()
 		var paint = PanoramaSkyMaterial.new()
-		paint.panorama = preload("res://scripts/retro_assets.gd").panorama(night)
+		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(night, horizon)
 		sky.sky_material = paint
 		environment.sky = sky
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient
@@ -1089,14 +1097,20 @@ func apply_time_of_day():
 		environment.ambient_light_color = Color("56628c") if night else Color("9db7d6")
 		environment.ambient_light_energy = .34 if night else .42
 		environment.tonemap_exposure = 1.0
-		environment.fog_light_color = Color("2a2433") if night else Color("bed3e2")
-		environment.fog_depth_begin = 60 if night else 130
-		environment.fog_depth_end = 520 if night else 950
+		# Daylight aerial perspective (GT4): a haze toward the sky's horizon blue that clears the middle
+		# distance (curve > 1) and closes at 1.15 km, where the painted hill silhouette in the sky takes over
+		# (RetroAssets.hills_panorama), so the world fades into wooded hills like GT4's Nordschleife overview
+		# instead of ending in a bare horizon. At 2.4 km the sky met flat ground; the old 950 m wall turned
+		# every hill into one pale mint band.
+		environment.fog_light_color = Color("2a2433") if night else Color("a9bfd3")
+		environment.fog_depth_begin = 60 if night else 150
+		environment.fog_depth_end = 520 if night else 1150
+		environment.fog_depth_curve = 1.0 if night else 1.8
 		environment.fog_density = 1.0
 		environment.fog_sky_affect = .15
 		sun.light_color = Color("8ca6df") if night else Color("ffd79a")
 		sun.light_energy = .32 if night else 1.5
-		camera.far = 650 if night else 1100
+		camera.far = 650 if night else 1250
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
 			warm_ghost.call_deferred()

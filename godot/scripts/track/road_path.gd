@@ -94,7 +94,7 @@ func bake():
 
 func mesh_node(result) -> MeshInstance3D:
 	var m = MeshInstance3D.new()
-	m.mesh = RoadBuilder.mesh(result.faces, result.uvs)
+	m.mesh = RoadBuilder.mesh(result.faces, result.uvs, result.get("uv2s", {}))
 	return m
 
 

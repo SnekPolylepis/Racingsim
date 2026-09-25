@@ -24,8 +24,11 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 @export var random_seed = 1
 @export var scale_min = .8
 @export var scale_max = 1.3
-## Mesh to scatter; empty uses a simple procedural conifer.
+## Mesh to scatter; empty scatters photographic tree cards (assets/trees/tree_atlas.png) of mixed species and
+## heights, one MultiMesh and one draw call. Cards ignore scale_min/scale_max and use CARDS' own heights.
 @export var mesh: Mesh
+## Multiplies every card's height, to raise or lower a whole band.
+@export var height_scale = 1.0
 @export_tool_button("Bake scatter", "Callable") var bake_button = bake
 
 var last_bake = {}
@@ -35,7 +38,7 @@ var last_bake = {}
 ## verge edge and its station, for tests.
 func layout() -> Dictionary:
 	var road = get_node_or_null(follow_road) if not follow_road.is_empty() else null
-	var out = {"xforms": [], "beyond": [], "s": []}
+	var out = {"xforms": [], "beyond": [], "s": [], "cards": [], "tint": []}
 	if road == null:
 		return out
 	var c = road.working_curve()
@@ -61,19 +64,53 @@ func layout() -> Dictionary:
 			var s = start + rng.randf() * span
 			var beyond = rng.randf_range(offset_min, offset_max)
 			var e = RoadBuilder.beyond_edge(c, keys, road.closed, spline, s, side_sign, beyond)
-			var size = rng.randf_range(scale_min, scale_max)
 			var yaw = rng.randf() * TAU
-			var turn = Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3.ONE * size)
-			out.xforms.append(Transform3D(turn, road.transform * e.point))
+			var basis: Basis
+			if mesh == null:
+				var pick = pick_card(rng)
+				var card = CARDS[pick.card]
+				var height = pick.height * height_scale
+				var width = height * (1.0 + SINK) * card[2] / card[3] * rng.randf_range(1.0, 1.4)
+				basis = Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3(width, height, width))
+				out.cards.append(Color(card[0], card[1], card[2], card[3]))
+				out.tint.append(pick.tint)
+			else:
+				var size = rng.randf_range(scale_min, scale_max)
+				basis = Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3.ONE * size)
+			out.xforms.append(Transform3D(basis, road.transform * e.point))
 			out.beyond.append(beyond)
 			out.s.append(fposmod(s, length))
 	return out
 
 
-const TREE_PINE_PATH = "res://assets/ps2/treetrue.png"
+const TREE_ATLAS_PATH = "res://assets/trees/tree_atlas.png"
 const RETRO_TREE_SHADER = preload("res://shaders/retro_tree.gdshader")
+## Atlas cells as [u, v, w, h] in 0..1 (tools/finish_tree_cards.py writes assets/trees/tree_atlas.json), by
+## kind: 0-2 spruce, 3-4 fir, 5 beech, 6-7 bush. CC0 Poly Haven models rendered to cut-outs (THIRD-PARTY.md).
+const CARDS = [
+	[0.00293, 0.06543, 0.24414, 0.43164],
+	[0.25293, 0.05176, 0.24414, 0.44531],
+	[0.50293, 0.16162, 0.24414, 0.33545],
+	[0.75293, 0.12061, 0.24414, 0.37646],
+	[0.01758, 0.50293, 0.21436, 0.49414],
+	[0.25293, 0.61670, 0.24414, 0.38037],
+	[0.53027, 0.75293, 0.17920, 0.24414],
+	[0.78516, 0.50293, 0.17920, 0.24414],
+]
+## Species mix: [weight, first card, card count, min height m, max height m]. Mixed heights make the
+## canopy overlap into one wall.
+const SPECIES = [
+	[0.32, 0, 3, 9.0, 24.0],
+	[0.22, 3, 2, 15.0, 30.0],
+	[0.26, 5, 1, 8.0, 19.0],
+	[0.20, 6, 2, 2.5, 5.5],
+]
+
+## Fraction of a card's height that sits below the ground.
+const SINK = 0.11
 
 static var _tree_mat: ShaderMaterial = null
+static var _card_mesh: ArrayMesh = null
 
 
 static func tree_material() -> ShaderMaterial:
@@ -81,10 +118,30 @@ static func tree_material() -> ShaderMaterial:
 		return _tree_mat
 	var mat = ShaderMaterial.new()
 	mat.shader = RETRO_TREE_SHADER
-	if ResourceLoader.exists(TREE_PINE_PATH):
-		mat.set_shader_parameter("painted_tree", load(TREE_PINE_PATH))
+	if ResourceLoader.exists(TREE_ATLAS_PATH):
+		mat.set_shader_parameter("tree_atlas", load(TREE_ATLAS_PATH))
 	_tree_mat = mat
 	return mat
+
+
+## One species, card and height from the weighted table, plus an instance tint.
+static func pick_card(rng: RandomNumberGenerator) -> Dictionary:
+	var r = rng.randf()
+	var sp = SPECIES[SPECIES.size() - 1]
+	for row in SPECIES:
+		r -= row[0]
+		if r <= 0.0:
+			sp = row
+			break
+	var card = sp[1] + rng.randi() % int(sp[2])
+	var height = lerpf(sp[3], sp[4], pow(rng.randf(), 1.25))
+	# Near white: the photographs carry the colour; the tint only varies value and a little hue.
+	var val = rng.randf_range(0.7, 1.0)
+	var hue_shift = rng.randf_range(-0.05, 0.05)
+	var tint = Color(val * (0.82 + hue_shift), val * 0.92, val * (0.84 - hue_shift))
+	if sp[1] == 5 and rng.randf() < 0.3:
+		tint = Color(val * 1.15, val * 1.0, val * 0.65)
+	return {"card": card, "height": height, "tint": tint}
 
 
 func bake():
@@ -107,19 +164,15 @@ func bake():
 	var mm = MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.use_colors = true
-	mm.mesh = mesh if mesh != null else conifer()
+	mm.use_custom_data = mesh == null
+	mm.mesh = mesh if mesh != null else card_mesh()
 	mm.instance_count = l.xforms.size()
-
-	# Conifer instance colours spread across hue and value per ART-DIRECTION.md
-	var rng_col = RandomNumberGenerator.new()
-	rng_col.seed = random_seed * 31 + 17
 
 	for i in l.xforms.size():
 		mm.set_instance_transform(i, l.xforms[i])
-		var hue = rng_col.randf_range(0.26, 0.38)
-		var sat = rng_col.randf_range(0.40, 0.72)
-		var val = rng_col.randf_range(0.55, 0.95)
-		mm.set_instance_color(i, Color.from_hsv(hue, sat, val))
+		if mesh == null:
+			mm.set_instance_custom_data(i, l.cards[i])
+			mm.set_instance_color(i, l.tint[i])
 
 	var inst = MultiMeshInstance3D.new()
 	inst.name = name
@@ -130,42 +183,23 @@ func bake():
 	inst.owner = owner_node
 
 
-## Alpha-tested crossed card conifer (~8 m tall, ~4.5 m wide at scale 1), base at the origin.
-## Shaded via shaders/retro_tree.gdshader using assets/ps2/treetrue.png.
-static func conifer() -> ArrayMesh:
+## Three alpha-tested cards crossed at 60 degrees, one unit wide and tall, its foot SINK units below the origin
+## so the bare trunk base sits in the ground instead of floating on it. The instance
+## transform scales it to the tree; INSTANCE_CUSTOM selects the atlas cell (shaders/retro_tree.gdshader).
+## Normals point up so foliage takes the same light from every side instead of a flat card's facing.
+static func card_mesh() -> ArrayMesh:
+	if _card_mesh != null:
+		return _card_mesh
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-
-	var hw = 2.25
-	var h = 8.0
-
-	# Card 1 (facing ±Z)
-	var p0 = Vector3(-hw, 0.0, 0.0)
-	var p1 = Vector3(hw, 0.0, 0.0)
-	var p2 = Vector3(hw, h, 0.0)
-	var p3 = Vector3(-hw, h, 0.0)
-
-	# Card 2 (facing ±X)
-	var p4 = Vector3(0.0, 0.0, -hw)
-	var p5 = Vector3(0.0, 0.0, hw)
-	var p6 = Vector3(0.0, h, hw)
-	var p7 = Vector3(0.0, h, -hw)
-
-	for card in [[p0, p1, p2, p3], [p4, p5, p6, p7]]:
-		st.set_uv(Vector2(0.0, 1.0))
-		st.add_vertex(card[0])
-		st.set_uv(Vector2(1.0, 1.0))
-		st.add_vertex(card[1])
-		st.set_uv(Vector2(1.0, 0.0))
-		st.add_vertex(card[2])
-
-		st.set_uv(Vector2(0.0, 1.0))
-		st.add_vertex(card[0])
-		st.set_uv(Vector2(1.0, 0.0))
-		st.add_vertex(card[2])
-		st.set_uv(Vector2(0.0, 0.0))
-		st.add_vertex(card[3])
-
-	st.generate_normals()
-	st.set_material(tree_material())
-	return st.commit()
+	st.set_normal(Vector3.UP)
+	for k in 3:
+		var turn = Basis(Vector3.UP, k * PI / 3.0)
+		var p = [Vector3(-.5, -SINK, 0), Vector3(.5, -SINK, 0), Vector3(.5, 1, 0), Vector3(-.5, 1, 0)]
+		var uv = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
+		for i in [0, 1, 2, 0, 2, 3]:
+			st.set_uv(uv[i])
+			st.add_vertex(turn * p[i])
+	_card_mesh = st.commit()
+	_card_mesh.surface_set_material(0, tree_material())
+	return _card_mesh

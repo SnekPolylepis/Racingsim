@@ -1,5 +1,6 @@
 extends SceneTree
 ## Headless P4-06 flow: menu selection, generator cache, drive, records, return to menu.
+const TrackDrive = preload("res://scripts/proving/track_drive.gd")
 var checks = 0
 var failures = []
 
@@ -74,6 +75,14 @@ func run() -> void:
 		"car picker changes body"
 	)
 	app.frontend.show_page("circuit")
+	var picked = []
+	for i in app.frontend.V2_TRACKS.size():
+		app.frontend.cycle_v2_track()
+		picked.append(app.frontend.selected_track)
+	check(
+		picked == ["spa", "nordschleife_s1", "proving_ground"],
+		"circuit picker cycles every circuit: " + str(picked)
+	)
 	app.frontend.cycle_v2_track()
 	check(app.frontend.selected_track == "spa", "circuit picker lists Spa")
 	app.frontend.prepare_v2_race()
@@ -84,8 +93,11 @@ func run() -> void:
 	check(
 		app.v2_track_id == "spa" and app.frontend.page == "drive" and not app.in_menu, "Spa loads into drive"
 	)
-	check(FileAccess.file_exists("user://tracks3d/spa.scn"), "Spa generator cache saved")
-	check(FileAccess.file_exists("user://tracks3d/spa.scn.revision"), "cache revision saved before reuse")
+	check(FileAccess.file_exists(TrackDrive.cache_dir().path_join("spa.scn")), "Spa generator cache saved")
+	check(
+		FileAccess.file_exists(TrackDrive.cache_dir().path_join("spa.scn.revision")),
+		"cache revision saved before reuse"
+	)
 	var spa_path = app.record_path()
 	check(spa_path.find("records") >= 0, "asset configuration has a record path")
 	app.frontend.open_v2_panel("garage")

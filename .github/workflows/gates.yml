@@ -74,3 +74,109 @@ jobs:
           name: gate-logs
           path: godot/tests/logs/ci/
           if-no-files-found: ignore
+
+  # A packaged build must contain every file the game reads at runtime (export include_filter and
+  # check_exported_v2_assets()). The Linux export uses the same filters as the Windows and macOS presets,
+  # so it catches a missing file without a Windows runner.
+  export-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Godot binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/bin/godot
+          key: godot-4.6.2-stable-linux-x86_64
+
+      - name: Download Godot 4.6.2-stable Linux x86_64
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/bin
+          curl -sSL -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot_extracted
+          mv /tmp/godot_extracted/Godot_v4.6.2-stable_linux.x86_64 ~/bin/godot
+          chmod +x ~/bin/godot
+
+      - name: Cache Linux export templates
+        id: cache-templates
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates/4.6.2.stable
+          key: godot-4.6.2-stable-linux-templates
+
+      - name: Download Linux export templates
+        if: steps.cache-templates.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL -o /tmp/tpl.tpz https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.6.2.stable
+          unzip -j -o /tmp/tpl.tpz templates/linux_release.x86_64 templates/linux_debug.x86_64 templates/version.txt -d ~/.local/share/godot/export_templates/4.6.2.stable
+          rm /tmp/tpl.tpz
+
+      - name: Export presets share one file filter
+        working-directory: godot
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          s = open("export_presets.cfg").read()
+          inc = set(re.findall(r'include_filter="([^"]*)"', s))
+          exc = set(re.findall(r'exclude_filter="([^"]*)"', s))
+          print("include filters:", len(inc), "exclude filters:", len(exc))
+          sys.exit(0 if len(inc) == 1 and len(exc) == 1 else 1)
+          PY
+
+      - name: Export and run the packaged asset check
+        working-directory: godot
+        run: |
+          chmod +x "$HOME/bin/godot"
+          "$HOME/bin/godot" --headless --path . --import > /dev/null 2>&1 || true
+          mkdir -p build/linux
+          "$HOME/bin/godot" --headless --path . --export-release "Linux Check" build/linux/RacingSim.x86_64
+          build/linux/RacingSim.x86_64 --headless -- --v2-export-check 2> export-check.err | tee export-check.out
+          grep -q "V2 EXPORT PASS" export-check.out
+          test ! -s export-check.err || { cat export-check.err; exit 1; }
+
+  # The windowed feature check (the same as tools/run_gates.ps1 -Features): two bot laps, then the
+  # Look-3 presentation check over every display mode with real mouse, key and pad input. Software GL.
+  features:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Godot binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/bin/godot
+          key: godot-4.6.2-stable-linux-x86_64
+
+      - name: Download Godot 4.6.2-stable Linux x86_64
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/bin
+          curl -sSL -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot_extracted
+          mv /tmp/godot_extracted/Godot_v4.6.2-stable_linux.x86_64 ~/bin/godot
+          chmod +x ~/bin/godot
+
+      - name: Install xvfb and Mesa
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q xvfb libgl1-mesa-dri libglx-mesa0
+
+      - name: Windowed --v2-present
+        working-directory: godot
+        run: |
+          chmod +x "$HOME/bin/godot"
+          "$HOME/bin/godot" --headless --path . --import > /dev/null 2>&1 || true
+          xvfb-run -a -s "-screen 0 1280x800x24" "$HOME/bin/godot" --path . --rendering-driver opengl3 -- --v2-present 2> present.err | tee present.out
+          grep -E "LOOK TIMINGS|FEATURE RESULTS" present.out
+          grep -q 'FEATURE RESULTS .*"failures":\[\]' present.out
+          test ! -s present.err || { cat present.err; exit 1; }

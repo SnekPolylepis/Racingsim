@@ -18,7 +18,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 2
+const CACHE_REVISION = 3
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -302,11 +302,7 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 	asset.add_child(terrain)
 	terrain.owner = asset
 	terrain.bake()
-	var material = StandardMaterial3D.new()
-	material.albedo_color = Color(.22, .34, .15)
-	material.roughness = 1.0
-	for chunk in asset.get_node("Terrain/Ardennes").get_children():
-		chunk.material_override = material
+	# The chunks keep terrain.gd's PS2 grass (Look-1); a flat colour override here predated it.
 	# Recover the exact stitched grid from the baked vertices to ground the trees, without
 	# repeating the expensive road/terrain stitching pass.
 	var heights = PackedFloat64Array()
@@ -368,12 +364,45 @@ static func add_forest(
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
-	if not terrain.is_empty():
-		var multimesh = asset.get_node("Scenery/" + title).multimesh
-		for i in multimesh.instance_count:
-			var xf = multimesh.get_instance_transform(i)
+	var multimesh = asset.get_node("Scenery/" + title).multimesh
+	var clear = road_clearance(asset.get_node("Main"))
+	# Ground each tree from the scatter's own layout: reading the MultiMesh back returns zeros under
+	# the headless renderer, which baked every tree at the origin into the shared track cache. A tree
+	# that lands near another part of the circuit (a far offset on a winding closed road) is dropped.
+	for i in multimesh.instance_count:
+		var xf: Transform3D = trees.last_bake.xforms[i]
+		if near_road(clear, xf.origin):
+			xf = Transform3D(Basis.from_scale(Vector3.ZERO), xf.origin)
+		elif not terrain.is_empty():
 			xf.origin.y = terrain_height(terrain, xf.origin)
-			multimesh.set_instance_transform(i, xf)
+		multimesh.set_instance_transform(i, xf)
+
+
+## Road centre points hashed into CLEAR_M cells (plan view) for near_road().
+const CLEAR_M = 24.0
+
+
+static func road_clearance(road) -> Dictionary:
+	var cells = {}
+	for p in road.last_bake.center:
+		var key = Vector2i(floori(p.x / CLEAR_M), floori(p.z / CLEAR_M))
+		if not cells.has(key):
+			cells[key] = []
+		cells[key].append(Vector2(p.x, p.z))
+	return cells
+
+
+## True when `point` is within CLEAR_M of the road's centreline anywhere on the circuit.
+static func near_road(cells: Dictionary, point: Vector3) -> bool:
+	var at = Vector2(point.x, point.z)
+	var cx = floori(point.x / CLEAR_M)
+	var cz = floori(point.z / CLEAR_M)
+	for dx in [-1, 0, 1]:
+		for dz in [-1, 0, 1]:
+			for p in cells.get(Vector2i(cx + dx, cz + dz), []):
+				if at.distance_squared_to(p) < CLEAR_M * CLEAR_M:
+					return true
+	return false
 
 
 static func add_bot_line(asset: Node3D, road: RoadPath) -> void:
@@ -818,7 +847,7 @@ static func build_asset() -> Node3D:
 		"ArdennesNear",
 		positions["Raidillon"] + 180.0,
 		positions["Blanchimont"] + 120.0,
-		18.0,
+		28.0,
 		12.0,
 		65.0,
 		601
@@ -829,7 +858,7 @@ static func build_asset() -> Node3D:
 		"ArdennesDeep",
 		positions["Raidillon"] + 200.0,
 		positions["Blanchimont"] + 100.0,
-		24.0,
+		34.0,
 		70.0,
 		180.0,
 		602
@@ -844,6 +873,19 @@ static func build_asset() -> Node3D:
 		25.0,
 		80.0,
 		603
+	)
+	# The Ardennes close in behind the paddock, La Source and Eau Rouge too: a far belt past the
+	# grandstands and paddock buildings, so the hills there are wooded, not bare.
+	add_forest(
+		asset,
+		terrain,
+		"ArdennesFar",
+		positions["Blanchimont"] + 200.0,
+		positions["Raidillon"] + 200.0,
+		14.0,
+		110.0,
+		260.0,
+		604
 	)
 	add_scenery_kit(asset, road, positions, measured)
 	add_lighting(asset, road, positions, measured)

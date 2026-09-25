@@ -57,6 +57,9 @@ func initialize(owner_app) -> void:
 	body.add_child(scroll)
 	content = VBoxContainer.new()
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# Fill the panel's height too, so the tab pages use it instead of stopping at their minimum and
+	# leaving an empty band at the bottom of the panel.
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_theme_constant_override("separation", 12)
 	scroll.add_child(content)
 	resized.connect(layout)
