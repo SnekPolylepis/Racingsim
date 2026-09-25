@@ -2018,3 +2018,17 @@ ART-DIRECTION gaps 3, 4, 5 and 8. Branch `rb/look-6-enclosure`; PR open, not mer
 
 ## 2026-09-24  REVIEW Look-6 (Sonnet): accepted  (Claude Opus 5.5)
 Merged with main (Look-8 road, Look-7 armco, CAR-01). Doc conflicts resolved: gap rows 1-2 from Look-8, rows 3-5 and 8 from Look-6. `run_gates.ps1 -All -Features` 35/35, features 77/0, car_models 56/0. Baseline recaptured on the merged tree: Hatzenbach now reads as the GT4 forest wall, and Spa shows photo trees, a hill skyline, edge lines and armco on posts.
+
+
+## 2026-09-24  CLAIM K-01  (Gemini)
+Claim K-01 "Kerb reference data" for Spa-Francorchamps and Nordschleife section 1. Branch `rb/K-01-kerbs`.
+
+## 2026-09-24  DONE K-01 kerb reference data (GPT-6 Luna, taking over from Gemini)
+
+- Traced 13 Spa observations (3,400 m summed interval length): 13 `unsure`; confidence high 1, medium 10, low 2. Traced 8 Nordschleife S1 observations (1,200 m): 8 `unsure`; medium 7, low 1. Orthophotos show painted stripes but cannot establish whether a kerb is flat or raised; no raised sausage kerbs were confidently identifiable.
+- Spa comparison (`kerb_report.py`), stretches longer than 20 m: profile-only left 946-966, 1006-1046, 2066-2086, 2737-2767, 4658-4688, 5158-5188, 5248-5268, 5358-5379, 5439-5469, 6559-6589 m; profile-only right 3187-3207, 3457-3477, 3978-3998, 6259-6279 m. Photo-only left 165-195, 225-285, 315-360, 1080-1240, 2240-2347, 2357-2520, 2920-2947, 2957-3160, 3960-4200, 5640-5989 m; photo-only right 800-1040, 2040-2240, 2680-2920, 3520-3677, 3687-3747, 3767-3797, 3817-3840, 4440-4898, 4948-4988, 6560-6920 m. Boundaries are approximate; photo-only denotes a traced interval not covered by positive `kerb_left`/`kerb_right` stations, while profile-only denotes positive stations not covered by a trace.
+- Low-confidence stretches: Spa Fagnes 3960-4200 m (tree and terrain shadows hide parts of the edge); Paul Frere 4720-5000 m (paddock structures and shadow obscure the striped boundary). Nordschleife Hocheichen 1360-1480 m (forest shadow partially masks the outside edge). Other listed spans were omitted where no paint was actually visible.
+- `kerb_report.py` reports 14 profile-only and 20 photo-only Spa disagreement spans >20 m. It compares Spa against `road-profile.json`; Nordschleife has no road-profile comparison. Captures were visually reviewed; no source crops are committed. K-01 queue status: `review: Claude`.
+
+## 2026-09-24  REVIEW K-01 (Luna): merged as a coarse first draft  (Claude Opus 5.5)
+Data and tools only; nothing reads them yet, so merging is safe. **Not good enough to place kerbs from:** Spa has 13 entries (the real circuit has dozens), several spanning 150-250 m (La Source 160-360 m), and every type is "unsure"; the Nordschleife has 8. The crop tool and `kerb_report.py` are useful. Follow-up K-01b: retrace each corner at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb, before any generator uses the file.

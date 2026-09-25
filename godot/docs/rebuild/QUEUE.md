@@ -57,6 +57,9 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | Look-6 | Enclosure (ART-DIRECTION gaps 3, 4, 5, 8): photographic mixed-species tree cards, distant forested-hill silhouette (day and night), day fog to about 1-1.2 km | Claude (Sonnet 5, owner-assigned) | Look-0 | done (PR #39, reviewed) | rb/look-6-enclosure; read "DONE Look-6" |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
+| K-01 | Kerb reference data for Spa-Francorchamps and Nordschleife section 1 | Gemini | | done (coarse draft, PR #38) | rb/K-01-kerbs |
+| K-01b | Retrace kerbs at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb with type; Spa and Nordschleife S1. K-01 data is too coarse to place kerbs from | GPT Luna or Sonnet | K-01 | open | |
+
 
 ## Decisions and later
 

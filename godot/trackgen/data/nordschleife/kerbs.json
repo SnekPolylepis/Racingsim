@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "track": "nordschleife",
+  "source": "LVermGeoRP DOP20 2025",
+  "kerbs": [
+    {"corner":"T13","side":"left","s_start":0,"s_end":120,"type":"unsure","colours":"red-white","width_m":0.8,"position":"outside","confidence":"medium","crop":"s00040.jpg"},
+    {"corner":"Sabine-Schmitz-Kurve","side":"right","s_start":200,"s_end":360,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00240.jpg"},
+    {"corner":"Hatzenbogen","side":"left","s_start":360,"s_end":560,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00400.jpg"},
+    {"corner":"Hatzenbach 1","side":"right","s_start":760,"s_end":880,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00800.jpg"},
+    {"corner":"Hatzenbach 2","side":"left","s_start":880,"s_end":1040,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s00960.jpg"},
+    {"corner":"Hatzenbach 3","side":"right","s_start":1040,"s_end":1200,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s01120.jpg"},
+    {"corner":"Hatzenbach 4","side":"left","s_start":1200,"s_end":1360,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"medium","crop":"s01240.jpg"},
+    {"corner":"Hocheichen","side":"right","s_start":1360,"s_end":1480,"type":"unsure","colours":"red-white","width_m":0.8,"position":"inside","confidence":"low","crop":"s01400.jpg"}
+  ],
+  "edge_lines": [
+    {"side":"left","s_start":0,"s_end":4220},
+    {"side":"right","s_start":0,"s_end":4220}
+  ]
+}
