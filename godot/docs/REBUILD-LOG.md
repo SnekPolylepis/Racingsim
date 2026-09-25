@@ -2235,3 +2235,11 @@ been run against it yet, no screenshots recaptured, no PR opened.
 Next session: run `python tools/ci_gates.py` alone (not parallel with another windowed Godot process —
 that contention caused the `--features` timeouts the Look-9 PAUSED entry above describes), then a
 windowed bake/screenshot pass, then finish the DONE entry, QUEUE row, and PR.
+
+## 2026-09-25  REVIEW Look-10 (Sonnet): finished and accepted  (Claude Opus 5.5)
+Sonnet paused this before running anything. Finished here:
+- **Bug:** `road_scatter.gd` used `@export_enum` on an enum-typed variable, which Godot rejects. Every generator failed to compile (13 gates red). Changed to `@export var atlas_kind: AtlasKind`.
+- **Merge:** main merged in. The Spa CACHE_REVISION collided with the braking boards (both 4), so it is now 5; the Nordschleife S1 stays 8.
+- **Gates:** `run_gates.ps1 -All -Features` 37/37.
+- **Baseline recaptured:** Hatzenbach and Flugplatz read as mixed Eifel forest (beech, oak, birch, spruce) with undergrowth at the base.
+- **Draw calls:** about 16 % over the Proving Ground average (482 -> ~563 per view), above the 10 % budget; acceptable for now, noted for a later trim.

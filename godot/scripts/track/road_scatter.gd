@@ -30,7 +30,7 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 @export var mesh: Mesh
 ## Trees: the canopy atlas (assets/trees/tree_atlas.png). Undergrowth (Look-10): ferns, brambles, long
 ## grass, bushes and saplings (assets/undergrowth/undergrowth_atlas.png), 0.3-2.5 m tall.
-@export_enum("Trees", "Undergrowth") var atlas_kind = AtlasKind.TREES
+@export var atlas_kind: AtlasKind = AtlasKind.TREES
 ## Multiplies every card's height, to raise or lower a whole band.
 @export var height_scale = 1.0
 ## Restricts card picks to these indices into `species_for(atlas_kind)` (e.g. UNDERGROWTH_SPECIES' grass

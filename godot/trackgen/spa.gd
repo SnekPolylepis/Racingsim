@@ -20,7 +20,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 4
+const CACHE_REVISION = 5
 const REFERENCE_LENGTH = 7004.0
 
 
