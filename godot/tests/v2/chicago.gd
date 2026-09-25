@@ -79,6 +79,7 @@ func _physics_process(_delta):
 		check(hit.get("surface", -1) == 0, "Grid slot on tarmac")
 	for title in Generator.data().landmarks:
 		check(asset.get_node_or_null("Landmarks/" + title.replace(" ", "")) != null, "Landmark: " + title)
+	check_cached_night_lighting()
 	print(
 		"CHICAGO RESULTS ",
 		JSON.stringify(
@@ -87,3 +88,22 @@ func _physics_process(_delta):
 	)
 	quit(0 if failures.is_empty() else 1)
 	return true
+
+
+func check_cached_night_lighting():
+	var packed = PackedScene.new()
+	check(packed.pack(asset) == OK, "Chicago scene packs for cache")
+	var path = "user://native-tests/chicago-night-cache.scn"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
+	check(ResourceSaver.save(packed, path) == OK, "Chicago lighting cache saves")
+	var restored = ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE).instantiate()
+	var wheel = restored.get_node("Scenery/CentennialWheel").mesh.surface_get_material(0)
+	var flood = restored.get_node("Scenery/PlazaFlood1")
+	for night in [true, false, true, false]:
+		preload("res://scripts/track/chicago_night.gd").set_night(restored, night)
+		check(
+			wheel.emission_enabled == night and flood.visible == night,
+			"Cached lights follow Afterhours=%s" % night
+		)
+	restored.free()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))

@@ -1153,3 +1153,4 @@ func apply_track_night() -> void:
 	if track is Node3D:
 		TrackLights.set_night(track, night)
 		NightGlow.set_night(track, night)
+		preload("res://scripts/track/chicago_night.gd").set_night(track, night)

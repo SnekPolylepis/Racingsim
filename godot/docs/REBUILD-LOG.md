@@ -2336,3 +2336,36 @@ sightlines are separate from full driving tests; Intel/Windows hardware were not
 
 Final decision: **Jev gate COMPLETE 0.94**. Implementation and required local checks complete;
 branch remains unmerged for Claude/owner review.
+
+## 2026-09-25 — CHI-01 nighttime refinement (owner follow-up)
+
+Owner requested a nighttime version and further refinement on the existing unmerged branch.
+Presentation scope includes Chicago generator accents, a local night-toggle helper wired through
+`game.gd`, and cached-scene day/night regression coverage. Driving geometry and record version stay
+unchanged. Two shadowless plaza lights illuminate the Bean; emissive wheel, pier, Willis crown and
+ceiling fixtures provide landmark contrast without adding hundreds of real lights. Lower Wacker's
+new luminaires are one batched mesh. Chicago facade windows now use 22% lit probability and
+45% glow energy; other circuits retain the shared shader's default. The second visual pass moved
+pier roofline lights onto the visible lakeside face.
+
+DONE CHI-01 nighttime follow-up — Apple M4 / Godot 4.6.2:
+- All 37 headless suites PASS; all six serial performance suites PASS.
+- Chicago probe 27/27, including packed-cache serialization and four night/day toggles.
+- Windowed features 77/77; 20 day/night captures generated, key driving and landmark views
+  inspected. Lower Wacker night capture: 120 draw calls (original capture: 115).
+- Mac universal export and signature verification PASS; packaged asset check and Chicago smoke PASS.
+- Formatting and diff checks PASS. Evidence: `docs/rebuild/chicago/night-refinement/`; new images:
+  `docs/rebuild/screenshots/chicago-night-refined/`. Prior evidence is preserved.
+
+Select Chicago — River & Lake and Afterhours in Settings to see the nighttime presentation.
+Branch remains `rb/CHI-01-chicago`, unmerged per owner. No Windows/Intel hardware run recorded.
+
+Additional verification after Jev's first COMPLETE confidence (0.76) fell below the required 0.90:
+re-read the presentation diff and ran `chicago_export_night.gd` against the exported PCK using the
+editor's `--main-pack` runner. All four checks PASS: night/day/night material and light state, plus
+windowed screenshot save. Inspected the resulting exported-resource night view. The first attempt
+passed `--script` to the release executable; it produced no test result and was stopped after 95 s.
+The corrected harness uses the editor binary with the shipped PCK; actual release-binary asset and
+Chicago driving smoke checks remain separate PASS results. This is not a full night driving lap.
+
+Final nighttime decision: **Jev gate COMPLETE 0.93**. MEDIUM (gpt-6-luna medium) lane sufficient.

@@ -94,7 +94,9 @@ This is a preview:
 Choose Chicago — River & Lake in the circuit picker for an 8.12 km city lap. Drive Michigan Avenue
 past Millennium Park, Jackson Drive, Lake Shore Drive, Lower Wacker and Upper Wacker. The route
 includes the Bean, Willis Tower, Navy Pier, the Chicago River and Lake Michigan. Try both daylight
-and Afterhours for the skyline and the lamps under Lower Wacker.
+and Afterhours for the skyline and the lamps under Lower Wacker. Afterhours also lights the
+Navy Pier wheel and pavilion rooflines, the Bean plaza, Willis Tower crown and antenna beacons,
+and paired ceiling fixtures along Lower Wacker. These accents switch off in daylight.
 
 This is an authored racing route with two fictional ramp connectors, not a surveyed public-road
 layout or the NASCAR Chicago circuit. Both Wacker levels are drivable and have separate timing

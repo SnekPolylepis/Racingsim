@@ -3,7 +3,7 @@ extends SceneTree
 ## Run with -- --v2-flow-test --v2-track=chicago. Captures driving views plus landmark sightlines.
 const Generator = preload("res://trackgen/chicago.gd")
 const NightShots = preload("res://tests/v2/night_screenshots.gd")
-const FOLDER = "res://docs/rebuild/screenshots/chicago"
+const FOLDER = "res://docs/rebuild/screenshots/chicago-night-refined"
 var failures = []
 
 

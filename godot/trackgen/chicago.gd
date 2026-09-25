@@ -11,7 +11,7 @@ const NightGlow = preload("res://scripts/track/night_glow.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
 const DATA = "res://trackgen/data/chicago/route.json"
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 2
+const CACHE_REVISION = 3
 
 
 static func data() -> Dictionary:
@@ -161,6 +161,7 @@ static func build_asset() -> Node3D:
 	add_landmarks(asset, scenery)
 	add_lower_deck(asset, scenery, road)
 	add_road_details(asset, scenery, road)
+	add_night_details(asset, scenery, road)
 	add_park_trees(asset)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
 	var lamps = TrackLights.place(road, 42.0, [], 1.2)
@@ -261,7 +262,8 @@ static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var mesh = st.commit()
 	var facade = NightGlow.facade_material().duplicate()
 	facade.set_shader_parameter("window_scale", 3.8)
-	facade.set_shader_parameter("lit_chance", .28)
+	facade.set_shader_parameter("lit_chance", .22)
+	facade.set_shader_parameter("glow_energy", .45)
 	mesh.surface_set_material(0, facade)
 	mesh_node(asset, parent, "LoopSkyline", mesh, Vector3.ZERO)
 
@@ -292,7 +294,8 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	var mesh = st.commit()
 	var facade = NightGlow.facade_material().duplicate()
 	facade.set_shader_parameter("window_scale", 3.8)
-	facade.set_shader_parameter("lit_chance", .28)
+	facade.set_shader_parameter("lit_chance", .22)
+	facade.set_shader_parameter("glow_energy", .45)
 	mesh.surface_set_material(0, facade)
 	mesh_node(asset, parent, "WillisTower", mesh, Vector3.ZERO)
 	for side in [-1, 1]:
@@ -337,7 +340,7 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	wheel.outer_radius = 29.5
 	wheel.rings = 48
 	wheel.ring_segments = 6
-	wheel.material = silver
+	wheel.material = night_material(Color("b5dce6"), 2.2)
 	var wn = mesh_node(asset, parent, "CentennialWheel", wheel, pier + Vector3(0, 33, 0))
 	wn.rotation_degrees.x = 90
 	for i in 16:
@@ -349,10 +352,17 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 			"WheelSpoke%d" % i,
 			(end + pier + Vector3(0, 33, 0)) * .5,
 			Vector3(.5, 28, .5),
-			silver
+			night_material(Color("96c8e0"), 1.3)
 		)
 		spoke.rotation.z = ang - PI / 2
-		box(asset, parent, "WheelCabin%d" % i, end, Vector3(3.2, 3.8, 3.2), material(Color("466b7b")))
+		box(
+			asset,
+			parent,
+			"WheelCabin%d" % i,
+			end,
+			Vector3(3.2, 3.8, 3.2),
+			night_material(Color("77b6cc"), 1.0)
+		)
 	for side in [-1, 1]:
 		var support = box(
 			asset, parent, "WheelSupport%d" % side, pier + Vector3(side * 7, 15, 0), Vector3(2, 33, 2), silver
@@ -489,3 +499,80 @@ static func add_park_trees(asset: Node3D) -> void:
 		trees.species_indices = PackedInt32Array([2, 3, 4])
 		attach(asset, asset, trees, "ParkTrees%d" % int(band[0]))
 		trees.bake()
+
+
+## Local accent materials retain their daylight appearance; runtime toggles emission on cached scenes.
+static func night_material(color: Color, energy: float) -> StandardMaterial3D:
+	var mat = material(color)
+	mat.emission = color
+	mat.emission_energy_multiplier = energy
+	mat.set_meta("chicago_night", true)
+	return mat
+
+
+static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> void:
+	var warm = night_material(Color("ffd19a"), 1.7)
+	var cool = night_material(Color("a6d6ef"), 1.5)
+	var fixtures = SurfaceTool.new()
+	fixtures.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# Batched ceiling luminaires stay above the unchanged driving clearance.
+	for i in range(0, road.last_bake.stations.size(), 16):
+		var at = road.last_bake.stations[i]
+		if at.pos.y > .1 or at.pos.z > 720:
+			continue
+		var basis = Basis.looking_at(at.tangent, Vector3.UP)
+		for side in [-1, 1]:
+			facade_box(
+				fixtures,
+				at.pos + basis.x * side * 4 + Vector3(0, 6.05, 0),
+				Vector3(.45, .12, 3.6),
+				Color.WHITE,
+				basis
+			)
+	fixtures.generate_normals()
+	var mesh = fixtures.commit()
+	mesh.surface_set_material(0, warm)
+	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
+	var pier = world(data().landmarks["Navy Pier"])
+	for i in 6:
+		box(
+			asset,
+			parent,
+			"PierRoofLight%d" % i,
+			pier + Vector3(i * 95, 18.2, 24.2),
+			Vector3(80, 1.0, .8),
+			warm
+		)
+	var willis = world(data().landmarks["Willis Tower"])
+	for side in [-1, 1]:
+		box(
+			asset,
+			parent,
+			"WillisBeacon%d" % side,
+			willis + Vector3(side * 9, 508, 0),
+			Vector3(2.5, 1.5, 2.5),
+			night_material(Color("ed6050"), 2.0)
+		)
+	box(asset, parent, "WillisCrown", willis + Vector3(0, 441, 0), Vector3(22.3, 1.5, 22.3), cool)
+	var bean = world(data().landmarks["Bean"])
+	for side in [-1, 1]:
+		var light = SpotLight3D.new()
+		light.position = bean + Vector3(side * 23, 7, -15)
+		light.light_color = Color("d0e2f3")
+		light.light_energy = 7.0
+		light.spot_range = 65.0
+		light.spot_angle = 48.0
+		light.shadow_enabled = false
+		light.visible = false
+		light.set_meta("chicago_night", true)
+		attach(asset, parent, light, "PlazaFlood%d" % side)
+		light.basis = Basis.looking_at(bean + Vector3(0, 4, 0) - light.position)
+		for i in 7:
+			box(
+				asset,
+				parent,
+				"PlazaBollard%d_%d" % [side, i],
+				bean + Vector3(side * 30, .8, (i - 3) * 8),
+				Vector3(.5, 1.6, .5),
+				warm
+			)

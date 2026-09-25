@@ -60,3 +60,9 @@ Only this circuit extends the fog/view distance to retain lake and skyline views
 render settings are unchanged. Flat painted sky replaces wooded hills for Chicago. Lamp fixtures
 under Lower Wacker are shortened beneath the deck and have collidable structural columns outside
 the barrier. The circuit has no AI traffic or animated boats/pedestrians.
+
+Afterhours accents are authored by `add_night_details()` and toggled by
+`scripts/track/chicago_night.gd`, including materials serialized into the track cache. The wheel,
+pier, plaza, crown and ceiling fixtures are original procedural geometry. The Bean uses two
+shadowless spotlights; repeated ceiling fixtures share one mesh. Chicago's facade materials use
+reduced window density and emission, while the shared shader's default preserves other tracks.
