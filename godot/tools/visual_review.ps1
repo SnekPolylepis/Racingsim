@@ -15,6 +15,8 @@ $ErrorActionPreference = "Stop"
 $godotDir = Split-Path -Parent $PSScriptRoot
 $runs = Join-Path $godotDir "visual-review"
 New-Item -ItemType Directory -Force $runs | Out-Null
+# Keep Godot from importing (and the export from packing) review screenshots.
+New-Item -ItemType File -Force (Join-Path $runs ".gdignore") | Out-Null
 
 $name = Get-Date -Format "yyyyMMdd-HHmm"
 if ($Label) { $name = "$name-$Label" }
