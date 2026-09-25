@@ -34,7 +34,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 8
+const CACHE_REVISION = 9
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -608,6 +608,10 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var count = 0
 	var deck_tool = SurfaceTool.new()
 	deck_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# CHI-LOOK-01: exposed steel beams and girders under the deck (visual only, no collision), as in real
+	# Lower Wacker. They stay above the 6.05 m luminaires' clearance line.
+	var beam_tool = SurfaceTool.new()
+	beam_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in range(0, st.size(), 8):
 		var at = st[i]
 		# Only the lower Wacker road, not the exposed game-only connector at the south end.
@@ -617,6 +621,10 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		var basis = Basis.looking_at(tangent, Vector3.UP)
 		var p = at.pos + Vector3(0, 6.7, 0)
 		facade_box(deck_tool, p, Vector3(23, 1.1, 13), Color.WHITE, basis)
+		facade_box(beam_tool, at.pos + Vector3(0, 5.85, 0), Vector3(22.6, 0.6, 0.55), Color.WHITE, basis)
+		for side in [-1, 1]:
+			var girder = at.pos + basis.x * side * 5.0 + Vector3(0, 5.75, 0)
+			facade_box(beam_tool, girder, Vector3(0.45, 0.8, 12.6), Color.WHITE, basis)
 		solid_box(asset, "Ceiling%d" % count, Transform3D(basis, p), Vector3(23, 1.1, 13))
 		if count % 2 == 0:
 			for side in [-1, 1]:
@@ -633,6 +641,10 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var deck_mesh = deck_tool.commit()
 	deck_mesh.surface_set_material(0, concrete)
 	mesh_node(asset, parent, "WackerDeckAndColumns", deck_mesh, Vector3.ZERO)
+	beam_tool.generate_normals()
+	var beam_mesh = beam_tool.commit()
+	beam_mesh.surface_set_material(0, material(Color("3f4443")))
+	mesh_node(asset, parent, "WackerBeams", beam_mesh, Vector3.ZERO)
 
 
 static func add_road_details(asset: Node3D, parent: Node, road: RoadPath) -> void:
@@ -737,6 +749,8 @@ static func night_material(color: Color, energy: float) -> StandardMaterial3D:
 static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var warm = night_material(Color("ffd19a"), 1.7)
 	var cool = night_material(Color("a6d6ef"), 1.5)
+	# High-pressure sodium orange for Lower Wacker's ceiling fixtures (lower-wacker-drive.jpg).
+	var sodium = night_material(Color("ffa540"), 2.0)
 	var fixtures = SurfaceTool.new()
 	fixtures.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# Batched ceiling luminaires stay above the unchanged driving clearance.
@@ -755,7 +769,7 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 			)
 	fixtures.generate_normals()
 	var mesh = fixtures.commit()
-	mesh.surface_set_material(0, warm)
+	mesh.surface_set_material(0, sodium)
 	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
 	var pier = world(data().landmarks["Navy Pier"])
 	for i in 6:
