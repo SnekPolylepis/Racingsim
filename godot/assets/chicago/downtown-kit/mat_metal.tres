@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/chicago/downtown-kit/textures/metal.jpg" id="1_kkqpo"]
+
+[resource]
+cull_mode = 2
+albedo_texture = ExtResource("1_kkqpo")
+roughness = 0.85
