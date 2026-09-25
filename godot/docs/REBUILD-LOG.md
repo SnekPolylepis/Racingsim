@@ -2033,6 +2033,9 @@ Claim K-01 "Kerb reference data" for Spa-Francorchamps and Nordschleife section 
 ## 2026-09-24  REVIEW K-01 (Luna): merged as a coarse first draft  (Claude Opus 5.5)
 Data and tools only; nothing reads them yet, so merging is safe. **Not good enough to place kerbs from:** Spa has 13 entries (the real circuit has dozens), several spanning 150-250 m (La Source 160-360 m), and every type is "unsure"; the Nordschleife has 8. The crop tool and `kerb_report.py` are useful. Follow-up K-01b: retrace each corner at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb, before any generator uses the file.
 
+## 2026-09-24  CLAIM K-01b  (GPT-6 Luna)
+Claim K-01b to retrace Spa and Nordschleife S1 kerbs at corner-apex scale. Branch `rb/K-01b-kerbs`.
+
 ## 2026-09-24  MAC CHECK five open PRs on a real GPU  (Claude Opus 5.5, macOS)
 Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71f334935, `Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 (Apple9)`. Fresh clone, `tracks3d` cache deleted before each branch, `--import`, then the owner's steps. No code changed.
 
