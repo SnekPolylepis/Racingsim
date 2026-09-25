@@ -82,7 +82,12 @@ choice below.
 - **Walls (`wall_contact.gd`, P4-03):**
   - The chassis hull box is swept against wall collision (layer 2) each tick, so nothing tunnels at
     300 km/h.
-  - Contacts come from intersect and collide queries, with the face normal from a ray.
+  - Contacts come from intersect and collide queries, one collide query per touching wall body, so
+    every contact carries its own wall's kind and that wall's face normal (a ray to its deepest point).
+    In a corner of two walls, push-out clears each normal in turn and each contact uses its own
+    kind's restitution and friction; Simcade removes the closing speed along every normal touched.
+    One wall body reports one normal, so a sharp bend inside a single freehand wall is handled as one
+    face (tested: no pass-through at 150 km/h into a 90° bend).
   - Sequential impulses with friction resolve them, with a restitution threshold of 0.5 m/s. Response
     varies by wall kind (tyre, armco, concrete).
   - In Simcade the car keeps more of its speed along the wall.

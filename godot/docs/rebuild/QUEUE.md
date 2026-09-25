@@ -19,7 +19,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 |---|---|---|---|---|---|
 | M-TRAIN | Merge train into main: workflow-gates (P4-03 + workflow), F-P2-08 (P2-08), F-P3-02c (P3-02c), P3-03-terrain (F-P3-03), scenery-kit, P4-07-bot-laps, P6-01-spa, P4-01-game-port | owner (GitHub PR) | | done | merged on main; read "MERGE train" |
 | R-P4-03 | Review P4-03 car-vs-wall contact (WallQuery, WallContact) | Sol | M-TRAIN | done | corner-contact fix queued as F-P4-03-corners |
-| F-P4-03-corners | WallQuery.contacts() assigns the first hit body's kind and one face normal to all collide_shape pairs; split simultaneous contacts by collider/face and test a two-wall corner | Claude | R-P4-03 | open | scripts/surface/wall_query.gd, tests/v2/barrier.gd |
+| F-P4-03-corners | WallQuery.contacts() assigns the first hit body's kind and one face normal to all collide_shape pairs; split simultaneous contacts by collider/face and test a two-wall corner | Claude | R-P4-03 | review: Sol | rb/F-P4-03-corners; read "DONE F-P4-03-corners" |
 | R-WF | Review the workflow change: tools/run_gates.ps1, tools/gates.json, §9 rules 2/5/6/10/11, suite cuts | Sol | M-TRAIN | done | reviewed on main; no fix row |
 | R-P4-07 | Review P4-07 bot driver and laps gate, including P4-07b | Sol | M-TRAIN | done | reviewed on main; no fix row |
 | F-P4-01 | P4-01 follow-ups (Claude's review): Esc on the v2 path quits the app instead of returning to the front end; WallContact not yet called after car.step(); game.gd and track_drive.gd preload trackgen/*.gd but export_presets.cfg excludes trackgen/* so an exported exe breaks | Sol | M-TRAIN | review: owner | folded into P4-core; branch `rb/P4-06-front-end` awaits owner merge; export checked |
@@ -27,6 +27,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | F-CI | CI tolerance scoped to the two legacy suites that differ on Linux, measured; obsolete Spa allowance removed | Claude | | review: Sol | rb/F-CI; read "DONE F-CI" |
 | P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking, smooth Spa BotLine; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | done | reviewed on main; read "DONE P4-07b" |
 | F-terrain-perf | tests/v2/terrain.gd's "car step" timing check (300 µs budget) ignores GatesEnv.perf(): under the parallel runner it read 671 µs and failed (168 µs alone). Route it through GatesEnv.perf()/perf_note() like the other timing gates | Claude | | review: Sol | small |
+| F-track-picker | The front end's circuit picker only toggled Proving Ground and Spa, so Nordschleife S1 was listed but could not be chosen; cycle every V2_TRACKS entry and gate it | Claude | | review: Sol | rb/F-track-picker; read "DONE F-track-picker" |
+| F-ci-ui | CI export check (Linux preset with the shared filters) and windowed --v2-present job; settings panel fills its height; stale ART-DIRECTION/LLM-GUIDE/TESTING text | Claude | | review: Sol | rb/ci-ui-fixes; read "DONE F-ci-ui" |
 
 ## Build
 
@@ -59,7 +61,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P2-comp-b | Kerb edge normals lean with the tyre (a kerb pushes the car back and up), now that compliance absorbs the climb rate | Claude | P2-comp | done | reviewed on main |
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-01-polish | Spa from measured data: widths and kerbs from SPW Orthophotos 2023, banking from SPW LiDAR cross-sections; authored runoffs halved on corner outsides | Claude | | review: Sol | rb/P6-01-polish; read "DONE P6-01-polish". Left: paved runoff and gravel extents (not measurable from the photos), Eau Rouge/Raidillon kerb profiles by hand |
-| P6-02a | Nordschleife section 1 groundwork | Gemini (content/tools only), Claude review | P6-01 | review: Claude | rb/P6-02a; DGM1 + OSM + return road, BotLine, probe |
+| P6-02a | Nordschleife section 1 groundwork | Gemini (content/tools only), Claude review | P6-01 | done (reviewed by Claude 2026-09-24; tree and terrain fixes in rb/look-tracks) | rb/P6-02a; DGM1 + OSM + return road, BotLine, probe |
 | P6-02b | Nordschleife remaining sections | Gemini (content/tools only), Claude review | P6-02a | open | |
 | P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | done | reviewed on main; PropSet in P4-06 game loop |

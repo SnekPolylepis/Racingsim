@@ -1734,6 +1734,67 @@ Not touched: Gemini's catch_fence, grandstand, wall_path, scenery_builder and ro
 ## 2026-09-24  REVIEW Look-2: accepted  (Claude Opus 5.5)
 Merged with main (Look-3 renderer): only doc/const conflicts. Windows `run_gates.ps1 -All -Features` on the merged tree: 35/35, features 77/0, stderr empty.
 
+## 2026-09-24  DONE F-track-picker  (Claude Opus 5.5) — branch `rb/F-track-picker`
+Found while checking main after Look-3: `front_end.gd::cycle_v2_track()` toggled between `proving_ground` and `spa`, so Nordschleife S1 appeared in `V2_TRACKS` but a player could never select it from the circuit page. It now steps through every `V2_TRACKS` entry in order. `tests/v2/front_end.gd` checks the full cycle (Spa, Nordschleife S1, Proving Ground) before its existing Spa load. As a negative control, the new check fails on the old code.
+
+Gates (Linux cloud, Godot 4.6.2): `python tools/ci_gates.py` **34/34** (`front_end` 29/0), stderr empty; parse check clean; `gdformat -l 110 --check` clean. No windowed change: the picker is the same button, and `--v2-present` opens on the drive page.
+
+## 2026-09-24  DONE F-P4-03-corners  (Claude Opus 5.5) — branch `rb/F-P4-03-corners`
+Sol's P4-03 review found that `WallQuery.contacts()` took the wall kind from the first body `intersect_shape` returned and one face normal from the deepest pair, and applied both to every contact. In a corner of two walls, the second wall's contacts were then pushed along the first wall's normal with the first wall's restitution and friction.
+
+- **`scripts/surface/wall_query.gd`:**
+  - `contacts()` collects every touching body (`intersect_shape(near, max_results)`) and runs one `collide_shape` per body, with the other bodies excluded.
+  - Each body's contacts carry its own `wall_kind` and its own face normal, from the same ray-to-deepest-point as before.
+  - With one wall touching (the usual case) no exclude lists are built.
+  - The face-normal ray is now `face_normal()`.
+- **`scripts/vehicle/wall_contact.gd`:**
+  - Push-out clears each contact's normal in turn, deepest first; a later contact only gets the depth the earlier pushes have not already cleared along its normal.
+  - Impulses use each contact's own kind's restitution and friction.
+  - Simcade's arcade response removes the closing speed along every normal touched, then bleeds speed and yaw once per tick.
+  - With one wall, all three are exactly the old behaviour.
+  - Props already used each contact's own normal (`prop_body.gd`) and needed no change.
+- **`tests/v2/barrier.gd`** (6 → 9 checks):
+  - A concrete wall and a tyre wall meet at a right angle.
+  - A hull pressed 1 cm into both must report both kinds, each with its own face normal. On main's code this check fails (4 contacts, all "concrete").
+  - 150 km/h at 45° into that corner, and into one L-shaped concrete wall bending 90°, in both handling models: never past either face, energy only lost. These drive tests also pass on main's code: the old bug produced wrong normals and restitution in corners, not pass-through at this speed. They stay as regression guards.
+- **Tried and dropped:** a per-face split inside one wall body (a sharp freehand bend). A ray to every contact point hits a rail's top or end faces, which broke the glancing (rebound 1.38 of closing speed) and resting (0.058 m/s creep) checks. A guarded version needed eight pairs per body and still missed faces, at 183 µs a tick. A single body keeps one normal (PHYSICS.md). No track has a sharp bend inside one wall; road-following walls bend in 2 m steps.
+
+Single-wall results are identical to main: head-on, glancing rebound 0.06, resting creep 0.012 m/s. Cost touching one wall, same machine, alternating runs, three each: main 119.7-130.8 µs (mean 124.5), branch 125.7-138.4 µs (mean 131.4), against a 150 µs budget; clear of walls 4 µs either way. These are Linux cloud numbers; the Windows `-Perf` pass is owed.
+
+Gates (Linux cloud, Godot 4.6.2):
+- `python tools/ci_gates.py`: **34/34**, stderr empty (`barrier` 9/0, `props` 13/0, all three `laps` suites).
+- Windowed `--v2-present`: V2 PRESENT PASS, FEATURE RESULTS 77/0, stderr empty.
+- Parse check and `gdformat -l 110 --check` clean.
+
+## 2026-09-24  REVIEW P6-02a (Gemini): accepted  (Claude Opus 5.5)
+Nordschleife section 1 on main:
+- `TrackAsset.validate()` is clean.
+- Zero bake warnings; the bake warns above CLAUDE.md's 0.20°/m bank rule, so the zero-warning check enforces it.
+- 100 % of BotLine points are on tarmac.
+- `nordschleife_s1` and the laps gates pass.
+
+Two generator faults, both fixed on `rb/look-tracks` (PR #27):
+1. `add_forest()` grounded trees by reading the MultiMesh back, which bakes every tree at the origin whenever a headless run builds the cache first. It hit Spa's copy of the same code; the Nordschleife escaped only because a windowed run happened to bake it first.
+2. A flat-colour terrain override hid Look-1's grass.
+
+No fix rows needed.
+
+## 2026-09-24  DONE F-ci-ui  (Claude Opus 5.5) — branch `rb/ci-ui-fixes`
+- **Export check without Windows:**
+  - New "Linux Check" preset in `export_presets.cfg`, with the same include/exclude filters as the Windows and macOS presets.
+  - Exported here with the official 4.6.2 templates; the packaged binary's `--v2-export-check` prints V2 EXPORT PASS with empty stderr.
+  - Negative control: with Spa's `dem.raw` removed from that preset's filter, it prints V2 EXPORT FAIL and exits 1.
+  - `godot/build/linux/` is ignored.
+- **CI (`.github/workflows/gates.yml`):**
+  - `export-check` job: checks that all presets share one include and one exclude filter, exports the Linux build (templates cached), and runs `--v2-export-check`.
+  - `features` job: `--v2-present` under xvfb with Mesa; fails on any failed check or any stderr.
+- **Settings panel:** the scroll content did not expand vertically, so the tab pages stopped at their 590 px minimum and left an empty band. `content.size_flags_vertical = SIZE_EXPAND_FILL`; two more rows now show.
+- **Docs:**
+  - ART-DIRECTION's front-end paragraph described the legacy front end (studio, demo, Help, `--compare`); rewritten for v2.
+  - LLM-GUIDE "Known boundaries" dropped the legacy barrier and generic-loft lines.
+  - TESTING describes the new CI jobs.
+- **Dropped:** the HUD overlap I noted earlier exists only in the non-console HUD, which the game no longer shows (`--v2-present` now opens the front end).
+
 ## 2026-09-24  DONE Look-tracks Spa and Nordschleife daylight  (Claude Opus 5.5) — branch `rb/look-tracks`
 Owner: "make Spa and the Nord look good", while staying out of Sol's Look-5 files (the `scripts/track/` scenery kit and `ps2_materials.gd`). The changes are in the generators, the ground and road shaders, and the daytime environment in `apply_time_of_day()`.
 

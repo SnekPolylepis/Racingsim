@@ -10,6 +10,11 @@ extends SceneTree
 ##   resting    parked against the wall for 3 s: no creep or jitter, no penetration.
 ##   over       airborne 3 m above a 1 m wall: no contact (walls have height; collisions.gd's did not).
 ##   oblique    300 km/h at 45 degrees into armco: no pass-through.
+##   corner     a concrete wall (face z = 100) meets a tyre wall (face x = CORNER_X) at a right angle:
+##              a hull pressed into both reports each wall's kind with its own face normal
+##              (F-P4-03-corners). 150 km/h at 45 degrees into it, and into one L-shaped concrete wall
+##              bending 90 degrees at x = L_X, both handling models: never past either face, energy only
+##              lost. (One wall body reports one face normal, from its deepest point; see WallQuery.)
 ##   cost       WallContact per tick, clear of walls and in contact.
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/barrier.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
@@ -23,6 +28,10 @@ const DT = 1.0 / 240
 const FACE_Z = 100.0
 ## x of each wall's middle, and its kind.
 const WALLS = {"concrete": 0.0, "armco": 300.0, "tyre": 600.0}
+## The corner: the concrete wall runs along x to CORNER_X, the tyre wall along z back from the face.
+const CORNER_X = 950.0
+## The single L-shaped concrete wall: along x to L_X, then back along z.
+const L_X = 1250.0
 var host
 var presets
 var failures = []
@@ -93,6 +102,40 @@ func _initialize():
 		w.curve = curve
 		host.add_child(w)
 		w.bake()
+	# Corner walls. A freehand wall's outward side is tangent x up when the track is on its left, so the
+	# concrete one runs +x (outward +z) and the tyre one runs -z (outward +x); they overlap past the corner.
+	# CornerL is one concrete wall with the same two faces, bending 90° at x = L_X.
+	for spec in [
+		[
+			"CornerConcrete",
+			WallBuilder.Kind.CONCRETE,
+			Vector3(CORNER_X - 100, 0, FACE_Z),
+			Vector3(CORNER_X + 10, 0, FACE_Z)
+		],
+		[
+			"CornerTyre",
+			WallBuilder.Kind.TYRE,
+			Vector3(CORNER_X, 0, FACE_Z + 10),
+			Vector3(CORNER_X, 0, FACE_Z - 100)
+		],
+		[
+			"CornerL",
+			WallBuilder.Kind.CONCRETE,
+			Vector3(L_X - 100, 0, FACE_Z),
+			Vector3(L_X, 0, FACE_Z),
+			Vector3(L_X, 0, FACE_Z - 100)
+		]
+	]:
+		var w = WallPath.new()
+		w.name = spec[0]
+		w.kind = spec[1]
+		w.track_side = WallPath.Side.LEFT
+		var curve = Curve3D.new()
+		for point in spec.slice(2):
+			curve.add_point(point)
+		w.curve = curve
+		host.add_child(w)
+		w.bake()
 	root.add_child(host)
 
 
@@ -110,6 +153,7 @@ func _physics_process(_delta):
 	resting()
 	over()
 	oblique()
+	corner()
 	cost()
 	print("BARRIER RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
 	quit(0 if failures.is_empty() else 1)
@@ -280,6 +324,92 @@ func oblique():
 		(
 			"300 km/h at 45° into the 0.15 m armco: hull at most %+.3f m past the face, CG ends %.2f m short, energy only lost"
 			% [r.past, FACE_Z - r.end_z]
+		)
+	)
+
+
+## How far the hull reaches past either corner face (z > FACE_Z or x > face_x), metres.
+func past_corner(c, face_x):
+	var b = c.basis()
+	var reach = -INF
+	for sx in [-1, 1]:
+		for sy in [-1, 1]:
+			for sz in [-1, 1]:
+				var p = c.pos + b * (c.hull_center + c.hull_half * Vector3(sx, sy, sz))
+				reach = maxf(reach, maxf(p.z - FACE_Z, p.x - face_x))
+	return reach
+
+
+func corner():
+	corner_case("concrete/tyre corner", CORNER_X, true)
+	corner_case("L-shaped concrete wall", L_X, false)
+
+
+## `two_walls`: concrete face z = FACE_Z and tyre face x = face_x, and the static contact check runs;
+## otherwise one concrete wall with both faces, driven into only.
+func corner_case(label: String, face_x: float, two_walls: bool):
+	if two_walls:
+		corner_contacts(label, face_x)
+	# Driven into the corner at 45°: no pass-through either way, in both handling models.
+	var rows = []
+	var all_ok = true
+	for simcade in [false, true]:
+		var c = make("f296gt3", simcade)
+		var query = WallQuery.new(host, c.hull_half)
+		c.place(Vector3(face_x - 40, 0, FACE_Z - 40), PI / 4, 0.0)
+		c.launch(150 / 3.6)
+		var ke0 = kinetic(c)
+		var worst = -INF
+		var touched = false
+		var ok = true
+		for i in int(2.0 / DT):
+			c.input = inp(0, 0, 0)
+			c.step(DT, ground, true)
+			touched = WallContact.step(c, query) > 0 or touched
+			worst = maxf(worst, past_corner(c, face_x))
+			ok = ok and finite(c)
+		var model = "simcade" if simcade else "simulation"
+		results[label + " " + model] = {"past": worst, "end": c.pos}
+		ok = ok and touched and worst < .01 and c.pos.x < face_x and c.pos.z < FACE_Z and kinetic(c) < ke0
+		all_ok = all_ok and ok
+		rows.append("%s: hull at most %+.3f m past either face" % [model, worst])
+	for row in rows:
+		print("      " + row)
+	check(
+		all_ok,
+		"150 km/h at 45° into the " + label + ", both handling models: never through, energy only lost"
+	)
+
+
+## A parked hull pressed 1 cm into both walls of the corner: every contact names its own wall and face.
+func corner_contacts(label: String, face_x: float):
+	var c = make("f296gt3")
+	var query = WallQuery.new(host, c.hull_half)
+	c.place(Vector3(face_x - 20, 0, FACE_Z - 20), 0.0, 0.0)
+	var b = c.basis()
+	var reach = Vector3(-INF, 0, -INF)
+	for sx in [-1, 1]:
+		for sz in [-1, 1]:
+			var p = b * (c.hull_center + c.hull_half * Vector3(sx, 0, sz))
+			reach = Vector3(maxf(reach.x, p.x), 0, maxf(reach.z, p.z))
+	var centre = Vector3(face_x + .01 - reach.x, c.pos.y, FACE_Z + .01 - reach.z) + b * c.hull_center
+	var cs = query.contacts(Transform3D(b, centre))
+	var seen = {}
+	var faces = {"z": false, "x": false}
+	var normals_ok = true
+	for k in cs:
+		seen[k.kind] = true
+		faces.z = faces.z or k.normal.dot(Vector3(0, 0, -1)) > .9
+		faces.x = faces.x or k.normal.dot(Vector3(-1, 0, 0)) > .9
+		var want = Vector3(0, 0, -1) if k.kind == "concrete" else Vector3(-1, 0, 0)
+		normals_ok = normals_ok and k.normal.dot(want) > .9
+	results[label + " contacts"] = cs.map(func(k): return [k.kind, k.normal, snappedf(k.depth, .001)])
+	var kinds_ok = seen.has("concrete") and seen.has("tyre")
+	check(
+		kinds_ok and normals_ok and faces.z and faces.x,
+		(
+			"hull pressed into both faces of the %s: %d contacts, kinds %s, each with its own face normal"
+			% [label, cs.size(), seen.keys()]
 		)
 	)
 
