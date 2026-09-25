@@ -1,0 +1,500 @@
+{
+  "baseline": "C:/Users/Zain's PC/Desktop/RacingSim-p2/godot/visual-review/20260925-1235-first",
+  "bonnet": false,
+  "night": false,
+  "tracks": {
+    "spa": {
+      "length": 6999.73196166754,
+      "shots": [
+        {
+          "changed": false,
+          "file": "000-corner-la-source-approach.png",
+          "kind": "corner",
+          "name": "la-source-approach",
+          "score": 0.0,
+          "station": 49.9
+        },
+        {
+          "changed": false,
+          "file": "001-corner-la-source-apex.png",
+          "kind": "corner",
+          "name": "la-source-apex",
+          "score": 0.0,
+          "station": 169.9
+        },
+        {
+          "changed": false,
+          "file": "002-corner-la-source-exit.png",
+          "kind": "corner",
+          "name": "la-source-exit",
+          "score": 0.0,
+          "station": 249.9
+        },
+        {
+          "changed": false,
+          "file": "003-straight-straight-after-la-source-1.png",
+          "kind": "straight",
+          "name": "straight-after-la-source-1",
+          "score": 0.0,
+          "station": 484.0
+        },
+        {
+          "changed": false,
+          "file": "004-corner-eau-rouge-approach.png",
+          "kind": "corner",
+          "name": "eau-rouge-approach",
+          "score": 0.0,
+          "station": 718.1
+        },
+        {
+          "changed": false,
+          "file": "005-corner-eau-rouge-apex.png",
+          "kind": "corner",
+          "name": "eau-rouge-apex",
+          "score": 0.0,
+          "station": 838.1
+        },
+        {
+          "changed": false,
+          "file": "006-corner-raidillon-approach.png",
+          "kind": "corner",
+          "name": "raidillon-approach",
+          "score": 0.0,
+          "station": 866.2
+        },
+        {
+          "changed": false,
+          "file": "007-scenic-eau-rouge-valley.png",
+          "kind": "scenic",
+          "name": "eau-rouge-valley",
+          "score": 0.0,
+          "station": 878.1
+        },
+        {
+          "changed": false,
+          "file": "008-corner-eau-rouge-exit.png",
+          "kind": "corner",
+          "name": "eau-rouge-exit",
+          "score": 0.0,
+          "station": 918.1
+        },
+        {
+          "changed": false,
+          "file": "009-corner-raidillon-exit-approach.png",
+          "kind": "corner",
+          "name": "raidillon-exit-approach",
+          "score": 0.0,
+          "station": 981.1
+        },
+        {
+          "changed": false,
+          "file": "010-corner-raidillon-apex.png",
+          "kind": "corner",
+          "name": "raidillon-apex",
+          "score": 0.0,
+          "station": 986.2
+        },
+        {
+          "changed": false,
+          "file": "011-corner-raidillon-exit.png",
+          "kind": "corner",
+          "name": "raidillon-exit",
+          "score": 0.0,
+          "station": 1066.2
+        },
+        {
+          "changed": false,
+          "file": "012-corner-raidillon-exit-apex.png",
+          "kind": "corner",
+          "name": "raidillon-exit-apex",
+          "score": 0.0,
+          "station": 1101.1
+        },
+        {
+          "changed": false,
+          "file": "013-corner-raidillon-exit-exit.png",
+          "kind": "corner",
+          "name": "raidillon-exit-exit",
+          "score": 0.0,
+          "station": 1181.1
+        },
+        {
+          "changed": false,
+          "file": "014-scenic-kemmel-crest.png",
+          "kind": "scenic",
+          "name": "kemmel-crest",
+          "score": 0.0,
+          "station": 1236.2
+        },
+        {
+          "changed": false,
+          "file": "015-straight-straight-after-raidillon-exit-1.png",
+          "kind": "straight",
+          "name": "straight-after-raidillon-exit-1",
+          "score": 0.0,
+          "station": 1424.3
+        },
+        {
+          "changed": false,
+          "file": "016-straight-straight-after-raidillon-exit-2.png",
+          "kind": "straight",
+          "name": "straight-after-raidillon-exit-2",
+          "score": 0.0,
+          "station": 1910.6
+        },
+        {
+          "changed": false,
+          "file": "017-corner-les-combes-approach.png",
+          "kind": "corner",
+          "name": "les-combes-approach",
+          "score": 0.0,
+          "station": 2153.7
+        },
+        {
+          "changed": false,
+          "file": "018-corner-les-combes-exit-approach.png",
+          "kind": "corner",
+          "name": "les-combes-exit-approach",
+          "score": 0.0,
+          "station": 2243.7
+        },
+        {
+          "changed": false,
+          "file": "019-corner-les-combes-apex.png",
+          "kind": "corner",
+          "name": "les-combes-apex",
+          "score": 0.0,
+          "station": 2273.7
+        },
+        {
+          "changed": false,
+          "file": "020-corner-malmedy-approach.png",
+          "kind": "corner",
+          "name": "malmedy-approach",
+          "score": 0.0,
+          "station": 2319.0
+        },
+        {
+          "changed": false,
+          "file": "021-corner-les-combes-exit.png",
+          "kind": "corner",
+          "name": "les-combes-exit",
+          "score": 0.0,
+          "station": 2353.7
+        },
+        {
+          "changed": false,
+          "file": "022-corner-les-combes-exit-apex.png",
+          "kind": "corner",
+          "name": "les-combes-exit-apex",
+          "score": 0.0,
+          "station": 2363.7
+        },
+        {
+          "changed": false,
+          "file": "023-corner-malmedy-apex.png",
+          "kind": "corner",
+          "name": "malmedy-apex",
+          "score": 0.0,
+          "station": 2439.0
+        },
+        {
+          "changed": false,
+          "file": "024-corner-les-combes-exit-exit.png",
+          "kind": "corner",
+          "name": "les-combes-exit-exit",
+          "score": 0.0,
+          "station": 2443.7
+        },
+        {
+          "changed": false,
+          "file": "025-corner-malmedy-exit.png",
+          "kind": "corner",
+          "name": "malmedy-exit",
+          "score": 0.0,
+          "station": 2519.0
+        },
+        {
+          "changed": false,
+          "file": "026-corner-bruxelles-approach.png",
+          "kind": "corner",
+          "name": "bruxelles-approach",
+          "score": 0.0,
+          "station": 2728.5
+        },
+        {
+          "changed": false,
+          "file": "027-corner-bruxelles-apex.png",
+          "kind": "corner",
+          "name": "bruxelles-apex",
+          "score": 0.0,
+          "station": 2848.5
+        },
+        {
+          "changed": false,
+          "file": "028-corner-bruxelles-exit.png",
+          "kind": "corner",
+          "name": "bruxelles-exit",
+          "score": 0.0,
+          "station": 2928.5
+        },
+        {
+          "changed": false,
+          "file": "029-corner-no-name-approach.png",
+          "kind": "corner",
+          "name": "no-name-approach",
+          "score": 0.0,
+          "station": 2974.1
+        },
+        {
+          "changed": false,
+          "file": "030-corner-no-name-apex.png",
+          "kind": "corner",
+          "name": "no-name-apex",
+          "score": 0.0,
+          "station": 3094.1
+        },
+        {
+          "changed": false,
+          "file": "031-corner-no-name-exit.png",
+          "kind": "corner",
+          "name": "no-name-exit",
+          "score": 0.0,
+          "station": 3174.1
+        },
+        {
+          "changed": false,
+          "file": "032-straight-straight-after-no-name-1.png",
+          "kind": "straight",
+          "name": "straight-after-no-name-1",
+          "score": 0.0,
+          "station": 3398.7
+        },
+        {
+          "changed": false,
+          "file": "033-corner-pouhon-approach.png",
+          "kind": "corner",
+          "name": "pouhon-approach",
+          "score": 0.0,
+          "station": 3623.3
+        },
+        {
+          "changed": false,
+          "file": "034-corner-pouhon-apex.png",
+          "kind": "corner",
+          "name": "pouhon-apex",
+          "score": 0.0,
+          "station": 3743.3
+        },
+        {
+          "changed": false,
+          "file": "035-corner-pouhon-exit.png",
+          "kind": "corner",
+          "name": "pouhon-exit",
+          "score": 0.0,
+          "station": 3823.3
+        },
+        {
+          "changed": false,
+          "file": "036-straight-straight-after-pouhon-1.png",
+          "kind": "straight",
+          "name": "straight-after-pouhon-1",
+          "score": 0.0,
+          "station": 4020.7
+        },
+        {
+          "changed": false,
+          "file": "037-corner-fagnes-approach.png",
+          "kind": "corner",
+          "name": "fagnes-approach",
+          "score": 0.0,
+          "station": 4218.0
+        },
+        {
+          "changed": false,
+          "file": "038-corner-fagnes-exit-approach.png",
+          "kind": "corner",
+          "name": "fagnes-exit-approach",
+          "score": 0.0,
+          "station": 4313.0
+        },
+        {
+          "changed": false,
+          "file": "039-corner-fagnes-apex.png",
+          "kind": "corner",
+          "name": "fagnes-apex",
+          "score": 0.0,
+          "station": 4338.0
+        },
+        {
+          "changed": false,
+          "file": "040-corner-fagnes-exit.png",
+          "kind": "corner",
+          "name": "fagnes-exit",
+          "score": 0.0,
+          "station": 4418.0
+        },
+        {
+          "changed": false,
+          "file": "041-corner-fagnes-exit-apex.png",
+          "kind": "corner",
+          "name": "fagnes-exit-apex",
+          "score": 0.0,
+          "station": 4433.0
+        },
+        {
+          "changed": false,
+          "file": "042-corner-fagnes-exit-exit.png",
+          "kind": "corner",
+          "name": "fagnes-exit-exit",
+          "score": 0.0,
+          "station": 4513.0
+        },
+        {
+          "changed": false,
+          "file": "043-corner-stavelot-approach.png",
+          "kind": "corner",
+          "name": "stavelot-approach",
+          "score": 0.0,
+          "station": 4600.5
+        },
+        {
+          "changed": false,
+          "file": "044-corner-stavelot-apex.png",
+          "kind": "corner",
+          "name": "stavelot-apex",
+          "score": 0.0,
+          "station": 4720.5
+        },
+        {
+          "changed": false,
+          "file": "045-corner-stavelot-exit.png",
+          "kind": "corner",
+          "name": "stavelot-exit",
+          "score": 0.0,
+          "station": 4800.5
+        },
+        {
+          "changed": false,
+          "file": "046-corner-paul-frere-approach.png",
+          "kind": "corner",
+          "name": "paul-frere-approach",
+          "score": 0.0,
+          "station": 4825.5
+        },
+        {
+          "changed": false,
+          "file": "047-corner-paul-frere-apex.png",
+          "kind": "corner",
+          "name": "paul-frere-apex",
+          "score": 0.0,
+          "station": 4945.5
+        },
+        {
+          "changed": false,
+          "file": "048-corner-paul-frere-exit.png",
+          "kind": "corner",
+          "name": "paul-frere-exit",
+          "score": 0.0,
+          "station": 5025.5
+        },
+        {
+          "changed": false,
+          "file": "049-straight-straight-after-paul-frere-1.png",
+          "kind": "straight",
+          "name": "straight-after-paul-frere-1",
+          "score": 0.0,
+          "station": 5339.8
+        },
+        {
+          "changed": false,
+          "file": "050-corner-blanchimont-approach.png",
+          "kind": "corner",
+          "name": "blanchimont-approach",
+          "score": 0.0,
+          "station": 5654.1
+        },
+        {
+          "changed": false,
+          "file": "051-corner-blanchimont-apex.png",
+          "kind": "corner",
+          "name": "blanchimont-apex",
+          "score": 0.0,
+          "station": 5774.1
+        },
+        {
+          "changed": false,
+          "file": "052-corner-blanchimont-exit.png",
+          "kind": "corner",
+          "name": "blanchimont-exit",
+          "score": 0.0,
+          "station": 5854.1
+        },
+        {
+          "changed": false,
+          "file": "053-straight-straight-after-blanchimont-1.png",
+          "kind": "straight",
+          "name": "straight-after-blanchimont-1",
+          "score": 0.01,
+          "station": 6125.2
+        },
+        {
+          "changed": false,
+          "file": "054-corner-bus-stop-approach.png",
+          "kind": "corner",
+          "name": "bus-stop-approach",
+          "score": 0.0,
+          "station": 6396.3
+        },
+        {
+          "changed": false,
+          "file": "055-corner-bus-stop-exit-approach.png",
+          "kind": "corner",
+          "name": "bus-stop-exit-approach",
+          "score": 0.0,
+          "station": 6451.3
+        },
+        {
+          "changed": false,
+          "file": "056-corner-bus-stop-apex.png",
+          "kind": "corner",
+          "name": "bus-stop-apex",
+          "score": 0.0,
+          "station": 6516.3
+        },
+        {
+          "changed": false,
+          "file": "057-corner-bus-stop-exit-apex.png",
+          "kind": "corner",
+          "name": "bus-stop-exit-apex",
+          "score": 0.0,
+          "station": 6571.3
+        },
+        {
+          "changed": false,
+          "file": "058-corner-bus-stop-exit.png",
+          "kind": "corner",
+          "name": "bus-stop-exit",
+          "score": 0.0,
+          "station": 6596.3
+        },
+        {
+          "changed": false,
+          "file": "059-corner-bus-stop-exit-exit.png",
+          "kind": "corner",
+          "name": "bus-stop-exit-exit",
+          "score": 0.0,
+          "station": 6651.3
+        },
+        {
+          "changed": false,
+          "file": "060-straight-straight-after-bus-stop-exit-1.png",
+          "kind": "straight",
+          "name": "straight-after-bus-stop-exit-1",
+          "score": 0.0,
+          "station": 6850.5
+        }
+      ]
+    }
+  }
+}
