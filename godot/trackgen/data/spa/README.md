@@ -98,53 +98,39 @@ crossfall is hand authored, and bridges are not supplied by this terrain model.
 
 ## Kerbs
 
-`kerbs.json` traces 44 separate painted runs from SPW Orthophotos 2023 Été apex crops (40 m square, 1200 px, 5 m station ticks).
+`kerbs.json` traces 30 individual continuous painted or ribbed runs. Boundaries are traced to 2 m from the 5 m crop ticks.
 
 | Corner | Side | Length | Type |
 |---|---|---:|---|
-| La Source | left | 10 m | flat |
-| La Source | left | 10 m | flat |
-| La Source | left | 10 m | flat |
-| Straight | left | 30 m | flat |
-| Eau Rouge | left | 10 m | flat |
-| Eau Rouge | left | 10 m | flat |
-| Raidillon | left | 10 m | flat |
-| Raidillon | left | 20 m | flat |
-| Raidillon | left | 40 m | flat |
-| Straight | right | 10 m | flat |
-| Straight | left | 20 m | flat |
-| Les Combes exit | left | 10 m | flat |
-| Bruxelles | left | 30 m | flat |
-| Bruxelles | left | 10 m | flat |
-| Straight | left | 10 m | flat |
-| Straight | right | 10 m | flat |
-| No Name | right | 10 m | flat |
-| No Name | right | 10 m | flat |
-| Straight | right | 20 m | flat |
-| Straight | right | 20 m | flat |
-| Pouhon | right | 10 m | flat |
-| Pouhon | right | 20 m | flat |
-| Pouhon | right | 20 m | flat |
-| Straight | right | 20 m | flat |
-| Straight | left | 10 m | flat |
-| Fagnes | left | 10 m | flat |
-| Stavelot | left | 30 m | flat |
-| Paul Frere | right | 10 m | flat |
-| Paul Frere | right | 10 m | flat |
-| Paul Frere | right | 10 m | flat |
-| Paul Frere | right | 10 m | flat |
-| Paul Frere | right | 10 m | flat |
-| Paul Frere | right | 10 m | flat |
-| Straight | right | 10 m | flat |
-| Straight | left | 30 m | flat |
-| Straight | left | 20 m | flat |
-| Straight | left | 10 m | flat |
-| Straight | left | 20 m | flat |
-| Straight | left | 30 m | flat |
-| Straight | left | 10 m | flat |
-| Straight | right | 10 m | flat |
-| Straight | right | 20 m | flat |
-| Bus Stop | left | 10 m | flat |
-| Bus Stop exit | left | 30 m | flat |
+| La Source | left | 114 m | flat |
+| La Source | right | 18 m | flat |
+| Straight | left | 38 m | flat |
+| Eau Rouge | left | 56 m | flat |
+| Eau Rouge | right | 42 m | flat |
+| Raidillon | left | 234 m | flat |
+| Raidillon | right | 232 m | flat |
+| Straight | right | 40 m | flat |
+| Straight | left | 54 m | flat |
+| Les Combes–Malmedy | left | 248 m | flat |
+| Les Combes–Malmedy | right | 248 m | flat |
+| Bruxelles | left | 60 m | flat |
+| Bruxelles–No Name | left | 316 m | flat |
+| Bruxelles–No Name | right | 256 m | flat |
+| Straight | right | 42 m | flat |
+| Pouhon | left | 198 m | flat |
+| Pouhon | right | 198 m | flat |
+| Fagnes | left | 220 m | flat |
+| Fagnes | right | 220 m | flat |
+| Stavelot | left | 44 m | flat |
+| Paul Frere | left | 148 m | flat |
+| Paul Frere | right | 148 m | flat |
+| Straight | right | 52 m | flat |
+| Straight | left | 154 m | flat |
+| Straight | left | 130 m | flat |
+| Straight | left | 34 m | flat |
+| Straight | right | 32 m | flat |
+| Straight | right | 38 m | flat |
+| Bus Stop | left | 104 m | flat |
+| Bus Stop | right | 104 m | flat |
 
-Widths and boundaries are approximate traces against the 5 m ticks. Entries in canopy shadow are marked low confidence. Top-down imagery does not show enough surface relief to distinguish raised forms everywhere.
+Colour is recorded as seen (red-cream). Continuous edge stripes are consolidated across overlapping apex and between-corner crops; inside and outside strips remain separate. Boundaries and widths are approximate; the low-resolution orthophoto softens some endpoints.

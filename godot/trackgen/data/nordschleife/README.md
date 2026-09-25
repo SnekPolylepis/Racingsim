@@ -25,21 +25,22 @@ Surrounding terrain is exported as a 5 m grid in `dem.raw` (761 columns × 841 r
 
 ## Kerbs
 
-`kerbs.json` traces 12 separate painted runs from LVermGeoRP DOP20 2025 apex crops (40 m square, 1200 px, 5 m station ticks).
+`kerbs.json` traces 13 individual continuous painted or ribbed runs. Boundaries are traced to 2 m from the 5 m crop ticks.
 
 | Corner | Side | Length | Type |
 |---|---|---:|---|
+| Sabine-Schmitz-Kurve | right | 40 m | flat |
 | Sabine-Schmitz-Kurve | left | 40 m | flat |
-| Hatzenbogen | right | 38 m | flat |
-| Hatzenbach 2 | left | 18 m | flat |
-| Hatzenbach 3 | left | 38 m | flat |
-| Hatzenbach 4 | left | 24 m | flat |
-| Hocheichen | left | 20 m | flat |
-| Hocheichen | right | 32 m | ribbed |
-| Hocheichen exit | right | 20 m | flat |
-| Flugplatz | left | 40 m | ribbed |
-| Flugplatz | right | 16 m | flat |
-| Flugplatz exit | left | 40 m | ribbed |
-| Schwedenkreuz | left | 90 m | flat |
+| Hatzenbogen | right | 138 m | flat |
+| Hatzenbach 2 | left | 30 m | flat |
+| Hatzenbach 3 | left | 40 m | flat |
+| Hatzenbach 3 | right | 40 m | ribbed |
+| Hatzenbach 4 | left | 50 m | flat |
+| Hocheichen | left | 70 m | flat |
+| Hocheichen | right | 80 m | ribbed |
+| Hocheichen exit | right | 30 m | flat |
+| Flugplatz–Flugplatz exit | left | 250 m | ribbed |
+| Flugplatz | right | 130 m | flat |
+| Schwedenkreuz | left | 138 m | flat |
 
-The S1 imagery often shows only a white edge line, while canopy and shadows cover the edge at other corners; those locations are omitted unless a painted kerb is visible. The 12 listed runs are fewer than the anticipated 20–40 because this photo set does not resolve a striped kerb on most surveyed bends.
+S1 imagery often shows only a white edge line or canopy shadow; entries are limited to visible painted or ribbed strips. No distinctly raised sausage kerb was identifiable. The count remains below the 20–40 estimate because most other bends lack visible painted kerbs in this photo set.
