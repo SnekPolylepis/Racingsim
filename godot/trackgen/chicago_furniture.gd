@@ -18,11 +18,16 @@ const DEDUPE_M = 40.0
 const MAX_ALIGN = 0.85
 const POLE_OFFSET = 10.4
 const ARM_HEIGHT = 6.6
+## Every L_EVERY-th crossing carries an elevated "L" line over the street (visual only, no collision).
+const L_EVERY = 6
+const L_PHASE = 2
+const L_HEIGHT = 7.2
 const SURFACES = ["paint", "metal", "housing", "red", "amber", "green"]
 
 
-## Crossing stations as indices into `stations`.
-static func find_crossings(stations: Array) -> Array:
+## Crossing stations as indices into `stations`. `dirs`, if given, receives each crossing's street direction
+## (horizontal unit vector), keyed by station index.
+static func find_crossings(stations: Array, dirs: Dictionary = {}) -> Array:
 	var grid = {}
 	for i in stations.size():
 		var p: Vector3 = stations[i].pos
@@ -64,6 +69,7 @@ static func find_crossings(stations: Array) -> Array:
 						break
 				if fresh:
 					found.append(hit)
+					dirs[hit] = Vector3(dir.x, 0.0, dir.y)
 	found.sort()
 	return found
 
@@ -89,7 +95,8 @@ static func _nearest(stations: Array, grid: Dictionary, at: Vector2) -> int:
 static func build(
 	asset: Node3D, parent: Node, stations: Array, box: Callable, night_material: Callable, attach: Callable
 ) -> int:
-	var crossings = find_crossings(stations)
+	var dirs = {}
+	var crossings = find_crossings(stations, dirs)
 	var mats = [
 		_plain(Color("d9d6c8")),
 		_plain(Color("4a4d50")),
@@ -110,6 +117,8 @@ static func build(
 				tools.append(tool)
 			chunks[key] = tools
 		_crossing(chunks[key], at, i, box)
+		if crossings.find(i) % L_EVERY == L_PHASE:
+			_elevated(chunks[key], at, dirs[i], box)
 	for key in chunks:
 		var mesh = ArrayMesh.new()
 		for n in SURFACES.size():
@@ -178,3 +187,58 @@ static func _crossing(tools: Array, at: Dictionary, index: int, box: Callable) -
 			Color.WHITE,
 			basis
 		)
+
+
+## An elevated railway over the route: a steel deck along the cross street `along` with side girders and
+## paired lattice-style piers outside the road, and a two-car train on it (window strip glows at night).
+static func _elevated(tools: Array, at: Dictionary, along: Vector3, box: Callable) -> void:
+	var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
+	var basis = Basis.looking_at(along, Vector3.UP)
+	var centre: Vector3 = at.pos + flat * 24.0
+	var deck_y = L_HEIGHT + 0.5
+	# Deck slab, two side girders, two rails.
+	box.call(tools[1], centre + Vector3(0, deck_y, 0), Vector3(7.0, 0.7, 70.0), Color.WHITE, basis)
+	for side in [-1, 1]:
+		box.call(
+			tools[1],
+			centre + basis.x * side * 3.4 + Vector3(0, deck_y + 0.7, 0),
+			Vector3(0.3, 1.5, 70.0),
+			Color.WHITE,
+			basis
+		)
+		box.call(
+			tools[2],
+			centre + basis.x * side * 0.9 + Vector3(0, deck_y + 0.5, 0),
+			Vector3(0.12, 0.14, 70.0),
+			Color.WHITE,
+			basis
+		)
+	# Piers on both sides of the 20 m wide carriageway, and an X brace between each pair.
+	for pos in [-19.0, 19.0]:
+		for side in [-1, 1]:
+			box.call(
+				tools[1],
+				centre + basis.z * pos + basis.x * side * 3.0 + Vector3(0, deck_y * 0.5, 0),
+				Vector3(0.6, deck_y, 0.6),
+				Color.WHITE,
+				basis
+			)
+		box.call(
+			tools[1],
+			centre + basis.z * pos + Vector3(0, deck_y - 0.6, 0),
+			Vector3(7.0, 0.6, 0.6),
+			Color.WHITE,
+			basis
+		)
+	# Train: body plus a lit window band, along the deck.
+	for car in [-1, 1]:
+		var pos = centre + basis.z * car * 9.5 + Vector3(0, deck_y + 2.4, 0)
+		box.call(tools[1], pos, Vector3(3.1, 3.0, 17.0), Color.WHITE, basis)
+		for side in [-1, 1]:
+			box.call(
+				tools[4],
+				pos + basis.x * side * 1.56 + Vector3(0, 0.5, 0),
+				Vector3(0.06, 0.8, 15.0),
+				Color.WHITE,
+				basis
+			)

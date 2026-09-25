@@ -1,0 +1,384 @@
+{
+  "baseline": "",
+  "bonnet": false,
+  "night": true,
+  "tracks": {
+    "chicago": {
+      "length": 8161.20169752836,
+      "shots": [
+        {
+          "file": "000-straight-after-michigan-turn-2.png",
+          "kind": "straight",
+          "name": "after-michigan-turn-2",
+          "station": 368.0
+        },
+        {
+          "file": "001-scenic-l-line-michigan.png",
+          "kind": "scenic",
+          "name": "l-line-michigan",
+          "station": 396.0
+        },
+        {
+          "file": "002-corner-jackson-turn-approach.png",
+          "kind": "corner",
+          "name": "jackson-turn-approach",
+          "station": 591.5
+        },
+        {
+          "file": "003-corner-jackson-turn-apex.png",
+          "kind": "corner",
+          "name": "jackson-turn-apex",
+          "station": 711.5
+        },
+        {
+          "file": "004-corner-jackson-turn-exit.png",
+          "kind": "corner",
+          "name": "jackson-turn-exit",
+          "station": 791.5
+        },
+        {
+          "file": "005-straight-after-jackson-turn-1.png",
+          "kind": "straight",
+          "name": "after-jackson-turn-1",
+          "station": 973.9
+        },
+        {
+          "file": "006-corner-lakefront-turn-approach.png",
+          "kind": "corner",
+          "name": "lakefront-turn-approach",
+          "station": 1156.3
+        },
+        {
+          "file": "007-corner-lakefront-turn-apex.png",
+          "kind": "corner",
+          "name": "lakefront-turn-apex",
+          "station": 1276.3
+        },
+        {
+          "file": "008-corner-lakefront-turn-exit.png",
+          "kind": "corner",
+          "name": "lakefront-turn-exit",
+          "station": 1356.3
+        },
+        {
+          "file": "009-corner-lake-shore-drive-approach.png",
+          "kind": "corner",
+          "name": "lake-shore-drive-approach",
+          "station": 1582.9
+        },
+        {
+          "file": "010-corner-lake-shore-drive-apex.png",
+          "kind": "corner",
+          "name": "lake-shore-drive-apex",
+          "station": 1702.9
+        },
+        {
+          "file": "011-scenic-skyline-from-lsd.png",
+          "kind": "scenic",
+          "name": "skyline-from-lsd",
+          "station": 1762.9
+        },
+        {
+          "file": "012-corner-lake-shore-drive-exit.png",
+          "kind": "corner",
+          "name": "lake-shore-drive-exit",
+          "station": 1782.9
+        },
+        {
+          "file": "013-straight-after-lake-shore-drive-1.png",
+          "kind": "straight",
+          "name": "after-lake-shore-drive-1",
+          "station": 1948.0
+        },
+        {
+          "file": "014-corner-navy-pier-view-approach.png",
+          "kind": "corner",
+          "name": "navy-pier-view-approach",
+          "station": 2113.0
+        },
+        {
+          "file": "015-corner-navy-pier-view-apex.png",
+          "kind": "corner",
+          "name": "navy-pier-view-apex",
+          "station": 2233.0
+        },
+        {
+          "file": "016-corner-harbor-connector-approach.png",
+          "kind": "corner",
+          "name": "harbor-connector-approach",
+          "station": 2261.3
+        },
+        {
+          "file": "017-scenic-navy-pier-view.png",
+          "kind": "scenic",
+          "name": "navy-pier-view",
+          "station": 2293.0
+        },
+        {
+          "file": "018-corner-navy-pier-view-exit.png",
+          "kind": "corner",
+          "name": "navy-pier-view-exit",
+          "station": 2313.0
+        },
+        {
+          "file": "019-corner-harbor-connector-apex.png",
+          "kind": "corner",
+          "name": "harbor-connector-apex",
+          "station": 2381.3
+        },
+        {
+          "file": "020-corner-harbor-connector-exit.png",
+          "kind": "corner",
+          "name": "harbor-connector-exit",
+          "station": 2461.3
+        },
+        {
+          "file": "021-corner-lower-wacker-portal-approach.png",
+          "kind": "corner",
+          "name": "lower-wacker-portal-approach",
+          "station": 2552.6
+        },
+        {
+          "file": "022-corner-lower-wacker-portal-apex.png",
+          "kind": "corner",
+          "name": "lower-wacker-portal-apex",
+          "station": 2672.6
+        },
+        {
+          "file": "023-corner-lower-wacker-portal-exit.png",
+          "kind": "corner",
+          "name": "lower-wacker-portal-exit",
+          "station": 2752.6
+        },
+        {
+          "file": "024-scenic-lower-wacker.png",
+          "kind": "scenic",
+          "name": "lower-wacker",
+          "station": 2922.6
+        },
+        {
+          "file": "025-straight-after-lower-wacker-portal-1.png",
+          "kind": "straight",
+          "name": "after-lower-wacker-portal-1",
+          "station": 2945.0
+        },
+        {
+          "file": "026-corner-michigan-crossing-approach.png",
+          "kind": "corner",
+          "name": "michigan-crossing-approach",
+          "station": 3137.3
+        },
+        {
+          "file": "027-corner-michigan-crossing-apex.png",
+          "kind": "corner",
+          "name": "michigan-crossing-apex",
+          "station": 3257.3
+        },
+        {
+          "file": "028-corner-michigan-crossing-exit.png",
+          "kind": "corner",
+          "name": "michigan-crossing-exit",
+          "station": 3337.3
+        },
+        {
+          "file": "029-corner-river-bend-approach.png",
+          "kind": "corner",
+          "name": "river-bend-approach",
+          "station": 3365.1
+        },
+        {
+          "file": "030-corner-river-bend-apex.png",
+          "kind": "corner",
+          "name": "river-bend-apex",
+          "station": 3485.1
+        },
+        {
+          "file": "031-corner-river-bend-exit.png",
+          "kind": "corner",
+          "name": "river-bend-exit",
+          "station": 3565.1
+        },
+        {
+          "file": "032-straight-after-river-bend-1.png",
+          "kind": "straight",
+          "name": "after-river-bend-1",
+          "station": 3866.1
+        },
+        {
+          "file": "033-corner-wacker-west-bend-approach.png",
+          "kind": "corner",
+          "name": "wacker-west-bend-approach",
+          "station": 4167.1
+        },
+        {
+          "file": "034-corner-wacker-west-bend-apex.png",
+          "kind": "corner",
+          "name": "wacker-west-bend-apex",
+          "station": 4287.1
+        },
+        {
+          "file": "035-corner-wacker-west-bend-exit.png",
+          "kind": "corner",
+          "name": "wacker-west-bend-exit",
+          "station": 4367.1
+        },
+        {
+          "file": "036-straight-after-wacker-west-bend-1.png",
+          "kind": "straight",
+          "name": "after-wacker-west-bend-1",
+          "station": 4746.0
+        },
+        {
+          "file": "037-corner-upper-wacker-portal-approach.png",
+          "kind": "corner",
+          "name": "upper-wacker-portal-approach",
+          "station": 5124.8
+        },
+        {
+          "file": "038-corner-south-connector-approach.png",
+          "kind": "corner",
+          "name": "south-connector-approach",
+          "station": 5224.4
+        },
+        {
+          "file": "039-corner-upper-wacker-portal-apex.png",
+          "kind": "corner",
+          "name": "upper-wacker-portal-apex",
+          "station": 5244.8
+        },
+        {
+          "file": "040-corner-upper-wacker-portal-exit.png",
+          "kind": "corner",
+          "name": "upper-wacker-portal-exit",
+          "station": 5324.8
+        },
+        {
+          "file": "041-corner-south-connector-apex.png",
+          "kind": "corner",
+          "name": "south-connector-apex",
+          "station": 5344.4
+        },
+        {
+          "file": "042-corner-south-connector-exit.png",
+          "kind": "corner",
+          "name": "south-connector-exit",
+          "station": 5424.4
+        },
+        {
+          "file": "043-straight-after-south-connector-1.png",
+          "kind": "straight",
+          "name": "after-south-connector-1",
+          "station": 5763.9
+        },
+        {
+          "file": "044-scenic-willis-tower-sightline.png",
+          "kind": "scenic",
+          "name": "willis-tower-sightline",
+          "station": 6073.5
+        },
+        {
+          "file": "045-corner-willis-tower-view-approach.png",
+          "kind": "corner",
+          "name": "willis-tower-view-approach",
+          "station": 6103.5
+        },
+        {
+          "file": "046-corner-willis-tower-view-apex.png",
+          "kind": "corner",
+          "name": "willis-tower-view-apex",
+          "station": 6223.5
+        },
+        {
+          "file": "047-corner-willis-tower-view-exit.png",
+          "kind": "corner",
+          "name": "willis-tower-view-exit",
+          "station": 6303.5
+        },
+        {
+          "file": "048-straight-after-willis-tower-view-1.png",
+          "kind": "straight",
+          "name": "after-willis-tower-view-1",
+          "station": 6465.3
+        },
+        {
+          "file": "049-scenic-l-line-upper-wacker.png",
+          "kind": "scenic",
+          "name": "l-line-upper-wacker",
+          "station": 6604.0
+        },
+        {
+          "file": "050-corner-upper-wacker-bend-approach.png",
+          "kind": "corner",
+          "name": "upper-wacker-bend-approach",
+          "station": 6627.1
+        },
+        {
+          "file": "051-corner-upper-wacker-bend-apex.png",
+          "kind": "corner",
+          "name": "upper-wacker-bend-apex",
+          "station": 6747.1
+        },
+        {
+          "file": "052-corner-upper-wacker-bend-exit.png",
+          "kind": "corner",
+          "name": "upper-wacker-bend-exit",
+          "station": 6827.1
+        },
+        {
+          "file": "053-straight-after-upper-wacker-bend-1.png",
+          "kind": "straight",
+          "name": "after-upper-wacker-bend-1",
+          "station": 7174.4
+        },
+        {
+          "file": "054-corner-upper-river-bend-approach.png",
+          "kind": "corner",
+          "name": "upper-river-bend-approach",
+          "station": 7521.8
+        },
+        {
+          "file": "055-corner-upper-river-bend-apex.png",
+          "kind": "corner",
+          "name": "upper-river-bend-apex",
+          "station": 7641.8
+        },
+        {
+          "file": "056-corner-michigan-turn-approach.png",
+          "kind": "corner",
+          "name": "michigan-turn-approach",
+          "station": 7658.9
+        },
+        {
+          "file": "057-scenic-river-from-bridge.png",
+          "kind": "scenic",
+          "name": "river-from-bridge",
+          "station": 7671.8
+        },
+        {
+          "file": "058-corner-upper-river-bend-exit.png",
+          "kind": "corner",
+          "name": "upper-river-bend-exit",
+          "station": 7721.8
+        },
+        {
+          "file": "059-corner-michigan-turn-apex.png",
+          "kind": "corner",
+          "name": "michigan-turn-apex",
+          "station": 7778.9
+        },
+        {
+          "file": "060-corner-michigan-turn-exit.png",
+          "kind": "corner",
+          "name": "michigan-turn-exit",
+          "station": 7858.9
+        },
+        {
+          "file": "061-straight-after-michigan-turn-1.png",
+          "kind": "straight",
+          "name": "after-michigan-turn-1",
+          "station": 8082.4
+        }
+      ]
+    }
+  }
+}

@@ -34,6 +34,11 @@ float hash21(vec2 p) {
 void fragment() {
 	vec2 uv = UV / tile_m;
 	vec3 base = texture(albedo_tex, uv).rgb * tint;
+	// Per-building variety (CHI-LOOK-01): brightness and a warm/cool lean from the building seed, so a
+	// block of the same facade kind does not read as one repeated slab.
+	float h1 = hash21(vec2(seed * 61.7, 3.1));
+	float h2 = hash21(vec2(seed * 17.3, 9.7));
+	base *= mix(0.78, 1.12, h1) * mix(vec3(1.06, 1.0, 0.92), vec3(0.94, 1.0, 1.08), h2);
 	ALBEDO = base;
 	NORMAL_MAP = texture(normal_tex, uv).rgb;
 	ROUGHNESS = texture(rough_tex, uv).r;

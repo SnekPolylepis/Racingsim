@@ -2622,3 +2622,11 @@ Setup: branch `rb/CHI-LOOK-01` from `rb/CHI-02-city` plus `main`. Chicago had no
 - **Problem:** Lower Wacker's ceiling was a flat teal slab with white fluorescent bars; the reference (`lower-wacker-drive.jpg`) has exposed steel beams and girders and orange sodium fixtures.
 - **Fix:** `add_lower_deck` adds a transverse beam every 12 m and two longitudinal girders (one batched mesh `WackerBeams`, no collision, above the existing clearance line); the ceiling luminaires use a sodium-orange night material. `CACHE_REVISION` 9.
 - **Runs:** day `20260925-1331-it3-wacker-day`, night `20260925-1331-it3-wacker-night` (baselines: it2 runs). Changes are confined to the Lower Wacker frames (`023-scenic-lower-wacker` 3.7 day / 4.5 night, `024`, `025`, `027`, `030`, `033`); nothing else moved.
+
+## 2026-09-25  CHI-LOOK-01 iteration 4: facade variety per building  (Claude Sonnet 5)
+- **Problem:** every building of a kind used the same tint, so blocks read as one repeated slab (reference `michigan-ave-street.jpg` mixes stone, brick and glass in every block).
+- **Fix:** `chicago_facade.gdshader` scales each building's brightness (0.78-1.12) and leans it warm or cool from its seed. No geometry change; runs `20260925-1343-it4-facade-variety` (baseline it3 day).
+
+## 2026-09-25  CHI-LOOK-01 iteration 5: elevated L lines  (Claude Sonnet 5)
+- **Problem:** no L structure anywhere; in the Loop it crosses the streets overhead (`michigan-ave-street.jpg`, far end).
+- **Fix:** `chicago_furniture.gd` `_elevated()`: at every 6th cross street (s = 441, 6649, 7424, and the ramp at 5797) a steel deck with girders, rails, piers and a two-car train whose window band glows at night, 7.2 m above the street (no collision, road headroom untouched). Scenic spots `l-line-michigan` and `l-line-upper-wacker` added to `track_review.gd`. Runs `20260925-1344-it5b` (day) and `-it5b-Night`, no baseline (new shots).
