@@ -2082,3 +2082,6 @@ Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71
   - It was also a hidden cost everywhere: the full `-All -Features` run went from about 280 s to 115 s, and nordschleife_s1 from about 130 s to 15 s.
 
 Gates: `run_gates.ps1 -All -Features` 35/35; laps are within the 2 % baselines.
+
+## 2026-09-24  CLAIM P6-02b  (Gemini)
+Claimed P6-02b "Nordschleife: the full lap" on `rb/P6-02b-nordschleife`. Full ~20.8 km lap data from OSM and DGM1 tiles, godot/trackgen/nordschleife.gd generator, corners, botline, sectors, tests, baseline and export check.

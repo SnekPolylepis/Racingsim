@@ -72,7 +72,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P6-01 | Spa v0 authored TrackAsset and generic dev drive scene | Astra | P3-02c, P3-03, P2-08 | done | rb/P6-01-spa; owner explicitly authorized acquisition, minimal checks and branch-only push |
 | P6-01-polish | Spa from measured data: widths and kerbs from SPW Orthophotos 2023, banking from SPW LiDAR cross-sections; authored runoffs halved on corner outsides | Claude | | review: Sol | rb/P6-01-polish; read "DONE P6-01-polish". Left: paved runoff and gravel extents (not measurable from the photos), Eau Rouge/Raidillon kerb profiles by hand |
 | P6-02a | Nordschleife section 1 groundwork | Gemini (content/tools only), Claude review | P6-01 | done (reviewed by Claude 2026-09-24; tree and terrain fixes in rb/look-tracks) | rb/P6-02a; DGM1 + OSM + return road, BotLine, probe |
-| P6-02b | Nordschleife remaining sections | Gemini (content/tools only), Claude review | P6-02a | open | |
+| P6-02b | Nordschleife remaining sections | Gemini (content/tools only), Claude review | P6-02a | claimed: Gemini | |
 | P6-03 | Monza (if still wanted) | owner | | done: no (2026-09-23) | not wanted |
 | props | Cones and other knock-over props as simple dynamic bodies (the rest of P4-03) | Claude | P6-01 | done | reviewed on main; PropSet in P4-06 game loop |
 | P7-02 | Docs rewritten for the v2 game: ARCHITECTURE, PHYSICS, LLM-GUIDE, TESTING, PLAYER-GUIDE, DATA-CONTRACTS; SOLVER-MATH and MACOS marked where they describe the legacy game | Claude | | review: Sol | rb/P7-02-docs; read "DONE P7-02" |
