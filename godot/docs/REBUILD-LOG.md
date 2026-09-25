@@ -2083,5 +2083,8 @@ Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71
 
 Gates: `run_gates.ps1 -All -Features` 35/35; laps are within the 2 % baselines.
 
+## 2026-09-24  DONE F-audio-leak  (Claude Opus 5.5)
+Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+1) "leaked at exit", which fails the windowed gate on stderr. Cause: quitting with the eleven looping players (8 engine layers, intake, tyres, road) still active let the audio server hold their playbacks past the exit check. `audio.gd` and `front_end.gd` now stop their players and drop the streams in `_exit_tree()`. Three `--verbose -- --features` runs: 77/0, zero leaks. `run_gates.ps1 -All -Features` 35/35.
+
 ## 2026-09-24  CLAIM P6-02b  (Gemini)
 Claimed P6-02b "Nordschleife: the full lap" on `rb/P6-02b-nordschleife`. Full ~20.8 km lap data from OSM and DGM1 tiles, godot/trackgen/nordschleife.gd generator, corners, botline, sectors, tests, baseline and export check.
