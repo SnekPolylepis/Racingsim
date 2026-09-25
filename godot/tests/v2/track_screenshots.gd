@@ -80,6 +80,12 @@ func shots() -> Array:
 		["nordschleife_s1", "ns-flugplatz", ["Flugplatz", -150.0]],
 		["nordschleife_s1", "ns-schwedenkreuz", ["Schwedenkreuz", -150.0]],
 		["nordschleife_s1", "ns-aremberg", ["Aremberg", -120.0]],
+		["nordschleife", "ns-full-adenauer-forst", ["Adenauer Forst", -100.0]],
+		["nordschleife", "ns-full-bergwerk", ["Bergwerk", -120.0]],
+		["nordschleife", "ns-full-karussell", ["Karussell", -80.0]],
+		["nordschleife", "ns-full-bruennchen", ["Bruennchen", -100.0]],
+		["nordschleife", "ns-full-pflanzgarten", ["Pflanzgarten", -100.0]],
+		["nordschleife", "ns-full-doettinger-hoehe", ["Doettinger Hoehe", -150.0]],
 	]
 
 

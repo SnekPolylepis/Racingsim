@@ -12,7 +12,8 @@ const PRESET_KEYS = ["roadster", "gt", "f296gt3"]
 const GENERATORS = {
 	"spa": "res://trackgen/spa.gd",
 	"proving_ground": "res://trackgen/proving_ground.gd",
-	"nordschleife_s1": "res://trackgen/nordschleife_s1.gd"
+	"nordschleife_s1": "res://trackgen/nordschleife_s1.gd",
+	"nordschleife": "res://trackgen/nordschleife.gd"
 }
 
 @export var track_id = "spa"

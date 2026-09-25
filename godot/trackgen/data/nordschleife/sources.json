@@ -1,50 +1,102 @@
 {
-  "acquired": "2026-09-23",
+  "acquired": "2026-09-23 / 2026-09-24",
   "osm_licence": "ODbL 1.0 (https://www.openstreetmap.org/copyright)",
   "dgm1_catalogue": "https://geoshop.rlp.de/opendata-dgm1.html",
   "dgm1_attribution": "\u00a9 GeoBasis-DE / LVermGeoRP 2026, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]",
   "dgm1_tiles": [
-    "dgm1_32_351_5581_1_rp_2025.tif",
-    "dgm1_32_351_5580_1_rp_2025.tif",
-    "dgm1_32_351_5579_1_rp_2025.tif",
-    "dgm1_32_351_5578_1_rp_2025.tif",
     "dgm1_32_351_5577_1_rp_2025.tif",
-    "dgm1_32_352_5581_1_rp_2025.tif",
-    "dgm1_32_352_5580_1_rp_2025.tif",
-    "dgm1_32_352_5579_1_rp_2025.tif",
-    "dgm1_32_352_5578_1_rp_2025.tif",
+    "dgm1_32_351_5578_1_rp_2025.tif",
+    "dgm1_32_351_5579_1_rp_2025.tif",
+    "dgm1_32_351_5580_1_rp_2025.tif",
+    "dgm1_32_351_5581_1_rp_2025.tif",
+    "dgm1_32_351_5582_1_rp_2025.tif",
+    "dgm1_32_351_5583_1_rp_2025.tif",
     "dgm1_32_352_5577_1_rp_2025.tif",
-    "dgm1_32_353_5581_1_rp_2025.tif",
-    "dgm1_32_353_5580_1_rp_2025.tif",
-    "dgm1_32_353_5579_1_rp_2025.tif",
-    "dgm1_32_353_5578_1_rp_2025.tif",
+    "dgm1_32_352_5578_1_rp_2025.tif",
+    "dgm1_32_352_5579_1_rp_2025.tif",
+    "dgm1_32_352_5580_1_rp_2025.tif",
+    "dgm1_32_352_5581_1_rp_2025.tif",
+    "dgm1_32_352_5582_1_rp_2025.tif",
+    "dgm1_32_352_5583_1_rp_2025.tif",
     "dgm1_32_353_5577_1_rp_2025.tif",
-    "dgm1_32_354_5581_1_rp_2025.tif",
-    "dgm1_32_354_5580_1_rp_2025.tif",
-    "dgm1_32_354_5579_1_rp_2025.tif",
+    "dgm1_32_353_5578_1_rp_2025.tif",
+    "dgm1_32_353_5579_1_rp_2025.tif",
+    "dgm1_32_353_5580_1_rp_2025.tif",
+    "dgm1_32_353_5581_1_rp_2025.tif",
+    "dgm1_32_353_5582_1_rp_2025.tif",
+    "dgm1_32_353_5583_1_rp_2025.tif",
+    "dgm1_32_354_5577_1_rp_2025.tif",
     "dgm1_32_354_5578_1_rp_2025.tif",
-    "dgm1_32_354_5577_1_rp_2025.tif"
+    "dgm1_32_354_5579_1_rp_2025.tif",
+    "dgm1_32_354_5580_1_rp_2025.tif",
+    "dgm1_32_354_5581_1_rp_2025.tif",
+    "dgm1_32_354_5582_1_rp_2025.tif",
+    "dgm1_32_354_5583_1_rp_2025.tif",
+    "dgm1_32_355_5577_1_rp_2025.tif",
+    "dgm1_32_355_5578_1_rp_2025.tif",
+    "dgm1_32_355_5579_1_rp_2025.tif",
+    "dgm1_32_355_5580_1_rp_2025.tif",
+    "dgm1_32_355_5581_1_rp_2025.tif",
+    "dgm1_32_355_5582_1_rp_2025.tif",
+    "dgm1_32_355_5583_1_rp_2025.tif",
+    "dgm1_32_356_5577_1_rp_2025.tif",
+    "dgm1_32_356_5578_1_rp_2025.tif",
+    "dgm1_32_356_5579_1_rp_2025.tif",
+    "dgm1_32_356_5580_1_rp_2025.tif",
+    "dgm1_32_356_5581_1_rp_2025.tif",
+    "dgm1_32_356_5582_1_rp_2025.tif",
+    "dgm1_32_356_5583_1_rp_2025.tif",
+    "dgm1_32_357_5577_1_rp_2025.tif",
+    "dgm1_32_357_5578_1_rp_2025.tif",
+    "dgm1_32_357_5579_1_rp_2025.tif",
+    "dgm1_32_357_5580_1_rp_2025.tif",
+    "dgm1_32_357_5581_1_rp_2025.tif",
+    "dgm1_32_357_5582_1_rp_2025.tif",
+    "dgm1_32_357_5583_1_rp_2025.tif",
+    "dgm1_32_358_5577_1_rp_2025.tif",
+    "dgm1_32_358_5578_1_rp_2025.tif",
+    "dgm1_32_358_5579_1_rp_2025.tif",
+    "dgm1_32_358_5580_1_rp_2025.tif",
+    "dgm1_32_358_5581_1_rp_2025.tif",
+    "dgm1_32_358_5582_1_rp_2025.tif",
+    "dgm1_32_358_5583_1_rp_2025.tif"
   ],
   "files": {
     "build_data.py": {
       "bytes": 18651,
       "sha256": "00675e7c3d41e6730df10429fd66552dc1f865fac031fca7a0ad285a59ae5cbf"
     },
+    "build_data_full.py": {
+      "bytes": 13319,
+      "sha256": "2c730a6c20b051523389cce051be5ce9b980e4989ae537be85535971ad635d26"
+    },
     "centreline.json": {
-      "bytes": 157700,
-      "sha256": "91c8c2951110437abd500b110b75a6bbb4e71cfe3c320837263c1b315f168b56"
+      "bytes": 146820,
+      "sha256": "efe1d6d10243962cbc51aeb7927d5940e668a0e100f00d21d792610cdf25ac1d"
+    },
+    "centreline_full.json": {
+      "bytes": 366662,
+      "sha256": "ee34da2822eff2a6494c2d91eb1a5b248c018a3ceab241e1d4ac7b0cc70acccb"
     },
     "dem.raw": {
       "bytes": 2560004,
       "sha256": "dc39f853b3516235b21d3b0a94da9f13d08f94341fe4b4df24c84dab4826904f"
     },
+    "dem_full.raw": {
+      "bytes": 5459080,
+      "sha256": "01c971fd4681a6a695d389cb53d9fa4a9218ec4c7ae685534954685fdaa666c2"
+    },
     "terrain.json": {
-      "bytes": 278,
-      "sha256": "1bac1797f55f4507c063866011b4ba9dcfe3ea13f983f1fc168dab131eb494e3"
+      "bytes": 264,
+      "sha256": "f5e8e918fe2bbbe0717f3c29161fbfd6bdfd16ab6b9691e50bc1085878309b96"
+    },
+    "terrain_full.json": {
+      "bytes": 285,
+      "sha256": "1c1e64e79b5501aa439ecc47467af75e1d171412c6d4dde4a10d35938b2b4488"
     },
     "README.md": {
-      "bytes": 1493,
-      "sha256": "9abca2ebf3fe2f7c9b30ef77df7b7d2416cb9d4cfdc81d74a8d59de1cc36ed5a"
+      "bytes": 1551,
+      "sha256": "cc519eb75eb5db98981e5621d633c1e51e65f4f375512d1ff79b97172ec7b646"
     },
     "licenses/dl-de-by-2.0.txt": {
       "bytes": 1394,

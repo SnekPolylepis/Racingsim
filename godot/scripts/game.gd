@@ -463,10 +463,14 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline_full.json")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain_full.json")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem_full.raw")
 		and ResourceLoader.exists("res://assets/trees/tree_atlas.png")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
+	ok = ok and load_v2_track("nordschleife") and track.id == "nordschleife" and track.length > 20000.0
 	print("V2 EXPORT ", "PASS" if ok else "FAIL")
 	var scene_tree = get_tree()
 	for player in find_children("*", "AudioStreamPlayer", true, false):
