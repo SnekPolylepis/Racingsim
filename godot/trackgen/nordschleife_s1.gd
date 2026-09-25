@@ -4,6 +4,7 @@ extends SceneTree
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const RoadPath = preload("res://scripts/track/road_path.gd")
 const RoadSection = preload("res://scripts/track/road_section.gd")
+const KerbMap = preload("res://trackgen/kerb_map.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
@@ -177,6 +178,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 			values["kerb_" + outside] = RoadSection.Kerb.RIBBED
 	# Weighted bank blend eliminates rate-of-change warnings
 	values.bank_deg = total_bank / maxf(total_bank_weight, 1.0)
+	# Traced kerbs (K-02) replace the rules above once the kerbs.json is reviewed.
+	KerbMap.apply(KerbMap.for_track("nordschleife_s1", DATA + "kerbs.json"), values, s, length)
 	return values
 
 
@@ -190,6 +193,7 @@ static func sections(data: Dictionary, measured: float, corners: Array) -> Array
 	for corner in corners:
 		for offset in [-110.0, -40.0, -35.0, 0.0, 25.0, 30.0, 80.0, 120.0]:
 			marks.append(fposmod(corner[1] + offset, length))
+	marks.append_array(KerbMap.marks(KerbMap.for_track("nordschleife_s1", DATA + "kerbs.json"), length))
 	marks.sort()
 	var keys: Array[RoadSection] = []
 	var previous = -1.0

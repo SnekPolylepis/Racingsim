@@ -460,9 +460,11 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
+		and FileAccess.file_exists("res://trackgen/data/spa/kerbs.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/kerbs.json")
 		and ResourceLoader.exists("res://assets/trees/tree_atlas.png")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
