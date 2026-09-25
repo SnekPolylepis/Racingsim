@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "track": "spa",
+  "source": "SPW Orthophotos 2023 Été",
+  "kerbs": [
+    {"corner":"La Source","side":"left","s_start":160,"s_end":360,"type":"unsure","colours":"red-white","width_m":0.9,"position":"outside","confidence":"high","crop":"s00160.jpg"},
+    {"corner":"Eau Rouge","side":"right","s_start":800,"s_end":1040,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"medium","crop":"s00840.jpg"},
+    {"corner":"Raidillon","side":"left","s_start":1080,"s_end":1240,"type":"unsure","colours":"red-white","width_m":0.9,"position":"outside","confidence":"medium","crop":"s01120.jpg"},
+    {"corner":"Les Combes","side":"right","s_start":2040,"s_end":2240,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"medium","crop":"s02080.jpg"},
+    {"corner":"Malmedy","side":"left","s_start":2240,"s_end":2520,"type":"unsure","colours":"red-white","width_m":0.9,"position":"outside","confidence":"medium","crop":"s02320.jpg"},
+    {"corner":"Bruxelles","side":"right","s_start":2680,"s_end":2920,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"medium","crop":"s02720.jpg"},
+    {"corner":"No Name","side":"left","s_start":2920,"s_end":3160,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"medium","crop":"s03000.jpg"},
+    {"corner":"Pouhon","side":"right","s_start":3520,"s_end":3840,"type":"unsure","colours":"red-white","width_m":0.9,"position":"outside","confidence":"medium","crop":"s03600.jpg"},
+    {"corner":"Fagnes","side":"left","s_start":3960,"s_end":4200,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"low","crop":"s04000.jpg"},
+    {"corner":"Stavelot","side":"right","s_start":4440,"s_end":4720,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"medium","crop":"s04480.jpg"},
+    {"corner":"Paul Frere","side":"right","s_start":4720,"s_end":5000,"type":"unsure","colours":"red-white","width_m":0.9,"position":"outside","confidence":"low","crop":"s04760.jpg"},
+    {"corner":"Blanchimont","side":"left","s_start":5640,"s_end":6000,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"medium","crop":"s05680.jpg"},
+    {"corner":"Bus Stop","side":"right","s_start":6560,"s_end":6920,"type":"unsure","colours":"red-white","width_m":0.9,"position":"inside","confidence":"medium","crop":"s06600.jpg"}
+  ],
+  "edge_lines": [
+    {"side":"left","s_start":0,"s_end":6995},
+    {"side":"right","s_start":0,"s_end":6995}
+  ]
+}

@@ -96,6 +96,16 @@ crossfall is hand authored, and bridges are not supplied by this terrain model.
 
 ## Measurements and reproduction
 
+## Kerbs
+
+`kerbs.json` records 13 visibly striped red/white kerb stretches traced from the
+SPW Orthophotos 2023 Été crops (`kerb-crops/`, 80 m square at 40 m spacing).
+Intervals are approximate; type is marked `unsure` because the overhead imagery
+does not establish kerb profile. Shadows and nearby runoff reduce confidence in
+the Fagnes and Paul Frere observations. Run
+`python godot/trackgen/data/tools/kerb_report.py` for counts and comparison with
+the LiDAR-derived `road-profile.json` kerb detections.
+
 - Original OSM GP polyline: 6,994.566584 m, 0.135% below nominal 7,004 m.
 - 699 planar points at roughly 10 m: polyline 6,989.813501 m.
 - 350 elevation keys spaced 19.984476 m along the **original** OSM arc.
