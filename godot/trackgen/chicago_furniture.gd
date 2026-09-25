@@ -150,10 +150,18 @@ static func _crossing(tools: Array, at: Dictionary, index: int, box: Callable) -
 			Color.WHITE,
 			basis
 		)
-	box.call(tools[0], base + flat * (lead - 3.2) + Vector3(0, 0.022, 0), Vector3(15.0, 0.01, 0.5), Color.WHITE, basis)
+	box.call(
+		tools[0],
+		base + flat * (lead - 3.2) + Vector3(0, 0.022, 0),
+		Vector3(15.0, 0.01, 0.5),
+		Color.WHITE,
+		basis
+	)
 	# Mast arm on the far right corner, reaching over the lanes.
 	var foot = base + flat * 9.0 + right * POLE_OFFSET
-	box.call(tools[1], foot + Vector3(0, ARM_HEIGHT * 0.5, 0), Vector3(0.32, ARM_HEIGHT, 0.32), Color.WHITE, basis)
+	box.call(
+		tools[1], foot + Vector3(0, ARM_HEIGHT * 0.5, 0), Vector3(0.32, ARM_HEIGHT, 0.32), Color.WHITE, basis
+	)
 	var top = foot + Vector3(0, ARM_HEIGHT - 0.3, 0)
 	box.call(tools[1], top - right * 4.9, Vector3(9.8, 0.24, 0.24), Color.WHITE, basis)
 	# Two heads over the two right-hand lanes, facing the driver (local +Z faces back along the route).
