@@ -2102,3 +2102,19 @@ The cleanup in `audio.gd` and `front_end.gd` moves from `_exit_tree()` to `_noti
 Gates: `run_gates.ps1 -All -Features` 36/36.
 
 Frame spikes: on the RTX 4080, `--v2-look --v2-track=nordschleife_s1` shows a worst frame of 6.3-7.8 ms in all six modes, with no spikes. The Mac's 114-119 ms spikes (720p Authentic, Native) came right after mode switches, which fits Metal compiling pipelines on first use. That needs a Mac re-check; it can't be reproduced on Windows.
+
+## 2026-09-25  CLAIM Look-9  (Claude Sonnet 5)
+NFSU nights on branch `rb/look-9-nights` (not on `main`): wet-road specular streaks from lamps and the
+car's own headlights, colour tuned against `docs/art/reference/nfsu-night-*.jpg`, glowing trackside
+structures, speed blur verified. Paused mid-verification for a task switch to Look-10; full state in
+`rb/look-9-nights`'s own REBUILD-LOG entries (CLAIM/PAUSED), not repeated here. Not merged, no PR yet.
+
+## 2026-09-25  CLAIM Look-10  (Claude Sonnet 5)
+Forest floor and roadside vegetation on branch `rb/look-10-undergrowth`: undergrowth cards (ferns,
+brambles, long grass, bushes, saplings) between and under the trees so no bare lawn shows at driving
+distance, a darker forest-floor ground tint under canopy, at least 3 more deciduous species in the tree
+atlas, and Nordschleife hedges/uncut verge grass. Not touching kerbs (`trackgen/data/*/kerbs.json`), car
+bodies (`scripts/cars/`, `assets/cars/`), Look-9's night lighting (`road_v2.gdshader`'s night branch,
+`track_lights.gd`, `apply_time_of_day()` — that branch is unmerged WIP, out of scope here regardless),
+or the full Nordschleife (`trackgen/nordschleife.gd`, `trackgen/data/nordschleife/` — Gemini's;
+`nordschleife_s1.gd` is fair game).
