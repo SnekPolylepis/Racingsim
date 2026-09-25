@@ -1833,3 +1833,17 @@ From the owner's Mac check: a TrackAsset baked by a headless run (the gates) was
 - Merged today: #25 F-track-picker, #26 F-P4-03-corners, #28 F-ci-ui, #27 Look-tracks, #29 Look-5. Only docs conflicted; a duplicated LLM-GUIDE paragraph was merged into one.
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0. After the run, `tracks3d-headless/` holds the gate bakes and `tracks3d/` only windowed ones.
+
+## 2026-09-24  DONE NS-section part 1: a narrow, enclosed Nordschleife  (Claude Opus 5.5)
+Owner feedback: the Nordschleife felt flat and open, not planted in the landscape. Causes: tarmac runoff of 2.5–10.5 m plus a 6 m flat verge each side, armco about 9.7 m from the tarmac, no tree within 24 m of the centreline, and terrain blended to road level over 30 m.
+- **Roadside (trackgen/nordschleife_s1.gd):**
+  - A 0.5 m grass shoulder, growing to 2.5 m on corner outsides; the paddock keeps its tarmac.
+  - A 1.5 m verge, with the armco 0.3 m beyond it, about 2.3 m from the tarmac.
+  - The forest's near band starts 1.5 m past the verge (34 per 100 m), and the deep band runs 18–120 m.
+  - Trees are cleared only within 9.5 m of any centreline.
+  - Terrain mesh 10 → 5 m. CACHE_REVISION 3.
+- **Terrain stitch (scripts/track/terrain.gd):** under a road footprint the ground is now raised into an embankment as well as lowered (up to `EMBANK_MAX_M` 6 m; deeper hollows are left, as bridges). Before, a road above the ground left a hollow under the verge. With the narrow verges this appeared as a 2–5 m ditch behind the armco at s 1880–1950, which the trench probe caught.
+- **Result (windowed captures):** Hatzenbach and Flugplatz now show armco close on both sides, a forest wall behind it and no bare horizon.
+- **Not fixed:** banks and cuttings. `dem.raw` is DGM1 resampled to 20 m per pixel, and the elevation keys are every 20 m, so the data holds no roadside relief. NS-section part 2 needs the 20 DGM1 1 m tiles re-fetched and a corridor DEM at 1–2 m (owner approval for the download pending).
+
+Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.

@@ -29,6 +29,8 @@ const CELL_GRID = 50.0
 ## The under-road drop at the footprint's outer edge (m) and how fast it grows inwards (m per m).
 const EDGE_DROP_M = .05
 const EDGE_DROP_SLOPE = .1
+## Deepest hollow under a road footprint that is filled into an embankment; anything deeper is a bridge gap.
+const EMBANK_MAX_M = 6.0
 @export_group("Heightmap")
 ## Grayscale or HDR heightmap texture (EXR or 16-bit PNG).
 @export var heightmap: Texture2D
@@ -270,7 +272,12 @@ func stitch_heights(grid: Dictionary, roads: Array) -> void:
 					var p_surf = st_eval.pos + fr_eval[0] * lat + fr_eval[1] * h_loc
 					var y_road_surf = (road.transform * p_surf).y
 					var drop = minf(under_road_drop_m, EDGE_DROP_M + (edge_lat - lat_mag) * EDGE_DROP_SLOPE)
-					data[v_idx] = minf(h_orig, y_road_surf - drop)
+					var target = y_road_surf - drop
+					# Under the road footprint the ground hugs the road: lowered where it would poke through, and
+					# raised into an embankment where it lies below (a verge must not overhang a hollow). Ground more
+					# than EMBANK_MAX_M below is a real gap (a bridge or viaduct) and is left alone.
+					if h_orig > target or target - h_orig <= EMBANK_MAX_M:
+						data[v_idx] = target
 				else:
 					var d_out = maxf(0.0, lat_mag - edge_lat)
 					if d_out <= blend_m:
