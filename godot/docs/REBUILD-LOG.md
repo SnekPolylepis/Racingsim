@@ -2302,7 +2302,7 @@ Rebuilt v0.1.0-preview.6 from main with NFSU nights and replaced both zips and t
 ## 2026-09-25 CLAIM CHI-01 (Codex)
 Owner assigned the complete Chicago circuit; branch `rb/CHI-01-chicago`. All work, including this claim, stays on the branch; no main changes or merge, overriding the queue default. Scope: Chicago generator/data/scenery, track registration and export integration, probes/laps/screenshots, and corresponding documentation. Jev route HIGH 0.37.
 
-## 2026-09-25 VERIFY CHI-01 (Codex)
+## 2026-09-25 DONE CHI-01 (Codex)
 
 Implemented on `rb/CHI-01-chicago`; owner explicitly requires an unmerged branch. The 8,123.44 m
 Chicago circuit includes Michigan Avenue, Jackson Drive, Lake Shore Drive and overlapping Lower /
@@ -2333,3 +2333,6 @@ Mac M4 / Godot 4.6.2 evidence is in `docs/rebuild/chicago/`:
 Geographic scaffold and route map: `trackgen/data/chicago/README.md` / `route.svg`. The city is an
 authored PS2-style blockout, not a surveyed city model or the NASCAR circuit. Daylight and night
 sightlines are separate from full driving tests; Intel/Windows hardware were not tested locally.
+
+Final decision: **Jev gate COMPLETE 0.94**. Implementation and required local checks complete;
+branch remains unmerged for Claude/owner review.

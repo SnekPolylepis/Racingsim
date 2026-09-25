@@ -4,7 +4,7 @@
       "python3",
       "godot/tools/ci_gates.py",
       "--godot",
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--jobs",
       "2"
     ],
@@ -15,7 +15,7 @@
   },
   "perf-chassis_spike": {
     "command": [
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--headless",
       "--path",
       "godot",
@@ -32,7 +32,7 @@
   },
   "perf-footprint": {
     "command": [
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--headless",
       "--path",
       "godot",
@@ -46,7 +46,7 @@
   },
   "perf-barrier": {
     "command": [
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--headless",
       "--path",
       "godot",
@@ -60,7 +60,7 @@
   },
   "perf-props": {
     "command": [
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--headless",
       "--path",
       "godot",
@@ -74,7 +74,7 @@
   },
   "perf-track_asset": {
     "command": [
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--headless",
       "--path",
       "godot",
@@ -88,7 +88,7 @@
   },
   "perf-terrain": {
     "command": [
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--headless",
       "--path",
       "godot",
@@ -102,7 +102,7 @@
   },
   "features": {
     "command": [
-      "tools/Godot.app/Contents/MacOS/Godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
       "--path",
       "godot",
       "--",
@@ -126,7 +126,7 @@
   },
   "export-check": {
     "command": [
-      "build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
+      "godot/build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
       "--headless",
       "--",
       "--v2-export-check",
@@ -139,7 +139,7 @@
   },
   "export-chicago-smoke": {
     "command": [
-      "build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
+      "godot/build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
       "--headless",
       "--",
       "--v2-smoke",
