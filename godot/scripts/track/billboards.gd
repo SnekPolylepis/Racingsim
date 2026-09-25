@@ -9,6 +9,7 @@ enum Side { LEFT, RIGHT }
 
 const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const NightGlow = preload("res://scripts/track/night_glow.gd")
 
 @export_group("Placement")
 @export var follow_road: NodePath
@@ -95,10 +96,7 @@ static func billboard_mesh(w: float, h: float, elev: float, r_post: float) -> Ar
 	SceneryBuilder.add_quad(st, p40, p50, p51, p41, col_stripe1)
 
 	st.generate_normals()
-	var mat = StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.cull_mode = BaseMaterial3D.CULL_BACK
-	st.set_material(mat)
+	st.set_material(NightGlow.facade_material())
 	return st.commit()
 
 

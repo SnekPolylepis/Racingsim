@@ -198,16 +198,57 @@ car against a distinctly cooler, flatter background. No change needed here; it's
 has a reference frame confirming it.
 
 **Nights (NFS Underground)**, from `nfsu-night-*.jpg` (mean saturation 0.28, luminance 0.20,
-std-dev 0.15 over three frames):
-- The road is wet-looking: long specular streaks of every light source run down the tarmac towards
-  the camera (`-wet-street-reflections`, `-wet-start-grid`). That is the signature look.
-- Building walls with lit windows, signs and neon enclose the road on both sides, and the sky is a
-  dark blue-grey with a skyline, never black and never empty.
-- Colour is teal/blue ambient against orange/amber lamps. Lane markings are bright yellow and white.
-- Motion blur and a light bloom at speed (`-motion-blur-native`, a native PS2 frame).
-Our circuits aren't cities, so the rules to carry over are: the wet specular road with light streaks
-(Look-2 has the start of this), coloured ambient against amber lamps, glowing trackside structures,
-and no black void beyond the lit area.
+std-dev 0.15 over three frames). **Look-9 (2026-09-25) implemented and measured this section:**
+- **Wet road streaks.** `road_v2.gdshader` already had per-lamp streaks (Look-2, driven by
+  `track_lights.gd`'s baked `lamp_data`). Look-9 added a second, independent streak standing in for the
+  car's own headlights: a camera-proximity glow using Godot's built-in `CAMERA_POSITION_WORLD`, narrow
+  across the road (reuses the shader's existing lateral term) and fading over about 26 m — no per-frame
+  uniform plumbing needed, since the camera always tracks the car. It reads clearly in every baseline
+  shot as a bright pool stretching from the car toward the horizon
+  (`docs/rebuild/screenshots/look-9/nordschleife-start.png`, `spa-pit-straight.png`), matching
+  `nfsu-night-wet-street-reflections.jpg`'s signature look. Grip never changes with it (unchanged from
+  Look-2). PS2-style approximation, not a real reflection, per the task's own framing — lit trackside
+  structures don't separately feed this system, a known gap (below).
+- **No black void.** New `shaders/night_glow.gdshader` / `scripts/track/night_glow.gd`: a shared facade
+  material for `pit_building.gd`/`grandstand.gd`/`gantry.gd`/`billboards.gd` (material swap only —
+  their geometry-building code is untouched). On near-vertical faces at Afterhours, a saturated surface
+  (a gantry start light, a billboard's printed stripe) glows in its own colour, and a desaturated wall
+  (concrete, doors, steel) gets a procedural amber window grid keyed off world position, so no UV
+  changes were needed in any builder. Confirmed working with a close-up day/night comparison: a
+  billboard's red/blue panel is flat and matte by day, clearly backlit at night, identical geometry.
+  Zero added draw calls (same meshes, only the material differs). Combined with the hill silhouette
+  (Look-6, dark against the lit sky at night) this is what keeps the horizon from reading as empty.
+- **Colour, measured** (`docs/art/reference/color_stats.py` on the 9 fixed
+  `docs/rebuild/screenshots/look-9/` shots, excluding the day-comparison frame):
+
+  | | mean saturation | mean luminance |
+  |---|---:|---:|
+  | NFSU target (`nfsu-night-*.jpg`) | 0.28 | 0.20 |
+  | Before Look-9 | 0.36 | 0.17 |
+  | After Look-9 | 0.31 | 0.21 |
+
+  Tuned in three measured rounds: the night sky's top colour (`retro_assets.gd::panorama()`, was
+  `0b1035`, saturation 0.79 — much more saturated purple than the NFSU frames' dark blue-grey), the
+  `hills_panorama()` forest-ridge colour (was `0b121c`, saturation 0.61), the night ambient
+  (`56628c`→`656e8c`, energy .34→.40 for luminance) and the moon light colour (`8ca6df`→`a1b4df`) —
+  same hues throughout, lower saturation, per `apply_time_of_day()`. Landed close on the open circuits
+  (Proving Ground 0.27-0.31, Spa 0.25-0.30) but the Nordschleife's dense forest enclosure stayed near
+  0.41 regardless of ambient/moon colour changes: with the sky mostly hidden by canopy, the tree cards'
+  own photographic albedo (vertex-lit, so it doesn't re-hue much with the light tint) dominates more
+  than ambient colour does — and NFSU has no forest-circuit reference to check this specific case
+  against, only city streets. Acceptable but not fully closed; see the gap table.
+- **Speed blur.** Already generic and active, day and night: Look-3's `retro_renderer.gd` history blend
+  (`speed_blur` setting × car speed above 20 m/s) needed no Look-9 changes. Verified still firing by
+  inspection of the render chain, not rebuilt.
+
+**Cost, before → after Look-9** (`tests/v2/night_screenshots.gd`'s 9 fixed shots, Linux cloud,
+llvmpipe software GL — absolute ms aren't meaningful across hardware, but the delta is): draw calls
+identical shot-for-shot both before and after (624, 615, 432, 628, 575, 548, 645, 657, 490) — the
+headlight streak is pure shader math on the existing road mesh and `night_glow` is a material swap, so
+neither adds geometry or draw calls. GPU ms moved within measurement noise (±0.3 ms, no consistent
+direction). A full-lap Spa sweep (1050 frames, chase view every 20 m, vsync off) after Look-9: mean
+8.61 ms GPU, worst 25.82 ms, worst 684 draw calls — no comparable before number exists (that run hit the
+capture script's timeout before reaching the sweep in the pre-Look-9 baseline).
 
 ## Cars
 
@@ -231,14 +272,15 @@ baseline captures and the measurements above:
 | 3 | ~~No distant horizon silhouette~~ **Done (Look-6)** | `RetroAssets.hills_panorama()` paints three forested ridges per circuit into the sky (Ardennes, Eifel, generic), day and night; before: `baseline` at Look-0 | Tune ridge height/colour against real Spa and Eifel photos when one is on the board |
 | 4 | ~~Canopy doesn't close~~ **Done (Look-6); ground closed (Look-10)** | Cards 8-30 m tall, widths jittered up to 1.4x, near band 56/100 m on the Nordschleife (34 before), 28/100 m at Spa (18); `ns-hatzenbach` reads as GT4's forest wall. Look-10 added a second card atlas (fern, bramble, long grass, flowering shrub, sapling) scattered from just behind the barriers through the near forest band, plus a darker forest-floor ribbon under the canopy, so bare mown lawn no longer shows between trunks | Still open: canopy itself still shows sky gaps between individual tree cards at driving distance (see "Trackside enclosure" below) — a card-height/overlap fix, not a ground one |
 | 5 | ~~Trees are flat single-colour cone cards~~ **Done (Look-6); more deciduous (Look-10)** | 2048 px atlas of ten CC0 Poly Haven cut-outs (three spruce, two fir, three deciduous — beech, oak, birch — two bush; THIRD-PARTY.md), instanced from one MultiMesh per band with a per-instance atlas cell and tint. Poly Haven has no literal oak/birch model; island_tree_02/03 stand in as the closest CC0 broadleaf/multi-stem renders | Mixed age is still only height jitter within each species' range, not distinct young/old card art |
-| 6 | Cars are procedural low-poly lofts | Owner verdict; `gt4-car-detail-slr.jpg` | Modelled bodies (CAR-01 Miata first) |
-| 7 | Armco is a single ribbed band | GT4: double or triple rails on dark posts | Rails on posts, 0.75-1 m |
+| 6 | ~~Cars are procedural low-poly lofts~~ **Done (CAR-01), one of three** | The MX-5 NA is a credited real model (23,264 tri exterior); GT and 296 GT3 are still procedural lofts | A real body for GT and 296 GT3 if the owner wants the whole grid modelled |
+| 7 | ~~Armco is a single ribbed band~~ **Done (Look-7)** | Double/triple corrugated rails on dark posts, 0.45-0.9 m tall, ≤3 m post spacing | — |
 | 8 | ~~Day fog to 2.4 km exposes a bare horizon~~ **Done (Look-6)** | Fog end 1.15 km, `camera.far` 1250, density 1.0 at the end; the hill ridges take over where the fog closes | — |
+| 9 | ~~No NFS Underground night presentation~~ **Done (Look-9)** | Camera-proximity headlight streak, glowing trackside structures (`night_glow.gdshader`), colour tuned to sat 0.31/lum 0.21 against the NFSU target of 0.28/0.20 | Nordschleife's forested night views still measure sat ~0.41 (see "Nights", above) — no forest-circuit NFSU reference exists to tune against; lit structures don't yet feed the road's wet-streak system, only lamps and the car's own headlights do |
 | — | Nordschleife sat on the terrain (no banks/cuttings) | **Fixed** by NS-section part 2: DGM1 at 5 m, 6 m blend | — |
 
-Not ranked (out of this round's evidence): NFS Underground night presentation (no reference collected
-yet), barrier-type variety (tyre walls), Spa's far-forest density against a real photo, kerb visibility
-at exact apex stations rather than approach shots.
+Not ranked (out of this round's evidence): barrier-type variety (tyre walls), Spa's far-forest density
+against a real photo, kerb visibility at exact apex stations rather than approach shots (K-01/K-01b is
+tracking a proper kerb retrace).
 
 ## Output and UI
 

@@ -2246,3 +2246,49 @@ Sonnet paused this before running anything. Finished here:
 
 ## 2026-09-25  RELEASE Rebuild Preview 6  (Claude Opus 5.5)
 v0.1.0-preview.6 contains Look-10 undergrowth, the K-01b/K-02 traced kerbs, the Spa braking boards (Look-11), the particle effects (Look-12) and NS-bumps. The exported Windows exe gave V2 EXPORT PASS and a windowed `-- --features` 77/0 with empty stderr. The macOS zip was built from the same commit. Look-9 (nights) is still unmerged WIP.
+
+## 2026-09-25  CLAIM Look-9  (Claude Sonnet 5)
+NFSU nights on branch `rb/look-9-nights`, per ART-DIRECTION.md's "Nights (NFS Underground)" rules and
+`docs/art/reference/nfsu-night-*.jpg`: wet-road specular streaks from lamps and the car's own headlights
+(`shaders/road_v2.gdshader`), teal/blue-vs-amber colour tuned and measured against the NFSU frames
+(`apply_time_of_day()`), glowing trackside structures so nothing reads as a black void (new
+`scripts/track/night_glow.gd`/`shaders/night_glow.gdshader`, wired into `pit_building.gd`,
+`grandstand.gd`, `gantry.gd`, `billboards.gd`), and speed blur (already generic in Look-3's
+`retro_renderer.gd` history chain — verified active, not rebuilt). Not touching kerbs
+(`trackgen/data/*/kerbs.json`), car bodies (`scripts/cars/`, `assets/cars/`), or
+`trackgen/nordschleife_s1.gd`'s elevation keys, per the task's stated scope.
+
+## 2026-09-25  PAUSED Look-9  (Claude Sonnet 5)
+All implementation and colour-tuning work is done and pushed to `rb/look-9-nights` (not merged):
+- `shaders/road_v2.gdshader`: camera-proximity headlight streak.
+- `shaders/night_glow.gdshader` + `scripts/track/night_glow.gd`: glowing trackside structures, wired
+  into `pit_building.gd`/`grandstand.gd`/`gantry.gd`/`billboards.gd` and `game.gd::apply_track_night()`.
+  Confirmed working with a close-up day/night comparison (a billboard panel visibly backlit at night,
+  identical to day otherwise).
+- `scripts/retro_assets.gd`, `scripts/game.gd::apply_time_of_day()`: three rounds of colour tuning
+  against `docs/art/reference/nfsu-night-*.jpg`, measured with `color_stats.py`. Final: mean saturation
+  0.31, luminance 0.21 against the NFSU target of 0.28/0.20 (started at 0.36/0.17). Open circuits land
+  close (0.25-0.31); the Nordschleife's forest enclosure stays near 0.41 — no further tuning closed
+  this, and it's likely the tree cards' own albedo, not ambient colour (see ART-DIRECTION.md "Nights").
+- `tests/v2/night_screenshots.gd`: output folder to `docs/rebuild/screenshots/look-9`; final 10 shots
+  committed, draw calls identical shot-for-shot to the pre-Look-9 baseline.
+- `docs/ART-DIRECTION.md`: "Nights" section and gap table (new row 9) updated with the above; also
+  corrected two stale rows in passing (row 6 cars, row 7 armco — both shipped since this table was last
+  touched).
+
+**Left to do, next session:** `python tools/ci_gates.py` and the windowed `-- --features` check hadn't
+finished on the final tree (both were interrupted by a task switch to Look-10, not by a failure — the
+last gates attempt had run 27 of 34 suites, 0 failures, before being stopped for the task switch;
+`scenery`, `test_surfaces_scene`, `nordschleife_s1`, the parse check and the three `laps` suites hadn't
+run yet; the two `--features` attempts hit the harness's own 300 s/900 s timeout while baking tracks
+under CPU contention, not a game error). Also owed: the DONE log entry and QUEUE row (`claimed: Sonnet`
+→ `review: Claude`), and the PR. Re-run both checks alone (not parallel with other Godot processes —
+that contention is likely why `--features` timed out), read stderr, then write DONE and open the PR
+from `rb/look-9-nights` (already pushed through commit `768c9db`).
+
+## 2026-09-25  REVIEW Look-9 (Sonnet): finished and accepted  (Claude Opus 5.5)
+Sonnet paused this with verification owed. Finished here:
+- **Merge:** main merged in; the ART-DIRECTION gap rows now take 4-5 from Look-10 and 6-7 from Look-9.
+- **Gates:** `run_gates.ps1 -All -Features` 37/37. The windowed features check passes 77/0; the earlier timeouts were CPU contention during bakes.
+- **Night shots** recaptured on the merged tree (`docs/rebuild/screenshots/look-9/`): wet headlight streak, sodium halos, lit structures, and a sky that is never black.
+- **Cost:** a full Spa lap sweep at night averages 0.96 ms per frame, worst 1.74 ms.
