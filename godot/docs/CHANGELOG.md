@@ -1,5 +1,26 @@
 # Native changelog
 
+## 2026-09-24 — Rebuild Preview 5
+
+- Cars: replaced the procedural roadster with a modelled Mazda MX-5 NA body and pop-up lights.
+- Scenery: photographic mixed-species forests, wooded hill skylines and fog to about 1 km.
+- Road: sharp 2K photo asphalt with stains, repair patches and tar seams; white edge lines.
+- Barriers: double Armco rails on dark posts. Nordschleife S1 is narrow and enclosed, with forest banks and cuttings.
+- Known limits: Miata night tail-glow sits low; kerb positions are approximate; only Nordschleife section 1 is included.
+
+## 2026-09-24 — Rebuild Preview 4
+
+- Look: new Spa and Nordschleife daylight shading and trackside colour; scenery rebuilds after headless bakes.
+- Front end: Nordschleife is selectable and the settings panel fits properly.
+- Physics: wall-corner contacts retain each wall's kind and direction.
+- Performance: car and scenery draw calls fell about 75% (Spa: 575 to 136 per view).
+
+## 2026-09-24 — Rebuild Preview 3
+
+- Lighting: amber sodium lamps, road glow and headlights for Afterhours.
+- Renderer: 640×448 PS2-style image with glow, motion persistence, CRT and 480i options, plus Authentic UI.
+- Scenery: crowds, grandstands, catch fences, tree cards, billboards, gantries and marshal posts on all circuits.
+
 ## 2026-09-24 — Rebuild Preview 2
 
 - Circuits: Nordschleife section 1, T13 to Aremberg (DGM1 terrain, OSM centreline), in the menu, the

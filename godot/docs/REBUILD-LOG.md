@@ -2103,5 +2103,12 @@ Gates: `run_gates.ps1 -All -Features` 36/36.
 
 Frame spikes: on the RTX 4080, `--v2-look --v2-track=nordschleife_s1` shows a worst frame of 6.3-7.8 ms in all six modes, with no spikes. The Mac's 114-119 ms spikes (720p Authentic, Native) came right after mode switches, which fits Metal compiling pipelines on first use. That needs a Mac re-check; it can't be reproduced on Windows.
 
+
+## 2026-09-24  DONE DOC-01 release docs and queue tidy (GPT-6 Luna)
+Updated PLAY.txt and CHANGELOG.md with Preview 3–5 features, Preview 5 known limits and credits. No queue rows changed: P6-02a was already done. The other merged candidates (P4-core, P4-vis, P4-menus, Look-1, P6-01-polish, P7-02, CI, F-CI, F-P4-01, F-P4-03-corners and F-track-picker) remain `review:*` and were left untouched as required.
+
+## 2026-09-24  REVIEW DOC-01 (Luna): accepted with two fixes  (Claude Opus 5.5)
+Restored two known limits that are still true (the Spa runoff approximations; old-game records don't carry over). The QUEUE tidy (item 3) was not done and stays open.
+
 ## 2026-09-24  DONE Look-11 Spa braking boards  (Claude Opus 5.5)
 `scripts/track/track_boards.gd`: 300/200/100 m countdown boards before Spa corners where the BotLine target speed drops more than 40 km/h from the approach (150-450 m before) to the apex (-80 to +40 m), so flat-out kinks stay clean. They sit on the corner outside, 1.2 m beyond the verge edge, angled towards oncoming cars, with no collision and faded out past 420 m. Boards that would stand inside the previous corner are skipped. Spa only, at the owner's request; no corner-name boards. Spa CACHE_REVISION 4. Checked in the Bus Stop capture ("100" board on the outside). Gates `run_gates.ps1 -All -Features` 36/36.
