@@ -2285,3 +2285,10 @@ under CPU contention, not a game error). Also owed: the DONE log entry and QUEUE
 → `review: Claude`), and the PR. Re-run both checks alone (not parallel with other Godot processes —
 that contention is likely why `--features` timed out), read stderr, then write DONE and open the PR
 from `rb/look-9-nights` (already pushed through commit `768c9db`).
+
+## 2026-09-25  REVIEW Look-9 (Sonnet): finished and accepted  (Claude Opus 5.5)
+Sonnet paused this with verification owed. Finished here:
+- **Merge:** main merged in; the ART-DIRECTION gap rows now take 4-5 from Look-10 and 6-7 from Look-9.
+- **Gates:** `run_gates.ps1 -All -Features` 37/37. The windowed features check passes 77/0; the earlier timeouts were CPU contention during bakes.
+- **Night shots** recaptured on the merged tree (`docs/rebuild/screenshots/look-9/`): wet headlight streak, sodium halos, lit structures, and a sky that is never black.
+- **Cost:** a full Spa lap sweep at night averages 0.96 ms per frame, worst 1.74 ms.
