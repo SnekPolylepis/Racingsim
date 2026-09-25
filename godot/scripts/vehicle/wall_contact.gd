@@ -41,6 +41,8 @@ static func step(car, query) -> int:
 		car.pos_y -= back.y
 		car.pos_z -= back.z
 	var cs = query.contacts(Transform3D(b, car.pos + b * car.hull_center))
+	# Presentation only (sparks, scripts/particles.gd).
+	car.wall_hits = cs
 	if cs.is_empty():
 		return 0
 	# Push out of each penetration along its own normal, deepest first. A later contact only gets the

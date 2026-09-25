@@ -2033,6 +2033,9 @@ Claim K-01 "Kerb reference data" for Spa-Francorchamps and Nordschleife section 
 ## 2026-09-24  REVIEW K-01 (Luna): merged as a coarse first draft  (Claude Opus 5.5)
 Data and tools only; nothing reads them yet, so merging is safe. **Not good enough to place kerbs from:** Spa has 13 entries (the real circuit has dozens), several spanning 150-250 m (La Source 160-360 m), and every type is "unsure"; the Nordschleife has 8. The crop tool and `kerb_report.py` are useful. Follow-up K-01b: retrace each corner at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb, before any generator uses the file.
 
+## 2026-09-24  CLAIM K-01b  (GPT-6 Luna)
+Claim K-01b to retrace Spa and Nordschleife S1 kerbs at corner-apex scale. Branch `rb/K-01b-kerbs`.
+
 ## 2026-09-24  MAC CHECK five open PRs on a real GPU  (Claude Opus 5.5, macOS)
 Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71f334935, `Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 (Apple9)`. Fresh clone, `tracks3d` cache deleted before each branch, `--import`, then the owner's steps. No code changed.
 
@@ -2084,6 +2087,17 @@ Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71
 Gates: `run_gates.ps1 -All -Features` 35/35; laps are within the 2 % baselines.
 
 ## 2026-09-24  DONE F-audio-leak  (Claude Opus 5.5)
+Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+1) "leaked at exit", which fails the windowed gate on stderr. Cause: quitting with the eleven looping players (8 engine layers, intake, tyres, road) still active let the audio server hold their playbacks past the exit check. `audio.gd` and `front_end.gd` now stop their players and drop the streams in `_exit_tree()`. Three `--verbose -- --features` runs: 77/0, zero leaks. `run_gates.ps1 -All -Features` 35/35.
+
+## 2026-09-24  DONE K-01b kerb apex retrace (GPT-6 Luna)
+
+- Revisited both sides across the 51 Spa (17 corners) and 48 Nordschleife S1 (16 corners) 40 m, 1200 × 1200 apex crops, their ±60 m neighbours, and supplemental between-corner crops. Consolidated continuous painted strips; separate inside/outside strips are separate entries. Bounds are read from 5 m ticks to the nearest 2 m. Spa colours recorded as red-cream; no clearly raised sausage kerb is visible.
+- Spa: 29 physical runs, 3,820 m total; types flat 29; confidence high 5, medium 20, low 4. Low confidence: Fagnes left/right 4280-4500 m (shadow and paved margins soften the exact ends) and Paul Frere left/right 4876-5024 m (paddock structures and shadows partly obscure the painted boundaries).
+- Nordschleife S1: 13 runs, 1,076 m; types flat 10, ribbed 3; confidence high 4, medium 7, low 2. The lower count than 20-40 is because the crops show only white edge lines or canopy/shadow at most remaining bends; no kerb was entered unless its paint or ribbed profile was visible. Low confidence: Hocheichen right 1370-1450 m and Hocheichen exit right 1536-1566 m, where canopy shadow softens the outer edge. No entries are shorter than 12 m.
+- Examples (before → after): La Source had left 156-166, 196-206 and 216-226 m; now the continuous outside strip is left 144-258 m, and the separate inside strip is right 150-168 m. Hatzenbogen right 322-360 m is now 322-460 m, following the same painted strip through the adjacent crop. Pouhon right 3678-3688, 3748-3768 and 3798-3818 m is now one right 3640-3838 m run; the separate left 3640-3838 m strip is also recorded.
+- `kerb_report.py` Spa profile comparison: profile-only right 3978-3998 m; photo-only left 165-195, 225-258, 826-846, 926-946, 966-1006, 1046-1150, 2204-2347, 2357-2452, 2767-2788, 2907-2947, 2957-3200, 3640-3838, 4280-4308, 4318-4500, 4876-5024, 5188-5248, 5379-5439 and 6496-6519, 6529-6559 m; photo-only right 878-1150, 2204-2452, 3007-3107, 3117-3187, 3640-3677, 3687-3747, 3767-3797, 3817-3838, 4280-4500, 4876-4898, 4948-4988, 5048-5068 and 6496-6600 m. These are comparison gaps against the coarse road-profile kerb flags.
+- JSON validation and the no-overlap / 4 m spacing check pass; all crop references resolve. The sanity script found no entry shorter than 12 m. Queue status remains `review: Claude`.
+
 Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+1) "leaked at exit", which fails the windowed gate on stderr. Cause: quitting with the eleven looping players (8 engine layers, intake, tyres, road) still active let the audio server hold their playbacks past the exit check. `audio.gd` and `front_end.gd` now stop their players and drop the streams in `_exit_tree()`. Three `--verbose -- --features` runs: 77/0, zero leaks. **Correction:** the gate run for #43 actually failed `features`, and it was merged by mistake. Using `_exit_tree()` broke the menu tones, because the Look-3 presentation chain re-parents the UI root, which exits and re-enters the tree, so the cleanup cleared `ui_sounds` mid-game. Fixed in F-audio-leak-2.
 
 ## 2026-09-24  DONE F-audio-leak-2  (Claude Opus 5.5)
@@ -2102,6 +2116,40 @@ The cleanup in `audio.gd` and `front_end.gd` moves from `_exit_tree()` to `_noti
 Gates: `run_gates.ps1 -All -Features` 36/36.
 
 Frame spikes: on the RTX 4080, `--v2-look --v2-track=nordschleife_s1` shows a worst frame of 6.3-7.8 ms in all six modes, with no spikes. The Mac's 114-119 ms spikes (720p Authentic, Native) came right after mode switches, which fits Metal compiling pipelines on first use. That needs a Mac re-check; it can't be reproduced on Windows.
+
+
+## 2026-09-24  DONE DOC-01 release docs and queue tidy (GPT-6 Luna)
+Updated PLAY.txt and CHANGELOG.md with Preview 3–5 features, Preview 5 known limits and credits. No queue rows changed: P6-02a was already done. The other merged candidates (P4-core, P4-vis, P4-menus, Look-1, P6-01-polish, P7-02, CI, F-CI, F-P4-01, F-P4-03-corners and F-track-picker) remain `review:*` and were left untouched as required.
+
+## 2026-09-24  REVIEW DOC-01 (Luna): accepted with two fixes  (Claude Opus 5.5)
+Restored two known limits that are still true (the Spa runoff approximations; old-game records don't carry over). The QUEUE tidy (item 3) was not done and stays open.
+
+## 2026-09-24  DONE Look-11 Spa braking boards  (Claude Opus 5.5)
+`scripts/track/track_boards.gd`: 300/200/100 m countdown boards before Spa corners where the BotLine target speed drops more than 40 km/h from the approach (150-450 m before) to the apex (-80 to +40 m), so flat-out kinks stay clean. They sit on the corner outside, 1.2 m beyond the verge edge, angled towards oncoming cars, with no collision and faded out past 420 m. Boards that would stand inside the previous corner are skipped. Spa only, at the owner's request; no corner-name boards. Spa CACHE_REVISION 4. Checked in the Bus Stop capture ("100" board on the outside). Gates `run_gates.ps1 -All -Features` 36/36.
+
+## 2026-09-24  DONE Look-12 Particle effects  (Claude Opus 5.5)
+`scripts/particles.gd`, presentation only:
+- **Tyre smoke** when a tyre slides past its grip peak on tarmac or a kerb (the skid-mark test); darker at Afterhours.
+- **Grass clods** and dust.
+- **Gravel stones** and a dust cloud.
+- **Sparks** from wall contacts and body scrapes.
+- **Exhaust backfire** on a lift-off or gear change above 70 % of the redline.
+
+**How it's built:** one CPU pool of 700 camera-facing quads in two MultiMeshes (alpha and additive), so the whole system costs 2 draw calls. Emission is rate-based with carry-over, so it doesn't depend on frame rate.
+- **Car telemetry:** `CarBody.wall_hits` (set by `WallContact.step`) and `CarBody.scrape_hits` (body points touching the ground, with their sliding speed). Physics never reads them, and all lap and handling gates are unchanged.
+- **Game:** `game.gd` creates the node beside the skid marks and updates it in `render_v2()` when not paused.
+
+**New gate `particles` (9 checks):** a stand-in car; `-- --shots` saves a capture of each effect.
+
+Gates: `run_gates.ps1 -All -Features` 37/37.
+
+## 2026-09-25  REVIEW K-01b (Luna): accepted with 3 corrections; traced kerbs live  (Claude Opus 5.5)
+The retrace is whole physical kerbs now: Spa 29 (La Source outside 144-258 and inside 150-168 match the crop), Nordschleife 13. Spot-checked La Source, Bruxelles-No Name and Hatzenbogen against their crops:
+- **Spa right 2964-3220:** over-merged across the No Name apex gap, so split into 2964-3060 and 3108-3220.
+- **Spa left 2884-3200:** trimmed to 3122; beyond that is the white line with the pit lane behind it.
+- **Nordschleife Hatzenbogen:** added the missing left kerb, 318-360.
+
+Both kerbs.json files are marked `"status": "reviewed"`, so the K-02 kerb map now drives Spa and Nordschleife S1 kerbs. `run_gates.ps1 -All -Features` 36/36 with the kerbs live (laps within baseline).
 
 ## 2026-09-25  CLAIM Look-9  (Claude Sonnet 5)
 NFSU nights on branch `rb/look-9-nights` (not on `main`): wet-road specular streaks from lamps and the

@@ -22,3 +22,25 @@ widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections.
 
 Surrounding terrain is exported as a 5 m grid in `dem.raw` (761 columns × 841 rows,
 2560004 bytes) referenced to start line elevation 619.38 m.
+
+## Kerbs
+
+`kerbs.json` traces 13 individual continuous painted or ribbed runs. Boundaries are traced to 2 m from the 5 m crop ticks.
+
+| Corner | Side | Length | Type |
+|---|---|---:|---|
+| Sabine-Schmitz-Kurve | right | 40 m | flat |
+| Sabine-Schmitz-Kurve | left | 40 m | flat |
+| Hatzenbogen | right | 138 m | flat |
+| Hatzenbach 2 | left | 30 m | flat |
+| Hatzenbach 3 | left | 40 m | flat |
+| Hatzenbach 3 | right | 40 m | ribbed |
+| Hatzenbach 4 | left | 50 m | flat |
+| Hocheichen | left | 70 m | flat |
+| Hocheichen | right | 80 m | ribbed |
+| Hocheichen exit | right | 30 m | flat |
+| Flugplatz–Flugplatz exit | left | 250 m | ribbed |
+| Flugplatz | right | 130 m | flat |
+| Schwedenkreuz | left | 138 m | flat |
+
+S1 imagery often shows only a white edge line or canopy shadow; entries are limited to visible painted or ribbed strips. No distinctly raised sausage kerb was identifiable. The count remains below the 20–40 estimate because most other bends lack visible painted kerbs in this photo set.

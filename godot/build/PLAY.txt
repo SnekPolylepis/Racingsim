@@ -1,4 +1,4 @@
-RACING SIM - REBUILD PREVIEW 2 (2026-09-24)
+RACING SIM - REBUILD PREVIEW 5 (2026-09-24)
 
 A preliminary build of the rebuilt game: a full 3-D car on hand-built 3-D circuits. It is a
 preview for testing, not a finished release. No installation, browser or Godot editor needed.
@@ -32,6 +32,23 @@ DRIVING
   V change camera (chase, high chase, bonnet, two overhead), Y telemetry, B debug.
   Esc pauses. Controllers work too (left stick, triggers, bumpers); rebind in Settings > Controls.
 
+NEW IN PREVIEW 5
+  - Real Mazda MX-5 NA body with pop-up lights.
+  - Photographic spruce, fir, deciduous trees and bushes; wooded hill skylines and fog to ~1 km.
+  - Sharp 2K photo asphalt, repair patches, tar seams and white road-edge lines.
+  - Double Armco rails on dark posts, like GT4; an enclosed Nordschleife S1 with forest banks.
+
+NEW IN PREVIEW 4
+  - New daylight shading and trackside colour at Spa and the Nordschleife.
+  - Track scenery now appears after headless builds; circuits rebuild once with scenery.
+  - Nordschleife is selectable; the settings panel fits. Wall corners use each wall's contact.
+  - About 75% fewer car and scenery draw calls (Spa: 575 to 136 per view).
+
+NEW IN PREVIEW 3
+  - Amber nights: sodium lamps, road glow and headlights that light the road.
+  - 640x448 PS2 renderer with glow and motion persistence, CRT and 480i options, and Authentic UI.
+  - Crowds, grandstands, catch fences, tree cards, billboards, gantries and marshal posts.
+
 NEW IN PREVIEW 2
   - Nordschleife section 1 (T13 to Aremberg).
   - Dedicated car models for all three cars, with lamps that light after dark.
@@ -47,9 +64,9 @@ WHAT'S NEW IN THE REBUILD
   - Best laps, ghosts and sector times save per car, setup and handling model.
 
 KNOWN LIMITS OF THIS PREVIEW
-  - Only the first Nordschleife section; the rest of the lap is in progress.
-  - Sparse trackside scenery (crowds, fences and gantries are being added), and Afterhours
-    has no trackside floodlights or amber road glow yet.
+  - The Miata's night tail-glow sits slightly low on the bumper.
+  - Kerb positions are approximate; a traced kerb map is in progress.
+  - Only the first Nordschleife section is included.
   - Runoff areas at Spa are approximations.
   - Records from the old game do not carry over (they live in a separate folder).
 
@@ -63,9 +80,10 @@ MACOS
 
 CREDITS AND LICENCES
   Godot Engine (MIT, GODOT-LICENSE.txt and GODOT-THIRD-PARTY-NOTICES.txt). Rajdhani font (OFL,
-  RAJDHANI-OFL.txt). Poly Haven assets (CC0, CC0-1.0.txt). Engine recordings: see
-  THIRD-PARTY.md. Spa: (c) OpenStreetMap contributors, ODbL 1.0 (ODbL-1.0.txt); elevation and
-  orthophotos (c) Service public de Wallonie (SPW), CC BY 4.0 (CC-BY-4.0.txt). Nordschleife:
+  RAJDHANI-OFL.txt). Poly Haven CC0 textures and tree models (CC0-1.0.txt).
+  "Mazda Miata MX-5 NA" by Lexyc16 (CC BY 4.0). Engine recordings: see THIRD-PARTY.md.
+  Spa: (c) OpenStreetMap contributors, ODbL 1.0 (ODbL-1.0.txt); elevation and orthophotos
+  (c) Service public de Wallonie (SPW), CC BY 4.0 (CC-BY-4.0.txt). Nordschleife:
   (c) GeoBasis-DE / LVermGeoRP 2026, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet];
   centreline (c) OpenStreetMap contributors, ODbL 1.0. Full titles,
   sources and modifications are in THIRD-PARTY.md.

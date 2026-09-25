@@ -28,6 +28,7 @@
     {"name": "car_models", "script": "tests/v2/car_models.gd", "groups": ["game"], "deps": ["scripts/cars/", "scripts/ferrari_296.gd", "scripts/visuals.gd", "data/cars.json"]},
     {"name": "track_asset", "script": "tests/v2/track_asset.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "kerb_map", "script": "tests/v2/kerb_map.gd", "groups": ["track"], "deps": ["trackgen/kerb_map.gd", "trackgen/data/spa/kerbs.json", "trackgen/data/nordschleife/kerbs.json"]},
+    {"name": "particles", "script": "tests/v2/particles.gd", "groups": ["game"], "deps": ["scripts/particles.gd"]},
     {"name": "road_tool", "script": "tests/v2/road_tool.gd", "groups": ["vehicle", "track"]},
     {"name": "road_tool_v2", "script": "tests/v2/road_tool_v2.gd", "groups": ["vehicle", "track"]},
     {"name": "walls", "script": "tests/v2/walls.gd", "groups": ["vehicle", "track"]},

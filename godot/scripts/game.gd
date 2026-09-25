@@ -125,6 +125,7 @@ var record_writer
 var settings_path = "user://settings.json"
 var skid_root: MultiMeshInstance3D
 var skid_multi: MultiMesh
+var particles = null
 var skid_cursor = 0
 var skid_retire_cursor = 0
 var skid_timer = 0.0
@@ -886,6 +887,9 @@ func render_v2(dt):
 		message(record_writer.errors.pop_front())
 	if v2_props:
 		v2_props.sync_nodes()
+	if particles and not paused and not in_menu:
+		particles.night = settings.time_of_day == 1
+		particles.update_car(car, dt)
 	var pose = blend_v2(prev_pose, snapshot_v2(), Engine.get_physics_interpolation_fraction())
 	var xf: Transform3D = pose.xform
 	model.root.transform = Transform3D(xf.basis, xf.origin - xf.basis.y * car.setup.cgHeight)
@@ -1014,6 +1018,10 @@ func setup_skids():
 	skid_root.multimesh = skid_multi
 	skid_root.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(skid_root)
+	# Tyre smoke, grass, gravel, sparks and backfires (Look-12), beside the skid marks.
+	particles = preload("res://scripts/particles.gd").new()
+	particles.name = "Particles"
+	add_child(particles)
 
 
 func add_skids():
