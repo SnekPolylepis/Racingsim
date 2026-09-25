@@ -12,7 +12,20 @@ const Gantry = preload("res://scripts/track/gantry.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
+const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
+const NO_SHADOW = [
+	"CityBase",
+	"LakeMichigan",
+	"River",
+	"MillenniumPark",
+	"GrantPark",
+	"Lakefront",
+	"Riverwalk",
+	"LaneMarkings",
+	"CloudGatePlaza",
+	"ChicagoBridgeDecks"
+]
 const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
 const DATA = "res://trackgen/data/chicago/route.json"
 ## Named corners for the visual review: [route.json point index, name]. Stations are found on the road.
@@ -34,7 +47,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 12
+const CACHE_REVISION = 110
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -217,6 +230,12 @@ static func build_asset() -> Node3D:
 	add_night_details(asset, scenery, road)
 	# CHI-LOOK-01: signals, crosswalks and stop lines at the cross streets.
 	ChicagoFurniture.build(asset, scenery, road.last_bake.stations, facade_box, night_material, attach)
+	ChicagoKit.sidewalk_props(asset, scenery, road.last_bake.stations)
+	# Ground-like scenery casts no useful shadow; it only costs shadow-pass draws (CHI-LOOK-02).
+	for node in scenery.get_children():
+		for prefix in NO_SHADOW:
+			if node is GeometryInstance3D and str(node.name).begins_with(prefix):
+				node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_park_trees(asset)
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
 	add_parked_cars(asset, scenery, road)
@@ -492,6 +511,37 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	add_loop_landmarks(asset, parent, stone, dark, silver)
 
 
+## A landmark tower with the city's window-grid facade shader (perimeter UVs) instead of a plain box.
+## `center` is the middle of the block at half its height, as for `box`.
+static func facade_block(
+	asset: Node3D,
+	parent: Node,
+	title: String,
+	center: Vector3,
+	size: Vector2,
+	h: float,
+	kind: String,
+	seed: float
+) -> void:
+	var ring = PackedVector2Array(
+		[
+			Vector2(center.x - size.x * .5, center.z - size.y * .5),
+			Vector2(center.x + size.x * .5, center.z - size.y * .5),
+			Vector2(center.x + size.x * .5, center.z + size.y * .5),
+			Vector2(center.x - size.x * .5, center.z + size.y * .5)
+		]
+	)
+	var base_y = center.y - h * .5
+	var facade = SurfaceTool.new()
+	facade.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# ChicagoCity's top is STREET_Y + its h; the block starts at its own base (kept off the lower level).
+	var layer = ChicagoCity.kind_layer(kind)
+	ChicagoCity._building(facade, facade, ring, h + base_y - ChicagoCity.STREET_Y, seed, base_y, layer)
+	facade.set_material(ChicagoCity.material(kind))
+	var mesh = facade.commit()
+	mesh_node(asset, parent, title, mesh, Vector3.ZERO)
+
+
 static func add_loop_landmarks(
 	asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material
 ) -> void:
@@ -501,7 +551,7 @@ static func add_loop_landmarks(
 	var terra_cotta_bands: Array = []
 	for tower in [[-31.0, 138.0, 35.0], [27.0, 91.0, 31.0]]:
 		var center = wrigley + Vector3(tower[0], tower[1] * .5, 0)
-		box(asset, parent, "WrigleyTower", center, Vector3(24, tower[1], 28), stone)
+		facade_block(asset, parent, "WrigleyTower", center, Vector2(24, 28), tower[1], "stone", 0.31)
 		for floor_i in range(4, int(tower[1] / 4.0), 4):
 			terra_cotta_bands.append([wrigley + Vector3(tower[0], floor_i, 0), Vector3(25, .65, 29)])
 		var cap = PrismMesh.new()
@@ -521,7 +571,9 @@ static func add_loop_landmarks(
 	var tribune = world([41.8905, -87.6230, 8])
 	var tribune_piers: Array = []
 	var tribune_spandrels: Array = []
-	box(asset, parent, "TribuneTower", tribune + Vector3(0, 61, 0), Vector3(42, 122, 50), stone)
+	facade_block(
+		asset, parent, "TribuneTower", tribune + Vector3(0, 61, 0), Vector2(42, 50), 122.0, "stone", 0.62
+	)
 	for x in [-19.0, 19.0]:
 		for z in [-23.0, 23.0]:
 			tribune_piers.append([tribune + Vector3(x, 64, z), Vector3(4, 128, 4)])

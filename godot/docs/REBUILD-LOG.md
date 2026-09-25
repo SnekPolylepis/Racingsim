@@ -2680,3 +2680,51 @@ Brought CHI-01, CHI-prelim, CHI-02 (city), CHI-03 (Sol: references, water) and C
 - **Water shader (CHI-03):** dropped the screen-texture "reflection" (it never rendered on Sol's host and wrote lit colour into albedo). At the grazing angle the near-mirror showed only the warm horizon haze, so roughness is now 0.24-0.3 and specular 0.35.
 Visual review (tools/visual_review.ps1 -Tracks chicago): only the nine lakefront shots changed (scores 7.6-9.8). Gates `-All -Features` 39/39.
 Open: Wrigley and Tribune facades, the red/white kerbs on the street edge, night road glare (LOOK-NIGHT-01), about 900 draw calls.
+
+## 2026-09-25  DONE LOOK-NIGHT-01  (Claude Opus 5.5)
+Night road glare. Judged with tools/visual_review.ps1 -Night on spa, nordschleife_s1 and chicago (runs night-base to night-5). The tarmac washed to a cream sheet from four causes, fixed in order:
+1. **`road_v2.gdshader` night surface:** albedo 0.95 to 0.6, metallic 0.18 to 0.04, roughness 0.3-0.5 to 0.55-0.75, specular 0.3. It's a damp sheen, not a mirror.
+2. **Headlights (`visuals.gd`):** energy 16 to 4.5, attenuation 0.5 to 1.1, range 80 to 60, angle 18 with a firmer edge. They were flooding the road instead of throwing a pool.
+3. **Look-9 camera-proximity streak:** cut to a quarter; it painted a white patch round the car.
+4. **Lamp streak emission and pool spotlights:**
+   - painted wet streaks 1.2 to 0.45, glow x0.6, caps 1.2 / 1.1 to 0.6 / 0.55;
+   - sodium pool spots energy 3.2 to 1.7, specular 0.6 to 0.2.
+   On lamp-lined straights the streaks had merged into one band.
+Day unchanged (Spa day run: 0 of 53 shots changed). Before/after: docs/rebuild/screenshots/look-night-01/before-after.png. Gates `-All -Features` 39/39.
+## 2026-09-25  DONE NS-karussell  (Claude Opus 5.5)
+The full lap's Caracciola-Karussell read as a normal corner with red/white kerbs. Fixes in `trackgen/nordschleife.gd`:
+- **Direction:** it is a left-hand hairpin. Gemini's spec had it as a right-hander (+1, bank +6). Now -1 with inward banking (-3/-6/-2).
+- **The bowl:** a concrete ditch on the inside, about 0.6 m deep with a 27-degree wall. It was a 0.18 m dip. Centred 1.9 m left, with the wall top about 1.2 m inside the tarmac edge.
+- **Kerbs:** none within 60 m of the apex.
+- **Concrete slabs:** `road_v2.gdshader` gained an optional per-instance `concrete_band` (station and lateral range in road UV metres), set only on the Nordschleife's Road/Main. Pale slabs every 2.5 m with dark joints and a trough joint; matte.
+- **Station:** a `KARUSSELL_S` constant replaces the hardcoded 12115 literals.
+`scripts/track/terrain.gd`: under a section with an inset ditch, the ground also sinks by the ditch's depth. Coarse 5 m terrain triangles poked green through the concave floor. The tapered under-road drop is unchanged everywhere else.
+Visual review (nordschleife vs a fresh main run): only the 7 Karussell shots changed, plus a small car-pose shift at Kleines Karussell. The nordschleife suite passes 7/7 (terrain poke 0). Laps: roadster full lap -0.34 %, within baseline. Gates `-All -Features` 39/39. One earlier parallel run lost `laps roadster` without a RESULTS line or error; alone it passed 10/10, and the rerun of all gates passed.
+Shot: docs/rebuild/screenshots/ns-karussell/karussell-bowl.png.
+## 2026-09-25  CHI-LOOK-02 iteration 1: kit shopfronts and cornices on route-facing buildings  (Claude Sonnet 5)
+- **Problem:** street-level building bases were flat shader texture (a dark band and a window grid), against the real Chicago frontage of shopfronts with storefront glass, doors and cornices.
+- **Fix:** Quaternius Downtown City MegaKit (CC0) pieces, baked by `tools/build_downtown_kit.gd` into `assets/chicago/downtown-kit/` (0.7 MB, README there). `trackgen/chicago_kit.gd` puts a 2-storey shopfront (kit first-floor window/wall modules, 2 m each, stretched 1.4x vertically for PS2 proportions) and a cornice along every footprint edge that faces the route within 55 m, on buildings 9-110 m tall (cornice) and 14 m and up (second storey). MultiMesh per piece and 300 m chunk, culled beyond 320 m with a dithered fade, no shadows. The glass and interior surfaces glow warm after hours (`chicago_night.gd` now toggles MultiMesh materials too). Pieces stand 0.36 m off the wall because the kit's glass sits 0.2-0.3 m behind its front plane. `CACHE_REVISION` bumps; `check_exported_v2_assets` checks the kit.
+- **Where the free kit falls short of the brief:** it has none of the awnings, fire escapes, rooftop tanks, hydrants, newspaper boxes or benches; the later iterations use what exists (ACUnit, bollards, planters, roof pieces) and procedural props.
+- **Runs:** `20260925-1712-l2-base` and `-Night` (baselines) to `20260925-1731-l2-it1-kit10` / `20260925-1730-l2-it1-kit9-Night`; night changes: `002`, `045`, `056`, `055` (6.1-7.2). Mean draws 920 -> 939 day, 973 -> 992 night (+19: the kit's MultiMeshes near the car).
+
+## 2026-09-25  CHI-LOOK-02 iteration 2: Wrigley and Tribune facades  (Claude Sonnet 5)
+- **Problem:** the two landmark towers next to the route were plain untextured boxes (a blank grey slab at the Michigan turn).
+- **Fix:** `Chicago.facade_block()` builds them with the city's facade shader (perimeter UVs, travertine kind, day and night windows, roof). `ChicagoCity._building` got a `bottom` parameter so a block starts at its own base (8 m), not at 0, which would put it through Lower Wacker. Runs `20260925-1732`/`1733-l2-it2-landmarks2`; new scenic spot `wrigley-and-bridge`.
+
+## 2026-09-25  CHI-LOOK-02 iteration 3: rooftop clutter  (Claude Sonnet 5)
+- **Fix:** `ChicagoKit.roof_clutter()`: wooden water tanks (procedural barrel, legs, cone, on 40 % of 18-90 m roofs), the kit's AC units and stair/lift boxes on the largest roof triangle of every 8-120 m building (500 tanks, 2136 AC units, 1220 boxes). MultiMesh per kind and 600 m chunk, culled beyond 800 m with a dithered fade. They only show against the skyline from street level (0 shots over the change threshold); run `20260925-1735-l2-it3-roofsd`.
+
+## 2026-09-25  CHI-LOOK-02 iteration 4: sidewalk props  (Claude Sonnet 5)
+- **Fix:** `ChicagoKit.sidewalk_props()`: kit planters and bollards plus procedural hydrants, newspaper boxes, benches and bins beside the street-level route (11 m from the centre line, every 7-18 m, none within 22 m of a cross street), sized up 1.5x for PS2 chunkiness. MultiMesh per kind and 500 m chunk, culled beyond 260 m. Run `20260925-1738-l2-it4-props2`. Small in frame (0 shots over the threshold).
+
+## 2026-09-25  CHI-LOOK-02 iteration 5: draw calls 956 -> 729 (day)  (Claude Sonnet 5)
+- **Problem:** about 900 draw calls per review shot (harness metric).
+- **Where they went:** at a downtown station the sun's shadow passes account for about 360 of 863 draws and a floor of about 500 (car, UI, presentation chain, sky) stays with the whole track hidden; none of that is the city. The city itself was about 500.
+- **Fix:** (a) `chicago_facade.gdshader` is now one material for every building: the six facade sets are layers of a 3x2 atlas imported as a Texture2DArray (`assets/chicago/facade-array/`, 512 px, VRAM compressed with mipmaps, built by `tools/build_facade_array.py`); the vertex colour carries the seed, the layer and a roof flag, per-layer tint, glassiness and tile size are uniform arrays, and roofs share the facade surface. A chunk drops from about 9 surfaces to about 5. (b) Water, river walls and parks moved into the flat set; flat geometry (streets, ground, water, parks) and lake, river, park and ground boxes no longer cast shadows. `CACHE_REVISION` bumps.
+- **Result:** mean draw calls 956 -> 729 day (`20260925-1738-l2-it4-props2` -> `20260925-1742-l2-it6-array`), 992 -> 782 night; 0 shots changed. The 600 target is not reached because of the 500-draw floor above; the road, sidewalk and ground materials are Sol's and were not touched (the flat set is still about 100 draws downtown).
+## 2026-09-25  DONE ASSET-01  (GPT-6 Sol; finished by Claude Opus 5.5)
+Sol integrated its CC0 asset inbox before its session broke; Claude reviewed and finished it.
+- **Particles:** eight Kenney Particle Pack sprites packed into `assets/particles/particle_atlas.png` (4x2): smoke, dust, grass, gravel, sparks, scrape, scorch, backfire. The effect frame is chosen per instance through MultiMesh custom data (`particles_atlas*.gdshader`), still 2 draws. The particles suite checks the atlas and each effect's frame. Captures are in tests/visual/particle-captures/.
+- **Chicago surfaces:** Poly Haven `worn_asphalt` on city streets and `pavement_05` on sidewalks and ground (1K, mipmapped, in assets/chicago/surfaces/). The ground tint is dark, which removes the beige "concrete desert".
+- **Claude's fixes:** reverted Sol's additions of the raw source images to `include_filter` (imported textures export anyway, so they would have been packed twice); `.gdignore` on the captures folder; dropped a no-op EMISSION in the additive shader.
+Chicago visual review: street/ground shots change (max score 4.6); nothing else changed. Gates `-All -Features` 39/39.

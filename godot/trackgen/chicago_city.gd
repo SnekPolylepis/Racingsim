@@ -12,6 +12,7 @@ extends RefCounted
 ##   Water      the river and lake at y -2.8 in the circuit's water shader, with concrete river walls
 ##   Parks      parks, gardens and lawns in grass
 ## Geometry is batched per 600 m chunk and material, so the whole city is a few hundred draw calls at most.
+const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const FACADE_SHADER = preload("res://shaders/chicago_facade.gdshader")
 const DATA = "res://trackgen/data/chicago/city.json"
@@ -30,6 +31,8 @@ const ROUTE_CLEAR = 9.5
 ## Facade set, tint and glassiness per building class (build_city.py kind_of()).
 ## [texture set, tint, glassiness, metres per texture repeat]: real brick repeats every couple of metres,
 ## a curtain-wall panel set every several.
+const ARRAY = "res://assets/chicago/facade-array/"
+const KIND_ORDER = ["glass", "glass2", "stone", "terracotta", "brick", "concrete"]
 const KINDS = {
 	"glass": ["Facade001", Color(0.95, 0.98, 1.0), 1.0, 7.5],
 	"glass2": ["Facade009", Color(1.0, 1.0, 1.0), 1.0, 7.5],
@@ -49,7 +52,7 @@ const WRIGLEY_SHIFT = 58.0
 ## Buildings under this height, and flat surfaces, are culled beyond these distances (m); fog ends at 1900-2800.
 const LOW_BUILDING_M = 40.0
 const LOW_RANGE_M = 900.0
-const FLAT_RANGE_M = 1800.0
+const FLAT_RANGE_M = 2400.0
 
 static var _mats = {}
 
@@ -78,6 +81,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	parent.add_child(holder)
 	holder.owner = asset
 	# Buildings.
+	var near_route = []
+	var kept_buildings = []
 	var i = 0
 	for b in doc.buildings:
 		var ring = _ring(b.f)
@@ -86,14 +91,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
-		_building(
-			_st(target, _centroid(ring), kind),
-			_st(target, _centroid(ring), "roof"),
-			ring,
-			float(b.h),
-			fmod(i * 0.6180339, 1.0)
-		)
+		var facade = _st(target, _centroid(ring), "facade")
+		_building(facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), 0.0, kind_layer(kind))
 		stats.buildings += 1
+		kept_buildings.append([ring, float(b.h), i])
+		var centre = _centroid(ring)
+		if ChicagoKit.nearest_route(route, centre, ChicagoKit.RANGE_M + 40.0).x != INF:
+			near_route.append([ring, float(b.h), i])
+	stats.merge(ChicagoKit.build(asset, holder, near_route, route))
+	stats.merge(ChicagoKit.roof_clutter(asset, holder, kept_buildings))
 	# Streets: sidewalk ribbon under the carriageway.
 	for r in doc.roads:
 		var pts = _ring(r.p)
@@ -108,8 +114,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if ring.size() >= 3:
 			water_polys.append(ring)
 			var wy = _water_level(ring)
-			_flat(_st(chunks, _centroid(ring), "water"), ring, wy)
-			_walls(_st(chunks, _centroid(ring), "wall"), ring, wy - 0.4, STREET_Y - 0.04)
+			_flat(_st(flat_chunks, _centroid(ring), "water"), ring, wy)
+			_walls(_st(flat_chunks, _centroid(ring), "wall"), ring, wy - 0.4, STREET_Y - 0.04)
 			stats.water += 1
 	# A park the circuit crosses (Grant Park) can't be one raised polygon over the road; its ground tiles
 	# below turn to lawn instead, so it no longer falls back to bare concrete.
@@ -121,7 +127,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if _touches_route(route, ring, 2.0):
 			crossed_parks.append(ring)
 		else:
-			_flat(_st(chunks, _centroid(ring), "park"), ring, STREET_Y + 0.02)
+			_flat(_st(flat_chunks, _centroid(ring), "park"), ring, STREET_Y + 0.02)
 			stats.parks += 1
 	# Street-level ground, in 20 m tiles, open over water and around the circuit's lower level and ramps.
 	var lo = Vector2(INF, INF)
@@ -159,36 +165,96 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			node.name = "%s_%d_%d" % [group[2], key.x, key.y]
 			node.mesh = mesh
 			node.visibility_range_end = group[1]
-			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+			# Flat streets and ground cast nothing (CHI-LOOK-02): they only cost shadow-pass draws.
+			node.cast_shadow = (
+				GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				if group[2] == "Flat"
+				else GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+			)
 			holder.add_child(node)
 			node.owner = asset
 	return stats
 
 
+## Layer of a facade kind in the texture array (the order of KIND_ORDER).
+static func kind_layer(kind: String) -> float:
+	return float(maxi(0, KIND_ORDER.find(kind)))
+
+
 static func material(name: String) -> Material:
+	if KINDS.has(name):
+		name = "facade"
 	if _mats.has(name):
 		return _mats[name]
 	var mat: Material
-	if KINDS.has(name):
-		var k = KINDS[name]
+	if name == "facade":
 		var sm = ShaderMaterial.new()
 		sm.shader = FACADE_SHADER
-		sm.set_shader_parameter("albedo_tex", load(TEX + k[0] + "/" + k[0] + "_color.jpg"))
-		sm.set_shader_parameter("normal_tex", load(TEX + k[0] + "/" + k[0] + "_normal.jpg"))
-		sm.set_shader_parameter("rough_tex", load(TEX + k[0] + "/" + k[0] + "_roughness.jpg"))
-		sm.set_shader_parameter("tint", k[1])
-		sm.set_shader_parameter("glassy", k[2])
-		sm.set_shader_parameter("tile_m", Vector2(k[3], k[3]))
+		sm.set_shader_parameter("albedo_tex", load(ARRAY + "albedo.png"))
+		sm.set_shader_parameter("normal_tex", load(ARRAY + "normal.png"))
+		sm.set_shader_parameter("rough_tex", load(ARRAY + "rough.png"))
+		var tints = PackedVector3Array()
+		var glassy = PackedFloat32Array()
+		var tiles = PackedFloat32Array()
+		for kind in KIND_ORDER:
+			var k = KINDS[kind]
+			tints.append(Vector3(k[1].r, k[1].g, k[1].b))
+			glassy.append(k[2])
+			tiles.append(k[3])
+		sm.set_shader_parameter("kind_tint", tints)
+		sm.set_shader_parameter("kind_glassy", glassy)
+		sm.set_shader_parameter("kind_tile", tiles)
 		mat = sm
 	elif name == "roof":
 		mat = _plain(Color(0.24, 0.25, 0.26), 0.9)
 	elif name == "road":
-		mat = _triplanar(
-			"res://assets/textures_hd/asphalt_pit_lane/asphalt_pit_lane_diff.jpg",
-			4.0,
-			Color(0.62, 0.62, 0.64)
+		var road = StandardMaterial3D.new()
+		road.albedo_texture = load("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_diff_1k.jpg")
+		road.normal_enabled = true
+		road.normal_texture = load("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_nor_gl_1k.jpg")
+		road.roughness_texture = load("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_rough_1k.jpg")
+		road.uv1_triplanar = true
+		road.uv1_world_triplanar = true
+		road.uv1_scale = Vector3.ONE / 4.0
+		road.albedo_color = Color(0.74, 0.74, 0.76)
+		road.roughness = 0.9
+		road.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat = road
+	elif name == "sidewalk":
+		var pavement = StandardMaterial3D.new()
+		pavement.albedo_texture = load("res://assets/chicago/surfaces/pavement_05/pavement_05_diff_1k.jpg")
+		pavement.normal_enabled = true
+		pavement.normal_texture = load("res://assets/chicago/surfaces/pavement_05/pavement_05_nor_gl_1k.jpg")
+		pavement.roughness_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_rough_1k.jpg"
 		)
-	elif name == "sidewalk" or name == "ground" or name == "wall":
+		pavement.uv1_triplanar = true
+		pavement.uv1_world_triplanar = true
+		pavement.uv1_scale = Vector3.ONE / 3.0
+		pavement.albedo_color = Color(0.78, 0.77, 0.74)
+		pavement.roughness = 0.9
+		pavement.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat = pavement
+	elif name == "ground":
+		var pavement_ground = StandardMaterial3D.new()
+		pavement_ground.albedo_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_diff_1k.jpg"
+		)
+		pavement_ground.normal_enabled = true
+		pavement_ground.normal_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_nor_gl_1k.jpg"
+		)
+		pavement_ground.roughness_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_rough_1k.jpg"
+		)
+		pavement_ground.uv1_triplanar = true
+		pavement_ground.uv1_world_triplanar = true
+		pavement_ground.uv1_scale = Vector3.ONE / 3.0
+		pavement_ground.albedo_color = Color(0.44, 0.45, 0.46)
+		pavement_ground.roughness = 0.95
+		pavement_ground.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat = pavement_ground
+	elif name == "wall":
 		mat = _triplanar(
 			TEX + "Concrete034/Concrete034_color.jpg",
 			3.0,
@@ -331,12 +397,18 @@ static func _in_water(polys: Array, p: Vector2) -> bool:
 
 
 static func _building(
-	walls: SurfaceTool, roof: SurfaceTool, ring: PackedVector2Array, h: float, seed: float
+	walls: SurfaceTool,
+	roof: SurfaceTool,
+	ring: PackedVector2Array,
+	h: float,
+	seed: float,
+	bottom: float = 0.0,
+	layer: float = 0.0
 ) -> void:
 	var top = STREET_Y + h
 	var c = _centroid(ring)
 	var u = 0.0
-	walls.set_color(Color(seed, 0, 0))
+	walls.set_color(Color(seed, layer / 8.0, 0))
 	for i in ring.size():
 		var a = ring[i]
 		var b = ring[(i + 1) % ring.size()]
@@ -348,8 +420,8 @@ static func _building(
 		if Vector2(n.x, n.z).dot(mid - c) < 0.0:
 			n = -n
 		var v = [
-			[Vector3(a.x, 0.0, a.y), Vector2(u, -STREET_Y)],
-			[Vector3(b.x, 0.0, b.y), Vector2(u + seg_len, -STREET_Y)],
+			[Vector3(a.x, bottom, a.y), Vector2(u, bottom - STREET_Y)],
+			[Vector3(b.x, bottom, b.y), Vector2(u + seg_len, bottom - STREET_Y)],
 			[Vector3(b.x, top, b.y), Vector2(u + seg_len, h)],
 			[Vector3(a.x, top, a.y), Vector2(u, h)],
 		]
@@ -358,6 +430,8 @@ static func _building(
 			walls.set_uv(v[idx][1])
 			walls.add_vertex(v[idx][0])
 		u += seg_len
+	# Roofs share the facade surface; blue = 1 selects the flat roof colour in the shader.
+	roof.set_color(Color(0, 0, 1))
 	_flat(roof, ring, top)
 
 

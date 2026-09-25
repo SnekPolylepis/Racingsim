@@ -603,11 +603,13 @@ func finish_car(root, body, p, ghost, brake_material, nose = 0.9):
 		# Look-2: a cheap forward beam (no shadows). It sits above the lamp lenses and pitches down 3 degrees:
 		# from bumper height it met the road at ~3 degrees and lit almost nothing. Bright enough to show on
 		# dark night tarmac 8-40 m ahead; the angle falloff keeps a soft edge.
-		light.light_energy = 16
-		light.spot_attenuation = .5
-		light.spot_range = 80
-		light.spot_angle = 20
-		light.spot_angle_attenuation = 1.4
+		# LOOK-NIGHT-01: energy 16 with attenuation .5 barely fell off and flooded the whole road; this is a
+		# pool that fades out by about 50 m, with a firmer beam edge.
+		light.light_energy = 4.5
+		light.spot_attenuation = 1.1
+		light.spot_range = 60
+		light.spot_angle = 18
+		light.spot_angle_attenuation = 2.0
 		light.shadow_enabled = false
 		light.visible = night
 		body.add_child(light)

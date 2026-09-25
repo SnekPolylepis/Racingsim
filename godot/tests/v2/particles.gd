@@ -59,6 +59,14 @@ func fresh():
 
 
 func _initialize():
+	var atlas = load("res://assets/particles/particle_atlas.png")
+	check(atlas is Texture2D, "the Kenney particle atlas loads")
+	var mapped = {}
+	for effect in Particles.EFFECT_FRAMES:
+		var frame = Particles.EFFECT_FRAMES[effect]
+		mapped[frame] = true
+		check(frame >= 0 and frame < 8, "%s maps to a valid atlas frame" % effect)
+	check(mapped.size() == 8, "each particle effect uses a distinct atlas frame")
 	var fx = fresh()
 	run(fx, StubCar.new(0, false), 1.0)
 	check(fx.live_count() == 0, "gripping tyres on tarmac emit nothing")
@@ -68,6 +76,7 @@ func _initialize():
 		smoke > 30 and fx.glow.visible_instance_count == 0,
 		"sliding tyres smoke (%d puffs, soft layer)" % smoke
 	)
+	check(fx.frame[fx.cursor - 1] == Particles.EFFECT_FRAMES.smoke, "tyre smoke selects its atlas frame")
 	fx.queue_free()
 
 	fx = fresh()
@@ -75,15 +84,19 @@ func _initialize():
 	run(fx, grass, 0.2)
 	var n = fx.live_count()
 	check(n > 5, "grass at speed throws clods (%d)" % n)
+	check(fx.frame[fx.cursor - 1] == Particles.EFFECT_FRAMES.grass, "grass selects its atlas frame")
 	fx.queue_free()
 
 	fx = fresh()
 	var gravel = StubCar.new(3, false)
 	run(fx, gravel, 0.3)
 	var peak = -INF
+	var dust_frames = 0
 	for i in fx.POOL:
 		if fx.age[i] < fx.life[i] and fx.gravity[i] > 1.0:
 			peak = maxf(peak, fx.vel[i].y)
+		if fx.age[i] < fx.life[i] and fx.frame[i] == Particles.EFFECT_FRAMES.dust:
+			dust_frames += 1
 	gravel.speed = 0.0
 	gravel.vel = Vector3.ZERO
 	run(fx, gravel, 0.6)
@@ -92,6 +105,7 @@ func _initialize():
 		if fx.age[i] < fx.life[i] and fx.gravity[i] > 1.0 and fx.vel[i].y < 0.0:
 			falling += 1
 	check(peak > 1.0 and falling > 0, "gravel stones fly up and fall back (%d falling)" % falling)
+	check(dust_frames > 0, "gravel dust selects its atlas frame")
 	fx.queue_free()
 
 	fx = fresh()
@@ -101,6 +115,7 @@ func _initialize():
 	]
 	run(fx, wall, 0.2)
 	check(fx.glow.visible_instance_count > 5, "wall contact sparks (%d)" % fx.glow.visible_instance_count)
+	check(fx.frame[fx.cursor - 1] == Particles.EFFECT_FRAMES.sparks, "wall sparks select their atlas frame")
 	fx.queue_free()
 
 	fx = fresh()
@@ -108,6 +123,14 @@ func _initialize():
 	scrape.scrape_hits = [[Vector3(0, 0, 0), 12.0]]
 	run(fx, scrape, 0.2)
 	check(fx.glow.visible_instance_count > 5, "body scrape sparks")
+	var scrape_sparks = false
+	var scrape_flash = false
+	for i in fx.POOL:
+		if fx.age[i] >= fx.life[i]:
+			continue
+		scrape_sparks = scrape_sparks or fx.frame[i] == Particles.EFFECT_FRAMES.scrape
+		scrape_flash = scrape_flash or fx.frame[i] == Particles.EFFECT_FRAMES.scorch
+	check(scrape_sparks and scrape_flash, "body scrape sparks and flash select their atlas frames")
 	fx.queue_free()
 
 	fx = fresh()
@@ -125,7 +148,7 @@ func _initialize():
 
 	fx = fresh()
 	for k in 3 * fx.POOL:
-		fx.emit(Vector3.ZERO, Vector3.UP, 5.0, 0.1, 0.1, Color.WHITE, 0.0, 0.0, k % 2 == 0)
+		fx.emit(Vector3.ZERO, Vector3.UP, 5.0, 0.1, 0.1, Color.WHITE, 0.0, 0.0, k % 2 == 0, k % 8)
 	fx.advance(0.016)
 	check(
 		(

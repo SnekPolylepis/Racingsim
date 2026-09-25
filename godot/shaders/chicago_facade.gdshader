@@ -5,26 +5,32 @@ shader_type spatial;
 // building (`building_seed`, from the vertex colour's red channel) and the cell. The uniform is `afterhours`,
 // like night_glow.gdshader, so NightGlow.set_night() toggles it.
 render_mode cull_disabled;
-uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap, repeat_enable;
-uniform sampler2D rough_tex : hint_default_white, filter_linear_mipmap, repeat_enable;
-uniform vec2 tile_m = vec2(9.0, 9.0);
-uniform vec3 tint : source_color = vec3(1.0);
+// One material for every building (CHI-LOOK-02): the six facade sets are layers of one texture array. The
+// vertex colour carries red = building seed, green = layer / 8, blue = 1 on roofs. Per-layer tint, glassiness
+// and metres per texture repeat come from the arrays below (order = ChicagoCity.KINDS).
+uniform sampler2DArray albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2DArray normal_tex : hint_normal, filter_linear_mipmap, repeat_enable;
+uniform sampler2DArray rough_tex : hint_default_white, filter_linear_mipmap, repeat_enable;
+uniform vec3 kind_tint[6];
+uniform float kind_glassy[6];
+uniform float kind_tile[6];
 uniform bool afterhours = false;
 // Floor height and bay width (m) of the night window grid, and the share of lit windows.
 uniform vec2 window_cell = vec2(3.6, 3.9);
 uniform float lit_chance = 0.32;
 uniform float glow_energy = 1.4;
-// 1 for glass towers (more, cooler windows), 0 for masonry (fewer, warmer).
-uniform float glassy = 0.0;
 // Daytime window grid (CHI-LOOK-01): the same cells as the night windows, drawn as dark glass panes with
 // sills and a darker storefront band on the ground floor. 0 leaves the bare photo texture.
 uniform float day_windows = 1.0;
 
 varying float seed;
+varying flat float kind;
+varying flat float roof;
 
 void vertex() {
 	seed = COLOR.r;
+	kind = floor(COLOR.g * 8.0 + 0.5);
+	roof = COLOR.b;
 }
 
 float hash21(vec2 p) {
@@ -32,16 +38,24 @@ float hash21(vec2 p) {
 }
 
 void fragment() {
-	vec2 uv = UV / tile_m;
-	vec3 base = texture(albedo_tex, uv).rgb * tint;
+	if (roof > 0.5) {
+		ALBEDO = afterhours ? vec3(0.085, 0.088, 0.091) : vec3(0.24, 0.25, 0.26);
+		ROUGHNESS = 0.9;
+		METALLIC = 0.0;
+	} else {
+	int k = int(kind);
+	vec3 tint = kind_tint[k];
+	float glassy = kind_glassy[k];
+	vec2 uv = UV / vec2(kind_tile[k]);
+	vec3 base = texture(albedo_tex, vec3(uv, kind)).rgb * tint;
 	// Per-building variety (CHI-LOOK-01): brightness and a warm/cool lean from the building seed, so a
 	// block of the same facade kind does not read as one repeated slab.
 	float h1 = hash21(vec2(seed * 61.7, 3.1));
 	float h2 = hash21(vec2(seed * 17.3, 9.7));
 	base *= mix(0.78, 1.12, h1) * mix(vec3(1.06, 1.0, 0.92), vec3(0.94, 1.0, 1.08), h2);
 	ALBEDO = base;
-	NORMAL_MAP = texture(normal_tex, uv).rgb;
-	ROUGHNESS = texture(rough_tex, uv).r;
+	NORMAL_MAP = texture(normal_tex, vec3(uv, kind)).rgb;
+	ROUGHNESS = texture(rough_tex, vec3(uv, kind)).r;
 	METALLIC = glassy * 0.35;
 	vec2 cell = floor(UV / window_cell);
 	vec2 f = fract(UV / window_cell);
@@ -75,4 +89,5 @@ void fragment() {
 		ALBEDO = base * 0.35;
 		EMISSION = light * pane * lit * glow_energy;
 	}
+}
 }

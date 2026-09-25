@@ -272,6 +272,10 @@ func stitch_heights(grid: Dictionary, roads: Array) -> void:
 					var p_surf = st_eval.pos + fr_eval[0] * lat + fr_eval[1] * h_loc
 					var y_road_surf = (road.transform * p_surf).y
 					var drop = minf(under_road_drop_m, EDGE_DROP_M + (edge_lat - lat_mag) * EDGE_DROP_SLOPE)
+					# An inset ditch (the Karussell bowl) is concave: coarse terrain triangles spanning crown and
+					# floor would poke through it, so the ground also sinks by the ditch's full depth there.
+					if sec_eval.ditch > 0.0:
+						drop += RoadBuilder.ditch_drop(sec_eval, 0.0)
 					var target = y_road_surf - drop
 					# Under the road footprint the ground hugs the road: lowered where it would poke through, and
 					# raised into an embankment where it lies below (a verge must not overhang a hollow). Ground more

@@ -34,6 +34,7 @@ const SCENIC = {
 		["lower-wacker", ["Lower Wacker Portal", 250.0]],
 		["navy-pier-view", ["Navy Pier View", 60.0]],
 		["willis-tower-sightline", ["Willis Tower View", -150.0]],
+		["wrigley-and-bridge", ["Upper River Bend", 60.0]],
 		["l-line-michigan", 396.0],
 		["l-line-upper-wacker", 6604.0],
 	],
