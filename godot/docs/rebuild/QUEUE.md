@@ -53,6 +53,8 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | Look-tracks | Spa and Nordschleife daylight look outside the Look-5 kit: forest cache bug, terrain grass, haze and view distance, road/runoff grade, forest density | Claude (owner-assigned) | Look-1 | review: Sol | rb/look-tracks; read "DONE Look-tracks" |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
+| K-01 | Kerb reference data for Spa-Francorchamps and Nordschleife section 1 | Gemini | | claimed | rb/K-01-kerbs |
+
 
 ## Decisions and later
 

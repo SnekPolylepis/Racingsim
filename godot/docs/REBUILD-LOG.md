@@ -1969,3 +1969,6 @@ Gaps 1 and 2 of ART-DIRECTION.md, judged against the GT4 Nordschleife frames.
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
 
+
+## 2026-09-24  CLAIM K-01  (Gemini)
+Claim K-01 "Kerb reference data" for Spa-Francorchamps and Nordschleife section 1. Branch `rb/K-01-kerbs`.
