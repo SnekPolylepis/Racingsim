@@ -27,6 +27,14 @@ const CAM_BONNET = 2
 const SCENIC = {
 	"spa": [["eau-rouge-valley", ["Eau Rouge", 40.0]], ["kemmel-crest", ["Raidillon", 250.0]]],
 	"nordschleife_s1": [["flugplatz-crest", ["Flugplatz", -20.0]]],
+	"chicago":
+	[
+		["river-from-bridge", ["Upper River Bend", 30.0]],
+		["skyline-from-lsd", ["Lake Shore Drive", 60.0]],
+		["lower-wacker", ["Lower Wacker Portal", 250.0]],
+		["navy-pier-view", ["Navy Pier View", 60.0]],
+		["willis-tower-sightline", ["Willis Tower View", -150.0]],
+	],
 	"nordschleife":
 	[
 		["flugplatz-crest", ["Flugplatz", -20.0]],

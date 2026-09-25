@@ -14,8 +14,26 @@ const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
 const DATA = "res://trackgen/data/chicago/route.json"
+## Named corners for the visual review: [route.json point index, name]. Stations are found on the road.
+const CORNERS = [
+	[2, "Jackson Turn"],
+	[3, "Lakefront Turn"],
+	[5, "Lake Shore Drive"],
+	[8, "Navy Pier View"],
+	[9, "Harbor Connector"],
+	[11, "Lower Wacker Portal"],
+	[14, "Michigan Crossing"],
+	[17, "River Bend"],
+	[20, "Wacker West Bend"],
+	[23, "South Connector"],
+	[26, "Upper Wacker Portal"],
+	[27, "Willis Tower View"],
+	[29, "Upper Wacker Bend"],
+	[33, "Upper River Bend"],
+	[36, "Michigan Turn"]
+]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 6
+const CACHE_REVISION = 7
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -165,6 +183,10 @@ static func build_asset() -> Node3D:
 	)
 	attach(asset, asset, road, "Main")
 	road.bake()
+	var corners = {}
+	for corner in CORNERS:
+		corners[corner[1]] = road.curve.get_closest_offset(world(data().points[corner[0]]))
+	asset.set_meta("corners", corners)
 	var timing = asset.get_node("TimingLine")
 	timing.set_meta("sector_offsets", [road.last_bake.length / 3.0, road.last_bake.length * 2.0 / 3.0])
 	var bot = Path3D.new()
