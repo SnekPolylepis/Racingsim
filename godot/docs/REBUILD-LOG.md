@@ -2150,3 +2150,96 @@ The retrace is whole physical kerbs now: Spa 29 (La Source outside 144-258 and i
 - **Nordschleife Hatzenbogen:** added the missing left kerb, 318-360.
 
 Both kerbs.json files are marked `"status": "reviewed"`, so the K-02 kerb map now drives Spa and Nordschleife S1 kerbs. `run_gates.ps1 -All -Features` 36/36 with the kerbs live (laps within baseline).
+
+## 2026-09-25  CLAIM Look-9  (Claude Sonnet 5)
+NFSU nights on branch `rb/look-9-nights` (not on `main`): wet-road specular streaks from lamps and the
+car's own headlights, colour tuned against `docs/art/reference/nfsu-night-*.jpg`, glowing trackside
+structures, speed blur verified. Paused mid-verification for a task switch to Look-10; full state in
+`rb/look-9-nights`'s own REBUILD-LOG entries (CLAIM/PAUSED), not repeated here. Not merged, no PR yet.
+
+## 2026-09-25  CLAIM Look-10  (Claude Sonnet 5)
+Forest floor and roadside vegetation on branch `rb/look-10-undergrowth`: undergrowth cards (ferns,
+brambles, long grass, bushes, saplings) between and under the trees so no bare lawn shows at driving
+distance, a darker forest-floor ground tint under canopy, at least 3 more deciduous species in the tree
+atlas, and Nordschleife hedges/uncut verge grass. Not touching kerbs (`trackgen/data/*/kerbs.json`), car
+bodies (`scripts/cars/`, `assets/cars/`), Look-9's night lighting (`road_v2.gdshader`'s night branch,
+`track_lights.gd`, `apply_time_of_day()` — that branch is unmerged WIP, out of scope here regardless),
+or the full Nordschleife (`trackgen/nordschleife.gd`, `trackgen/data/nordschleife/` — Gemini's;
+`nordschleife_s1.gd` is fair game).
+
+## 2026-09-25  PAUSED Look-10  (Claude Sonnet 5)
+Stopped mid-verification on user instruction; left as WIP for a later session to pick up. Implementation
+is complete and committed/pushed to `rb/look-10-undergrowth` (commits through `76ee8b0`); no gates have
+been run against it yet, no screenshots recaptured, no PR opened.
+
+**Done:**
+- A second photographic card atlas, `assets/undergrowth/undergrowth_atlas.png`/`.json` (1.8 MB, 14
+  cards: 2 fern, 3 bramble, 3 long grass, 3 flowering shrub, 3 conifer sapling), from 5 more Poly Haven
+  CC0 1.0 models (`fern_02`, `wild_rooibos_bush`, `grass_medium_01`, `shrub_04`, `pine_sapling_small`),
+  baked/packed with the same `tools/bake_tree_cards.gd` + `tools/finish_tree_cards.py` pipeline as the
+  tree atlas (extended, not replaced).
+- `scripts/track/road_scatter.gd`: new `AtlasKind` enum (`TREES`/`UNDERGROWTH`) and `atlas_kind` export
+  so one RoadScatter node picks either atlas; static caches (`_mats`, card/species tables) generalized
+  from single-value to kind-keyed. New `species_indices` export + `pick_card()` param restricts a band to
+  a subset of `species_for(kind)` (re-weighted against just those rows), for a verge-grass or hedge band
+  that reads as one plant kind instead of the full mix.
+- `tree_atlas.png` regenerated to 10 cards: 3 spruce, 2 fir, 3 deciduous (beech, oak, birch — oak/birch
+  are `island_tree_02`/`island_tree_03`, the closest CC0 broadleaf/multi-stem stand-ins Poly Haven has,
+  documented as a substitution in `road_scatter.gd`'s `CARDS` comment and both THIRD-PARTY.md files), 2
+  bush.
+- `trackgen/nordschleife_s1.gd`, `trackgen/spa.gd`: `add_forest()` gained `atlas_kind`/`clear_m` params
+  (backward compatible); new `add_undergrowth()` wrapper (4 m clearance vs. a tree's 9.5/24 m) and
+  `add_forest_floor()` (a semi-transparent dark ribbon mesh at terrain height, unshaded alpha-blended
+  `StandardMaterial3D`, doesn't touch grip or surface ids). Call sites: `EifelFloor`/`EifelNear`/
+  `EifelDeep` (Nordschleife) and `ArdennesFloor` (Spa) scatter the mixed undergrowth band from just
+  behind the barrier through the near forest; `EifelVergeGrass` (grass-only, `species_indices=[2]`) is a
+  dedicated uncut strip right at the verge edge (0.3-1.6 m); `FlugplatzHedge` (bramble+shrub only,
+  `species_indices=[1,3]`) runs from Quiddelbacher Höhe to Flugplatz exit+80 m, standing in for the real
+  corner's open-airfield hedge line (`real-nordschleife-flugplatz.jpg`) without thinning the continuous
+  forest elsewhere. `trackgen/proving_ground.gd` gets a plain `Undergrowth` RoadScatter node (no
+  terrain-height correction needed there, matching its existing `Trees` node).
+- `CACHE_REVISION` bumped: Nordschleife S1 7→8, Spa 3→4.
+- `scripts/game.gd::check_exported_v2_assets()` now also checks
+  `res://assets/undergrowth/undergrowth_atlas.png`. No `export_presets.cfg` change needed — all three
+  presets use `export_filter="all_resources"`, and `assets/undergrowth/*` isn't in any
+  `exclude_filter`, so it's already included the same way `assets/trees/tree_atlas.png` is.
+- Both THIRD-PARTY.md files (repo root and `build/`) record the 7 new Poly Haven CC0 1.0 models with
+  author credits and the oak/birch substitution note. New committed assets: 4.4 MB total (tree +
+  undergrowth atlases), well under the ~40 MB budget.
+- ART-DIRECTION.md gap table rows 4 and 5 updated (ground-level closure done, deciduous count to 3); a
+  new "Ground layer (Look-10)" paragraph added under "Trackside enclosure".
+- `gdformat -l 110 scripts tests` clean; `--headless --path . --script scripts/game.gd --check-only`
+  clean (run twice, after the `road_scatter.gd`/`nordschleife_s1.gd` edits and again after the
+  `game.gd` export-probe edit).
+
+**Not done — pick up here:**
+- No gates have passed on this branch yet. A headless `python tools/ci_gates.py` run was started and
+  killed partway through (user asked to pause, not because anything failed) — the killed run showed
+  early suites (`static_friction`, `suspension`, `surfaces`, `energy_wall`) passing before it was
+  stopped; that is not a verified result, re-run the whole suite from scratch.
+- No windowed `-- --features` run yet.
+- Tracks have not been baked windowed since these changes landed, so `user://tracks3d/` (the windowed
+  cache; headless gates use the separate `user://tracks3d-headless/`, see `track_drive.gd:119`) is stale
+  for Nordschleife S1, Spa and the Proving Ground. Bake windowed before trusting any screenshot or
+  draw-call number — a headless-first bake places every scatter instance at the origin
+  (`add_forest()`'s known issue, see the 2026-09 entries on the headless track cache above).
+  `CACHE_REVISION` bumps mean the next windowed load rebuilds all three from scratch.
+- No `tests/v2/track_screenshots.gd --compare` recapture, so no updated `docs/art/baseline/` and no
+  before/after look at `ns-flugplatz-compare.png` against `real-nordschleife-flugplatz.jpg` for the new
+  verge grass and hedge.
+- No draw-call or GPU-time before/after numbers (`TRACK SHOT DRAWS` from `track_screenshots.gd`); no
+  check against the +10%-per-view budget.
+- No DONE log entry; QUEUE.md's Look-10 row is still `claimed: Sonnet`, not `review: Claude`.
+- No PR opened for `rb/look-10-undergrowth`.
+
+Next session: run `python tools/ci_gates.py` alone (not parallel with another windowed Godot process —
+that contention caused the `--features` timeouts the Look-9 PAUSED entry above describes), then a
+windowed bake/screenshot pass, then finish the DONE entry, QUEUE row, and PR.
+
+## 2026-09-25  REVIEW Look-10 (Sonnet): finished and accepted  (Claude Opus 5.5)
+Sonnet paused this before running anything. Finished here:
+- **Bug:** `road_scatter.gd` used `@export_enum` on an enum-typed variable, which Godot rejects. Every generator failed to compile (13 gates red). Changed to `@export var atlas_kind: AtlasKind`.
+- **Merge:** main merged in. The Spa CACHE_REVISION collided with the braking boards (both 4), so it is now 5; the Nordschleife S1 stays 8.
+- **Gates:** `run_gates.ps1 -All -Features` 37/37.
+- **Baseline recaptured:** Hatzenbach and Flugplatz read as mixed Eifel forest (beech, oak, birch, spruce) with undergrowth at the base.
+- **Draw calls:** about 16 % over the Proving Ground average (482 -> ~563 per view), above the 10 % budget; acceptable for now, noted for a later trim.

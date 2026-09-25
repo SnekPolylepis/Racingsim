@@ -120,6 +120,16 @@ or varied height. Rule: either raise near-band density further or vary tree heig
 enough that adjacent canopies overlap and close the gaps, rather than reading as individually placed
 cones.
 
+**Ground layer (Look-10).** Between the verge and the tree line, and between the trunks themselves, a
+second card atlas (`assets/undergrowth/undergrowth_atlas.png`: fern, bramble, long grass, flowering
+shrub, conifer sapling, 0.3-2.5 m) now fills the band 0.3-20 m beyond the verge, plus a dedicated uncut-
+grass strip right at the verge edge (0.3-1.6 m, grass cards only) and a darker semi-transparent
+forest-floor ribbon at terrain height under the canopy. Through the open Flugplatz stretch — a former
+airfield, not forest, in reality (`real-nordschleife-flugplatz.jpg`) — a dense bramble/shrub row (0.3-1.5
+m) reads as a hedge line dividing road from field instead of continuing the forest wall. Clearance for
+this low vegetation is 4 m from centreline (`UNDERGROWTH_CLEAR_M`), tighter than a tree's 9.5 m, since
+undergrowth belongs much closer to the barrier than a trunk does.
+
 **Distances, Spa (`trackgen/spa.gd`):** deliberately wider — verge 7-35 m, forest starting 12 m off the
 verge at 18/100 m (near) and 24/100 m (deep, to 180 m), plus a far belt (`ArdennesFar`, 14/100 m,
 110-260 m) behind the paddock/La Source/Eau Rouge so distant hills aren't bare. This width is correct
@@ -219,8 +229,8 @@ baseline captures and the measurements above:
 | 1 | **Fixed (Look-8):** white 0.12 m edge lines, 0.25 m inside each tarmac edge (RoadBuilder UV2 edge distance) — was: no white edge line anywhere on the road | Confirmed absent in `road_v2.gdshader`/`road_builder.gd`; every reference frame has one | Add a ~0.12 m painted edge line in the road UV space |
 | 2 | **Mostly fixed (Look-8):** 2K photo asphalt tiled in metres, macro drift, stains, repair patches and seams; road-crop contrast 0.078-0.097 (target ≥ 0.07) in three of four views, saturation 0.21-0.27 still a little over 0.20 — was: road surface has less than half the real luminance contrast, and is more saturated (tinted) than real asphalt | Measured: contrast 0.036 vs reference 0.078; saturation 0.157 vs reference 0.072 | Author luminance variation (patches, rubber line, paving seams) into `asphalt_track_diff.png`; desaturate the base tone |
 | 3 | ~~No distant horizon silhouette~~ **Done (Look-6)** | `RetroAssets.hills_panorama()` paints three forested ridges per circuit into the sky (Ardennes, Eifel, generic), day and night; before: `baseline` at Look-0 | Tune ridge height/colour against real Spa and Eifel photos when one is on the board |
-| 4 | ~~Canopy doesn't close~~ **Done (Look-6)** | Cards 8-30 m tall, widths jittered up to 1.4x, near band 56/100 m on the Nordschleife (34 before), 28/100 m at Spa (18); `ns-hatzenbach` reads as GT4's forest wall | Still open: ground-level undergrowth is thin between trunks; a dedicated fern/bramble card would close it |
-| 5 | ~~Trees are flat single-colour cone cards~~ **Done (Look-6)** | One 2048 px atlas of nine CC0 Poly Haven cut-outs (spruce, fir, one deciduous, bush; THIRD-PARTY.md), instanced from one MultiMesh per band with a per-instance atlas cell and tint | More deciduous species (only one card today) if the owner wants a beech-heavy Eifel |
+| 4 | ~~Canopy doesn't close~~ **Done (Look-6); ground closed (Look-10)** | Cards 8-30 m tall, widths jittered up to 1.4x, near band 56/100 m on the Nordschleife (34 before), 28/100 m at Spa (18); `ns-hatzenbach` reads as GT4's forest wall. Look-10 added a second card atlas (fern, bramble, long grass, flowering shrub, sapling) scattered from just behind the barriers through the near forest band, plus a darker forest-floor ribbon under the canopy, so bare mown lawn no longer shows between trunks | Still open: canopy itself still shows sky gaps between individual tree cards at driving distance (see "Trackside enclosure" below) — a card-height/overlap fix, not a ground one |
+| 5 | ~~Trees are flat single-colour cone cards~~ **Done (Look-6); more deciduous (Look-10)** | 2048 px atlas of ten CC0 Poly Haven cut-outs (three spruce, two fir, three deciduous — beech, oak, birch — two bush; THIRD-PARTY.md), instanced from one MultiMesh per band with a per-instance atlas cell and tint. Poly Haven has no literal oak/birch model; island_tree_02/03 stand in as the closest CC0 broadleaf/multi-stem renders | Mixed age is still only height jitter within each species' range, not distinct young/old card art |
 | 6 | Cars are procedural low-poly lofts | Owner verdict; `gt4-car-detail-slr.jpg` | Modelled bodies (CAR-01 Miata first) |
 | 7 | Armco is a single ribbed band | GT4: double or triple rails on dark posts | Rails on posts, 0.75-1 m |
 | 8 | ~~Day fog to 2.4 km exposes a bare horizon~~ **Done (Look-6)** | Fog end 1.15 km, `camera.far` 1250, density 1.0 at the end; the hill ridges take over where the fog closes | — |

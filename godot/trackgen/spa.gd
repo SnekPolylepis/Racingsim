@@ -20,7 +20,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 4
+const CACHE_REVISION = 5
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -352,7 +352,9 @@ static func add_forest(
 	density: float,
 	offset_min: float,
 	offset_max: float,
-	seed_value: int
+	seed_value: int,
+	atlas_kind: int = RoadScatter.AtlasKind.TREES,
+	clear_m: float = CLEAR_M
 ) -> void:
 	var trees = RoadScatter.new()
 	trees.name = title
@@ -366,6 +368,7 @@ static func add_forest(
 	trees.offset_max = offset_max
 	trees.scale_min = 1.0
 	trees.scale_max = 2.0
+	trees.atlas_kind = atlas_kind
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
@@ -376,15 +379,117 @@ static func add_forest(
 	# that lands near another part of the circuit (a far offset on a winding closed road) is dropped.
 	for i in multimesh.instance_count:
 		var xf: Transform3D = trees.last_bake.xforms[i]
-		if near_road(clear, xf.origin):
+		if near_road(clear, xf.origin, clear_m):
 			xf = Transform3D(Basis.from_scale(Vector3.ZERO), xf.origin)
 		elif not terrain.is_empty():
 			xf.origin.y = terrain_height(terrain, xf.origin)
 		multimesh.set_instance_transform(i, xf)
 
 
+## Look-10: low vegetation (ferns, brambles, long grass, bushes, saplings) from just behind the
+## barriers to under the tree canopy, with a smaller road clearance than the trees since undergrowth
+## belongs much closer to the barrier than a tree trunk does.
+static func add_undergrowth(
+	asset: Node3D,
+	terrain: Dictionary,
+	title: String,
+	from_m: float,
+	to_m: float,
+	density: float,
+	offset_min: float,
+	offset_max: float,
+	seed_value: int
+) -> void:
+	add_forest(
+		asset,
+		terrain,
+		title,
+		from_m,
+		to_m,
+		density,
+		offset_min,
+		offset_max,
+		seed_value,
+		RoadScatter.AtlasKind.UNDERGROWTH,
+		UNDERGROWTH_CLEAR_M
+	)
+
+
+## Look-10: a darker, semi-transparent ground tint under the forest canopy (ART-DIRECTION.md "Trackside
+## enclosure"); see nordschleife_s1.gd's copy for the reasoning. Doesn't touch grip or surface ids.
+static func add_forest_floor(
+	asset: Node3D,
+	road: RoadPath,
+	terrain: Dictionary,
+	from_m: float,
+	to_m: float,
+	offset_min: float,
+	offset_max: float
+) -> void:
+	var c = road.working_curve()
+	var length = c.get_baked_length()
+	var keys = road.sections.duplicate()
+	keys.sort_custom(func(a, b): return a.at < b.at)
+	var spline = (
+		RoadBuilder.elevation_spline(road.elevation_keys, length, road.closed)
+		if not road.elevation_keys.is_empty()
+		else []
+	)
+	var span = to_m - from_m if to_m >= 0.0 else length - from_m
+	if road.closed and to_m >= 0.0 and to_m <= from_m:
+		span += length
+	var step_m = 6.0
+	var count = maxi(1, int(ceil(span / step_m)))
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var col = Color(0.05, 0.09, 0.04, 0.4)
+	for side_sign in [-1, 1]:
+		var prev_in = null
+		var prev_out = null
+		for i in count + 1:
+			var s = from_m + span * float(i) / float(count)
+			var e_in = RoadBuilder.beyond_edge(c, keys, road.closed, spline, s, side_sign, offset_min)
+			var e_out = RoadBuilder.beyond_edge(c, keys, road.closed, spline, s, side_sign, offset_max)
+			var p_in = road.transform * e_in.point
+			var p_out = road.transform * e_out.point
+			p_in.y = terrain_height(terrain, p_in) + 0.05
+			p_out.y = terrain_height(terrain, p_out) + 0.05
+			if prev_in != null:
+				if side_sign < 0:
+					SceneryBuilder.add_quad(st, prev_in, prev_out, p_out, p_in, col)
+				else:
+					SceneryBuilder.add_quad(st, prev_out, prev_in, p_in, p_out, col)
+			prev_in = p_in
+			prev_out = p_out
+	st.generate_normals()
+	var mat = StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	st.set_material(mat)
+	var floor_mesh = st.commit()
+	var scenery = asset.get_node_or_null("Scenery")
+	if scenery == null:
+		scenery = Node3D.new()
+		scenery.name = "Scenery"
+		asset.add_child(scenery)
+		scenery.owner = asset
+	var old = scenery.get_node_or_null("ForestFloor")
+	if old != null:
+		scenery.remove_child(old)
+		old.free()
+	var inst = MeshInstance3D.new()
+	inst.name = "ForestFloor"
+	inst.mesh = floor_mesh
+	scenery.add_child(inst)
+	inst.owner = asset
+
+
 ## Road centre points hashed into CLEAR_M cells (plan view) for near_road().
 const CLEAR_M = 24.0
+## Undergrowth clears only the tarmac, shoulder and verge, not the tree band beyond it.
+const UNDERGROWTH_CLEAR_M = 4.0
 
 
 static func road_clearance(road) -> Dictionary:
@@ -398,14 +503,14 @@ static func road_clearance(road) -> Dictionary:
 
 
 ## True when `point` is within CLEAR_M of the road's centreline anywhere on the circuit.
-static func near_road(cells: Dictionary, point: Vector3) -> bool:
+static func near_road(cells: Dictionary, point: Vector3, clear_m: float = CLEAR_M) -> bool:
 	var at = Vector2(point.x, point.z)
 	var cx = floori(point.x / CLEAR_M)
 	var cz = floori(point.z / CLEAR_M)
 	for dx in [-1, 0, 1]:
 		for dz in [-1, 0, 1]:
 			for p in cells.get(Vector2i(cx + dx, cz + dz), []):
-				if at.distance_squared_to(p) < CLEAR_M * CLEAR_M:
+				if at.distance_squared_to(p) < clear_m * clear_m:
 					return true
 	return false
 
@@ -891,6 +996,23 @@ static func build_asset() -> Node3D:
 		110.0,
 		260.0,
 		604
+	)
+	# Look-10: ferns, brambles, long grass and saplings from the verge edge through the near forest
+	# band, over the same stretch as ArdennesNear, so Spa's wider runoff doesn't read as bare lawn
+	# right up to the tree line either.
+	add_undergrowth(
+		asset,
+		terrain,
+		"ArdennesFloor",
+		positions["Raidillon"] + 180.0,
+		positions["Blanchimont"] + 120.0,
+		50.0,
+		7.0,
+		20.0,
+		605
+	)
+	add_forest_floor(
+		asset, road, terrain, positions["Raidillon"] + 180.0, positions["Blanchimont"] + 120.0, 7.0, 20.0
 	)
 	add_scenery_kit(asset, road, positions, measured)
 	# Braking countdown and corner name boards (Look-11).

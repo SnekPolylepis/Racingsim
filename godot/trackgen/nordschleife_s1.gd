@@ -20,7 +20,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
-const CACHE_REVISION = 6
+const CACHE_REVISION = 8
 
 
 static func read_json(path: String) -> Dictionary:
@@ -320,7 +320,10 @@ static func add_forest(
 	density: float,
 	offset_min: float,
 	offset_max: float,
-	seed_value: int
+	seed_value: int,
+	atlas_kind: int = RoadScatter.AtlasKind.TREES,
+	clear_m: float = TREE_CLEAR_M,
+	species_indices: PackedInt32Array = []
 ) -> void:
 	var trees = RoadScatter.new()
 	trees.name = title
@@ -334,6 +337,8 @@ static func add_forest(
 	trees.offset_max = offset_max
 	trees.scale_min = 1.0
 	trees.scale_max = 2.0
+	trees.atlas_kind = atlas_kind
+	trees.species_indices = species_indices
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
@@ -344,17 +349,124 @@ static func add_forest(
 	# that lands near another part of the circuit (a far offset on a winding closed road) is dropped.
 	for i in multimesh.instance_count:
 		var xf: Transform3D = trees.last_bake.xforms[i]
-		if near_road(clear, xf.origin):
+		if near_road(clear, xf.origin, clear_m):
 			xf = Transform3D(Basis.from_scale(Vector3.ZERO), xf.origin)
 		elif not terrain.is_empty():
 			xf.origin.y = terrain_height(terrain, xf.origin)
 		multimesh.set_instance_transform(i, xf)
 
 
+## Look-10: low vegetation (ferns, brambles, long grass, bushes, saplings) from just behind the
+## barriers to under the tree canopy — same grounding/clearance as add_forest, a smaller road
+## clearance since undergrowth belongs much closer to the barrier than a tree trunk does.
+static func add_undergrowth(
+	asset: Node3D,
+	terrain: Dictionary,
+	title: String,
+	from_m: float,
+	to_m: float,
+	density: float,
+	offset_min: float,
+	offset_max: float,
+	seed_value: int,
+	species_indices: PackedInt32Array = []
+) -> void:
+	add_forest(
+		asset,
+		terrain,
+		title,
+		from_m,
+		to_m,
+		density,
+		offset_min,
+		offset_max,
+		seed_value,
+		RoadScatter.AtlasKind.UNDERGROWTH,
+		UNDERGROWTH_CLEAR_M,
+		species_indices
+	)
+
+
+## Look-10: a darker, semi-transparent ground tint under the forest canopy (ART-DIRECTION.md "Trackside
+## enclosure") — real-nordschleife-adenauer-forst.jpg shows the shaded forest floor read noticeably
+## darker than the sunlit verge. A thin alpha-blended ribbon laid on the terrain's own height, offset
+## min..max beyond the verge; doesn't touch grip or surface ids, which stay whatever the terrain/ground
+## shader already says for that ground.
+static func add_forest_floor(
+	asset: Node3D,
+	road: RoadPath,
+	terrain: Dictionary,
+	from_m: float,
+	to_m: float,
+	offset_min: float,
+	offset_max: float
+) -> void:
+	var c = road.working_curve()
+	var length = c.get_baked_length()
+	var keys = road.sections.duplicate()
+	keys.sort_custom(func(a, b): return a.at < b.at)
+	var spline = (
+		RoadBuilder.elevation_spline(road.elevation_keys, length, road.closed)
+		if not road.elevation_keys.is_empty()
+		else []
+	)
+	var span = to_m - from_m if to_m >= 0.0 else length - from_m
+	if road.closed and to_m >= 0.0 and to_m <= from_m:
+		span += length
+	var step_m = 6.0
+	var count = maxi(1, int(ceil(span / step_m)))
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var col = Color(0.05, 0.09, 0.04, 0.4)
+	for side_sign in [-1, 1]:
+		var prev_in = null
+		var prev_out = null
+		for i in count + 1:
+			var s = from_m + span * float(i) / float(count)
+			var e_in = RoadBuilder.beyond_edge(c, keys, road.closed, spline, s, side_sign, offset_min)
+			var e_out = RoadBuilder.beyond_edge(c, keys, road.closed, spline, s, side_sign, offset_max)
+			var p_in = road.transform * e_in.point
+			var p_out = road.transform * e_out.point
+			p_in.y = terrain_height(terrain, p_in) + 0.05
+			p_out.y = terrain_height(terrain, p_out) + 0.05
+			if prev_in != null:
+				if side_sign < 0:
+					SceneryBuilder.add_quad(st, prev_in, prev_out, p_out, p_in, col)
+				else:
+					SceneryBuilder.add_quad(st, prev_out, prev_in, p_in, p_out, col)
+			prev_in = p_in
+			prev_out = p_out
+	st.generate_normals()
+	var mat = StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	st.set_material(mat)
+	var floor_mesh = st.commit()
+	var scenery = asset.get_node_or_null("Scenery")
+	if scenery == null:
+		scenery = Node3D.new()
+		scenery.name = "Scenery"
+		asset.add_child(scenery)
+		scenery.owner = asset
+	var old = scenery.get_node_or_null("ForestFloor")
+	if old != null:
+		scenery.remove_child(old)
+		old.free()
+	var inst = MeshInstance3D.new()
+	inst.name = "ForestFloor"
+	inst.mesh = floor_mesh
+	scenery.add_child(inst)
+	inst.owner = asset
+
+
 ## Road centre points hashed into CLEAR_M cells (plan view) for near_road().
 const CLEAR_M = 24.0
 ## No tree closer than this to any road centreline: the widest half-road plus shoulder, verge and armco.
 const TREE_CLEAR_M = 9.5
+## Undergrowth clears only the tarmac, shoulder and verge, not the tree band beyond it.
+const UNDERGROWTH_CLEAR_M = 4.0
 
 
 static func road_clearance(road) -> Dictionary:
@@ -367,15 +479,15 @@ static func road_clearance(road) -> Dictionary:
 	return cells
 
 
-## True when `point` is within TREE_CLEAR_M of the road's centreline anywhere on the circuit.
-static func near_road(cells: Dictionary, point: Vector3) -> bool:
+## True when `point` is within `clear_m` of the road's centreline anywhere on the circuit.
+static func near_road(cells: Dictionary, point: Vector3, clear_m: float = TREE_CLEAR_M) -> bool:
 	var at = Vector2(point.x, point.z)
 	var cx = floori(point.x / CLEAR_M)
 	var cz = floori(point.z / CLEAR_M)
 	for dx in [-1, 0, 1]:
 		for dz in [-1, 0, 1]:
 			for p in cells.get(Vector2i(cx + dx, cz + dz), []):
-				if at.distance_squared_to(p) < TREE_CLEAR_M * TREE_CLEAR_M:
+				if at.distance_squared_to(p) < clear_m * clear_m:
 					return true
 	return false
 
@@ -782,6 +894,24 @@ static func build_asset() -> Node3D:
 	# The Eifel forest stands right behind the armco: a dense near wall, then a deep band.
 	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 56.0, 1.5, 18.0, 713)
 	add_forest(asset, terrain, "EifelDeep", 0.0, -1.0, 34.0, 18.0, 120.0, 714)
+	# Look-10: ferns, brambles, long grass and saplings from just behind the armco (0.3 m beyond the
+	# verge, matching the armco's own offset) through the near forest band, so the ground between and
+	# under the trees isn't bare mown lawn (real-nordschleife-adenauer-forst.jpg, -flugplatz.jpg).
+	add_undergrowth(asset, terrain, "EifelFloor", 0.0, -1.0, 60.0, 0.3, 20.0, 812)
+	# Look-10: a distinct uncut-grass strip right at the verge edge, before the mixed forest-floor band
+	# beyond it — the mown strip gives way to long grass at the verge before the tree line, not straight
+	# to forest floor (real-nordschleife-flugplatz.jpg). UNDERGROWTH_SPECIES index 2 is grass.
+	add_undergrowth(asset, terrain, "EifelVergeGrass", 0.0, -1.0, 45.0, 0.3, 1.6, 815, PackedInt32Array([2]))
+	# Look-10: a hedge line through the open Flugplatz stretch. The real corner runs along a disused
+	# airfield — open ground, not forest wall, there (real-nordschleife-flugplatz.jpg) — so a dense
+	# bramble/shrub row (indices 1, 3) reads as a hedge dividing road from field without thinning the
+	# continuous forest bands elsewhere.
+	var flug_from = positions.get("Quiddelbacher Hoehe", 2000.0)
+	var flug_to = positions.get("Flugplatz exit", 2440.0) + 80.0
+	add_undergrowth(
+		asset, terrain, "FlugplatzHedge", flug_from, flug_to, 95.0, 0.3, 1.5, 816, PackedInt32Array([1, 3])
+	)
+	add_forest_floor(asset, road, terrain, 0.0, -1.0, 0.3, 20.0)
 	add_scenery_kit(asset, road, positions, measured)
 	add_lighting(asset, road, positions, measured)
 	return asset

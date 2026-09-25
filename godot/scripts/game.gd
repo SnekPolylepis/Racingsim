@@ -452,7 +452,8 @@ func setup_v2():
 		call_deferred("check_exported_v2_assets")
 
 
-## A packaged-build probe: both generators, Spa's raw heightmap and the tree atlas must be inside the PCK.
+## A packaged-build probe: both generators, Spa's raw heightmap and the tree/undergrowth atlases must be
+## inside the PCK.
 func check_exported_v2_assets() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -467,6 +468,7 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/kerbs.json")
 		and ResourceLoader.exists("res://assets/trees/tree_atlas.png")
+		and ResourceLoader.exists("res://assets/undergrowth/undergrowth_atlas.png")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
