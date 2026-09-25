@@ -47,6 +47,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | Look-3 | PS2 renderer on the v2 path: retro_renderer.gd (640x448, ordered dither, glow, motion persistence, console output), v2 HUD and menus in the Authentic UI viewport | Claude | P4-menus | done (PR #23; Windows GPU review 2026-09-24) | |
 | Look-4 | Dress proving ground, Spa and Nordschleife per ART-DIRECTION.md: crowd cards, fences, painted tyre walls, billboards, marshal posts, lamp placement support for Look-2 | Gemini (content only), Claude review | Look-1 | done (reviewed by Claude 2026-09-24) | rb/look-4-dressing |
 | Look-5 | Scenery kit and walls in PS2 materials (armco, tyre and concrete textures from assets/ps2; crowd cards; tree cards) | Claude | Look-1 | open | |
+| Look-tracks | Spa and Nordschleife daylight look outside the Look-5 kit: forest cache bug, terrain grass, haze and view distance, road/runoff grade, forest density | Claude (owner-assigned) | Look-1 | review: Sol | rb/look-tracks; read "DONE Look-tracks" |
 | P5-04 | Owner playtest of the proving ground in the real game; record lap baselines | owner | P4-core, P4-vis | open | |
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
 

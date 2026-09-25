@@ -1794,3 +1794,32 @@ No fix rows needed.
   - LLM-GUIDE "Known boundaries" dropped the legacy barrier and generic-loft lines.
   - TESTING describes the new CI jobs.
 - **Dropped:** the HUD overlap I noted earlier exists only in the non-console HUD, which the game no longer shows (`--v2-present` now opens the front end).
+
+## 2026-09-24  DONE Look-tracks Spa and Nordschleife daylight  (Claude Opus 5.5) — branch `rb/look-tracks`
+Owner: "make Spa and the Nord look good", while staying out of Sol's Look-5 files (the `scripts/track/` scenery kit and `ps2_materials.gd`). The changes are in the generators, the ground and road shaders, and the daytime environment in `apply_time_of_day()`.
+
+- **Bug, Spa's forest:** all 4,080 Spa trees were baked at the world origin. `add_forest()` grounded trees by reading the MultiMesh back (`get_instance_transform`), which returns zeros under the headless renderer. The track cache in `user://tracks3d` is shared with the gates, so any headless run that baked Spa first (the `front_end` gate does) left the game a treeless Spa. Trees are now grounded from `RoadScatter.last_bake.xforms`, in both generators. The generator change bumps the cache revision, so old caches rebuild.
+- **Trees clear the circuit:** a tree within 24 m of any part of the road centreline is dropped. Far offsets on a winding closed road had put trees on the pit straight and Eau Rouge.
+- **Forest density:** Spa gains `ArdennesFar`, 14 per 100 m at 110-260 m, behind the paddock, La Source and Eau Rouge. The Nordschleife goes from 5 per 100 m near the road to 11 near (10-45 m) plus 16 deep (45-150 m).
+- **Terrain:** both generators overrode the terrain with a flat green StandardMaterial from before Look-1. The chunks now keep terrain.gd's PS2 grass.
+- **Grass grade (`ground.gdshader`):** the dry-grass photo's ×(1.65, 1.6, 1.2) grade read khaki over whole hillsides. It is now ×(0.62, 1.08, 0.7), a lush green.
+- **Runoff and road (`road_v2.gdshader`):** paved runoff and the daytime road were warm brown-pink. They are now graded to a cool neutral grey. Day road sheen is lowered (metallic 0.23 → 0.08, roughness 0.5-0.64), which removes the white glare stripe driving toward the sun. Night is unchanged.
+- **Daytime haze and view (`game.gd apply_time_of_day`):** the fog was fully opaque at 950 m and the camera clipped at 1,100 m, so every hill beyond turned into a pale mint band with a hard edge. Now: fog colour a9bfd3 (the sky's horizon blue), from 150 m to 2.4 km, curve 1.8, density 0.82; far plane 3 km. Night is unchanged.
+- **New tool:** `tests/v2/track_screenshots.gd` (windowed, not a gate) captures 9 Spa and 6 Nordschleife daylight views through the default presentation.
+
+Before/after pairs are in [rebuild/screenshots/look-tracks/](rebuild/screenshots/look-tracks/). I looked at all 15 views after each change.
+
+Cost, llvmpipe, `--v2-look`, 480p Authentic frame / world:
+- Spa 118 / 68 ms, against 102 / 61 ms in the Look-3 run (before Look-2's lamps merged, so not a pure comparison);
+- Nordschleife 151 / 101 ms (no earlier figure).
+
+The longer view and the extra trees cost something on a software rasterizer. A Windows GPU run should confirm it is small there; trees are alpha cards in one MultiMesh per forest.
+
+Gates (Linux cloud, Godot 4.6.2):
+- `python tools/ci_gates.py` 34/34, stderr empty;
+- windowed `--v2-present` 77/0;
+- `--v2-look --v2-track=spa` 72/0;
+- `--v2-look --v2-track=nordschleife_s1` 72/0;
+- all stderr empty; parse and gdformat clean.
+
+For Sol (Look-5): `ground.gdshader` and `road_v2.gdshader` changed their grades here. `trackgen/spa.gd` and `nordschleife_s1.gd` `add_forest()` now filter and ground trees after `RoadScatter.bake()`; keep that if batching moves the trees.

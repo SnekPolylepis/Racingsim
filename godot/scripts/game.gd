@@ -1067,7 +1067,7 @@ func setup_environment():
 	camera = Camera3D.new()
 	camera.fov = 64
 	camera.near = .15
-	camera.far = 1100
+	camera.far = 3000
 	add_child(camera)
 	camera.make_current()
 	lamp_pool = TrackLights.make_pool(self)
@@ -1089,14 +1089,18 @@ func apply_time_of_day():
 		environment.ambient_light_color = Color("56628c") if night else Color("9db7d6")
 		environment.ambient_light_energy = .34 if night else .42
 		environment.tonemap_exposure = 1.0
-		environment.fog_light_color = Color("2a2433") if night else Color("bed3e2")
-		environment.fog_depth_begin = 60 if night else 130
-		environment.fog_depth_end = 520 if night else 950
-		environment.fog_density = 1.0
+		# Daylight aerial perspective (GT4): a haze toward the sky's horizon blue that clears the middle
+		# distance (curve > 1) and only closes at 2.4 km, so Spa's and the Eifel's hills read as blue-grey
+		# layers. The old 950 m wall turned every hill beyond it into one pale mint band.
+		environment.fog_light_color = Color("2a2433") if night else Color("a9bfd3")
+		environment.fog_depth_begin = 60 if night else 150
+		environment.fog_depth_end = 520 if night else 2400
+		environment.fog_depth_curve = 1.0 if night else 1.8
+		environment.fog_density = 1.0 if night else .82
 		environment.fog_sky_affect = .15
 		sun.light_color = Color("8ca6df") if night else Color("ffd79a")
 		sun.light_energy = .32 if night else 1.5
-		camera.far = 650 if night else 1100
+		camera.far = 650 if night else 3000
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
 			warm_ghost.call_deferred()

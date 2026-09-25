@@ -39,8 +39,10 @@ void fragment() {
 	// Tarmac runoff keeps a crisp edge (it is laid, not spread) and reads a little lighter than the circuit.
 	float t = smoothstep(.46, .54, mask.g);
 	vec2 r1 = w * 0.32; vec2 r2 = w * 0.074 + vec2(0.37, 0.61);
-	vec3 runoff = mix(linear_sample(texture(runoff_albedo, r1).rgb), linear_sample(texture(runoff_albedo, r2).rgb), 0.35 + far * 0.65) * 4.6 * vec3(0.95, 0.96, 1.0);
-	vec3 styled_grass = grass * vec3(1.65, 1.6, 1.2);
+	vec3 runoff = mix(linear_sample(texture(runoff_albedo, r1).rgb), linear_sample(texture(runoff_albedo, r2).rgb), 0.35 + far * 0.65) * 4.8 * vec3(0.84, 0.98, 1.2);
+	// Graded to a lush Ardennes/Eifel green (mean about sRGB 70,100,40 in sun) from the dry-grass photo;
+	// the old (1.65, 1.6, 1.2) grade read khaki on whole hillsides once terrain used this shader.
+	vec3 styled_grass = grass * vec3(0.62, 1.08, 0.7);
 	vec3 styled_gravel = gravel * vec3(1.1, 1.12, 1.0);
 	ALBEDO = mix(mix(styled_grass, styled_gravel, m), runoff, t) * COLOR.rgb;
 	if (OUTPUT_IS_SRGB) ALBEDO = pow(max(ALBEDO, vec3(0.)), vec3(1. / 2.2));
