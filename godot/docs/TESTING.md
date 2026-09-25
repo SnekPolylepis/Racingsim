@@ -48,6 +48,8 @@ The runner reads `tools/gates.json`, launches suites in parallel Godot processes
 
 `tools/gates.json` maps each suite to dependency-path groups (`vehicle`, `track`, `game`). The default (no `-All`) runs only suites whose paths the branch touched. Add a new suite as an entry in `gates.json` with its dependency paths.
 
+After a failed run, `python3 tools/gate_triage.py [log folder]` (default: the newest folder under `tests/logs/`) gives each failed suite a likely cause and next step: script error, regression, timing under parallel load (a suite that ignores `GatesEnv.perf()`), real slowdown in the `-Perf` pass, baseline drift, stderr warning, asset/import, environment. Script errors are read from the log; the other causes come from one TypeSafe Jev request, so it needs `TYPESAFE_API_KEY` (`--dry-run` prints the request without it). Answers below `--min-confidence` (0.6) say "needs a person". It writes `triage.json` beside the logs. It is advice only: whether a gate passed is still decided by the runner.
+
 ### v2 test suites
 
 All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Each prints a `<NAME> RESULTS {json}` line.
