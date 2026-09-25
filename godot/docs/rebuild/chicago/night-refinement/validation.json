@@ -1,0 +1,199 @@
+{
+  "final-gates": {
+    "command": [
+      "python3",
+      "godot/tools/ci_gates.py",
+      "--godot",
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--jobs",
+      "2"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 301.9,
+    "log": "chicago-night-final-gates.log"
+  },
+  "perf-chassis_spike": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/chassis_spike.gd",
+      "--",
+      "--part",
+      "cost"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 0.9,
+    "log": "chicago-night-perf-chassis_spike.log"
+  },
+  "perf-footprint": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/footprint.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 4.5,
+    "log": "chicago-night-perf-footprint.log"
+  },
+  "perf-barrier": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/barrier.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 1.6,
+    "log": "chicago-night-perf-barrier.log"
+  },
+  "perf-props": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/props.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 6.5,
+    "log": "chicago-night-perf-props.log"
+  },
+  "perf-track_asset": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/track_asset.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 3.4,
+    "log": "chicago-night-perf-track_asset.log"
+  },
+  "perf-terrain": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/terrain.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 10.8,
+    "log": "chicago-night-perf-terrain.log"
+  },
+  "features": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--path",
+      "godot",
+      "--",
+      "--features",
+      "--v2-flow-test"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 84.7,
+    "log": "chicago-night-features.log"
+  },
+  "mac-build": {
+    "command": [
+      "bash",
+      "godot/packaging/build-macos.sh"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 10.6,
+    "log": "chicago-night-mac-build.log"
+  },
+  "export-check": {
+    "command": [
+      "godot/build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
+      "--headless",
+      "--",
+      "--v2-export-check",
+      "--v2-flow-test"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 15.1,
+    "log": "chicago-night-export-check.log"
+  },
+  "export-chicago-smoke": {
+    "command": [
+      "godot/build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
+      "--headless",
+      "--",
+      "--v2-smoke",
+      "--v2-track=chicago",
+      "--v2-flow-test"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 0.9,
+    "log": "chicago-night-export-chicago-smoke.log"
+  },
+  "night-cache": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "res://tests/v2/chicago.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 2.0,
+    "log": "chicago-night-night-cache.log"
+  },
+  "night-shots": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--path",
+      "godot",
+      "--script",
+      "res://tests/v2/chicago_screenshots.gd",
+      "--",
+      "--v2-flow-test",
+      "--v2-track=chicago"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 8.5,
+    "log": "chicago-night-night-shots.log"
+  },
+  "export-night-windowed": {
+    "command": [
+      "godot/tools/Godot.app/Contents/MacOS/Godot",
+      "--main-pack",
+      "godot/build/macos/Racing Sim.app/Contents/Resources/Racing Sim.pck",
+      "--script",
+      "godot/tests/v2/chicago_export_night.gd",
+      "--",
+      "--v2-flow-test"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 3.0,
+    "log": "chicago-night-export-night-windowed.log"
+  }
+}

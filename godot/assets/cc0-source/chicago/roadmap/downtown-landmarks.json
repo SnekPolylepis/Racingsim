@@ -1,0 +1,6469 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.7 375dc00a",
+  "osm3s": {
+    "timestamp_osm_base": "2026-09-25T15:54:05Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 20217109,
+  "lat": 41.8891445,
+  "lon": -87.6225172,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "401",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Shoreline Sightseeing",
+    "network": "Shoreline Water Taxi",
+    "operator": "Shoreline Water Taxi",
+    "public_transport": "station",
+    "source": "PGS",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 20217442,
+  "lat": 41.8790618,
+  "lon": -87.6377402,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "200",
+    "addr:state": "IL",
+    "addr:street": "South Upper Wacker Drive",
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Union Station/Willis Tower",
+    "network": "Shoreline Water Taxi",
+    "operator": "Shoreline Water Taxi",
+    "public_transport": "station",
+    "website": "https://shorelinesightseeing.com/water-taxis/union-station-willis-tower/"
+  }
+},
+{
+  "type": "node",
+  "id": 258023123,
+  "lat": 41.8928775,
+  "lon": -87.6107126,
+  "tags": {
+    "bench": "no",
+    "bus": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "stop_position",
+    "ref": "18620",
+    "route_ref": "2",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 271275603,
+  "lat": 41.8848116,
+  "lon": -87.6255101,
+  "tags": {
+    "amenity": "theatre",
+    "name": "Storefront Theater"
+  }
+},
+{
+  "type": "node",
+  "id": 313107974,
+  "lat": 41.8918968,
+  "lon": -87.6092419,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "700",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Grand Avenue",
+    "disused:amenity": "cinema",
+    "name": "Former Navy Pier IMAX Theatre",
+    "website": "https://www.imax.com/oo/navy-pier-imax/",
+    "wikidata": "Q37760649"
+  }
+},
+{
+  "type": "node",
+  "id": 368069217,
+  "lat": 41.8972550,
+  "lon": -87.6331086,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "820",
+    "addr:postcode": "60610",
+    "addr:state": "IL",
+    "addr:street": "North LaSalle Drive",
+    "amenity": "theatre",
+    "ele": "179",
+    "gnis:feature_id": "1831186",
+    "name": "Moody Bible Auditorium",
+    "source": "USGS Geonames"
+  }
+},
+{
+  "type": "node",
+  "id": 1299823016,
+  "lat": 41.8788065,
+  "lon": -87.6296809,
+  "tags": {
+    "artist_name": "Alexander Calder",
+    "artwork_type": "sculpture",
+    "layer": "4",
+    "material": "steel",
+    "name": "Flamingo",
+    "source": "survey",
+    "start_date": "1974",
+    "tourism": "artwork",
+    "wheelchair": "yes",
+    "wikidata": "Q3073296",
+    "wikipedia": "en:Flamingo (sculpture)"
+  }
+},
+{
+  "type": "node",
+  "id": 1619740970,
+  "lat": 41.8819687,
+  "lon": -87.6431230,
+  "tags": {
+    "artwork_type": "sculpture",
+    "historic": "memorial",
+    "name": "Batcolumn",
+    "tourism": "artwork",
+    "wikidata": "Q4868732",
+    "wikipedia": "en:Batcolumn"
+  }
+},
+{
+  "type": "node",
+  "id": 1619741255,
+  "lat": 41.8794533,
+  "lon": -87.6437937,
+  "tags": {
+    "artist_name": "Maurice Harron",
+    "artwork_type": "sculpture",
+    "name": "Gráinne",
+    "subject:wikidata": "Q1551263",
+    "subject:wikipedia": "en:Gráinne",
+    "tourism": "artwork",
+    "website": "https://www.chicagoparkdistrict.com/parks-facilities/grainne-artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 1629279490,
+  "lat": 41.8752389,
+  "lon": -87.6214946,
+  "tags": {
+    "artist_name": "Dessa Kirk",
+    "artwork_type": "sculpture",
+    "name": "Lilies",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 1633465278,
+  "lat": 41.8814854,
+  "lon": -87.6233816,
+  "tags": {
+    "artist_name": "Yvonne Domenge",
+    "artwork_type": "sculpture",
+    "name": "Interconnected",
+    "tourism": "artwork",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1633465279,
+  "lat": 41.8837191,
+  "lon": -87.6234300,
+  "tags": {
+    "artist_name": "Yvonne Domenge",
+    "artwork_type": "sculpture",
+    "name": "Interconnected",
+    "tourism": "artwork",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1648106848,
+  "lat": 41.8856833,
+  "lon": -87.6221080,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 1648106861,
+  "lat": 41.8857919,
+  "lon": -87.6219843,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 1648241274,
+  "lat": 41.8872808,
+  "lon": -87.6127155,
+  "tags": {
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2311635030,
+  "lat": 41.8785046,
+  "lon": -87.6358868,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "233",
+    "addr:postcode": "60606",
+    "addr:state": "IL",
+    "addr:street": "South Wacker Drive",
+    "contact:website": "https://theskydeck.com",
+    "level": "-2",
+    "name": "SkyDeck Chicago Willis Tower",
+    "operator": "Willis Tower",
+    "toilets:wheelchair": "yes",
+    "tourism": "attraction",
+    "wheelchair": "yes",
+    "wikidata": "Q84047380"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032862,
+  "lat": 41.8878568,
+  "lon": -87.6355290,
+  "tags": {
+    "artist_name": "Milton Horn",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "Aaron Montgomery Ward",
+    "subject:wikidata": "Q4662269",
+    "subject:wikipedia": "en:Aaron Montgomery Ward",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032863,
+  "lat": 41.8878577,
+  "lon": -87.6354568,
+  "tags": {
+    "artist_name": "Henry Rox",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "Edward Albert Filene",
+    "subject:wikidata": "Q5342896",
+    "subject:wikipedia": "en:Edward Filene",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032864,
+  "lat": 41.8878581,
+  "lon": -87.6353839,
+  "tags": {
+    "artist_name": "Charles Umlauf",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "George Huntington Hartford",
+    "subject:wikidata": "Q5945352",
+    "subject:wikipedia": "en:Huntington Hartford",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032865,
+  "lat": 41.8878599,
+  "lon": -87.6353096,
+  "tags": {
+    "artist_name": "Lewis Iselin",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "John Wanamaker",
+    "subject:wikidata": "Q921045",
+    "subject:wikipedia": "en:John Wanamaker",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032866,
+  "lat": 41.8878610,
+  "lon": -87.6351648,
+  "tags": {
+    "artist_name": "Lewis Iselin",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "Marshall Field",
+    "subject:wikidata": "Q1902746",
+    "subject:wikipedia": "en:Marshall Field",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032867,
+  "lat": 41.8878630,
+  "lon": -87.6350915,
+  "tags": {
+    "artist_name": "Charles Umlauf",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "Julius Rosenwald",
+    "subject:wikidata": "Q6137028",
+    "subject:wikipedia": "en:Julius Rosenwald",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032868,
+  "lat": 41.8878633,
+  "lon": -87.6350185,
+  "tags": {
+    "artist_name": "Milton Horn",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "Frank W. Woolworth",
+    "subject:wikidata": "Q2142312",
+    "subject:wikipedia": "en:Frank Winfield Woolworth",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2884032869,
+  "lat": 41.8878637,
+  "lon": -87.6349460,
+  "tags": {
+    "artist_name": "Minna Harkavy",
+    "artwork_type": "bust",
+    "material": "bronze",
+    "name": "Robert E. Wood",
+    "subject:wikidata": "Q7343909",
+    "subject:wikipedia": "en:Robert E. Wood",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 2974991606,
+  "lat": 41.8882801,
+  "lon": -87.6294218,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Dearborn & Marina City",
+    "network": "CTA",
+    "network:wikidata": "Q117309",
+    "network:wikipedia": "en:Chicago Transit Authority",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "platform",
+    "ref": "1887",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3445060946,
+  "lat": 41.8918294,
+  "lon": -87.6085594,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "600",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Grand Avenue",
+    "name": "Navy Pier Store",
+    "shop": "gift",
+    "website": "https://navypier.org/location/navy-pier-store/"
+  }
+},
+{
+  "type": "node",
+  "id": 3551074730,
+  "lat": 41.8806061,
+  "lon": -87.6190914,
+  "tags": {
+    "artist_name": "Richard Serra",
+    "artwork_type": "sculpture",
+    "name": "Reading Cones",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 3554700407,
+  "lat": 41.8778676,
+  "lon": -87.6236335,
+  "tags": {
+    "artist_name": "Dame Elisabeth Frink",
+    "artwork_type": "bust",
+    "name": "Sir Georg Solti Bust",
+    "subject:wikidata": "Q29601566",
+    "subject:wikipedia": "en:Bust of Georg Solti",
+    "tourism": "artwork",
+    "website": "https://www.cpdit01.com/resources/planning-and-development.fountains-monuments-and-sculptures/Grant%20Park/Sir%20Georg%20Solti%20Bust.pdf",
+    "wikidata": "Q29601566",
+    "wikipedia": "en:Bust of Georg Solti"
+  }
+},
+{
+  "type": "node",
+  "id": 3554701711,
+  "lat": 41.8802887,
+  "lon": -87.6237026,
+  "tags": {
+    "artist_name": "Alexander Calder",
+    "artwork_type": "sculpture",
+    "name": "Flying Dragon",
+    "tourism": "artwork",
+    "wikidata": "Q5463397"
+  }
+},
+{
+  "type": "node",
+  "id": 3554702496,
+  "lat": 41.8805829,
+  "lon": -87.6239544,
+  "tags": {
+    "artist_name": "Henry Moore",
+    "artwork_type": "sculpture",
+    "name": "Large Interior Form",
+    "tourism": "artwork",
+    "wikidata": "Q6489055"
+  }
+},
+{
+  "type": "node",
+  "id": 3566953561,
+  "lat": 41.8905710,
+  "lon": -87.6237588,
+  "tags": {
+    "artwork_type": "statue",
+    "name": "Nathan Hale",
+    "subject:wikidata": "Q465574",
+    "subject:wikipedia": "en:Nathan Hale",
+    "tourism": "artwork",
+    "wikimedia_commons": "File:Nathan-Hale-statue-Chicago-Tribune-Tower-figure.jpg"
+  }
+},
+{
+  "type": "node",
+  "id": 3566956627,
+  "lat": 41.8901260,
+  "lon": -87.6248828,
+  "tags": {
+    "artwork_type": "statue",
+    "name": "Benito Juárez",
+    "subject:wikidata": "Q182276",
+    "subject:wikimedia_commons": "File:Photograph_of_Benito_Juarez.jpg",
+    "subject:wikipedia": "en:Benito Juárez",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 3566974571,
+  "lat": 41.8893184,
+  "lon": -87.6240375,
+  "tags": {
+    "artist_name": "Erik Blome",
+    "artwork_type": "bust",
+    "material": "metal",
+    "name": "Jean Baptiste Point Du Sable",
+    "subject:wikidata": "Q492555",
+    "subject:wikimedia_commons": "File:Jean_Baptiste_Point_du_Sable_Andreas_1884.jpg",
+    "subject:wikipedia": "en:Jean Baptiste Point du Sable",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 3566992170,
+  "lat": 41.8833571,
+  "lon": -87.6248187,
+  "tags": {
+    "artwork_type": "sculpture",
+    "name": "Cow",
+    "subject:wikidata": "Q628812",
+    "subject:wikipedia": "en:CowParade",
+    "tourism": "artwork",
+    "wikidata": "Q628812",
+    "wikipedia": "en:CowParade"
+  }
+},
+{
+  "type": "node",
+  "id": 3744841485,
+  "lat": 41.8913145,
+  "lon": -87.6102083,
+  "tags": {
+    "name": "Crack The Whip",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 3845881257,
+  "lat": 41.8909667,
+  "lon": -87.6092189,
+  "tags": {
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Navy Pier (Lake Route)",
+    "network": "Shoreline Water Taxi",
+    "operator": "Shoreline Water Taxi",
+    "public_transport": "station",
+    "website": "https://shorelinesightseeing.com/water-taxis/navy-pier-dock/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3845882234,
+  "lat": 41.8905809,
+  "lon": -87.6122081,
+  "tags": {
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Navy Pier (River Route)",
+    "network": "Shoreline Water Taxi",
+    "operator": "Shoreline Water Taxi",
+    "public_transport": "station",
+    "website": "https://shorelinesightseeing.com/water-taxis/navy-pier-dock/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4036847469,
+  "lat": 41.8982462,
+  "lon": -87.6223534,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "175",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Chestnut Street",
+    "amenity": "theatre",
+    "name": "Broadway Playhouse at Water Tower Place",
+    "website": "https://www.broadwayinchicago.com/chicago-theater-guide/broadway-playhouse-chicago/",
+    "wikidata": "Q4972494",
+    "wikipedia": "en:Broadway Playhouse at Water Tower Place"
+  }
+},
+{
+  "type": "node",
+  "id": 4354322728,
+  "lat": 41.8970885,
+  "lon": -87.6222005,
+  "tags": {
+    "artist_name": "Deborah Butterfield",
+    "artwork_type": "sculpture",
+    "name": "Ben",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 4745415583,
+  "lat": 41.8898084,
+  "lon": -87.6383468,
+  "tags": {
+    "artwork_type": "sculpture",
+    "name": "The Athlete",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 4756819321,
+  "lat": 41.8886634,
+  "lon": -87.6282270,
+  "tags": {
+    "bench": "yes",
+    "bin": "no",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "lit": "yes",
+    "name": "State & Marina City",
+    "network": "CTA",
+    "network:wikidata": "Q117309",
+    "network:wikipedia": "en:Chicago Transit Authority",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "platform",
+    "ref": "2370",
+    "shelter": "yes",
+    "tactile_paving": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 4839412823,
+  "lat": 41.8806113,
+  "lon": -87.6307011,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "79",
+    "addr:postcode": "60603",
+    "addr:state": "IL",
+    "addr:street": "West Monroe Street",
+    "name": "Weather Bell",
+    "tourism": "attraction",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5036973981,
+  "lat": 41.8889727,
+  "lon": -87.6207825,
+  "tags": {
+    "artist_name": "Milton Horn",
+    "artwork_type": "relief",
+    "name": "Chicago Rising from the Lake",
+    "tourism": "artwork",
+    "wikidata": "Q113480567",
+    "wikipedia": "en:Chicago Rising from the Lake"
+  }
+},
+{
+  "type": "node",
+  "id": 5062539279,
+  "lat": 41.8925955,
+  "lon": -87.6100608,
+  "tags": {
+    "bench": "yes",
+    "bin": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "lit": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "network:wikidata": "Q117309",
+    "network:wikipedia": "en:Chicago Transit Authority",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "platform",
+    "ref": "14160",
+    "route_ref": "124",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5062539280,
+  "lat": 41.8923440,
+  "lon": -87.6100531,
+  "tags": {
+    "bench": "yes",
+    "bin": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "lit": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "network:wikidata": "Q117309",
+    "network:wikipedia": "en:Chicago Transit Authority",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "platform",
+    "ref": "14161",
+    "route_ref": "66",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5062539281,
+  "lat": 41.8925921,
+  "lon": -87.6102070,
+  "tags": {
+    "bench": "yes",
+    "bin": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "lit": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "network:wikidata": "Q117309",
+    "network:wikipedia": "en:Chicago Transit Authority",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "platform",
+    "ref": "14162",
+    "route_ref": "65",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5062539282,
+  "lat": 41.8923413,
+  "lon": -87.6101955,
+  "tags": {
+    "bench": "yes",
+    "bin": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "lit": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "network:wikidata": "Q117309",
+    "network:wikipedia": "en:Chicago Transit Authority",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "platform",
+    "ref": "758",
+    "route_ref": "29",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5062541128,
+  "lat": 41.8912454,
+  "lon": -87.6075786,
+  "tags": {
+    "name": "The Wave Wall",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 5062541131,
+  "lat": 41.8911672,
+  "lon": -87.6023371,
+  "tags": {
+    "name": "Spirit of Navy Pier",
+    "shop": "ticket"
+  }
+},
+{
+  "type": "node",
+  "id": 5104210322,
+  "lat": 41.8764164,
+  "lon": -87.6203513,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "Divvy",
+    "brand:wikidata": "Q16973938",
+    "capacity": "39",
+    "fee": "yes",
+    "name": "Buckingham Fountain",
+    "network": "Divvy",
+    "network:wikidata": "Q16973938",
+    "network:wikipedia": "en:Divvy",
+    "opening_hours": "24/7",
+    "operator": "Lyft",
+    "operator:type": "private",
+    "operator:wikidata": "Q17077936",
+    "operator:wikipedia": "en:Lyft",
+    "payment:app": "yes",
+    "payment:credit_cards": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5401536922,
+  "lat": 41.8796145,
+  "lon": -87.6246298,
+  "tags": {
+    "addr:street": "East Adams Street",
+    "name": "Begin Route 66",
+    "name:de": "Startpunkt Route 66",
+    "tourism": "attraction",
+    "wikidata": "Q79934",
+    "wikipedia": "en:U.S. Route 66"
+  }
+},
+{
+  "type": "node",
+  "id": 5416820728,
+  "lat": 41.8759852,
+  "lon": -87.6192307,
+  "tags": {
+    "animal": "seahorse",
+    "artist_name": "Marcel Loyau",
+    "artwork_type": "statue",
+    "material": "metal",
+    "statue": "animal",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 5416820729,
+  "lat": 41.8759893,
+  "lon": -87.6187261,
+  "tags": {
+    "animal": "seahorse",
+    "artist_name": "Marcel Loyau",
+    "artwork_type": "statue",
+    "material": "metal",
+    "statue": "animal",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 5416820730,
+  "lat": 41.8756101,
+  "lon": -87.6192208,
+  "tags": {
+    "animal": "seahorse",
+    "artist_name": "Marcel Loyau",
+    "artwork_type": "statue",
+    "material": "metal",
+    "statue": "animal",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 5416820731,
+  "lat": 41.8756183,
+  "lon": -87.6187211,
+  "tags": {
+    "animal": "seahorse",
+    "artist_name": "Marcel Loyau",
+    "artwork_type": "statue",
+    "material": "metal",
+    "statue": "animal",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 5825178882,
+  "lat": 41.8923514,
+  "lon": -87.6101408,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "stop_position",
+    "ref": "758",
+    "route_ref": "29",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5825178883,
+  "lat": 41.8925945,
+  "lon": -87.6101467,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "stop_position",
+    "ref": "14162",
+    "route_ref": "65",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5825178884,
+  "lat": 41.8923497,
+  "lon": -87.6099909,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "stop_position",
+    "ref": "14161",
+    "route_ref": "66",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5825178885,
+  "lat": 41.8925973,
+  "lon": -87.6099945,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "stop_position",
+    "ref": "14160",
+    "route_ref": "124",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6297015880,
+  "lat": 41.8763589,
+  "lon": -87.6245773,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "410",
+    "addr:postcode": "60605",
+    "addr:state": "IL",
+    "addr:street": "South Michigan Avenue",
+    "amenity": "theatre",
+    "name": "Studebaker Theater",
+    "wikidata": "Q5450045",
+    "wikipedia": "en:Fine Arts Building (Chicago)"
+  }
+},
+{
+  "type": "node",
+  "id": 6397091037,
+  "lat": 41.8885263,
+  "lon": -87.6283588,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "340",
+    "addr:postcode": "60654",
+    "addr:state": "IL",
+    "addr:street": "North State Street",
+    "amenity": "restaurant",
+    "cuisine": "breakfast;brunch;lunch;american",
+    "name": "Yolk - Marina City",
+    "opening_hours": "Mo-Su 07:00-14:30",
+    "phone": "+1-312-477-7676",
+    "website": "https://www.eatyolk.com"
+  }
+},
+{
+  "type": "node",
+  "id": 6424301702,
+  "lat": 41.8776307,
+  "lon": -87.6322706,
+  "tags": {
+    "artwork_type": "sculpture",
+    "height": "9.4",
+    "name": "Ceres",
+    "subject:wikidata": "Q32102",
+    "subject:wikipedia": "en:Ceres (mythology)",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 6440659075,
+  "lat": 41.8759530,
+  "lon": -87.6327146,
+  "tags": {
+    "artist_name": "Ludovico De Luigi",
+    "artwork_type": "statue",
+    "material": "metal",
+    "name": "San Marco II",
+    "tourism": "artwork",
+    "wikidata": "Q29600980",
+    "wikipedia": "en:San Marco II"
+  }
+},
+{
+  "type": "node",
+  "id": 6935340662,
+  "lat": 41.8882461,
+  "lon": -87.6295526,
+  "tags": {
+    "bus": "yes",
+    "name": "Dearborn & Marina City",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "stop_position",
+    "ref": "1887"
+  }
+},
+{
+  "type": "node",
+  "id": 7022676547,
+  "lat": 41.8898888,
+  "lon": -87.6238655,
+  "tags": {
+    "artwork_type": "bust",
+    "inscription": "Jack Brickhouse \nHall of Fame\nBroadcaster\n1917-1998",
+    "material": "bronze",
+    "memorial": "bust",
+    "name": "Jack Brickhouse",
+    "subject:wikidata": "Q30603088",
+    "subject:wikipedia": "en:Bust of Jack Brickhouse",
+    "tourism": "artwork",
+    "wikidata": "Q30603088",
+    "wikipedia": "en:Bust of Jack Brickhouse"
+  }
+},
+{
+  "type": "node",
+  "id": 7025601431,
+  "lat": 41.8860334,
+  "lon": -87.6371889,
+  "tags": {
+    "artist_name": "Robert Burnier",
+    "artwork_type": "sculpture",
+    "name": "Black Tiberinus",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 7025722420,
+  "lat": 41.8885433,
+  "lon": -87.6238905,
+  "tags": {
+    "name": "Weather Station",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 7040100119,
+  "lat": 41.8911443,
+  "lon": -87.6016004,
+  "tags": {
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Spirit of Navy Pier",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "node",
+  "id": 7126043427,
+  "lat": 41.8783189,
+  "lon": -87.6167412,
+  "tags": {
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 7126058111,
+  "lat": 41.8744894,
+  "lon": -87.6168011,
+  "tags": {
+    "artist_name": "Mark di Suvero",
+    "name": "Magma",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 7137251427,
+  "lat": 41.8751781,
+  "lon": -87.6216744,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 7137251428,
+  "lat": 41.8751781,
+  "lon": -87.6212887,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 7147377822,
+  "lat": 41.8804840,
+  "lon": -87.6238031,
+  "tags": {
+    "artist_name": "David Smith",
+    "artwork_type": "sculpture",
+    "name": "Cubi VII",
+    "tourism": "artwork",
+    "wikidata": "Q5192229",
+    "wikipedia": "en:Cubi VII"
+  }
+},
+{
+  "type": "node",
+  "id": 7185068618,
+  "lat": 41.8886757,
+  "lon": -87.6280098,
+  "tags": {
+    "bus": "yes",
+    "name": "State & Marina City",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "stop_position",
+    "ref": "2370"
+  }
+},
+{
+  "type": "node",
+  "id": 7223222152,
+  "lat": 41.8757319,
+  "lon": -87.6238785,
+  "tags": {
+    "artist_name": "Dessa Kirk",
+    "artwork_type": "sculpture",
+    "material": "steel",
+    "name": "Magdalene",
+    "tourism": "artwork",
+    "wikidata": "Q55621707",
+    "wikipedia": "en:Magdalene (sculpture)"
+  }
+},
+{
+  "type": "node",
+  "id": 8015063697,
+  "lat": 41.8879123,
+  "lon": -87.6160138,
+  "tags": {
+    "artist_name": "Carolyn Ottmers",
+    "artwork_type": "installation",
+    "name": "Allium",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8118655889,
+  "lat": 41.8769513,
+  "lon": -87.6238806,
+  "tags": {
+    "artist:wikidata": "Q316422",
+    "artist_name": "Hector Guimard",
+    "name": "Hector Guimard Metro entrance",
+    "tourism": "artwork",
+    "wikidata": "Q3579100",
+    "wikipedia": "en:Paris Métro entrances by Hector Guimard"
+  }
+},
+{
+  "type": "node",
+  "id": 8166373643,
+  "lat": 41.8919946,
+  "lon": -87.6179110,
+  "tags": {
+    "artist_name": "Dennis Downes",
+    "artwork_type": "statue",
+    "material": "metal",
+    "name": "George Wellington \"Cap'n\" Streeter",
+    "subject:wikidata": "Q5544907",
+    "subject:wikipedia": "en:George Streeter",
+    "tourism": "artwork",
+    "website": "https://www.themagnificentmile.com/explore/listing/george-wellington-capn-streeter"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689982,
+  "lat": 41.8757582,
+  "lon": -87.6301424,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689984,
+  "lat": 41.8757604,
+  "lon": -87.6300556,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689986,
+  "lat": 41.8757618,
+  "lon": -87.6299572,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689988,
+  "lat": 41.8757619,
+  "lon": -87.6298690,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689990,
+  "lat": 41.8757559,
+  "lon": -87.6303270,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689992,
+  "lat": 41.8757569,
+  "lon": -87.6302403,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689994,
+  "lat": 41.8757545,
+  "lon": -87.6304211,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689996,
+  "lat": 41.8757688,
+  "lon": -87.6309642,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633689998,
+  "lat": 41.8754551,
+  "lon": -87.6315793,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633690000,
+  "lat": 41.8754641,
+  "lon": -87.6302972,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633690002,
+  "lat": 41.8754644,
+  "lon": -87.6303683,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633690011,
+  "lat": 41.8754631,
+  "lon": -87.6301038,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633690013,
+  "lat": 41.8754651,
+  "lon": -87.6300092,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633690015,
+  "lat": 41.8754661,
+  "lon": -87.6299153,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711417,
+  "lat": 41.8754667,
+  "lon": -87.6298543,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711419,
+  "lat": 41.8754724,
+  "lon": -87.6295508,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711421,
+  "lat": 41.8754727,
+  "lon": -87.6294461,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711423,
+  "lat": 41.8754924,
+  "lon": -87.6290037,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711425,
+  "lat": 41.8754944,
+  "lon": -87.6289135,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711427,
+  "lat": 41.8754731,
+  "lon": -87.6284191,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711429,
+  "lat": 41.8754739,
+  "lon": -87.6283284,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711431,
+  "lat": 41.8754765,
+  "lon": -87.6280900,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711433,
+  "lat": 41.8754779,
+  "lon": -87.6279978,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711435,
+  "lat": 41.8754779,
+  "lon": -87.6279033,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711437,
+  "lat": 41.8755179,
+  "lon": -87.6273426,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711439,
+  "lat": 41.8755510,
+  "lon": -87.6270721,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711441,
+  "lat": 41.8756055,
+  "lon": -87.6257114,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711443,
+  "lat": 41.8756074,
+  "lon": -87.6255298,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711445,
+  "lat": 41.8758005,
+  "lon": -87.6256953,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711473,
+  "lat": 41.8754655,
+  "lon": -87.6284698,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711488,
+  "lat": 41.8757851,
+  "lon": -87.6288892,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711490,
+  "lat": 41.8757833,
+  "lon": -87.6289675,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711492,
+  "lat": 41.8757850,
+  "lon": -87.6290607,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711575,
+  "lat": 41.8757707,
+  "lon": -87.6284717,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711577,
+  "lat": 41.8757728,
+  "lon": -87.6283885,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711586,
+  "lat": 41.8757741,
+  "lon": -87.6280913,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711588,
+  "lat": 41.8757762,
+  "lon": -87.6280033,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8633711593,
+  "lat": 41.8757753,
+  "lon": -87.6279237,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586642,
+  "lat": 41.8757304,
+  "lon": -87.6328091,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586644,
+  "lat": 41.8757303,
+  "lon": -87.6329008,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586646,
+  "lat": 41.8757617,
+  "lon": -87.6315813,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586650,
+  "lat": 41.8757314,
+  "lon": -87.6327204,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586652,
+  "lat": 41.8757368,
+  "lon": -87.6333257,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586654,
+  "lat": 41.8757367,
+  "lon": -87.6334164,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586656,
+  "lat": 41.8754423,
+  "lon": -87.6334082,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 8732586658,
+  "lat": 41.8754417,
+  "lon": -87.6333177,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 9777365617,
+  "lat": 41.8877011,
+  "lon": -87.6262319,
+  "tags": {
+    "artist_name": "Preston Jackson",
+    "artwork_type": "statue",
+    "material": "metal",
+    "name": "Irv Kupcinet",
+    "subject:wikidata": "Q11683680",
+    "subject:wikimedia_commons": "File:Irv_Kupcinet_at_the_62nd_Academy_Awards.jpg",
+    "subject:wikipedia": "en:Irv Kupcinet",
+    "tourism": "artwork",
+    "wikidata": "Q30603273",
+    "wikipedia": "en:Statue of Irv Kupcinet"
+  }
+},
+{
+  "type": "node",
+  "id": 9878390037,
+  "lat": 41.8844231,
+  "lon": -87.6254658,
+  "tags": {
+    "artist_name": "Richard Hunt",
+    "artwork_type": "sculpture",
+    "material": "metal",
+    "name": "We Will Chicago",
+    "tourism": "artwork",
+    "wikidata": "Q30686880",
+    "wikipedia": "en:We Will"
+  }
+},
+{
+  "type": "node",
+  "id": 9938661775,
+  "lat": 41.8795919,
+  "lon": -87.6210468,
+  "tags": {
+    "artist_name": "Isamu Noguchi",
+    "artwork_type": "sculpture",
+    "name": "In Celebration of the 200th Anniversary of the Founding of the Republic",
+    "tourism": "artwork",
+    "website": "https://www.chicagoparkdistrict.com/parks-facilities/celebration-200th-anniversary-founding-republic-artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 9938661776,
+  "lat": 41.8847518,
+  "lon": -87.6171769,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 10198409807,
+  "lat": 41.8928418,
+  "lon": -87.6106736,
+  "tags": {
+    "bench": "no",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "network:wikidata": "Q117309",
+    "network:wikipedia": "en:Chicago Transit Authority",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "platform",
+    "ref": "18620",
+    "route_ref": "2",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10198409811,
+  "lat": 41.8910129,
+  "lon": -87.6128145,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 10707741966,
+  "lat": 41.8885993,
+  "lon": -87.6273950,
+  "tags": {
+    "artwork_type": "bust",
+    "name": "Ludwig Mies van der Rohe",
+    "subject:wikidata": "Q41508",
+    "subject:wikimedia_commons": "File:Hugo_Erfurth_-_Portrait_Ludwig_Mies_van_der_Rohe,_1934.jpg",
+    "subject:wikipedia": "en:Ludwig Mies van der Rohe",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 10873118808,
+  "lat": 41.8965717,
+  "lon": -87.6227382,
+  "tags": {
+    "artist_name": "Joseph J. O'Connell",
+    "artwork_type": "sculpture",
+    "name": "Family",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 10873118810,
+  "lat": 41.8993411,
+  "lon": -87.6248540,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "900",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "artist_name": "John Seward Johnson II",
+    "artwork_type": "sculpture",
+    "name": "Allow Me",
+    "tourism": "artwork",
+    "wikidata": "Q16961116",
+    "wikipedia": "en:Allow Me"
+  }
+},
+{
+  "type": "node",
+  "id": 10873118812,
+  "lat": 41.9056036,
+  "lon": -87.6268839,
+  "tags": {
+    "amenity": "drinking_water",
+    "artwork_type": "sculpture",
+    "bottle": "no",
+    "drinking_water": "yes",
+    "fee": "no",
+    "fountain": "decorative",
+    "name": "Turtle Fountain",
+    "tourism": "artwork",
+    "website": "https://www.chicagoparkdistrict.com/parks-facilities/turtle-fountain"
+  }
+},
+{
+  "type": "node",
+  "id": 10933483768,
+  "lat": 41.8846884,
+  "lon": -87.6247494,
+  "tags": {
+    "artwork_type": "sculpture",
+    "name": "150",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 10945307447,
+  "lat": 41.8788896,
+  "lon": -87.6363230,
+  "tags": {
+    "level": "103",
+    "name": "The Ledge",
+    "operator": "Skydeck",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 10945307448,
+  "lat": 41.8788854,
+  "lon": -87.6363713,
+  "tags": {
+    "artist_name": "Jacob Hashimoto",
+    "artwork_type": "installation",
+    "name": "In the Heart of this Infinite Particle of Galactic Dust",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 10951815619,
+  "lat": 41.8891219,
+  "lon": -87.6256125,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "400",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Wendella Tours - Dock 3",
+    "public_transport": "station",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 10951815620,
+  "lat": 41.8889311,
+  "lon": -87.6259394,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "400",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Wendella Tours - Dock 4",
+    "public_transport": "station",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 10951815621,
+  "lat": 41.8892215,
+  "lon": -87.6246397,
+  "tags": {
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Wendella Tours - Michigan Avenue",
+    "public_transport": "station",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 11114716087,
+  "lat": 41.8912800,
+  "lon": -87.6059159,
+  "tags": {
+    "artwork_type": "bust",
+    "name": "William Shakespeare",
+    "subject:wikidata": "Q692",
+    "subject:wikipedia": "en:William Shakespeare",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11163553579,
+  "lat": 41.8903401,
+  "lon": -87.6228616,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "435",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "name": "Museum of Ice Cream",
+    "opening_hours": "Mo, We-Th 11:00-18:30; Fr-Sa 11:00-19:30; Su 10:00-18:30",
+    "tourism": "attraction",
+    "website": "https://www.museumoficecream.com/chicago/"
+  }
+},
+{
+  "type": "node",
+  "id": 11664046415,
+  "lat": 41.8752934,
+  "lon": -87.6162043,
+  "tags": {
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Buckingham Fountain",
+    "network": "Shoreline Water Taxi",
+    "operator": "Shoreline Water Taxi",
+    "public_transport": "station",
+    "website": "https://shorelinesightseeing.com/water-taxis/museum-campus/"
+  }
+},
+{
+  "type": "node",
+  "id": 11780160053,
+  "lat": 41.8883874,
+  "lon": -87.6236700,
+  "tags": {
+    "artist_name": "Andrea Carlson",
+    "artwork_type": "mural",
+    "description": "The mural is located in the middle of the Riverwalk, near Michigan Avenue, and is made up of five banners that are 15 feet high and 266 feet wide.",
+    "name": "You Are on Potawatomi Land",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11780160054,
+  "lat": 41.8883313,
+  "lon": -87.6255224,
+  "tags": {
+    "artist_name": "Kate Lynn Lewis",
+    "artwork_type": "mural",
+    "description": "The mural features Art Deco elements that celebrate iconic Chicago structures, including the Palmer House, The Rookery, and the Palmolive. Lewis was inspired to create the mural to celebrate 100 years of Art Deco",
+    "name": "The Radiance of Being",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11782999420,
+  "lat": 41.8757738,
+  "lon": -87.6283119,
+  "tags": {
+    "artwork_type": "sculpture",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11783294757,
+  "lat": 41.8757907,
+  "lon": -87.6266523,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11783294758,
+  "lat": 41.8757916,
+  "lon": -87.6262775,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11783294759,
+  "lat": 41.8757751,
+  "lon": -87.6269967,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11783294760,
+  "lat": 41.8757716,
+  "lon": -87.6273715,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11786760656,
+  "lat": 41.8758142,
+  "lon": -87.6251980,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11786760657,
+  "lat": 41.8758194,
+  "lon": -87.6249581,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11786760658,
+  "lat": 41.8758255,
+  "lon": -87.6247246,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11810082267,
+  "lat": 41.8889774,
+  "lon": -87.6216288,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "450",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Cityfront Plaza Drive",
+    "amenity": "ferry_terminal",
+    "ferry": "yes",
+    "name": "Odyssey Chicago River",
+    "network": "Odyssey Cruise River North",
+    "operator": "City Experiences",
+    "public_transport": "station",
+    "tourism": "attraction",
+    "website": "https://www.cityexperiences.com/chicago/city-cruises/our-fleet/odyssey-chicago-river/"
+  }
+},
+{
+  "type": "node",
+  "id": 11905322512,
+  "lat": 41.8982245,
+  "lon": -87.6261682,
+  "tags": {
+    "artwork_type": "statue",
+    "name": "Archbishop Quigley",
+    "subject:wikidata": "Q6133376",
+    "subject:wikipedia": "en:James Edward Quigley",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11931153517,
+  "lat": 41.8763486,
+  "lon": -87.6279058,
+  "tags": {
+    "artwork_type": "bust",
+    "name": "Mayor Harold Washington",
+    "subject:wikidata": "Q295584",
+    "subject:wikipedia": "en:Harold Washington",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12029632793,
+  "lat": 41.8901305,
+  "lon": -87.6246758,
+  "tags": {
+    "artwork_type": "sculpture",
+    "name": "Wings of Mexico",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12056312569,
+  "lat": 41.8756152,
+  "lon": -87.6247321,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12056312570,
+  "lat": 41.8756118,
+  "lon": -87.6248541,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12056312571,
+  "lat": 41.8756179,
+  "lon": -87.6246206,
+  "tags": {
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12498993808,
+  "lat": 41.8780340,
+  "lon": -87.6305857,
+  "tags": {
+    "artist_name": "Frank Stella",
+    "artwork_type": "sculpture",
+    "name": "The Town-Ho's Story",
+    "tourism": "artwork",
+    "website": "https://art.gsa.gov/artworks/20411/the-townhos-story"
+  }
+},
+{
+  "type": "node",
+  "id": 12629162901,
+  "lat": 41.8919035,
+  "lon": -87.6090681,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "600",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Grand Avenue",
+    "name": "Flyover",
+    "opening_hours": "Su-Th 11:00-20:00; Fr-Sa 11:00-21:00",
+    "phone": "+1 888-895-8595",
+    "tourism": "attraction",
+    "website": "https://experienceflyover.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 12818364904,
+  "lat": 41.8904892,
+  "lon": -87.6097751,
+  "tags": {
+    "artwork_type": "installation",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12840427043,
+  "lat": 41.8876498,
+  "lon": -87.6131064,
+  "tags": {
+    "artwork_type": "installation",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12840429557,
+  "lat": 41.8872930,
+  "lon": -87.6130956,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12840461201,
+  "lat": 41.8873994,
+  "lon": -87.6132366,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12874155993,
+  "lat": 41.8744349,
+  "lon": -87.6298001,
+  "tags": {
+    "artwork_type": "installation",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12920293469,
+  "lat": 41.8758545,
+  "lon": -87.6289818,
+  "tags": {
+    "artist_name": "Dwight White",
+    "artwork_type": "mural",
+    "name": "All Roads Lead Back to the Loop",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 13196100903,
+  "lat": 41.8833774,
+  "lon": -87.6298290,
+  "tags": {
+    "artwork_type": "sculpture",
+    "blind": "yes",
+    "name": "Chicago Picasso Braille Model",
+    "tourism": "artwork",
+    "wikidata": "Q5095736",
+    "wikipedia": "en:Chicago Picasso"
+  }
+},
+{
+  "type": "node",
+  "id": 13566596730,
+  "lat": 41.8861630,
+  "lon": -87.6473535,
+  "tags": {
+    "artwork_type": "statue",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 13566596740,
+  "lat": 41.8804387,
+  "lon": -87.6439291,
+  "tags": {
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 13903002397,
+  "lat": 41.8912822,
+  "lon": -87.6089629,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 13946960741,
+  "lat": 41.8926355,
+  "lon": -87.6375698,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 13968526972,
+  "lat": 41.8863904,
+  "lon": -87.6209986,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 14068842693,
+  "lat": 41.8935023,
+  "lon": -87.6251968,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "100",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Ontario Street",
+    "amenity": "theatre",
+    "description": "Magic show",
+    "name": "The Hand and The Eye",
+    "website": "https://www.handandeye.com"
+  }
+},
+{
+  "type": "node",
+  "id": 14212143300,
+  "lat": 41.8819317,
+  "lon": -87.6248124,
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "8",
+    "addr:postcode": "60603",
+    "addr:state": "IL",
+    "addr:street": "South Michigan Avenue",
+    "addr:unit": "1800",
+    "alt_name": "Dentistry at Millennium Park: Nanditha Ranganathan DDS",
+    "amenity": "dentist",
+    "contact:facebook": "https://www.facebook.com/DentistryatMillenniumPark/",
+    "contact:instagram": "https://www.instagram.com/dentistryatmillenniumpark/",
+    "email": "info@datmp.com",
+    "healthcare": "dentist",
+    "name": "Dentistry at Millennium Park",
+    "opening_hours": "Mo,We 09:00-16:30; Tu,Th 08:00-16:30; Fr 08:00-14:00 \"by appointment\"; Sa,Su off",
+    "phone": "+1 224-249-5977",
+    "website": "https://www.datmp.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 23888253,
+  "bounds": {
+    "minlat": 41.8809120,
+    "minlon": -87.6242026,
+    "maxlat": 41.8843215,
+    "maxlon": -87.6208328
+  },
+  "nodes": [
+    258922802,
+    7141034983,
+    7131957872,
+    7141034984,
+    7141034981,
+    12056067399,
+    7141034980,
+    258922804,
+    7149933177,
+    11042864438,
+    7139482164,
+    7139482163,
+    258922808,
+    7131957897,
+    258922809,
+    7131957893,
+    7131957896,
+    7149933142,
+    7131957895,
+    7131957892,
+    1307894954,
+    1406189018,
+    2209055630,
+    1406172256,
+    7149077767,
+    258922810,
+    7131957888,
+    7149077765,
+    7131957887,
+    7131957886,
+    7131957885,
+    7149933141,
+    7131957884,
+    2435899035,
+    7149077764,
+    7131957883,
+    7149077763,
+    258922812,
+    7149077762,
+    7131957882,
+    7131957880,
+    258922813,
+    2867357280,
+    7131957878,
+    258922815,
+    7131957875,
+    7131957876,
+    7131957877,
+    7149933139,
+    2435899013,
+    2427245784,
+    2435899048,
+    7131957874,
+    2431735298,
+    1307894950,
+    7149077761,
+    7131957873,
+    7149077760,
+    258922802
+  ],
+  "geometry": [
+    { "lat": 41.8842494, "lon": -87.6208412 },
+    { "lat": 41.8842017, "lon": -87.6208416 },
+    { "lat": 41.8840403, "lon": -87.6208373 },
+    { "lat": 41.8835613, "lon": -87.6208842 },
+    { "lat": 41.8835172, "lon": -87.6208828 },
+    { "lat": 41.8830975, "lon": -87.6208758 },
+    { "lat": 41.8829476, "lon": -87.6208733 },
+    { "lat": 41.8828742, "lon": -87.6208779 },
+    { "lat": 41.8828399, "lon": -87.6208814 },
+    { "lat": 41.8826991, "lon": -87.6208989 },
+    { "lat": 41.8824453, "lon": -87.6209327 },
+    { "lat": 41.8819055, "lon": -87.6210050 },
+    { "lat": 41.8817670, "lon": -87.6210211 },
+    { "lat": 41.8816004, "lon": -87.6210103 },
+    { "lat": 41.8810192, "lon": -87.6209998 },
+    { "lat": 41.8809875, "lon": -87.6209993 },
+    { "lat": 41.8809762, "lon": -87.6210038 },
+    { "lat": 41.8809698, "lon": -87.6210128 },
+    { "lat": 41.8809593, "lon": -87.6210278 },
+    { "lat": 41.8809546, "lon": -87.6210450 },
+    { "lat": 41.8809547, "lon": -87.6210940 },
+    { "lat": 41.8809475, "lon": -87.6215936 },
+    { "lat": 41.8809423, "lon": -87.6219387 },
+    { "lat": 41.8809385, "lon": -87.6221863 },
+    { "lat": 41.8809363, "lon": -87.6223124 },
+    { "lat": 41.8809341, "lon": -87.6224568 },
+    { "lat": 41.8809288, "lon": -87.6228681 },
+    { "lat": 41.8809221, "lon": -87.6233330 },
+    { "lat": 41.8809120, "lon": -87.6240432 },
+    { "lat": 41.8809131, "lon": -87.6240857 },
+    { "lat": 41.8809297, "lon": -87.6241323 },
+    { "lat": 41.8809360, "lon": -87.6241400 },
+    { "lat": 41.8809512, "lon": -87.6241585 },
+    { "lat": 41.8809855, "lon": -87.6241760 },
+    { "lat": 41.8811772, "lon": -87.6241600 },
+    { "lat": 41.8815277, "lon": -87.6241308 },
+    { "lat": 41.8817173, "lon": -87.6241351 },
+    { "lat": 41.8822028, "lon": -87.6241460 },
+    { "lat": 41.8824517, "lon": -87.6241532 },
+    { "lat": 41.8827689, "lon": -87.6241624 },
+    { "lat": 41.8831420, "lon": -87.6241709 },
+    { "lat": 41.8833535, "lon": -87.6241713 },
+    { "lat": 41.8835812, "lon": -87.6241786 },
+    { "lat": 41.8839342, "lon": -87.6241890 },
+    { "lat": 41.8842681, "lon": -87.6242026 },
+    { "lat": 41.8842885, "lon": -87.6242011 },
+    { "lat": 41.8843070, "lon": -87.6241885 },
+    { "lat": 41.8843155, "lon": -87.6241741 },
+    { "lat": 41.8843191, "lon": -87.6241626 },
+    { "lat": 41.8843215, "lon": -87.6241551 },
+    { "lat": 41.8843211, "lon": -87.6238129 },
+    { "lat": 41.8842972, "lon": -87.6234737 },
+    { "lat": 41.8842626, "lon": -87.6230135 },
+    { "lat": 41.8842470, "lon": -87.6226864 },
+    { "lat": 41.8842445, "lon": -87.6225045 },
+    { "lat": 41.8842458, "lon": -87.6221903 },
+    { "lat": 41.8842474, "lon": -87.6217840 },
+    { "lat": 41.8842501, "lon": -87.6208328 },
+    { "lat": 41.8842494, "lon": -87.6208412 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "201",
+    "addr:postcode": "60601",
+    "addr:state": "IL",
+    "addr:street": "East Randolph Street",
+    "bicycle": "no",
+    "dog": "no",
+    "leisure": "park",
+    "name": "Millennium Park",
+    "name:en": "Millennium Park",
+    "name:etymology:wikidata": "Q26224",
+    "name:etymology:wikipedia": "en:3rd millennium",
+    "opening_hours": "Mo-Su 06:00-23:00",
+    "operator": "Chicago Department of Cultural Affairs",
+    "operator:type": "public",
+    "phone": "+1-312-742-1168",
+    "start_date": "2004-07-16",
+    "website": "https://www.cityofchicago.org/city/en/depts/dca/supp_info/millennium_park.html",
+    "wikidata": "Q1130516",
+    "wikimedia_commons": "Category:Millennium_Park,_Chicago",
+    "wikipedia": "en:Millennium Park"
+  }
+},
+{
+  "type": "way",
+  "id": 24800238,
+  "bounds": {
+    "minlat": 41.8910177,
+    "minlon": -87.6097504,
+    "maxlat": 41.8924447,
+    "maxlon": -87.5985431
+  },
+  "nodes": [
+    269447828,
+    6939664359,
+    7035114778,
+    2150021943,
+    7042454831,
+    2150021917,
+    8601455463,
+    6939664428,
+    1052680580,
+    1699135696,
+    4267421805,
+    7040100094,
+    4267421806,
+    7040081224,
+    7040100093,
+    7040081199,
+    7040081197,
+    6945645274,
+    6945645273,
+    6945645259,
+    6945645258,
+    6945645231,
+    6945645230,
+    269447830,
+    269447831,
+    2780811770,
+    4267421827,
+    2780811776,
+    4267421830,
+    2780811772,
+    2780811780,
+    2780811853,
+    1648217548,
+    269447841,
+    7040062750,
+    269447842,
+    269447846,
+    2780811785,
+    4267421894,
+    4267421895,
+    2780811787,
+    4267421893,
+    2780811783,
+    2780811781,
+    13021586711,
+    2780811793,
+    13021586767,
+    13021586771,
+    13021586770,
+    13021586779,
+    13021586783,
+    13021586782,
+    13021586802,
+    13021586793,
+    13021586799,
+    269447828
+  ],
+  "geometry": [
+    { "lat": 41.8922278, "lon": -87.6097504 },
+    { "lat": 41.8920838, "lon": -87.6097436 },
+    { "lat": 41.8920779, "lon": -87.6097433 },
+    { "lat": 41.8920699, "lon": -87.6097430 },
+    { "lat": 41.8915298, "lon": -87.6097303 },
+    { "lat": 41.8912922, "lon": -87.6097226 },
+    { "lat": 41.8910177, "lon": -87.6097114 },
+    { "lat": 41.8910200, "lon": -87.6096220 },
+    { "lat": 41.8910210, "lon": -87.6096001 },
+    { "lat": 41.8910218, "lon": -87.6095651 },
+    { "lat": 41.8910307, "lon": -87.6090313 },
+    { "lat": 41.8910320, "lon": -87.6089367 },
+    { "lat": 41.8910331, "lon": -87.6088424 },
+    { "lat": 41.8910367, "lon": -87.6086184 },
+    { "lat": 41.8910439, "lon": -87.6081657 },
+    { "lat": 41.8910462, "lon": -87.6080201 },
+    { "lat": 41.8910640, "lon": -87.6068946 },
+    { "lat": 41.8911035, "lon": -87.6044081 },
+    { "lat": 41.8911063, "lon": -87.6042311 },
+    { "lat": 41.8911193, "lon": -87.6034126 },
+    { "lat": 41.8911221, "lon": -87.6032392 },
+    { "lat": 41.8911351, "lon": -87.6024238 },
+    { "lat": 41.8911376, "lon": -87.6022468 },
+    { "lat": 41.8911515, "lon": -87.6008988 },
+    { "lat": 41.8911153, "lon": -87.6008972 },
+    { "lat": 41.8911157, "lon": -87.6008664 },
+    { "lat": 41.8910904, "lon": -87.6008138 },
+    { "lat": 41.8910820, "lon": -87.6007423 },
+    { "lat": 41.8910899, "lon": -87.6006714 },
+    { "lat": 41.8911190, "lon": -87.6006164 },
+    { "lat": 41.8911195, "lon": -87.6005808 },
+    { "lat": 41.8914224, "lon": -87.6005903 },
+    { "lat": 41.8914535, "lon": -87.5985431 },
+    { "lat": 41.8922780, "lon": -87.5985659 },
+    { "lat": 41.8922378, "lon": -87.6004561 },
+    { "lat": 41.8922354, "lon": -87.6006049 },
+    { "lat": 41.8924149, "lon": -87.6006109 },
+    { "lat": 41.8924151, "lon": -87.6006466 },
+    { "lat": 41.8924336, "lon": -87.6006876 },
+    { "lat": 41.8924447, "lon": -87.6007441 },
+    { "lat": 41.8924434, "lon": -87.6007982 },
+    { "lat": 41.8924329, "lon": -87.6008454 },
+    { "lat": 41.8924106, "lon": -87.6008935 },
+    { "lat": 41.8924097, "lon": -87.6009289 },
+    { "lat": 41.8923803, "lon": -87.6009291 },
+    { "lat": 41.8923665, "lon": -87.6009292 },
+    { "lat": 41.8923057, "lon": -87.6048101 },
+    { "lat": 41.8923055, "lon": -87.6048217 },
+    { "lat": 41.8923053, "lon": -87.6048333 },
+    { "lat": 41.8922833, "lon": -87.6061793 },
+    { "lat": 41.8922831, "lon": -87.6062020 },
+    { "lat": 41.8922830, "lon": -87.6062178 },
+    { "lat": 41.8922676, "lon": -87.6072550 },
+    { "lat": 41.8922669, "lon": -87.6072717 },
+    { "lat": 41.8922668, "lon": -87.6072839 },
+    { "lat": 41.8922278, "lon": -87.6097504 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "600",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Grand Avenue",
+    "landuse": "retail",
+    "name": "Navy Pier",
+    "name:etymology:wikidata": "Q11220",
+    "name:etymology:wikipedia": "en:United States Navy",
+    "old_name": "Municipal Pier",
+    "operator": "Metropolitan Pier and Exposition Authority",
+    "tourism": "attraction",
+    "website": "https://navypier.org/",
+    "wheelchair": "yes",
+    "wikidata": "Q3337338",
+    "wikipedia": "en:Navy Pier"
+  }
+},
+{
+  "type": "way",
+  "id": 64594680,
+  "bounds": {
+    "minlat": 41.8884420,
+    "minlon": -87.6269223,
+    "maxlat": 41.8893036,
+    "maxlon": -87.6259925
+  },
+  "nodes": [
+    793705554,
+    11815154909,
+    793705558,
+    7025421716,
+    13905456022,
+    13905456023,
+    1989678889,
+    7025421717,
+    5248835592,
+    793705564,
+    1989678968,
+    1987964687,
+    1987964694,
+    793705573,
+    1987964695,
+    1987964691,
+    11810338453,
+    793705579,
+    793705586,
+    1987964692,
+    793705590,
+    1989678868,
+    1989678937,
+    11810338465,
+    3566986847,
+    11810338466,
+    11810338296,
+    3566986817,
+    11810338297,
+    793705596,
+    1989678934,
+    793705606,
+    1987964690,
+    1987964689,
+    11810338256,
+    793705619,
+    1987964701,
+    11810338257,
+    793705625,
+    1987964704,
+    793705629,
+    11815154942,
+    11815154943,
+    11815154918,
+    1987964688,
+    11815154931,
+    793705637,
+    11815154908,
+    11815154952,
+    11815154905,
+    11810338182,
+    793705554
+  ],
+  "geometry": [
+    { "lat": 41.8886724, "lon": -87.6269170 },
+    { "lat": 41.8887817, "lon": -87.6269212 },
+    { "lat": 41.8888113, "lon": -87.6269223 },
+    { "lat": 41.8889150, "lon": -87.6267821 },
+    { "lat": 41.8889918, "lon": -87.6266737 },
+    { "lat": 41.8890502, "lon": -87.6265913 },
+    { "lat": 41.8890728, "lon": -87.6265594 },
+    { "lat": 41.8891117, "lon": -87.6265013 },
+    { "lat": 41.8891623, "lon": -87.6264325 },
+    { "lat": 41.8892792, "lon": -87.6262598 },
+    { "lat": 41.8892927, "lon": -87.6262328 },
+    { "lat": 41.8893004, "lon": -87.6262037 },
+    { "lat": 41.8893036, "lon": -87.6261684 },
+    { "lat": 41.8892998, "lon": -87.6261359 },
+    { "lat": 41.8892925, "lon": -87.6261044 },
+    { "lat": 41.8892808, "lon": -87.6260792 },
+    { "lat": 41.8892735, "lon": -87.6260683 },
+    { "lat": 41.8892637, "lon": -87.6260538 },
+    { "lat": 41.8892453, "lon": -87.6260360 },
+    { "lat": 41.8892263, "lon": -87.6260245 },
+    { "lat": 41.8892031, "lon": -87.6260206 },
+    { "lat": 41.8890778, "lon": -87.6260148 },
+    { "lat": 41.8890660, "lon": -87.6259934 },
+    { "lat": 41.8890415, "lon": -87.6259932 },
+    { "lat": 41.8890173, "lon": -87.6259931 },
+    { "lat": 41.8889909, "lon": -87.6259929 },
+    { "lat": 41.8889814, "lon": -87.6259928 },
+    { "lat": 41.8889630, "lon": -87.6259927 },
+    { "lat": 41.8889496, "lon": -87.6259926 },
+    { "lat": 41.8889364, "lon": -87.6259925 },
+    { "lat": 41.8887353, "lon": -87.6262804 },
+    { "lat": 41.8884550, "lon": -87.6266819 },
+    { "lat": 41.8884465, "lon": -87.6267065 },
+    { "lat": 41.8884420, "lon": -87.6267381 },
+    { "lat": 41.8884422, "lon": -87.6267425 },
+    { "lat": 41.8884440, "lon": -87.6267753 },
+    { "lat": 41.8884518, "lon": -87.6268083 },
+    { "lat": 41.8884558, "lon": -87.6268189 },
+    { "lat": 41.8884640, "lon": -87.6268408 },
+    { "lat": 41.8884815, "lon": -87.6268620 },
+    { "lat": 41.8885007, "lon": -87.6268817 },
+    { "lat": 41.8885082, "lon": -87.6268861 },
+    { "lat": 41.8885135, "lon": -87.6268891 },
+    { "lat": 41.8885183, "lon": -87.6268919 },
+    { "lat": 41.8885213, "lon": -87.6268936 },
+    { "lat": 41.8885366, "lon": -87.6268973 },
+    { "lat": 41.8885420, "lon": -87.6268986 },
+    { "lat": 41.8885488, "lon": -87.6268989 },
+    { "lat": 41.8885747, "lon": -87.6268999 },
+    { "lat": 41.8886018, "lon": -87.6269009 },
+    { "lat": 41.8886622, "lon": -87.6269033 },
+    { "lat": 41.8886724, "lon": -87.6269170 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "401",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Wabash Avenue",
+    "addr:street:name": "Wabash",
+    "addr:street:prefix": "North",
+    "addr:street:type": "Avenue",
+    "air_conditioning": "yes",
+    "architect": "Skidmore, Owings, and Merrill",
+    "bar": "yes",
+    "brand": "Trump Hotels",
+    "building": "tower",
+    "building:colour": "#84A7B5",
+    "building:levels": "18",
+    "building:material": "glass",
+    "check_date": "2022-09-11",
+    "chicago:building_id": "834535",
+    "description": "The Trump International Hotel and Tower, also known as Trump Tower Chicago and Trump Tower, is a skyscraper condo-hotel in downtown Chicago, Illinois.",
+    "email": "TCH_Inquiries@trumphotels.com",
+    "height": "60",
+    "internet_access": "wlan",
+    "internet_access:fee": "no",
+    "name": "Trump International Hotel & Tower Chicago",
+    "opening_hours": "24/7",
+    "operator": "The Trump Organization",
+    "payment:cash": "yes",
+    "payment:contactless": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:unionpay": "yes",
+    "phone": "+1-312-588-8000",
+    "reservation": "yes",
+    "roof:material": "concrete",
+    "roof:shape": "flat",
+    "rooms": "339",
+    "start_date": "2009",
+    "tourism": "hotel",
+    "website": "https://www.trumphotels.com/chicago",
+    "wheelchair": "yes",
+    "wikidata": "Q546221",
+    "wikipedia": "en:Trump International Hotel and Tower (Chicago)"
+  }
+},
+{
+  "type": "way",
+  "id": 124865476,
+  "bounds": {
+    "minlat": 41.8835941,
+    "minlon": -87.6300418,
+    "maxlat": 41.8836515,
+    "maxlon": -87.6299164
+  },
+  "nodes": [
+    1388390404,
+    1388390406,
+    1388390402,
+    1388390401,
+    1388390404
+  ],
+  "geometry": [
+    { "lat": 41.8836508, "lon": -87.6300418 },
+    { "lat": 41.8836515, "lon": -87.6299170 },
+    { "lat": 41.8835949, "lon": -87.6299164 },
+    { "lat": 41.8835941, "lon": -87.6300412 },
+    { "lat": 41.8836508, "lon": -87.6300418 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Pablo Picasso",
+    "artwork_type": "sculpture",
+    "material": "metal",
+    "name": "Chicago Picasso",
+    "start_date": "1967",
+    "tourism": "artwork",
+    "wheelchair": "yes",
+    "wheelchair:description": "Braille explanation",
+    "wikidata": "Q5095736",
+    "wikipedia": "en:Chicago Picasso"
+  }
+},
+{
+  "type": "way",
+  "id": 127107026,
+  "bounds": {
+    "minlat": 41.8848314,
+    "minlon": -87.6242799,
+    "maxlat": 41.8856557,
+    "maxlon": -87.6240110
+  },
+  "nodes": [
+    1407580231,
+    1407580220,
+    10950861994,
+    10950861995,
+    1407580219,
+    1407580229,
+    1407580231
+  ],
+  "geometry": [
+    { "lat": 41.8856557, "lon": -87.6240359 },
+    { "lat": 41.8848485, "lon": -87.6240110 },
+    { "lat": 41.8848351, "lon": -87.6240357 },
+    { "lat": 41.8848314, "lon": -87.6242420 },
+    { "lat": 41.8848508, "lon": -87.6242648 },
+    { "lat": 41.8856518, "lon": -87.6242799 },
+    { "lat": 41.8856557, "lon": -87.6240359 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "151-155",
+    "addr:postcode": "60601",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "addr:street:name": "Michigan",
+    "addr:street:prefix": "North",
+    "addr:street:type": "Avenue",
+    "building": "apartments",
+    "building:levels": "40",
+    "chicago:building_id": "353205",
+    "ele": "178",
+    "gnis:feature_id": "1826182",
+    "height": "122",
+    "name": "Millennium Park Plaza"
+  }
+},
+{
+  "type": "way",
+  "id": 130147025,
+  "bounds": {
+    "minlat": 41.8970996,
+    "minlon": -87.6245308,
+    "maxlat": 41.8972410,
+    "maxlon": -87.6243431
+  },
+  "nodes": [
+    1434374546,
+    1572573735,
+    1572573692,
+    1572573715,
+    11905188037,
+    11905188024,
+    11905188028,
+    1572573711,
+    1572573676,
+    1572573724,
+    1434374560,
+    1572573742,
+    1572573727,
+    1572573685,
+    1572573691,
+    1572573697,
+    1572573703,
+    1434374559,
+    1572573738,
+    1572573737,
+    1572573689,
+    11905188033,
+    11905188025,
+    11905188030,
+    1572573690,
+    1572573695,
+    1572573739,
+    1434374549,
+    1572573707,
+    1572573699,
+    1572573712,
+    11905188035,
+    3743962217,
+    11905188026,
+    1572573719,
+    1572573693,
+    1572573705,
+    1434374546
+  ],
+  "geometry": [
+    { "lat": 41.8972370, "lon": -87.6245269 },
+    { "lat": 41.8972387, "lon": -87.6245187 },
+    { "lat": 41.8972362, "lon": -87.6245096 },
+    { "lat": 41.8972302, "lon": -87.6245065 },
+    { "lat": 41.8972310, "lon": -87.6244645 },
+    { "lat": 41.8972316, "lon": -87.6244414 },
+    { "lat": 41.8972320, "lon": -87.6244196 },
+    { "lat": 41.8972330, "lon": -87.6243730 },
+    { "lat": 41.8972393, "lon": -87.6243691 },
+    { "lat": 41.8972410, "lon": -87.6243609 },
+    { "lat": 41.8972385, "lon": -87.6243518 },
+    { "lat": 41.8972325, "lon": -87.6243487 },
+    { "lat": 41.8972261, "lon": -87.6243509 },
+    { "lat": 41.8972226, "lon": -87.6243594 },
+    { "lat": 41.8971206, "lon": -87.6243553 },
+    { "lat": 41.8971181, "lon": -87.6243462 },
+    { "lat": 41.8971121, "lon": -87.6243431 },
+    { "lat": 41.8971057, "lon": -87.6243454 },
+    { "lat": 41.8971020, "lon": -87.6243540 },
+    { "lat": 41.8971055, "lon": -87.6243651 },
+    { "lat": 41.8971122, "lon": -87.6243673 },
+    { "lat": 41.8971113, "lon": -87.6244157 },
+    { "lat": 41.8971109, "lon": -87.6244374 },
+    { "lat": 41.8971105, "lon": -87.6244599 },
+    { "lat": 41.8971097, "lon": -87.6245019 },
+    { "lat": 41.8971034, "lon": -87.6245041 },
+    { "lat": 41.8970996, "lon": -87.6245128 },
+    { "lat": 41.8971031, "lon": -87.6245239 },
+    { "lat": 41.8971102, "lon": -87.6245262 },
+    { "lat": 41.8971165, "lon": -87.6245223 },
+    { "lat": 41.8971182, "lon": -87.6245141 },
+    { "lat": 41.8971510, "lon": -87.6245152 },
+    { "lat": 41.8971680, "lon": -87.6245157 },
+    { "lat": 41.8971834, "lon": -87.6245162 },
+    { "lat": 41.8972201, "lon": -87.6245174 },
+    { "lat": 41.8972236, "lon": -87.6245285 },
+    { "lat": 41.8972307, "lon": -87.6245308 },
+    { "lat": 41.8972370, "lon": -87.6245269 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "806",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "building": "water_tower",
+    "height": "55.4",
+    "historic": "building",
+    "name": "Chicago Water Tower",
+    "opening_hours": "Mo-Fr 10:00-19:00; Sa,Su 10:00-17:00",
+    "wikidata": "Q862890",
+    "wikipedia": "en:Chicago Water Tower"
+  }
+},
+{
+  "type": "way",
+  "id": 137060274,
+  "bounds": {
+    "minlat": 41.8825980,
+    "minlon": -87.6234298,
+    "maxlat": 41.8827743,
+    "maxlon": -87.6232515
+  },
+  "nodes": [
+    1503537610,
+    1503537602,
+    7142795991,
+    7142795992,
+    1503537597,
+    1503537604,
+    1503537582,
+    7142795989,
+    7142795990,
+    1503537615,
+    2209055614,
+    1503537607,
+    1503537613,
+    2209055592,
+    2723922527,
+    1503537586,
+    2209055576,
+    1503537589,
+    1503537599,
+    1503537600,
+    1503537588,
+    1503537617,
+    1503537612,
+    1503537610
+  ],
+  "geometry": [
+    { "lat": 41.8825980, "lon": -87.6233465 },
+    { "lat": 41.8825982, "lon": -87.6233190 },
+    { "lat": 41.8826056, "lon": -87.6233001 },
+    { "lat": 41.8826143, "lon": -87.6232848 },
+    { "lat": 41.8826287, "lon": -87.6232718 },
+    { "lat": 41.8826498, "lon": -87.6232581 },
+    { "lat": 41.8826740, "lon": -87.6232516 },
+    { "lat": 41.8826912, "lon": -87.6232515 },
+    { "lat": 41.8827103, "lon": -87.6232529 },
+    { "lat": 41.8827236, "lon": -87.6232567 },
+    { "lat": 41.8827457, "lon": -87.6232707 },
+    { "lat": 41.8827593, "lon": -87.6232894 },
+    { "lat": 41.8827683, "lon": -87.6233053 },
+    { "lat": 41.8827743, "lon": -87.6233308 },
+    { "lat": 41.8827740, "lon": -87.6233541 },
+    { "lat": 41.8827653, "lon": -87.6233798 },
+    { "lat": 41.8827528, "lon": -87.6234007 },
+    { "lat": 41.8827366, "lon": -87.6234159 },
+    { "lat": 41.8827174, "lon": -87.6234240 },
+    { "lat": 41.8826885, "lon": -87.6234298 },
+    { "lat": 41.8826563, "lon": -87.6234228 },
+    { "lat": 41.8826284, "lon": -87.6234077 },
+    { "lat": 41.8826064, "lon": -87.6233789 },
+    { "lat": 41.8825980, "lon": -87.6233465 }
+  ],
+  "tags": {
+    "alt_name": "The Bean",
+    "artist_name": "Anish Kapoor",
+    "artwork_type": "sculpture",
+    "building": "yes",
+    "building:colour": "gray",
+    "email": "dcase@cityofchicago.org",
+    "height": "10",
+    "landmark": "10",
+    "material": "stainless steel",
+    "name": "Cloud Gate",
+    "phone": "+1 312 742 1168",
+    "roof:shape": "dome",
+    "subject:wikidata": "Q589099",
+    "subject:wikipedia": "en:Cloud Gate",
+    "surface": "metal",
+    "tourism": "artwork",
+    "url": "http://www.millenniumpark.org/artandarchitecture/cloud_gate.html",
+    "wheelchair": "yes",
+    "wikidata": "Q589099",
+    "wikipedia": "en:Cloud Gate"
+  }
+},
+{
+  "type": "way",
+  "id": 145625872,
+  "bounds": {
+    "minlat": 41.8830488,
+    "minlon": -87.6304044,
+    "maxlat": 41.8830883,
+    "maxlon": -87.6303506
+  },
+  "nodes": [
+    1590043933,
+    1590043908,
+    1590043943,
+    1590043954,
+    1590043933
+  ],
+  "geometry": [
+    { "lat": 41.8830876, "lon": -87.6304044 },
+    { "lat": 41.8830883, "lon": -87.6303515 },
+    { "lat": 41.8830495, "lon": -87.6303506 },
+    { "lat": 41.8830488, "lon": -87.6304035 },
+    { "lat": 41.8830876, "lon": -87.6304044 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Joan Miro",
+    "artwork_type": "sculpture",
+    "name": "Miro's Chicago",
+    "tourism": "artwork",
+    "wheelchair": "yes",
+    "wheelchair:description": "Braille explanation",
+    "wikidata": "Q3054192",
+    "wikipedia": "en:Miró's Chicago"
+  }
+},
+{
+  "type": "way",
+  "id": 145626300,
+  "bounds": {
+    "minlat": 41.8847057,
+    "minlon": -87.6312528,
+    "maxlat": 41.8847754,
+    "maxlon": -87.6311748
+  },
+  "nodes": [
+    1590047077,
+    1590047048,
+    1590047067,
+    1590047072,
+    1590047049,
+    1590047079,
+    1590047061,
+    1590047076,
+    1590047047,
+    1590047065,
+    1590047064,
+    1590047069,
+    1590047059,
+    1590047070,
+    1590047071,
+    1590047077
+  ],
+  "geometry": [
+    { "lat": 41.8847711, "lon": -87.6312246 },
+    { "lat": 41.8847706, "lon": -87.6311946 },
+    { "lat": 41.8847754, "lon": -87.6311848 },
+    { "lat": 41.8847689, "lon": -87.6311749 },
+    { "lat": 41.8847548, "lon": -87.6311748 },
+    { "lat": 41.8847473, "lon": -87.6311894 },
+    { "lat": 41.8847387, "lon": -87.6311844 },
+    { "lat": 41.8847262, "lon": -87.6311902 },
+    { "lat": 41.8847196, "lon": -87.6312016 },
+    { "lat": 41.8847117, "lon": -87.6312052 },
+    { "lat": 41.8847057, "lon": -87.6312221 },
+    { "lat": 41.8847124, "lon": -87.6312358 },
+    { "lat": 41.8847437, "lon": -87.6312372 },
+    { "lat": 41.8847454, "lon": -87.6312528 },
+    { "lat": 41.8847671, "lon": -87.6312496 },
+    { "lat": 41.8847711, "lon": -87.6312246 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Jean Debuffet",
+    "artwork_type": "sculpture",
+    "check_date": "2025-08-28",
+    "description": "white form with black edges",
+    "fixme": "current location",
+    "name": "Monument With Standing Beast",
+    "nickname": "Snoopy in a Blender",
+    "tourism": "artwork",
+    "wikidata": "Q6906917",
+    "wikipedia": "en:Monument with Standing Beast"
+  }
+},
+{
+  "type": "way",
+  "id": 145626581,
+  "bounds": {
+    "minlat": 41.8809926,
+    "minlon": -87.6298137,
+    "maxlat": 41.8811948,
+    "maxlon": -87.6297648
+  },
+  "nodes": [
+    1590049862,
+    1590049864,
+    1590049865,
+    1590049863,
+    1590049862
+  ],
+  "geometry": [
+    { "lat": 41.8811940, "lon": -87.6298137 },
+    { "lat": 41.8811948, "lon": -87.6297713 },
+    { "lat": 41.8809934, "lon": -87.6297648 },
+    { "lat": 41.8809926, "lon": -87.6298073 },
+    { "lat": 41.8811940, "lon": -87.6298137 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Marc Chagall",
+    "artwork_type": "mosaic",
+    "name": "Four Seasons",
+    "tourism": "artwork",
+    "wheelchair": "yes",
+    "wikidata": "Q5475476",
+    "wikipedia": "en:Four Seasons (Chagall)"
+  }
+},
+{
+  "type": "way",
+  "id": 147397547,
+  "bounds": {
+    "minlat": 41.8836083,
+    "minlon": -87.6260719,
+    "maxlat": 41.8843928,
+    "maxlon": -87.6254538
+  },
+  "nodes": [
+    1606218678,
+    1606218661,
+    2391130111,
+    1606218639,
+    1606218656,
+    1606218675,
+    10922954436,
+    6431768621,
+    6431768619,
+    10922954412,
+    1606218604,
+    1606218582,
+    1606218678
+  ],
+  "geometry": [
+    { "lat": 41.8843928, "lon": -87.6260719 },
+    { "lat": 41.8843917, "lon": -87.6257481 },
+    { "lat": 41.8843891, "lon": -87.6257191 },
+    { "lat": 41.8843865, "lon": -87.6256478 },
+    { "lat": 41.8843770, "lon": -87.6255526 },
+    { "lat": 41.8843689, "lon": -87.6254712 },
+    { "lat": 41.8841954, "lon": -87.6254652 },
+    { "lat": 41.8841073, "lon": -87.6254621 },
+    { "lat": 41.8836650, "lon": -87.6254542 },
+    { "lat": 41.8836595, "lon": -87.6254571 },
+    { "lat": 41.8836092, "lon": -87.6254538 },
+    { "lat": 41.8836083, "lon": -87.6260475 },
+    { "lat": 41.8843928, "lon": -87.6260719 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "130",
+    "addr:postcode": "60602",
+    "addr:state": "IL",
+    "addr:street": "North Garland Court",
+    "addr:street:name": "Garland",
+    "addr:street:prefix": "North",
+    "addr:street:type": "Court",
+    "building": "apartments",
+    "building:levels": "57",
+    "chicago:building_id": "354372",
+    "height": "192",
+    "name": "The Heritage at Millennium Park",
+    "wikidata": "Q376658"
+  }
+},
+{
+  "type": "way",
+  "id": 147478372,
+  "bounds": {
+    "minlat": 41.8811039,
+    "minlon": -87.6259901,
+    "maxlat": 41.8815531,
+    "maxlon": -87.6253373
+  },
+  "nodes": [
+    1606934712,
+    10926007423,
+    10926007421,
+    10926007425,
+    10926007420,
+    10926007428,
+    10926007419,
+    10926007418,
+    10926007417,
+    1606943200,
+    10945603848,
+    10945603847,
+    10926002655,
+    10926002656,
+    10925917570,
+    10926002703,
+    10926002696,
+    10926002699,
+    10926002654,
+    10926002653,
+    10926002652,
+    1606943199,
+    1606943204,
+    1606943224,
+    10926002645,
+    10926002646,
+    10926007408,
+    1606943218,
+    10926002644,
+    1606934716,
+    10945603855,
+    1606934712
+  ],
+  "geometry": [
+    { "lat": 41.8815433, "lon": -87.6259901 },
+    { "lat": 41.8815029, "lon": -87.6259887 },
+    { "lat": 41.8814521, "lon": -87.6259870 },
+    { "lat": 41.8814401, "lon": -87.6259878 },
+    { "lat": 41.8814111, "lon": -87.6259878 },
+    { "lat": 41.8813859, "lon": -87.6259873 },
+    { "lat": 41.8812976, "lon": -87.6259855 },
+    { "lat": 41.8812098, "lon": -87.6259835 },
+    { "lat": 41.8811198, "lon": -87.6259840 },
+    { "lat": 41.8811039, "lon": -87.6259837 },
+    { "lat": 41.8811041, "lon": -87.6259616 },
+    { "lat": 41.8811060, "lon": -87.6257900 },
+    { "lat": 41.8811077, "lon": -87.6256316 },
+    { "lat": 41.8811090, "lon": -87.6255063 },
+    { "lat": 41.8811106, "lon": -87.6253559 },
+    { "lat": 41.8811361, "lon": -87.6253565 },
+    { "lat": 41.8811504, "lon": -87.6253569 },
+    { "lat": 41.8811630, "lon": -87.6253572 },
+    { "lat": 41.8812091, "lon": -87.6253584 },
+    { "lat": 41.8812093, "lon": -87.6253781 },
+    { "lat": 41.8812372, "lon": -87.6253800 },
+    { "lat": 41.8812438, "lon": -87.6253373 },
+    { "lat": 41.8812884, "lon": -87.6253384 },
+    { "lat": 41.8812979, "lon": -87.6253867 },
+    { "lat": 41.8813186, "lon": -87.6253867 },
+    { "lat": 41.8813192, "lon": -87.6253610 },
+    { "lat": 41.8813576, "lon": -87.6253620 },
+    { "lat": 41.8813960, "lon": -87.6253630 },
+    { "lat": 41.8815531, "lon": -87.6253670 },
+    { "lat": 41.8815531, "lon": -87.6254146 },
+    { "lat": 41.8815467, "lon": -87.6257876 },
+    { "lat": 41.8815433, "lon": -87.6259901 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "21-39",
+    "addr:postcode": "60603",
+    "addr:state": "IL",
+    "addr:street": "South Wabash Avenue",
+    "building": "apartments",
+    "check_date": "2021-04-21",
+    "name": "Legacy at Millennium Park",
+    "wikidata": "Q1812350",
+    "wikipedia": "en:Legacy at Millennium Park"
+  }
+},
+{
+  "type": "way",
+  "id": 148560424,
+  "bounds": {
+    "minlat": 41.8969530,
+    "minlon": -87.6240337,
+    "maxlat": 41.8973871,
+    "maxlon": -87.6236814
+  },
+  "nodes": [
+    1616477719,
+    11914508795,
+    11914508801,
+    11914508800,
+    11914508797,
+    11914508810,
+    11914508809,
+    1616477699,
+    11914508808,
+    11914508807,
+    11914508806,
+    11914508798,
+    11914508805,
+    11914508804,
+    11914508803,
+    11914508799,
+    11914508802,
+    11914508796,
+    11914508842,
+    11914508843,
+    11914508844,
+    11914508845,
+    11914508846,
+    11914508847,
+    11914508848,
+    11914508849,
+    11914508850,
+    11914508851,
+    11914508852,
+    11914508853,
+    11914508854,
+    11914508841,
+    11914508699,
+    11914508839,
+    11914508840,
+    11914508827,
+    11914508828,
+    11914508831,
+    11914508832,
+    11914508833,
+    11914508834,
+    11914508835,
+    11914508836,
+    11914508837,
+    11914508829,
+    11914508830,
+    11914508838,
+    11914508826,
+    11914508825,
+    11914508824,
+    11914508823,
+    11914508822,
+    11914508821,
+    11914508820,
+    11914508819,
+    11914508818,
+    11914508817,
+    11914508816,
+    11914508815,
+    1616477714,
+    11914508814,
+    11914508813,
+    11914508812,
+    11914508811,
+    1616477717,
+    11914508855,
+    11914508867,
+    11914508866,
+    11914508865,
+    11914508864,
+    11914508863,
+    1616477708,
+    11914508862,
+    11914508861,
+    11914508860,
+    11914508859,
+    11914508858,
+    11914508857,
+    11914508856,
+    11914508669,
+    11914508648,
+    11914508671,
+    11914508870,
+    11914508869,
+    11914508871,
+    11914508868,
+    1616477689,
+    1616477710,
+    11914508625,
+    11914508775,
+    11914508780,
+    11914508779,
+    11914508778,
+    11914508777,
+    1616477694,
+    11914508690,
+    11914508621,
+    11914508675,
+    11914508781,
+    11914508794,
+    11914508793,
+    11914508792,
+    11914508791,
+    11914508790,
+    11914508789,
+    1616477691,
+    11914508788,
+    11914508787,
+    11914508786,
+    11914508785,
+    11914508784,
+    11914508783,
+    11914508782,
+    1616477719
+  ],
+  "geometry": [
+    { "lat": 41.8972595, "lon": -87.6239284 },
+    { "lat": 41.8972591, "lon": -87.6240119 },
+    { "lat": 41.8972605, "lon": -87.6240117 },
+    { "lat": 41.8972629, "lon": -87.6240123 },
+    { "lat": 41.8972650, "lon": -87.6240138 },
+    { "lat": 41.8972668, "lon": -87.6240162 },
+    { "lat": 41.8972680, "lon": -87.6240192 },
+    { "lat": 41.8972684, "lon": -87.6240225 },
+    { "lat": 41.8972681, "lon": -87.6240259 },
+    { "lat": 41.8972669, "lon": -87.6240290 },
+    { "lat": 41.8972652, "lon": -87.6240315 },
+    { "lat": 41.8972629, "lon": -87.6240331 },
+    { "lat": 41.8972602, "lon": -87.6240337 },
+    { "lat": 41.8972575, "lon": -87.6240331 },
+    { "lat": 41.8972551, "lon": -87.6240314 },
+    { "lat": 41.8972534, "lon": -87.6240289 },
+    { "lat": 41.8972523, "lon": -87.6240258 },
+    { "lat": 41.8972520, "lon": -87.6240224 },
+    { "lat": 41.8972003, "lon": -87.6240192 },
+    { "lat": 41.8972011, "lon": -87.6240214 },
+    { "lat": 41.8972013, "lon": -87.6240238 },
+    { "lat": 41.8972009, "lon": -87.6240262 },
+    { "lat": 41.8971999, "lon": -87.6240283 },
+    { "lat": 41.8971985, "lon": -87.6240298 },
+    { "lat": 41.8971968, "lon": -87.6240307 },
+    { "lat": 41.8971950, "lon": -87.6240307 },
+    { "lat": 41.8971932, "lon": -87.6240299 },
+    { "lat": 41.8971918, "lon": -87.6240284 },
+    { "lat": 41.8971908, "lon": -87.6240263 },
+    { "lat": 41.8971904, "lon": -87.6240240 },
+    { "lat": 41.8971905, "lon": -87.6240216 },
+    { "lat": 41.8971912, "lon": -87.6240194 },
+    { "lat": 41.8971753, "lon": -87.6240184 },
+    { "lat": 41.8971619, "lon": -87.6240175 },
+    { "lat": 41.8971626, "lon": -87.6240197 },
+    { "lat": 41.8971628, "lon": -87.6240220 },
+    { "lat": 41.8971625, "lon": -87.6240244 },
+    { "lat": 41.8971615, "lon": -87.6240265 },
+    { "lat": 41.8971601, "lon": -87.6240281 },
+    { "lat": 41.8971584, "lon": -87.6240289 },
+    { "lat": 41.8971565, "lon": -87.6240289 },
+    { "lat": 41.8971548, "lon": -87.6240282 },
+    { "lat": 41.8971533, "lon": -87.6240267 },
+    { "lat": 41.8971523, "lon": -87.6240246 },
+    { "lat": 41.8971519, "lon": -87.6240222 },
+    { "lat": 41.8971521, "lon": -87.6240198 },
+    { "lat": 41.8971528, "lon": -87.6240176 },
+    { "lat": 41.8971004, "lon": -87.6240160 },
+    { "lat": 41.8971008, "lon": -87.6240193 },
+    { "lat": 41.8971005, "lon": -87.6240227 },
+    { "lat": 41.8970994, "lon": -87.6240258 },
+    { "lat": 41.8970976, "lon": -87.6240283 },
+    { "lat": 41.8970954, "lon": -87.6240299 },
+    { "lat": 41.8970927, "lon": -87.6240305 },
+    { "lat": 41.8970900, "lon": -87.6240299 },
+    { "lat": 41.8970876, "lon": -87.6240282 },
+    { "lat": 41.8970858, "lon": -87.6240257 },
+    { "lat": 41.8970848, "lon": -87.6240226 },
+    { "lat": 41.8970844, "lon": -87.6240193 },
+    { "lat": 41.8970849, "lon": -87.6240159 },
+    { "lat": 41.8970862, "lon": -87.6240127 },
+    { "lat": 41.8970881, "lon": -87.6240103 },
+    { "lat": 41.8970906, "lon": -87.6240088 },
+    { "lat": 41.8970930, "lon": -87.6240085 },
+    { "lat": 41.8970939, "lon": -87.6239225 },
+    { "lat": 41.8969803, "lon": -87.6239214 },
+    { "lat": 41.8969785, "lon": -87.6239272 },
+    { "lat": 41.8969754, "lon": -87.6239318 },
+    { "lat": 41.8969713, "lon": -87.6239348 },
+    { "lat": 41.8969667, "lon": -87.6239358 },
+    { "lat": 41.8969621, "lon": -87.6239347 },
+    { "lat": 41.8969581, "lon": -87.6239316 },
+    { "lat": 41.8969552, "lon": -87.6239273 },
+    { "lat": 41.8969534, "lon": -87.6239220 },
+    { "lat": 41.8969530, "lon": -87.6239162 },
+    { "lat": 41.8969539, "lon": -87.6239106 },
+    { "lat": 41.8969560, "lon": -87.6239055 },
+    { "lat": 41.8969592, "lon": -87.6239016 },
+    { "lat": 41.8969631, "lon": -87.6238992 },
+    { "lat": 41.8969646, "lon": -87.6238276 },
+    { "lat": 41.8969652, "lon": -87.6238007 },
+    { "lat": 41.8969658, "lon": -87.6237722 },
+    { "lat": 41.8969677, "lon": -87.6236967 },
+    { "lat": 41.8969638, "lon": -87.6236960 },
+    { "lat": 41.8969601, "lon": -87.6236931 },
+    { "lat": 41.8969571, "lon": -87.6236874 },
+    { "lat": 41.8969568, "lon": -87.6236814 },
+    { "lat": 41.8973196, "lon": -87.6236889 },
+    { "lat": 41.8973421, "lon": -87.6236899 },
+    { "lat": 41.8973871, "lon": -87.6236911 },
+    { "lat": 41.8973863, "lon": -87.6236983 },
+    { "lat": 41.8973844, "lon": -87.6237033 },
+    { "lat": 41.8973815, "lon": -87.6237072 },
+    { "lat": 41.8973778, "lon": -87.6237097 },
+    { "lat": 41.8973744, "lon": -87.6237105 },
+    { "lat": 41.8973741, "lon": -87.6237438 },
+    { "lat": 41.8973727, "lon": -87.6238106 },
+    { "lat": 41.8973717, "lon": -87.6238712 },
+    { "lat": 41.8973709, "lon": -87.6239116 },
+    { "lat": 41.8973751, "lon": -87.6239131 },
+    { "lat": 41.8973786, "lon": -87.6239163 },
+    { "lat": 41.8973812, "lon": -87.6239209 },
+    { "lat": 41.8973826, "lon": -87.6239264 },
+    { "lat": 41.8973826, "lon": -87.6239321 },
+    { "lat": 41.8973811, "lon": -87.6239376 },
+    { "lat": 41.8973785, "lon": -87.6239421 },
+    { "lat": 41.8973749, "lon": -87.6239452 },
+    { "lat": 41.8973708, "lon": -87.6239466 },
+    { "lat": 41.8973666, "lon": -87.6239462 },
+    { "lat": 41.8973627, "lon": -87.6239440 },
+    { "lat": 41.8973595, "lon": -87.6239402 },
+    { "lat": 41.8973574, "lon": -87.6239353 },
+    { "lat": 41.8973566, "lon": -87.6239297 },
+    { "lat": 41.8972595, "lon": -87.6239284 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "811",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "North Michigan Avenue",
+    "addr:street:name": "Michigan",
+    "addr:street:prefix": "North",
+    "addr:street:type": "Avenue",
+    "building": "water_tower",
+    "building:levels": "2",
+    "chicago:building_id": "335460",
+    "historic": "building",
+    "man_made": "pumping_station",
+    "name": "Chicago Avenue Pumping Station",
+    "operator": "Chicago Department of Water Mangement",
+    "wikidata": "Q2963293",
+    "wikipedia": "en:Chicago Avenue Pumping Station"
+  }
+},
+{
+  "type": "way",
+  "id": 153328601,
+  "bounds": {
+    "minlat": 41.8877792,
+    "minlon": -87.6294852,
+    "maxlat": 41.8888832,
+    "maxlon": -87.6281959
+  },
+  "nodes": [
+    11819959766,
+    10942494306,
+    9755644029,
+    5302750824,
+    11819959715,
+    20217240,
+    11819959716,
+    11819959719,
+    6991457082,
+    1407580273,
+    11817213383,
+    6423931280,
+    6991457099,
+    6423931268,
+    11817213410,
+    11817213379,
+    11817213409,
+    11817213414,
+    11817213413,
+    11817213417,
+    11817213378,
+    9755644031,
+    11817218731,
+    11817218726,
+    3585990760,
+    1407580260,
+    11819974903,
+    1659972624,
+    10059477320,
+    2387078546,
+    11817218693,
+    11819974902,
+    9755644025,
+    9755644026,
+    9755644027,
+    11819974869,
+    11817218745,
+    11819974879,
+    10942494308,
+    10942494311,
+    10942494309,
+    11819959766
+  ],
+  "geometry": [
+    { "lat": 41.8878876, "lon": -87.6293832 },
+    { "lat": 41.8877983, "lon": -87.6293816 },
+    { "lat": 41.8877983, "lon": -87.6293885 },
+    { "lat": 41.8877792, "lon": -87.6293885 },
+    { "lat": 41.8877804, "lon": -87.6293100 },
+    { "lat": 41.8877950, "lon": -87.6293104 },
+    { "lat": 41.8878005, "lon": -87.6290794 },
+    { "lat": 41.8878019, "lon": -87.6290271 },
+    { "lat": 41.8878071, "lon": -87.6288346 },
+    { "lat": 41.8878174, "lon": -87.6283137 },
+    { "lat": 41.8878178, "lon": -87.6282919 },
+    { "lat": 41.8878362, "lon": -87.6282920 },
+    { "lat": 41.8878673, "lon": -87.6282936 },
+    { "lat": 41.8878800, "lon": -87.6282766 },
+    { "lat": 41.8879393, "lon": -87.6282813 },
+    { "lat": 41.8879448, "lon": -87.6282818 },
+    { "lat": 41.8879460, "lon": -87.6282420 },
+    { "lat": 41.8879568, "lon": -87.6282421 },
+    { "lat": 41.8879620, "lon": -87.6282421 },
+    { "lat": 41.8880376, "lon": -87.6282425 },
+    { "lat": 41.8880425, "lon": -87.6282425 },
+    { "lat": 41.8880466, "lon": -87.6281959 },
+    { "lat": 41.8881711, "lon": -87.6281998 },
+    { "lat": 41.8882123, "lon": -87.6282010 },
+    { "lat": 41.8882435, "lon": -87.6282022 },
+    { "lat": 41.8884322, "lon": -87.6282109 },
+    { "lat": 41.8888829, "lon": -87.6282275 },
+    { "lat": 41.8888832, "lon": -87.6282717 },
+    { "lat": 41.8888826, "lon": -87.6282968 },
+    { "lat": 41.8888673, "lon": -87.6290594 },
+    { "lat": 41.8888581, "lon": -87.6294237 },
+    { "lat": 41.8888566, "lon": -87.6294852 },
+    { "lat": 41.8884299, "lon": -87.6294661 },
+    { "lat": 41.8879712, "lon": -87.6294451 },
+    { "lat": 41.8879716, "lon": -87.6293987 },
+    { "lat": 41.8879606, "lon": -87.6293985 },
+    { "lat": 41.8879523, "lon": -87.6293984 },
+    { "lat": 41.8879441, "lon": -87.6293982 },
+    { "lat": 41.8879319, "lon": -87.6293980 },
+    { "lat": 41.8879090, "lon": -87.6293976 },
+    { "lat": 41.8878874, "lon": -87.6293972 },
+    { "lat": 41.8878876, "lon": -87.6293832 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "300",
+    "addr:postcode": "60654",
+    "addr:state": "IL",
+    "addr:street": "North State Street",
+    "addr:street:name": "State",
+    "addr:street:prefix": "North",
+    "addr:street:type": "Street",
+    "architect": "Bertrand Goldberg",
+    "chicago:building_id": "351489",
+    "gnis:feature_id": "1831020",
+    "landuse": "retail",
+    "layer": "-1",
+    "name": "Marina City",
+    "start_date": "1962",
+    "wikidata": "Q653584",
+    "wikipedia": "en:Marina City"
+  }
+},
+{
+  "type": "way",
+  "id": 205025619,
+  "bounds": {
+    "minlat": 41.8914947,
+    "minlon": -87.6071816,
+    "maxlat": 41.8919568,
+    "maxlon": -87.6062712
+  },
+  "nodes": [
+    2150021934,
+    2150021933,
+    2150021931,
+    2150021929,
+    6939664023,
+    2150021927,
+    2150021926,
+    2150021922,
+    271278227,
+    2150021921,
+    6939664281,
+    2150021919,
+    2150021920,
+    6939664028,
+    2150021925,
+    2150021924,
+    6939664027,
+    2150021928,
+    6939664025,
+    2150021930,
+    6939664026,
+    2150021932,
+    2150021936,
+    2150021942,
+    7035116917,
+    7035116919,
+    2150021940,
+    2150021939,
+    2150021938,
+    7035116918,
+    6939664024,
+    2150021934
+  ],
+  "geometry": [
+    { "lat": 41.8918810, "lon": -87.6071008 },
+    { "lat": 41.8918428, "lon": -87.6071294 },
+    { "lat": 41.8917745, "lon": -87.6071679 },
+    { "lat": 41.8917035, "lon": -87.6071816 },
+    { "lat": 41.8916544, "lon": -87.6071703 },
+    { "lat": 41.8916051, "lon": -87.6071479 },
+    { "lat": 41.8915344, "lon": -87.6070925 },
+    { "lat": 41.8915277, "lon": -87.6070531 },
+    { "lat": 41.8915289, "lon": -87.6068641 },
+    { "lat": 41.8915290, "lon": -87.6067234 },
+    { "lat": 41.8915291, "lon": -87.6066421 },
+    { "lat": 41.8915291, "lon": -87.6065303 },
+    { "lat": 41.8915231, "lon": -87.6064696 },
+    { "lat": 41.8915111, "lon": -87.6064021 },
+    { "lat": 41.8914947, "lon": -87.6063527 },
+    { "lat": 41.8915821, "lon": -87.6063532 },
+    { "lat": 41.8916106, "lon": -87.6063414 },
+    { "lat": 41.8916391, "lon": -87.6063119 },
+    { "lat": 41.8916810, "lon": -87.6063004 },
+    { "lat": 41.8917189, "lon": -87.6062712 },
+    { "lat": 41.8917589, "lon": -87.6063034 },
+    { "lat": 41.8917976, "lon": -87.6063126 },
+    { "lat": 41.8918337, "lon": -87.6063484 },
+    { "lat": 41.8919568, "lon": -87.6063483 },
+    { "lat": 41.8919557, "lon": -87.6064259 },
+    { "lat": 41.8919545, "lon": -87.6065111 },
+    { "lat": 41.8919536, "lon": -87.6065678 },
+    { "lat": 41.8919525, "lon": -87.6067343 },
+    { "lat": 41.8919503, "lon": -87.6068339 },
+    { "lat": 41.8919382, "lon": -87.6068745 },
+    { "lat": 41.8919376, "lon": -87.6070622 },
+    { "lat": 41.8918810, "lon": -87.6071008 }
+  ],
+  "tags": {
+    "amenity": "theatre",
+    "building:part": "yes",
+    "height": "10",
+    "level": "1",
+    "name": "Navy Pier Skyline Stage",
+    "roof:height": "6",
+    "roof:orientation": "along",
+    "roof:shape": "mansard"
+  }
+},
+{
+  "type": "way",
+  "id": 210671749,
+  "bounds": {
+    "minlat": 41.8754762,
+    "minlon": -87.6235024,
+    "maxlat": 41.8755211,
+    "maxlon": -87.6234795
+  },
+  "nodes": [
+    5417432185,
+    7152041376,
+    2207542937,
+    2207542944,
+    2207542941,
+    5417432185
+  ],
+  "geometry": [
+    { "lat": 41.8754765, "lon": -87.6234795 },
+    { "lat": 41.8754763, "lon": -87.6234949 },
+    { "lat": 41.8754762, "lon": -87.6235012 },
+    { "lat": 41.8755207, "lon": -87.6235024 },
+    { "lat": 41.8755211, "lon": -87.6234807 },
+    { "lat": 41.8754765, "lon": -87.6234795 }
+  ],
+  "tags": {
+    "artist:wikidata": "Q313828",
+    "artist_name": "Ivan Mestrovic",
+    "artwork_type": "sculpture",
+    "building": "yes",
+    "chicago:building_id": "874126",
+    "material": "bronze",
+    "name": "Equestrian Indians (The Spearman)",
+    "statue": "equestrian",
+    "subject:wikidata": "Q36747",
+    "subject:wikipedia": "en:Indigenous peoples of the Americas",
+    "tourism": "artwork",
+    "website": "https://www.cpdit01.com/resources/planning-and-development.fountains-monuments-and-sculptures/Grant%20Park/Equestrian%20Indians.pdf",
+    "wheelchair": "yes",
+    "wikidata": "Q7719555",
+    "wikipedia": "en:The Bowman and The Spearman"
+  }
+},
+{
+  "type": "way",
+  "id": 210671752,
+  "bounds": {
+    "minlat": 41.8793903,
+    "minlon": -87.6241607,
+    "maxlat": 41.8794000,
+    "maxlon": -87.6241272
+  },
+  "nodes": [
+    2207543527,
+    2433029762,
+    2207543525,
+    2207543534,
+    7149995803,
+    2207543530,
+    2207543527
+  ],
+  "geometry": [
+    { "lat": 41.8793908, "lon": -87.6241272 },
+    { "lat": 41.8793903, "lon": -87.6241444 },
+    { "lat": 41.8793904, "lon": -87.6241605 },
+    { "lat": 41.8793998, "lon": -87.6241607 },
+    { "lat": 41.8793999, "lon": -87.6241503 },
+    { "lat": 41.8794000, "lon": -87.6241273 },
+    { "lat": 41.8793908, "lon": -87.6241272 }
+  ],
+  "tags": {
+    "artist_name": "Edward Kemeys",
+    "artwork_type": "statue",
+    "building": "yes",
+    "chicago:building_id": "881852",
+    "name": "Lion “in an attitude of defiance”",
+    "subject:wikidata": "Q29335007",
+    "subject:wikipedia": "en:Lions (Kemeys)",
+    "tourism": "artwork",
+    "wikidata": "Q29335007",
+    "wikipedia": "en:Lions (Kemeys)"
+  }
+},
+{
+  "type": "way",
+  "id": 210671755,
+  "bounds": {
+    "minlat": 41.8759573,
+    "minlon": -87.6235184,
+    "maxlat": 41.8759990,
+    "maxlon": -87.6234970
+  },
+  "nodes": [
+    5417432184,
+    2207542964,
+    2207542971,
+    2207542967,
+    5417432184
+  ],
+  "geometry": [
+    { "lat": 41.8759573, "lon": -87.6234970 },
+    { "lat": 41.8759573, "lon": -87.6235178 },
+    { "lat": 41.8759990, "lon": -87.6235184 },
+    { "lat": 41.8759990, "lon": -87.6234972 },
+    { "lat": 41.8759573, "lon": -87.6234970 }
+  ],
+  "tags": {
+    "artist:wikidata": "Q313828",
+    "artist_name": "Ivan Mestrovic",
+    "artwork_type": "sculpture",
+    "building": "yes",
+    "chicago:building_id": "874127",
+    "material": "bronze",
+    "name": "Equestrian Indians (The Bowman)",
+    "tourism": "artwork",
+    "website": "https://www.cpdit01.com/resources/planning-and-development.fountains-monuments-and-sculptures/Grant%20Park/Equestrian%20Indians.pdf",
+    "wheelchair": "yes",
+    "wikidata": "Q7719555",
+    "wikipedia": "en:The Bowman and The Spearman"
+  }
+},
+{
+  "type": "way",
+  "id": 210671756,
+  "bounds": {
+    "minlat": 41.8797222,
+    "minlon": -87.6241672,
+    "maxlat": 41.8797313,
+    "maxlon": -87.6241349
+  },
+  "nodes": [
+    2207543548,
+    7149995804,
+    2207543551,
+    2207543558,
+    2433029752,
+    7149995805,
+    2207543556,
+    2207543548
+  ],
+  "geometry": [
+    { "lat": 41.8797222, "lon": -87.6241349 },
+    { "lat": 41.8797223, "lon": -87.6241583 },
+    { "lat": 41.8797224, "lon": -87.6241669 },
+    { "lat": 41.8797310, "lon": -87.6241672 },
+    { "lat": 41.8797312, "lon": -87.6241609 },
+    { "lat": 41.8797312, "lon": -87.6241517 },
+    { "lat": 41.8797313, "lon": -87.6241350 },
+    { "lat": 41.8797222, "lon": -87.6241349 }
+  ],
+  "tags": {
+    "artist_name": "Edward Kemeys",
+    "artwork_type": "statue",
+    "building": "yes",
+    "chicago:building_id": "881853",
+    "name": "Lion \"on the prowl\"",
+    "subject:wikidata": "Q29335007",
+    "subject:wikipedia": "en:Lions (Kemeys)",
+    "tourism": "artwork",
+    "wikidata": "Q29335007",
+    "wikipedia": "en:Lions (Kemeys)"
+  }
+},
+{
+  "type": "way",
+  "id": 210969115,
+  "bounds": {
+    "minlat": 41.8744470,
+    "minlon": -87.6192654,
+    "maxlat": 41.8744746,
+    "maxlon": -87.6192302
+  },
+  "nodes": [
+    6588578129,
+    6588578130,
+    6588578131,
+    6588578132,
+    6588578129
+  ],
+  "geometry": [
+    { "lat": 41.8744746, "lon": -87.6192449 },
+    { "lat": 41.8744626, "lon": -87.6192654 },
+    { "lat": 41.8744470, "lon": -87.6192514 },
+    { "lat": 41.8744580, "lon": -87.6192302 },
+    { "lat": 41.8744746, "lon": -87.6192449 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Leonard Crunelle",
+    "artwork_type": "sculpture",
+    "name": "Dove Girl",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 210969116,
+  "bounds": {
+    "minlat": 41.8744546,
+    "minlon": -87.6186466,
+    "maxlat": 41.8744751,
+    "maxlon": -87.6186194
+  },
+  "nodes": [
+    6588578143,
+    6588578144,
+    6588578145,
+    6588578146,
+    6588578143
+  ],
+  "geometry": [
+    { "lat": 41.8744751, "lon": -87.6186241 },
+    { "lat": 41.8744717, "lon": -87.6186466 },
+    { "lat": 41.8744546, "lon": -87.6186419 },
+    { "lat": 41.8744581, "lon": -87.6186194 },
+    { "lat": 41.8744751, "lon": -87.6186241 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Leonard Crunelle",
+    "artwork_type": "sculpture",
+    "chicago:building_id": "874135",
+    "name": "Turtle Boy",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 230511525,
+  "bounds": {
+    "minlat": 41.8771141,
+    "minlon": -87.6193303,
+    "maxlat": 41.8771397,
+    "maxlon": -87.6192948
+  },
+  "nodes": [
+    2390080442,
+    2390080331,
+    7130918733,
+    2390080393,
+    2390080442
+  ],
+  "geometry": [
+    { "lat": 41.8771141, "lon": -87.6193094 },
+    { "lat": 41.8771248, "lon": -87.6193303 },
+    { "lat": 41.8771397, "lon": -87.6193161 },
+    { "lat": 41.8771297, "lon": -87.6192948 },
+    { "lat": 41.8771141, "lon": -87.6193094 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Leonard Crunelle",
+    "artwork_type": "sculpture",
+    "chicago:building_id": "874132",
+    "name": "Fisher Boy",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 230512650,
+  "bounds": {
+    "minlat": 41.8771240,
+    "minlon": -87.6187097,
+    "maxlat": 41.8771438,
+    "maxlon": -87.6186835
+  },
+  "nodes": [
+    2390091766,
+    2390091764,
+    2390091753,
+    2390091765,
+    2390091766
+  ],
+  "geometry": [
+    { "lat": 41.8771240, "lon": -87.6187092 },
+    { "lat": 41.8771438, "lon": -87.6187097 },
+    { "lat": 41.8771435, "lon": -87.6186836 },
+    { "lat": 41.8771245, "lon": -87.6186835 },
+    { "lat": 41.8771240, "lon": -87.6187092 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Leonard Crunelle",
+    "artwork_type": "sculpture",
+    "chicago:building_id": "874133",
+    "name": "Crane Girl",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 234847963,
+  "bounds": {
+    "minlat": 41.8840268,
+    "minlon": -87.6224555,
+    "maxlat": 41.8841628,
+    "maxlon": -87.6223149
+  },
+  "nodes": [
+    1406176647,
+    8502214097,
+    2429723930,
+    1406176643,
+    1406176651,
+    7150002103,
+    7142960622,
+    7150002102,
+    1406176652,
+    1406176647
+  ],
+  "geometry": [
+    { "lat": 41.8840636, "lon": -87.6223157 },
+    { "lat": 41.8840469, "lon": -87.6223153 },
+    { "lat": 41.8840299, "lon": -87.6223149 },
+    { "lat": 41.8840268, "lon": -87.6224517 },
+    { "lat": 41.8841607, "lon": -87.6224555 },
+    { "lat": 41.8841614, "lon": -87.6224073 },
+    { "lat": 41.8841617, "lon": -87.6223869 },
+    { "lat": 41.8841622, "lon": -87.6223596 },
+    { "lat": 41.8841628, "lon": -87.6223199 },
+    { "lat": 41.8840636, "lon": -87.6223157 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "151",
+    "addr:postcode": "60601",
+    "addr:state": "IL",
+    "addr:street": "East Randolph Street",
+    "building": "pavilion",
+    "information": "office",
+    "name": "Northwest Exelon Pavilion / Millennium Park Information Center",
+    "tourism": "information"
+  }
+},
+{
+  "type": "way",
+  "id": 267163766,
+  "bounds": {
+    "minlat": 41.8903132,
+    "minlon": -87.6136499,
+    "maxlat": 41.8908052,
+    "maxlon": -87.6129036
+  },
+  "nodes": [
+    11026272339,
+    11026272365,
+    8601451541,
+    2726339095,
+    2726339127,
+    7027261884,
+    11026272383,
+    5652226062,
+    2726339097,
+    2726339107,
+    7027261883
+  ],
+  "geometry": [
+    { "lat": 41.8903132, "lon": -87.6136499 },
+    { "lat": 41.8903960, "lon": -87.6136213 },
+    { "lat": 41.8904432, "lon": -87.6135990 },
+    { "lat": 41.8905244, "lon": -87.6135424 },
+    { "lat": 41.8906080, "lon": -87.6134442 },
+    { "lat": 41.8906759, "lon": -87.6133358 },
+    { "lat": 41.8907128, "lon": -87.6132666 },
+    { "lat": 41.8907430, "lon": -87.6131895 },
+    { "lat": 41.8907703, "lon": -87.6130976 },
+    { "lat": 41.8907956, "lon": -87.6129734 },
+    { "lat": 41.8908052, "lon": -87.6129036 }
+  ],
+  "tags": {
+    "bicycle": "designated",
+    "bridge": "yes",
+    "check_date:cycleway:surface": "2024-06-21",
+    "check_date:surface": "2024-06-21",
+    "cycleway:surface": "concrete",
+    "foot": "designated",
+    "footway:surface": "concrete",
+    "highway": "cycleway",
+    "layer": "1",
+    "name": "Navy Pier Flyover",
+    "segregated": "yes",
+    "source": "http://www.navypierflyover.com/",
+    "surface": "concrete"
+  }
+},
+{
+  "type": "way",
+  "id": 283892909,
+  "bounds": {
+    "minlat": 41.8806623,
+    "minlon": -87.6212554,
+    "maxlat": 41.8806864,
+    "maxlon": -87.6210957
+  },
+  "nodes": [
+    1523883275,
+    2877081807,
+    7147849992,
+    7147849991,
+    7147849990,
+    7147849989,
+    7147849988,
+    7147849987,
+    7147849986,
+    7147849994,
+    7147849995,
+    7147849996,
+    7147849997,
+    7147849993,
+    2877112701,
+    2877112501,
+    1523883275
+  ],
+  "geometry": [
+    { "lat": 41.8806639, "lon": -87.6210957 },
+    { "lat": 41.8806773, "lon": -87.6210959 },
+    { "lat": 41.8806772, "lon": -87.6211044 },
+    { "lat": 41.8806807, "lon": -87.6211044 },
+    { "lat": 41.8806806, "lon": -87.6211160 },
+    { "lat": 41.8806834, "lon": -87.6211161 },
+    { "lat": 41.8806833, "lon": -87.6211276 },
+    { "lat": 41.8806864, "lon": -87.6211276 },
+    { "lat": 41.8806856, "lon": -87.6212204 },
+    { "lat": 41.8806819, "lon": -87.6212204 },
+    { "lat": 41.8806818, "lon": -87.6212335 },
+    { "lat": 41.8806786, "lon": -87.6212335 },
+    { "lat": 41.8806785, "lon": -87.6212460 },
+    { "lat": 41.8806745, "lon": -87.6212459 },
+    { "lat": 41.8806744, "lon": -87.6212554 },
+    { "lat": 41.8806623, "lon": -87.6212552 },
+    { "lat": 41.8806639, "lon": -87.6210957 }
+  ],
+  "tags": {
+    "architect": "Louis Sullivan",
+    "artwork_type": "arch",
+    "building": "yes",
+    "name": "Chicago Stock Exchange Arch",
+    "note": "Re-ercted here 1970s, after original bulding was demolished",
+    "tourism": "artwork",
+    "wikidata": "Q30680906",
+    "wikipedia": "en:Chicago Stock Exchange Arch"
+  }
+},
+{
+  "type": "way",
+  "id": 284822929,
+  "bounds": {
+    "minlat": 41.8880289,
+    "minlon": -87.6287269,
+    "maxlat": 41.8883857,
+    "maxlon": -87.6282490
+  },
+  "nodes": [
+    2885274211,
+    2885274099,
+    2885274093,
+    2885274072,
+    2885274064,
+    2885274047,
+    2885274031,
+    2885274007,
+    2885273985,
+    11819983044,
+    2885273946,
+    2885273908,
+    6991457096,
+    2885273896,
+    2885273854,
+    2885273832,
+    2885273827,
+    2885273824,
+    2885273830,
+    2885273844,
+    2885273845,
+    11819959720,
+    2885273889,
+    11819974946,
+    2885273870,
+    2885273900,
+    2885273933,
+    2885273969,
+    2885274000,
+    11819974947,
+    2885274015,
+    2885274046,
+    2885274052,
+    2885274071,
+    11819974945,
+    11817213450,
+    11817213451,
+    11819974943,
+    2885274203,
+    2885274207,
+    2885274213,
+    2885274211
+  ],
+  "geometry": [
+    { "lat": 41.8883853, "lon": -87.6285044 },
+    { "lat": 41.8883716, "lon": -87.6285799 },
+    { "lat": 41.8883669, "lon": -87.6285946 },
+    { "lat": 41.8883339, "lon": -87.6286574 },
+    { "lat": 41.8883256, "lon": -87.6286688 },
+    { "lat": 41.8882756, "lon": -87.6287081 },
+    { "lat": 41.8882647, "lon": -87.6287148 },
+    { "lat": 41.8882089, "lon": -87.6287260 },
+    { "lat": 41.8881970, "lon": -87.6287269 },
+    { "lat": 41.8881634, "lon": -87.6287154 },
+    { "lat": 41.8881414, "lon": -87.6287078 },
+    { "lat": 41.8881291, "lon": -87.6287019 },
+    { "lat": 41.8880949, "lon": -87.6286711 },
+    { "lat": 41.8880852, "lon": -87.6286589 },
+    { "lat": 41.8880748, "lon": -87.6286447 },
+    { "lat": 41.8880435, "lon": -87.6285803 },
+    { "lat": 41.8880391, "lon": -87.6285644 },
+    { "lat": 41.8880289, "lon": -87.6284842 },
+    { "lat": 41.8880304, "lon": -87.6284676 },
+    { "lat": 41.8880458, "lon": -87.6283890 },
+    { "lat": 41.8880524, "lon": -87.6283757 },
+    { "lat": 41.8880724, "lon": -87.6283370 },
+    { "lat": 41.8880788, "lon": -87.6283247 },
+    { "lat": 41.8880834, "lon": -87.6283157 },
+    { "lat": 41.8880852, "lon": -87.6283122 },
+    { "lat": 41.8880949, "lon": -87.6283030 },
+    { "lat": 41.8881393, "lon": -87.6282651 },
+    { "lat": 41.8881502, "lon": -87.6282597 },
+    { "lat": 41.8882083, "lon": -87.6282490 },
+    { "lat": 41.8882121, "lon": -87.6282492 },
+    { "lat": 41.8882204, "lon": -87.6282496 },
+    { "lat": 41.8882765, "lon": -87.6282640 },
+    { "lat": 41.8882870, "lon": -87.6282716 },
+    { "lat": 41.8883341, "lon": -87.6283160 },
+    { "lat": 41.8883376, "lon": -87.6283210 },
+    { "lat": 41.8883417, "lon": -87.6283268 },
+    { "lat": 41.8883471, "lon": -87.6283387 },
+    { "lat": 41.8883525, "lon": -87.6283502 },
+    { "lat": 41.8883737, "lon": -87.6283954 },
+    { "lat": 41.8883776, "lon": -87.6284105 },
+    { "lat": 41.8883857, "lon": -87.6284884 },
+    { "lat": 41.8883853, "lon": -87.6285044 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "300",
+    "addr:postcode": "60654",
+    "addr:state": "IL",
+    "addr:street": "North State Street",
+    "building": "apartments",
+    "building:colour": "#FEF0C9",
+    "height": "45",
+    "min_height": "10",
+    "name": "Marina City 2",
+    "polling_station": "yes",
+    "roof:colour": "lightgray",
+    "roof:shape": "flat"
+  }
+},
+{
+  "type": "way",
+  "id": 357517024,
+  "bounds": {
+    "minlat": 41.8937244,
+    "minlon": -87.6416732,
+    "maxlat": 41.8937619,
+    "maxlon": -87.6416321
+  },
+  "nodes": [
+    12180832458,
+    12180832459,
+    12180832460,
+    12180832461,
+    12180832462,
+    12180832463,
+    12180832464,
+    12180832465,
+    3627425425,
+    3627425426,
+    12180832450,
+    3627425427,
+    12180832455,
+    12180832456,
+    12180832457,
+    12180832452,
+    12180832466,
+    12180832451,
+    12180832453,
+    12180832454,
+    12180832458
+  ],
+  "geometry": [
+    { "lat": 41.8937513, "lon": -87.6416424 },
+    { "lat": 41.8937485, "lon": -87.6416373 },
+    { "lat": 41.8937447, "lon": -87.6416337 },
+    { "lat": 41.8937401, "lon": -87.6416321 },
+    { "lat": 41.8937354, "lon": -87.6416325 },
+    { "lat": 41.8937311, "lon": -87.6416349 },
+    { "lat": 41.8937275, "lon": -87.6416392 },
+    { "lat": 41.8937252, "lon": -87.6416447 },
+    { "lat": 41.8937244, "lon": -87.6416509 },
+    { "lat": 41.8937251, "lon": -87.6416571 },
+    { "lat": 41.8937273, "lon": -87.6416626 },
+    { "lat": 41.8937306, "lon": -87.6416669 },
+    { "lat": 41.8937348, "lon": -87.6416695 },
+    { "lat": 41.8937394, "lon": -87.6416702 },
+    { "lat": 41.8937440, "lon": -87.6416688 },
+    { "lat": 41.8937479, "lon": -87.6416656 },
+    { "lat": 41.8937561, "lon": -87.6416732 },
+    { "lat": 41.8937619, "lon": -87.6416627 },
+    { "lat": 41.8937526, "lon": -87.6416548 },
+    { "lat": 41.8937528, "lon": -87.6416485 },
+    { "lat": 41.8937513, "lon": -87.6416424 }
+  ],
+  "tags": {
+    "artist_name": "Sheila Klein",
+    "artwork_type": "sculpture",
+    "name": "Commemorative Ground Ring",
+    "tourism": "artwork",
+    "website": "https://www.chicagoparkdistrict.com/parks-facilities/commemorative-ground-ring-artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 380868216,
+  "bounds": {
+    "minlat": 41.8781922,
+    "minlon": -87.6365297,
+    "maxlat": 41.8792768,
+    "maxlon": -87.6353939
+  },
+  "nodes": [
+    7854366942,
+    10945219739,
+    10945219769,
+    10945219771,
+    10945219734,
+    10945219738,
+    10945219737,
+    3841687193,
+    10945219733,
+    10945203294,
+    10945219728,
+    10945219732,
+    10945219731,
+    10945203295,
+    10945203298,
+    10945203303,
+    10945203302,
+    10945203299,
+    10945203300,
+    10945203301,
+    10945203297,
+    10945323492,
+    10945203296,
+    10945219720,
+    10945220000,
+    10945219713,
+    10945219723,
+    10945219716,
+    10945219714,
+    10945219719,
+    10925363849,
+    10945219724,
+    10945219715,
+    10945219727,
+    10945219780,
+    10945219805,
+    3841687194,
+    10945219787,
+    10945219788,
+    10945307443,
+    10945219789,
+    10945219778,
+    10945219794,
+    10945219791,
+    10801274517,
+    10945219792,
+    10945219793,
+    10945219777,
+    10945219774,
+    10945307438,
+    10945307442,
+    10945307441,
+    3841687195,
+    10945219750,
+    10945219745,
+    10945219749,
+    10945219748,
+    10945219752,
+    10945219751,
+    10945219755,
+    10945219756,
+    10945219760,
+    10945219759,
+    10945219761,
+    1504528432,
+    10945219764,
+    10945219765,
+    10945219766,
+    10945219767,
+    10945219768,
+    1504528433,
+    10945219762,
+    10945219740,
+    10945219744,
+    10945219743,
+    7854366942
+  ],
+  "geometry": [
+    { "lat": 41.8792768, "lon": -87.6354196 },
+    { "lat": 41.8792746, "lon": -87.6355736 },
+    { "lat": 41.8792733, "lon": -87.6356626 },
+    { "lat": 41.8792666, "lon": -87.6362092 },
+    { "lat": 41.8792658, "lon": -87.6362714 },
+    { "lat": 41.8792655, "lon": -87.6362942 },
+    { "lat": 41.8792652, "lon": -87.6363162 },
+    { "lat": 41.8792624, "lon": -87.6365297 },
+    { "lat": 41.8792178, "lon": -87.6365293 },
+    { "lat": 41.8790843, "lon": -87.6365256 },
+    { "lat": 41.8790626, "lon": -87.6365249 },
+    { "lat": 41.8790451, "lon": -87.6365243 },
+    { "lat": 41.8790257, "lon": -87.6365236 },
+    { "lat": 41.8789754, "lon": -87.6365220 },
+    { "lat": 41.8789769, "lon": -87.6364289 },
+    { "lat": 41.8789572, "lon": -87.6364283 },
+    { "lat": 41.8789210, "lon": -87.6364274 },
+    { "lat": 41.8788777, "lon": -87.6364262 },
+    { "lat": 41.8788362, "lon": -87.6364251 },
+    { "lat": 41.8787977, "lon": -87.6364240 },
+    { "lat": 41.8787800, "lon": -87.6364236 },
+    { "lat": 41.8787794, "lon": -87.6364646 },
+    { "lat": 41.8787786, "lon": -87.6365166 },
+    { "lat": 41.8787328, "lon": -87.6365152 },
+    { "lat": 41.8787284, "lon": -87.6365151 },
+    { "lat": 41.8787143, "lon": -87.6365147 },
+    { "lat": 41.8786947, "lon": -87.6365143 },
+    { "lat": 41.8785663, "lon": -87.6365113 },
+    { "lat": 41.8785480, "lon": -87.6365109 },
+    { "lat": 41.8785285, "lon": -87.6365104 },
+    { "lat": 41.8785242, "lon": -87.6365103 },
+    { "lat": 41.8784050, "lon": -87.6365076 },
+    { "lat": 41.8783863, "lon": -87.6365071 },
+    { "lat": 41.8783672, "lon": -87.6365067 },
+    { "lat": 41.8782800, "lon": -87.6365047 },
+    { "lat": 41.8782364, "lon": -87.6365031 },
+    { "lat": 41.8781922, "lon": -87.6365024 },
+    { "lat": 41.8781938, "lon": -87.6364099 },
+    { "lat": 41.8781964, "lon": -87.6361824 },
+    { "lat": 41.8781968, "lon": -87.6361541 },
+    { "lat": 41.8781991, "lon": -87.6360187 },
+    { "lat": 41.8782351, "lon": -87.6360198 },
+    { "lat": 41.8782354, "lon": -87.6359939 },
+    { "lat": 41.8782361, "lon": -87.6359365 },
+    { "lat": 41.8782368, "lon": -87.6358822 },
+    { "lat": 41.8782376, "lon": -87.6358232 },
+    { "lat": 41.8782382, "lon": -87.6357728 },
+    { "lat": 41.8782386, "lon": -87.6357461 },
+    { "lat": 41.8782017, "lon": -87.6357452 },
+    { "lat": 41.8782026, "lon": -87.6356821 },
+    { "lat": 41.8782029, "lon": -87.6356574 },
+    { "lat": 41.8782033, "lon": -87.6356343 },
+    { "lat": 41.8782065, "lon": -87.6353939 },
+    { "lat": 41.8783395, "lon": -87.6353972 },
+    { "lat": 41.8784603, "lon": -87.6354002 },
+    { "lat": 41.8784789, "lon": -87.6354006 },
+    { "lat": 41.8784981, "lon": -87.6354011 },
+    { "lat": 41.8786280, "lon": -87.6354043 },
+    { "lat": 41.8786491, "lon": -87.6354049 },
+    { "lat": 41.8786653, "lon": -87.6354053 },
+    { "lat": 41.8787061, "lon": -87.6354063 },
+    { "lat": 41.8787241, "lon": -87.6354067 },
+    { "lat": 41.8787433, "lon": -87.6354072 },
+    { "lat": 41.8787823, "lon": -87.6354082 },
+    { "lat": 41.8787855, "lon": -87.6354788 },
+    { "lat": 41.8788096, "lon": -87.6354794 },
+    { "lat": 41.8788510, "lon": -87.6354803 },
+    { "lat": 41.8788924, "lon": -87.6354813 },
+    { "lat": 41.8789349, "lon": -87.6354823 },
+    { "lat": 41.8789763, "lon": -87.6354833 },
+    { "lat": 41.8789965, "lon": -87.6354838 },
+    { "lat": 41.8789955, "lon": -87.6354132 },
+    { "lat": 41.8791634, "lon": -87.6354166 },
+    { "lat": 41.8791805, "lon": -87.6354171 },
+    { "lat": 41.8792011, "lon": -87.6354176 },
+    { "lat": 41.8792768, "lon": -87.6354196 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "233",
+    "addr:postcode": "60606",
+    "addr:state": "IL",
+    "addr:street": "South Wacker Drive",
+    "addr:street:name": "Wacker",
+    "addr:street:prefix": "South",
+    "addr:street:type": "Drive",
+    "alt_name": "Sears Tower",
+    "building": "commercial",
+    "building:use": "multipurpose",
+    "chicago:building_id": "358897",
+    "landmark": "3",
+    "name": "Willis Tower",
+    "name:en": "Willis Tower",
+    "name:etymology:wikidata": "Q919120",
+    "name:etymology:wikipedia": "en:Willis Group",
+    "name:he": "מגדל סירס",
+    "name:ja": "ウィリス・タワー",
+    "name:ru": "Уиллис-тауэр",
+    "name:uk": "Вілліс Тауер",
+    "old_name": "Sears Tower",
+    "old_name:etymology:wikidata": "Q3431318",
+    "old_name:etymology:wikipedia": "en:Richard Warren Sears",
+    "phone": "+1 312 875 0066",
+    "start_date": "1973",
+    "website": "https://www.willistower.com/",
+    "wikidata": "Q29294",
+    "wikipedia": "en:Willis Tower"
+  }
+},
+{
+  "type": "way",
+  "id": 381381830,
+  "bounds": {
+    "minlat": 41.8883751,
+    "minlon": -87.6230288,
+    "maxlat": 41.8905809,
+    "maxlon": -87.6120320
+  },
+  "nodes": [
+    3845882234,
+    11810218394,
+    3845882235,
+    12094086381,
+    12094086383,
+    12094086382,
+    9778323181,
+    3845882238,
+    9778323180,
+    3845882239,
+    12094178782,
+    12094178781,
+    11810218370
+  ],
+  "geometry": [
+    { "lat": 41.8905809, "lon": -87.6122081 },
+    { "lat": 41.8903370, "lon": -87.6121316 },
+    { "lat": 41.8888458, "lon": -87.6120320 },
+    { "lat": 41.8886847, "lon": -87.6121226 },
+    { "lat": 41.8885234, "lon": -87.6123803 },
+    { "lat": 41.8884344, "lon": -87.6126987 },
+    { "lat": 41.8884322, "lon": -87.6136267 },
+    { "lat": 41.8883751, "lon": -87.6176429 },
+    { "lat": 41.8886004, "lon": -87.6203105 },
+    { "lat": 41.8888300, "lon": -87.6226158 },
+    { "lat": 41.8888442, "lon": -87.6228343 },
+    { "lat": 41.8889375, "lon": -87.6229459 },
+    { "lat": 41.8892318, "lon": -87.6230288 }
+  ],
+  "tags": {
+    "bicycle": "yes",
+    "foot": "yes",
+    "from": "Navy Pier",
+    "motor_vehicle": "no",
+    "name": "Navy Pier - Michigan Avenue",
+    "operator": "Shoreline Water Taxis",
+    "route": "ferry",
+    "to": "Michigan Avenue",
+    "toll": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 381381832,
+  "bounds": {
+    "minlat": 41.8790140,
+    "minlon": -87.6382842,
+    "maxlat": 41.8892318,
+    "maxlon": -87.6230288
+  },
+  "nodes": [
+    11810218370,
+    12094178780,
+    12094178779,
+    5062540849,
+    12117256070,
+    385665616,
+    9778296326,
+    6423868607,
+    6423868169,
+    12117256067,
+    6423868585,
+    12117256066,
+    6423868591,
+    6423868619,
+    6423868634,
+    12117256044,
+    3845882252,
+    3845882253,
+    11718424988,
+    12117256047,
+    12094223679,
+    20217442
+  ],
+  "geometry": [
+    { "lat": 41.8892318, "lon": -87.6230288 },
+    { "lat": 41.8889466, "lon": -87.6232148 },
+    { "lat": 41.8888685, "lon": -87.6233729 },
+    { "lat": 41.8889219, "lon": -87.6245959 },
+    { "lat": 41.8888175, "lon": -87.6252059 },
+    { "lat": 41.8875871, "lon": -87.6277744 },
+    { "lat": 41.8875649, "lon": -87.6293539 },
+    { "lat": 41.8875546, "lon": -87.6317482 },
+    { "lat": 41.8875367, "lon": -87.6356059 },
+    { "lat": 41.8865549, "lon": -87.6375692 },
+    { "lat": 41.8864102, "lon": -87.6377771 },
+    { "lat": 41.8861747, "lon": -87.6378450 },
+    { "lat": 41.8856159, "lon": -87.6378013 },
+    { "lat": 41.8845953, "lon": -87.6379761 },
+    { "lat": 41.8832940, "lon": -87.6381272 },
+    { "lat": 41.8824066, "lon": -87.6382213 },
+    { "lat": 41.8817860, "lon": -87.6382842 },
+    { "lat": 41.8805076, "lon": -87.6382739 },
+    { "lat": 41.8792368, "lon": -87.6381519 },
+    { "lat": 41.8790653, "lon": -87.6380830 },
+    { "lat": 41.8790140, "lon": -87.6379627 },
+    { "lat": 41.8790618, "lon": -87.6377402 }
+  ],
+  "tags": {
+    "bicycle": "yes",
+    "foot": "yes",
+    "from": "Michigan Avenue",
+    "motor_vehicle": "no",
+    "name": "Michigan Avenue - Willis Tower / Union Station",
+    "operator": "Shoreline Sightseeing",
+    "route": "ferry",
+    "to": "Willis Tower / Union Station",
+    "toll": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 561821879,
+  "bounds": {
+    "minlat": 41.8754156,
+    "minlon": -87.6194877,
+    "maxlat": 41.8761883,
+    "maxlon": -87.6184565
+  },
+  "nodes": [
+    5416815987,
+    5416815988,
+    5416815989,
+    7129167704,
+    5416815990,
+    7129167705,
+    5416815991,
+    5416815992,
+    7129167706,
+    5416815993,
+    5416815994,
+    7129167707,
+    7129167708,
+    5416815995,
+    5416815996,
+    5416815997,
+    5416815998,
+    5416815999,
+    7129167709,
+    5416816000,
+    7129167710,
+    5416816001,
+    7129167715,
+    7129167714,
+    7129167713,
+    7129167712,
+    7129167711,
+    5416816004,
+    5416816005,
+    5416816006,
+    5416816007,
+    7129167725,
+    7129167724,
+    7129167723,
+    7129167722,
+    7129167721,
+    7129167720,
+    7129167719,
+    7129167718,
+    7129167717,
+    7129167716,
+    5416816013,
+    5416816014,
+    5416816015,
+    7129167736,
+    7129167735,
+    7129167734,
+    7129167733,
+    7129167732,
+    7129167731,
+    7129167730,
+    7129167729,
+    7129167728,
+    7129167727,
+    7129167726,
+    5416816622,
+    5416815987
+  ],
+  "geometry": [
+    { "lat": 41.8755206, "lon": -87.6193346 },
+    { "lat": 41.8755955, "lon": -87.6193380 },
+    { "lat": 41.8756293, "lon": -87.6193957 },
+    { "lat": 41.8756631, "lon": -87.6194323 },
+    { "lat": 41.8756963, "lon": -87.6194579 },
+    { "lat": 41.8757338, "lon": -87.6194756 },
+    { "lat": 41.8757731, "lon": -87.6194851 },
+    { "lat": 41.8758148, "lon": -87.6194877 },
+    { "lat": 41.8758520, "lon": -87.6194810 },
+    { "lat": 41.8758893, "lon": -87.6194674 },
+    { "lat": 41.8759231, "lon": -87.6194444 },
+    { "lat": 41.8759508, "lon": -87.6194175 },
+    { "lat": 41.8759777, "lon": -87.6193848 },
+    { "lat": 41.8760003, "lon": -87.6193452 },
+    { "lat": 41.8760722, "lon": -87.6193467 },
+    { "lat": 41.8760743, "lon": -87.6192501 },
+    { "lat": 41.8761102, "lon": -87.6192144 },
+    { "lat": 41.8761372, "lon": -87.6191738 },
+    { "lat": 41.8761613, "lon": -87.6191255 },
+    { "lat": 41.8761753, "lon": -87.6190807 },
+    { "lat": 41.8761851, "lon": -87.6190306 },
+    { "lat": 41.8761883, "lon": -87.6189823 },
+    { "lat": 41.8761856, "lon": -87.6189246 },
+    { "lat": 41.8761738, "lon": -87.6188652 },
+    { "lat": 41.8761577, "lon": -87.6188188 },
+    { "lat": 41.8761363, "lon": -87.6187755 },
+    { "lat": 41.8761091, "lon": -87.6187372 },
+    { "lat": 41.8760822, "lon": -87.6187108 },
+    { "lat": 41.8760824, "lon": -87.6186115 },
+    { "lat": 41.8760098, "lon": -87.6186077 },
+    { "lat": 41.8759818, "lon": -87.6185589 },
+    { "lat": 41.8759591, "lon": -87.6185308 },
+    { "lat": 41.8759348, "lon": -87.6185072 },
+    { "lat": 41.8759035, "lon": -87.6184825 },
+    { "lat": 41.8758675, "lon": -87.6184656 },
+    { "lat": 41.8758297, "lon": -87.6184565 },
+    { "lat": 41.8757892, "lon": -87.6184568 },
+    { "lat": 41.8757454, "lon": -87.6184665 },
+    { "lat": 41.8757046, "lon": -87.6184855 },
+    { "lat": 41.8756655, "lon": -87.6185167 },
+    { "lat": 41.8756325, "lon": -87.6185541 },
+    { "lat": 41.8756044, "lon": -87.6185998 },
+    { "lat": 41.8755316, "lon": -87.6185983 },
+    { "lat": 41.8755296, "lon": -87.6186953 },
+    { "lat": 41.8754957, "lon": -87.6187283 },
+    { "lat": 41.8754705, "lon": -87.6187644 },
+    { "lat": 41.8754479, "lon": -87.6188074 },
+    { "lat": 41.8754315, "lon": -87.6188535 },
+    { "lat": 41.8754210, "lon": -87.6189041 },
+    { "lat": 41.8754156, "lon": -87.6189600 },
+    { "lat": 41.8754179, "lon": -87.6190116 },
+    { "lat": 41.8754271, "lon": -87.6190617 },
+    { "lat": 41.8754426, "lon": -87.6191135 },
+    { "lat": 41.8754645, "lon": -87.6191616 },
+    { "lat": 41.8754913, "lon": -87.6192006 },
+    { "lat": 41.8755229, "lon": -87.6192365 },
+    { "lat": 41.8755206, "lon": -87.6193346 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "301",
+    "addr:postcode": "60605",
+    "addr:state": "IL",
+    "addr:street": "South Columbus Drive",
+    "alt_name": "Clarence Buckingham Memorial Fountain",
+    "amenity": "fountain",
+    "architect": "Edward H. Bennett",
+    "artist_name": "Marcel F. Loyau",
+    "chicago:building_id": "361856",
+    "ele": "183",
+    "gnis:feature_id": "405131",
+    "name": "Buckingham Fountain",
+    "name:en": "Clarence Buckingham Memorial Fountain",
+    "natural": "water",
+    "phone": "+1 312 742 3918",
+    "start_date": "1927",
+    "tourism": "attraction",
+    "website": "https://www.chicagoparkdistrict.com/parks/clarence-f-buckingham-memorial-fountain/",
+    "wheelchair": "yes",
+    "wikidata": "Q158989",
+    "wikipedia": "en:Buckingham Fountain"
+  }
+},
+{
+  "type": "way",
+  "id": 616097096,
+  "bounds": {
+    "minlat": 41.8922557,
+    "minlon": -87.6110198,
+    "maxlat": 41.8930849,
+    "maxlon": -87.6099449
+  },
+  "nodes": [
+    8761515441,
+    5825178881,
+    2780811822,
+    2780811821,
+    2780811820,
+    2780811819,
+    2780811818,
+    13376566532,
+    7042462552,
+    12195880550,
+    12117291588,
+    2780811817,
+    8761495784,
+    8761495783,
+    8761515448,
+    8761515449,
+    12195880551,
+    12195880552,
+    7042462517,
+    12195880553,
+    7042462515,
+    7042462513,
+    7042462509,
+    7042462504,
+    7042462503,
+    7042462500,
+    7042462499,
+    7042462498,
+    7042462497,
+    7042462496,
+    5825178878,
+    5825178879,
+    7042462561,
+    5062539315,
+    5825178880,
+    8761515441
+  ],
+  "geometry": [
+    { "lat": 41.8927350, "lon": -87.6102478 },
+    { "lat": 41.8928374, "lon": -87.6102504 },
+    { "lat": 41.8928372, "lon": -87.6102033 },
+    { "lat": 41.8929065, "lon": -87.6102318 },
+    { "lat": 41.8929488, "lon": -87.6102865 },
+    { "lat": 41.8929657, "lon": -87.6103506 },
+    { "lat": 41.8929660, "lon": -87.6104190 },
+    { "lat": 41.8929447, "lon": -87.6104795 },
+    { "lat": 41.8929280, "lon": -87.6105269 },
+    { "lat": 41.8929248, "lon": -87.6105335 },
+    { "lat": 41.8929008, "lon": -87.6105823 },
+    { "lat": 41.8928721, "lon": -87.6106410 },
+    { "lat": 41.8928510, "lon": -87.6106712 },
+    { "lat": 41.8928389, "lon": -87.6106550 },
+    { "lat": 41.8928291, "lon": -87.6106716 },
+    { "lat": 41.8926551, "lon": -87.6109211 },
+    { "lat": 41.8926656, "lon": -87.6109344 },
+    { "lat": 41.8927335, "lon": -87.6110198 },
+    { "lat": 41.8928799, "lon": -87.6108188 },
+    { "lat": 41.8929149, "lon": -87.6107572 },
+    { "lat": 41.8929250, "lon": -87.6107395 },
+    { "lat": 41.8929791, "lon": -87.6106361 },
+    { "lat": 41.8930223, "lon": -87.6105336 },
+    { "lat": 41.8930607, "lon": -87.6103982 },
+    { "lat": 41.8930811, "lon": -87.6102460 },
+    { "lat": 41.8930849, "lon": -87.6101303 },
+    { "lat": 41.8930706, "lon": -87.6100657 },
+    { "lat": 41.8930438, "lon": -87.6100148 },
+    { "lat": 41.8930186, "lon": -87.6099849 },
+    { "lat": 41.8929801, "lon": -87.6099642 },
+    { "lat": 41.8928360, "lon": -87.6099594 },
+    { "lat": 41.8922609, "lon": -87.6099449 },
+    { "lat": 41.8922566, "lon": -87.6101855 },
+    { "lat": 41.8922560, "lon": -87.6102200 },
+    { "lat": 41.8922557, "lon": -87.6102334 },
+    { "lat": 41.8927350, "lon": -87.6102478 }
+  ],
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Navy Pier Terminal",
+    "network": "CTA",
+    "operator": "Chicago Transit Authority",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "way",
+  "id": 747184055,
+  "bounds": {
+    "minlat": 41.8877950,
+    "minlon": -87.6293170,
+    "maxlat": 41.8879435,
+    "maxlon": -87.6283137
+  },
+  "nodes": [
+    20217240,
+    11819959716,
+    11819959719,
+    6991457082,
+    1407580273,
+    11819959690,
+    10942457437,
+    6991457083,
+    6991457084,
+    11819974894,
+    11819974883,
+    10942408388,
+    11819959745,
+    20217240
+  ],
+  "geometry": [
+    { "lat": 41.8877950, "lon": -87.6293104 },
+    { "lat": 41.8878005, "lon": -87.6290794 },
+    { "lat": 41.8878019, "lon": -87.6290271 },
+    { "lat": 41.8878071, "lon": -87.6288346 },
+    { "lat": 41.8878174, "lon": -87.6283137 },
+    { "lat": 41.8878787, "lon": -87.6283168 },
+    { "lat": 41.8878891, "lon": -87.6283173 },
+    { "lat": 41.8879435, "lon": -87.6283198 },
+    { "lat": 41.8879307, "lon": -87.6293170 },
+    { "lat": 41.8878628, "lon": -87.6293135 },
+    { "lat": 41.8878410, "lon": -87.6293124 },
+    { "lat": 41.8878341, "lon": -87.6293121 },
+    { "lat": 41.8878056, "lon": -87.6293110 },
+    { "lat": 41.8877950, "lon": -87.6293104 }
+  ],
+  "tags": {
+    "covered": "yes",
+    "leisure": "marina",
+    "name": "Marina City",
+    "seamark:harbour:category": "marina",
+    "seamark:type": "harbour"
+  }
+},
+{
+  "type": "way",
+  "id": 752904680,
+  "bounds": {
+    "minlat": 41.8915484,
+    "minlon": -87.6008211,
+    "maxlat": 41.8917276,
+    "maxlon": -87.5999384
+  },
+  "nodes": [
+    7035168288,
+    7035168294,
+    7040062635,
+    7040062638,
+    7040062636,
+    7040062630,
+    7040062639,
+    7040062642,
+    7040062643,
+    7040062646,
+    7040062647,
+    7040062650,
+    7040062628,
+    7040062651,
+    7040062654,
+    7040062655,
+    7040062658,
+    7040062624,
+    7040062621,
+    7040062626,
+    7040062615,
+    7040062618,
+    7040062611,
+    1648217552,
+    1648217562,
+    7040062544,
+    7035168288
+  ],
+  "geometry": [
+    { "lat": 41.8917125, "lon": -87.6008211 },
+    { "lat": 41.8915484, "lon": -87.6008160 },
+    { "lat": 41.8915487, "lon": -87.6007951 },
+    { "lat": 41.8915488, "lon": -87.6007881 },
+    { "lat": 41.8915489, "lon": -87.6007817 },
+    { "lat": 41.8915504, "lon": -87.6006984 },
+    { "lat": 41.8915518, "lon": -87.6006122 },
+    { "lat": 41.8915529, "lon": -87.6005532 },
+    { "lat": 41.8915531, "lon": -87.6005377 },
+    { "lat": 41.8915541, "lon": -87.6004804 },
+    { "lat": 41.8915544, "lon": -87.6004634 },
+    { "lat": 41.8915554, "lon": -87.6004037 },
+    { "lat": 41.8915561, "lon": -87.6003616 },
+    { "lat": 41.8915569, "lon": -87.6003171 },
+    { "lat": 41.8915579, "lon": -87.6002605 },
+    { "lat": 41.8915581, "lon": -87.6002482 },
+    { "lat": 41.8915591, "lon": -87.6001873 },
+    { "lat": 41.8915594, "lon": -87.6001710 },
+    { "lat": 41.8915604, "lon": -87.6001130 },
+    { "lat": 41.8915607, "lon": -87.6000936 },
+    { "lat": 41.8915611, "lon": -87.6000738 },
+    { "lat": 41.8915496, "lon": -87.6000734 },
+    { "lat": 41.8915511, "lon": -87.5999864 },
+    { "lat": 41.8915519, "lon": -87.5999384 },
+    { "lat": 41.8917276, "lon": -87.5999439 },
+    { "lat": 41.8917135, "lon": -87.6007623 },
+    { "lat": 41.8917125, "lon": -87.6008211 }
+  ],
+  "tags": {
+    "amenity": "bar",
+    "building": "no",
+    "name": "Navy Pier Beer Garden"
+  }
+},
+{
+  "type": "way",
+  "id": 756335277,
+  "bounds": {
+    "minlat": 41.8889680,
+    "minlon": -87.6138785,
+    "maxlat": 41.8929186,
+    "maxlon": -87.6136484
+  },
+  "nodes": [
+    14143018981,
+    14143018991,
+    11860283163,
+    12608231349,
+    12608231348,
+    12608231350,
+    2726339088,
+    11026272337,
+    2726339086,
+    12429532206,
+    2726339115,
+    11026272339,
+    11026272338,
+    7064147878,
+    2726339120,
+    8601451553,
+    11026272380,
+    11848468168,
+    2726339123,
+    8601451615,
+    5652226060,
+    8776944306,
+    11848468166,
+    2726339084,
+    5787938777,
+    5787938775,
+    5787938774,
+    12438058365,
+    5787938773,
+    2726339109,
+    12438058366,
+    2726339121,
+    8776944310,
+    2726339110,
+    12438058368,
+    11848468165,
+    2726339113
+  ],
+  "geometry": [
+    { "lat": 41.8889680, "lon": -87.6138785 },
+    { "lat": 41.8889811, "lon": -87.6138732 },
+    { "lat": 41.8889958, "lon": -87.6138662 },
+    { "lat": 41.8892785, "lon": -87.6137329 },
+    { "lat": 41.8893757, "lon": -87.6136917 },
+    { "lat": 41.8894333, "lon": -87.6136721 },
+    { "lat": 41.8894900, "lon": -87.6136566 },
+    { "lat": 41.8895624, "lon": -87.6136484 },
+    { "lat": 41.8899336, "lon": -87.6136524 },
+    { "lat": 41.8900648, "lon": -87.6136518 },
+    { "lat": 41.8902650, "lon": -87.6136509 },
+    { "lat": 41.8903132, "lon": -87.6136499 },
+    { "lat": 41.8903474, "lon": -87.6136590 },
+    { "lat": 41.8905116, "lon": -87.6137068 },
+    { "lat": 41.8907081, "lon": -87.6137418 },
+    { "lat": 41.8909550, "lon": -87.6137444 },
+    { "lat": 41.8910058, "lon": -87.6137457 },
+    { "lat": 41.8910479, "lon": -87.6137475 },
+    { "lat": 41.8910663, "lon": -87.6137517 },
+    { "lat": 41.8911256, "lon": -87.6137713 },
+    { "lat": 41.8911737, "lon": -87.6137926 },
+    { "lat": 41.8914627, "lon": -87.6138061 },
+    { "lat": 41.8918079, "lon": -87.6138125 },
+    { "lat": 41.8918573, "lon": -87.6138054 },
+    { "lat": 41.8919067, "lon": -87.6137892 },
+    { "lat": 41.8919593, "lon": -87.6137500 },
+    { "lat": 41.8920141, "lon": -87.6137011 },
+    { "lat": 41.8920554, "lon": -87.6136768 },
+    { "lat": 41.8920747, "lon": -87.6136694 },
+    { "lat": 41.8921088, "lon": -87.6136578 },
+    { "lat": 41.8921697, "lon": -87.6136544 },
+    { "lat": 41.8925101, "lon": -87.6136680 },
+    { "lat": 41.8926315, "lon": -87.6136807 },
+    { "lat": 41.8927147, "lon": -87.6136960 },
+    { "lat": 41.8928413, "lon": -87.6137283 },
+    { "lat": 41.8928750, "lon": -87.6137392 },
+    { "lat": 41.8929186, "lon": -87.6137511 }
+  ],
+  "tags": {
+    "bicycle": "designated",
+    "bridge": "yes",
+    "check_date:cycleway:surface": "2024-06-21",
+    "check_date:surface": "2024-06-21",
+    "cycleway:surface": "concrete",
+    "foot": "designated",
+    "footway:surface": "concrete",
+    "highway": "cycleway",
+    "horse": "no",
+    "lanes": "4",
+    "layer": "1",
+    "lit": "yes",
+    "motor_vehicle": "no",
+    "name": "Navy Pier Flyover",
+    "portage": "yes",
+    "segregated": "yes",
+    "smoothness": "good",
+    "source": "http://www.navypierflyover.com/",
+    "surface": "concrete"
+  }
+},
+{
+  "type": "way",
+  "id": 763964103,
+  "bounds": {
+    "minlat": 41.8747629,
+    "minlon": -87.6215122,
+    "maxlat": 41.8747838,
+    "maxlon": -87.6214371
+  },
+  "nodes": [
+    7137251720,
+    7137251721,
+    7137251722,
+    7137251723,
+    7137251720
+  ],
+  "geometry": [
+    { "lat": 41.8747838, "lon": -87.6215122 },
+    { "lat": 41.8747838, "lon": -87.6214384 },
+    { "lat": 41.8747634, "lon": -87.6214371 },
+    { "lat": 41.8747629, "lon": -87.6215108 },
+    { "lat": 41.8747838, "lon": -87.6215122 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "sculpture",
+    "name": "Hedgerow",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 765245586,
+  "bounds": {
+    "minlat": 41.8806447,
+    "minlon": -87.6235356,
+    "maxlat": 41.8806844,
+    "maxlon": -87.6235271
+  },
+  "nodes": [
+    7147377818,
+    7147377819,
+    7147377820,
+    7147377821,
+    7147377818
+  ],
+  "geometry": [
+    { "lat": 41.8806447, "lon": -87.6235271 },
+    { "lat": 41.8806447, "lon": -87.6235344 },
+    { "lat": 41.8806844, "lon": -87.6235356 },
+    { "lat": 41.8806844, "lon": -87.6235278 },
+    { "lat": 41.8806447, "lon": -87.6235271 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Ulrich Ruckriem",
+    "artwork_type": "sculpture",
+    "name": "Untitled",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 925740536,
+  "bounds": {
+    "minlat": 41.8885462,
+    "minlon": -87.6062574,
+    "maxlat": 41.8886543,
+    "maxlon": -87.6061487
+  },
+  "nodes": [
+    2454243219,
+    2454243220,
+    4267421769,
+    8591313049,
+    4267421766,
+    8591313048,
+    4267421762,
+    4267421760,
+    4267421761,
+    4267421763,
+    8591313047,
+    4267421768,
+    8591313050,
+    4267421770,
+    2454243222,
+    2454243221,
+    2454243219
+  ],
+  "geometry": [
+    { "lat": 41.8886525, "lon": -87.6062574 },
+    { "lat": 41.8886422, "lon": -87.6062559 },
+    { "lat": 41.8885629, "lon": -87.6062419 },
+    { "lat": 41.8885581, "lon": -87.6062365 },
+    { "lat": 41.8885547, "lon": -87.6062327 },
+    { "lat": 41.8885522, "lon": -87.6062274 },
+    { "lat": 41.8885489, "lon": -87.6062205 },
+    { "lat": 41.8885462, "lon": -87.6062066 },
+    { "lat": 41.8885468, "lon": -87.6061922 },
+    { "lat": 41.8885507, "lon": -87.6061788 },
+    { "lat": 41.8885533, "lon": -87.6061744 },
+    { "lat": 41.8885574, "lon": -87.6061675 },
+    { "lat": 41.8885594, "lon": -87.6061657 },
+    { "lat": 41.8885664, "lon": -87.6061596 },
+    { "lat": 41.8886429, "lon": -87.6061487 },
+    { "lat": 41.8886543, "lon": -87.6061491 },
+    { "lat": 41.8886525, "lon": -87.6062574 }
+  ],
+  "tags": {
+    "building": "watchtower",
+    "height": "20",
+    "man_made": "tower",
+    "tower:type": "observation"
+  }
+},
+{
+  "type": "way",
+  "id": 927021750,
+  "bounds": {
+    "minlat": 41.8907088,
+    "minlon": -87.6097114,
+    "maxlat": 41.8907296,
+    "maxlon": -87.6096844
+  },
+  "nodes": [
+    1648217456,
+    8601455467,
+    8601455468,
+    8601455469,
+    1648217456
+  ],
+  "geometry": [
+    { "lat": 41.8907296, "lon": -87.6097114 },
+    { "lat": 41.8907088, "lon": -87.6097114 },
+    { "lat": 41.8907088, "lon": -87.6096844 },
+    { "lat": 41.8907296, "lon": -87.6096844 },
+    { "lat": 41.8907296, "lon": -87.6097114 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "sculpture",
+    "name": "Captain on the Helm",
+    "tourism": "artwork",
+    "wikidata": "Q29268309",
+    "wikipedia": "en:Captain on the Helm"
+  }
+},
+{
+  "type": "way",
+  "id": 953291457,
+  "bounds": {
+    "minlat": 41.8927335,
+    "minlon": -87.6104295,
+    "maxlat": 41.8928832,
+    "maxlon": -87.6103049
+  },
+  "nodes": [
+    8823595040,
+    8823595041,
+    13376566527,
+    8823595042,
+    11839098472,
+    8823595043,
+    13376566533,
+    8823595040
+  ],
+  "geometry": [
+    { "lat": 41.8928827, "lon": -87.6104295 },
+    { "lat": 41.8928832, "lon": -87.6103090 },
+    { "lat": 41.8928362, "lon": -87.6103077 },
+    { "lat": 41.8927340, "lon": -87.6103049 },
+    { "lat": 41.8927339, "lon": -87.6103334 },
+    { "lat": 41.8927335, "lon": -87.6104255 },
+    { "lat": 41.8927478, "lon": -87.6104259 },
+    { "lat": 41.8928827, "lon": -87.6104295 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "590",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Grand Avenue",
+    "building": "service",
+    "name": "CTA Navy Pier Substation",
+    "operator": "Chicago Transit Authority",
+    "operator:short": "CTA",
+    "operator:wikidata": "Q117309",
+    "operator:wikipedia": "en:Chicago Transit Authority",
+    "power": "substation",
+    "substation": "substation"
+  }
+},
+{
+  "type": "way",
+  "id": 1177752227,
+  "bounds": {
+    "minlat": 41.8859324,
+    "minlon": -87.6279763,
+    "maxlat": 41.8859532,
+    "maxlon": -87.6279485
+  },
+  "nodes": [
+    10941242400,
+    10941242401,
+    10941242402,
+    10941242403,
+    10941242404,
+    10941242405,
+    10941242406,
+    10941242388,
+    10941242389,
+    10941242392,
+    10941242393,
+    10941242394,
+    10941242395,
+    10941242396,
+    10941242397,
+    10941242398,
+    10941242399,
+    10941242390,
+    10941242391,
+    10941242400
+  ],
+  "geometry": [
+    { "lat": 41.8859348, "lon": -87.6279533 },
+    { "lat": 41.8859376, "lon": -87.6279502 },
+    { "lat": 41.8859409, "lon": -87.6279485 },
+    { "lat": 41.8859444, "lon": -87.6279485 },
+    { "lat": 41.8859478, "lon": -87.6279500 },
+    { "lat": 41.8859506, "lon": -87.6279530 },
+    { "lat": 41.8859525, "lon": -87.6279571 },
+    { "lat": 41.8859532, "lon": -87.6279617 },
+    { "lat": 41.8859528, "lon": -87.6279661 },
+    { "lat": 41.8859514, "lon": -87.6279702 },
+    { "lat": 41.8859491, "lon": -87.6279734 },
+    { "lat": 41.8859462, "lon": -87.6279755 },
+    { "lat": 41.8859429, "lon": -87.6279763 },
+    { "lat": 41.8859397, "lon": -87.6279756 },
+    { "lat": 41.8859367, "lon": -87.6279736 },
+    { "lat": 41.8859344, "lon": -87.6279705 },
+    { "lat": 41.8859329, "lon": -87.6279665 },
+    { "lat": 41.8859324, "lon": -87.6279621 },
+    { "lat": 41.8859330, "lon": -87.6279574 },
+    { "lat": 41.8859348, "lon": -87.6279533 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "John Adduci",
+    "artwork_type": "sculpture",
+    "name": "Loop Da Loop",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1177923716,
+  "bounds": {
+    "minlat": 41.8877805,
+    "minlon": -87.6293799,
+    "maxlat": 41.8881352,
+    "maxlon": -87.6289011
+  },
+  "nodes": [
+    10942408379,
+    10942452214,
+    10942408380,
+    11819974934,
+    10942408381,
+    11819974933,
+    11819974899,
+    10942408382,
+    10942408383,
+    11819959767,
+    10942408384,
+    10942408385,
+    11819974878,
+    10942408386,
+    10942408387,
+    11819974882,
+    10942408388,
+    10942408389,
+    10942408390,
+    10942408391,
+    10942408392,
+    10942408393,
+    10942408394,
+    10942408395,
+    11819959693,
+    11819959746,
+    2885273710,
+    10942408398,
+    11819959747,
+    10942408399,
+    10942408400,
+    11817213424,
+    11819959698,
+    11819959694,
+    10942408401,
+    10942408402,
+    10942408403,
+    10942452120,
+    2885273879,
+    11819983043,
+    10942408404,
+    10942452112,
+    10942452105,
+    10942452106,
+    10942452108,
+    11819974935,
+    10942408379
+  ],
+  "geometry": [
+    { "lat": 41.8881211, "lon": -87.6292329 },
+    { "lat": 41.8881164, "lon": -87.6292476 },
+    { "lat": 41.8880834, "lon": -87.6293104 },
+    { "lat": 41.8880778, "lon": -87.6293180 },
+    { "lat": 41.8880751, "lon": -87.6293218 },
+    { "lat": 41.8880624, "lon": -87.6293318 },
+    { "lat": 41.8880496, "lon": -87.6293418 },
+    { "lat": 41.8880251, "lon": -87.6293611 },
+    { "lat": 41.8880142, "lon": -87.6293678 },
+    { "lat": 41.8879973, "lon": -87.6293712 },
+    { "lat": 41.8879584, "lon": -87.6293790 },
+    { "lat": 41.8879465, "lon": -87.6293799 },
+    { "lat": 41.8879440, "lon": -87.6293791 },
+    { "lat": 41.8878909, "lon": -87.6293608 },
+    { "lat": 41.8878795, "lon": -87.6293559 },
+    { "lat": 41.8878377, "lon": -87.6293158 },
+    { "lat": 41.8878341, "lon": -87.6293121 },
+    { "lat": 41.8878254, "lon": -87.6293028 },
+    { "lat": 41.8877956, "lon": -87.6292379 },
+    { "lat": 41.8877897, "lon": -87.6292222 },
+    { "lat": 41.8877805, "lon": -87.6291389 },
+    { "lat": 41.8877814, "lon": -87.6291213 },
+    { "lat": 41.8877940, "lon": -87.6290489 },
+    { "lat": 41.8877982, "lon": -87.6290345 },
+    { "lat": 41.8878123, "lon": -87.6290070 },
+    { "lat": 41.8878276, "lon": -87.6289773 },
+    { "lat": 41.8878311, "lon": -87.6289705 },
+    { "lat": 41.8878406, "lon": -87.6289588 },
+    { "lat": 41.8878580, "lon": -87.6289419 },
+    { "lat": 41.8878886, "lon": -87.6289186 },
+    { "lat": 41.8878980, "lon": -87.6289137 },
+    { "lat": 41.8879053, "lon": -87.6289119 },
+    { "lat": 41.8879098, "lon": -87.6289108 },
+    { "lat": 41.8879146, "lon": -87.6289099 },
+    { "lat": 41.8879571, "lon": -87.6289011 },
+    { "lat": 41.8879717, "lon": -87.6289018 },
+    { "lat": 41.8880260, "lon": -87.6289170 },
+    { "lat": 41.8880365, "lon": -87.6289246 },
+    { "lat": 41.8880628, "lon": -87.6289471 },
+    { "lat": 41.8880713, "lon": -87.6289564 },
+    { "lat": 41.8880821, "lon": -87.6289682 },
+    { "lat": 41.8880913, "lon": -87.6289812 },
+    { "lat": 41.8881232, "lon": -87.6290484 },
+    { "lat": 41.8881271, "lon": -87.6290635 },
+    { "lat": 41.8881352, "lon": -87.6291414 },
+    { "lat": 41.8881348, "lon": -87.6291554 },
+    { "lat": 41.8881211, "lon": -87.6292329 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:housenumber": "323",
+    "addr:postcode": "60654",
+    "addr:state": "IL",
+    "addr:street": "North Dearborn Street",
+    "building": "apartments",
+    "building:colour": "#FEF0C9",
+    "height": "45",
+    "min_height": "10",
+    "name": "Marina City 1",
+    "roof:colour": "lightgray",
+    "roof:shape": "flat"
+  }
+},
+{
+  "type": "way",
+  "id": 1178187727,
+  "bounds": {
+    "minlat": 41.8798749,
+    "minlon": -87.6371452,
+    "maxlat": 41.8798967,
+    "maxlon": -87.6371342
+  },
+  "nodes": [
+    10945008411,
+    10945008412,
+    10945008413,
+    10945008414,
+    10945008411
+  ],
+  "geometry": [
+    { "lat": 41.8798967, "lon": -87.6371342 },
+    { "lat": 41.8798967, "lon": -87.6371450 },
+    { "lat": 41.8798750, "lon": -87.6371452 },
+    { "lat": 41.8798749, "lon": -87.6371344 },
+    { "lat": 41.8798967, "lon": -87.6371342 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "sculpture",
+    "name": "150",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1178187728,
+  "bounds": {
+    "minlat": 41.8800394,
+    "minlon": -87.6371452,
+    "maxlat": 41.8800611,
+    "maxlon": -87.6371342
+  },
+  "nodes": [
+    10945008415,
+    10945008416,
+    10945008417,
+    10945008418,
+    10945008415
+  ],
+  "geometry": [
+    { "lat": 41.8800611, "lon": -87.6371342 },
+    { "lat": 41.8800611, "lon": -87.6371450 },
+    { "lat": 41.8800394, "lon": -87.6371452 },
+    { "lat": 41.8800394, "lon": -87.6371344 },
+    { "lat": 41.8800611, "lon": -87.6371342 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "sculpture",
+    "name": "100",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1178213009,
+  "bounds": {
+    "minlat": 41.8781905,
+    "minlon": -87.6364099,
+    "maxlat": 41.8781964,
+    "maxlon": -87.6361823
+  },
+  "nodes": [
+    10945219788,
+    10945219807,
+    10945219806,
+    10945219787,
+    10945219788
+  ],
+  "geometry": [
+    { "lat": 41.8781964, "lon": -87.6361824 },
+    { "lat": 41.8781931, "lon": -87.6361823 },
+    { "lat": 41.8781905, "lon": -87.6364098 },
+    { "lat": 41.8781938, "lon": -87.6364099 },
+    { "lat": 41.8781964, "lon": -87.6361824 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Olafur Eliasson",
+    "artwork_type": "installation",
+    "name": "atmospheric Wave Wall",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1189225981,
+  "bounds": {
+    "minlat": 41.8779722,
+    "minlon": -87.6318992,
+    "maxlat": 41.8780022,
+    "maxlon": -87.6318574
+  },
+  "nodes": [
+    10866526579,
+    11042849579,
+    11042849580,
+    11042849581,
+    10866526579
+  ],
+  "geometry": [
+    { "lat": 41.8779834, "lon": -87.6318574 },
+    { "lat": 41.8780022, "lon": -87.6318860 },
+    { "lat": 41.8779910, "lon": -87.6318992 },
+    { "lat": 41.8779722, "lon": -87.6318706 },
+    { "lat": 41.8779834, "lon": -87.6318574 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "statue",
+    "name": "Agriculture",
+    "subject:wikidata": "Q11451",
+    "subject:wikipedia": "en:Agriculture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1189225982,
+  "bounds": {
+    "minlat": 41.8779736,
+    "minlon": -87.6318226,
+    "maxlat": 41.8780036,
+    "maxlon": -87.6317808
+  },
+  "nodes": [
+    10866526580,
+    11042849582,
+    11042849583,
+    11042849584,
+    10866526580
+  ],
+  "geometry": [
+    { "lat": 41.8780036, "lon": -87.6317941 },
+    { "lat": 41.8779847, "lon": -87.6318226 },
+    { "lat": 41.8779736, "lon": -87.6318092 },
+    { "lat": 41.8779925, "lon": -87.6317808 },
+    { "lat": 41.8780036, "lon": -87.6317941 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "statue",
+    "name": "Industry",
+    "subject:wikidata": "Q268592",
+    "subject:wikipedia": "en:Industry (economics)",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1261251645,
+  "bounds": {
+    "minlat": 41.8752934,
+    "minlon": -87.6162043,
+    "maxlat": 41.8909667,
+    "maxlon": -87.5979990
+  },
+  "nodes": [
+    3845881257,
+    12117256094,
+    12117256093,
+    12117256092,
+    12117256091,
+    12117256090,
+    12117256089,
+    12117256088,
+    12117256087,
+    12117256086,
+    12117262703,
+    11699265369,
+    11664046415
+  ],
+  "geometry": [
+    { "lat": 41.8909667, "lon": -87.6092189 },
+    { "lat": 41.8906132, "lon": -87.6092251 },
+    { "lat": 41.8903317, "lon": -87.6083458 },
+    { "lat": 41.8904565, "lon": -87.6000633 },
+    { "lat": 41.8902639, "lon": -87.5993793 },
+    { "lat": 41.8895529, "lon": -87.5982701 },
+    { "lat": 41.8891308, "lon": -87.5979990 },
+    { "lat": 41.8880620, "lon": -87.5980175 },
+    { "lat": 41.8875986, "lon": -87.5982147 },
+    { "lat": 41.8765529, "lon": -87.6071591 },
+    { "lat": 41.8762400, "lon": -87.6077072 },
+    { "lat": 41.8753018, "lon": -87.6124614 },
+    { "lat": 41.8752934, "lon": -87.6162043 }
+  ],
+  "tags": {
+    "bicycle": "yes",
+    "foot": "yes",
+    "from": "Navy Pier",
+    "motor_vehicle": "no",
+    "name": "Navy Pier - Buckingham Fountain",
+    "oneway": "yes",
+    "operator": "Shoreline Sightseeing",
+    "roundtrip": "no",
+    "route": "ferry",
+    "to": "Buckingham Fountain",
+    "toll": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1261251646,
+  "bounds": {
+    "minlat": 41.8685933,
+    "minlon": -87.6156365,
+    "maxlat": 41.8909667,
+    "maxlon": -87.5979052
+  },
+  "nodes": [
+    992006194,
+    12094223685,
+    12094223686,
+    3845881264,
+    3845881263,
+    12117256085,
+    12117256095,
+    12117256096,
+    12117256097,
+    12117256098,
+    12117256099,
+    12117256100,
+    12117262701,
+    12117262702,
+    3845881257
+  ],
+  "geometry": [
+    { "lat": 41.8685933, "lon": -87.6156365 },
+    { "lat": 41.8685990, "lon": -87.6147772 },
+    { "lat": 41.8689302, "lon": -87.6134580 },
+    { "lat": 41.8691973, "lon": -87.6130670 },
+    { "lat": 41.8739807, "lon": -87.6090506 },
+    { "lat": 41.8765045, "lon": -87.6070577 },
+    { "lat": 41.8875399, "lon": -87.5981332 },
+    { "lat": 41.8880308, "lon": -87.5979360 },
+    { "lat": 41.8891455, "lon": -87.5979052 },
+    { "lat": 41.8896042, "lon": -87.5982195 },
+    { "lat": 41.8903015, "lon": -87.5992979 },
+    { "lat": 41.8905171, "lon": -87.6000250 },
+    { "lat": 41.8903929, "lon": -87.6083198 },
+    { "lat": 41.8906381, "lon": -87.6091410 },
+    { "lat": 41.8909667, "lon": -87.6092189 }
+  ],
+  "tags": {
+    "bicycle": "yes",
+    "foot": "yes",
+    "from": "Museum Campus",
+    "motor_vehicle": "no",
+    "name": "Museum Campus - Navy Pier",
+    "oneway": "yes",
+    "operator": "Shoreline Sightseeing",
+    "roundtrip": "no",
+    "route": "ferry",
+    "to": "Navy Pier",
+    "toll": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1267682594,
+  "bounds": {
+    "minlat": 41.8935562,
+    "minlon": -87.6179569,
+    "maxlat": 41.8936160,
+    "maxlon": -87.6178934
+  },
+  "nodes": [
+    11773557009,
+    11773557010,
+    11773557011,
+    11773557012,
+    11773557009
+  ],
+  "geometry": [
+    { "lat": 41.8936115, "lon": -87.6178934 },
+    { "lat": 41.8935562, "lon": -87.6179493 },
+    { "lat": 41.8935600, "lon": -87.6179569 },
+    { "lat": 41.8936160, "lon": -87.6179015 },
+    { "lat": 41.8936115, "lon": -87.6178934 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "installation",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1267682595,
+  "bounds": {
+    "minlat": 41.8941703,
+    "minlon": -87.6183757,
+    "maxlat": 41.8941786,
+    "maxlon": -87.6182822
+  },
+  "nodes": [
+    11773557013,
+    11773557014,
+    11773557015,
+    11773557016,
+    11773557013
+  ],
+  "geometry": [
+    { "lat": 41.8941710, "lon": -87.6182822 },
+    { "lat": 41.8941703, "lon": -87.6183751 },
+    { "lat": 41.8941771, "lon": -87.6183757 },
+    { "lat": 41.8941786, "lon": -87.6182823 },
+    { "lat": 41.8941710, "lon": -87.6182822 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "installation",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1268164038,
+  "bounds": {
+    "minlat": 41.8780756,
+    "minlon": -87.6270059,
+    "maxlat": 41.8781125,
+    "maxlon": -87.6269864
+  },
+  "nodes": [
+    11778427179,
+    11778427189,
+    11778427188,
+    11778427180,
+    11778427187,
+    11778427181,
+    11778427182,
+    11778427183,
+    11778427184,
+    11778427185,
+    11778427186,
+    11778427179
+  ],
+  "geometry": [
+    { "lat": 41.8781125, "lon": -87.6269873 },
+    { "lat": 41.8781036, "lon": -87.6269907 },
+    { "lat": 41.8780835, "lon": -87.6269897 },
+    { "lat": 41.8780756, "lon": -87.6269864 },
+    { "lat": 41.8780782, "lon": -87.6269939 },
+    { "lat": 41.8780756, "lon": -87.6270059 },
+    { "lat": 41.8780848, "lon": -87.6269966 },
+    { "lat": 41.8781020, "lon": -87.6269966 },
+    { "lat": 41.8781046, "lon": -87.6270028 },
+    { "lat": 41.8781115, "lon": -87.6270037 },
+    { "lat": 41.8781090, "lon": -87.6269958 },
+    { "lat": 41.8781125, "lon": -87.6269873 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1268374535,
+  "bounds": {
+    "minlat": 41.8766455,
+    "minlon": -87.6362771,
+    "maxlat": 41.8766538,
+    "maxlon": -87.6362512
+  },
+  "nodes": [
+    11780470362,
+    11780470363,
+    11780470364,
+    11780470365,
+    11780470362
+  ],
+  "geometry": [
+    { "lat": 41.8766538, "lon": -87.6362514 },
+    { "lat": 41.8766459, "lon": -87.6362512 },
+    { "lat": 41.8766455, "lon": -87.6362769 },
+    { "lat": 41.8766534, "lon": -87.6362771 },
+    { "lat": 41.8766538, "lon": -87.6362514 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1269033025,
+  "bounds": {
+    "minlat": 41.8810352,
+    "minlon": -87.6241391,
+    "maxlat": 41.8813557,
+    "maxlon": -87.6241116
+  },
+  "nodes": [
+    2359403107,
+    11786813875,
+    11786813876,
+    11786813877,
+    2359403107
+  ],
+  "geometry": [
+    { "lat": 41.8813557, "lon": -87.6241197 },
+    { "lat": 41.8813547, "lon": -87.6241391 },
+    { "lat": 41.8810352, "lon": -87.6241304 },
+    { "lat": 41.8810357, "lon": -87.6241116 },
+    { "lat": 41.8813557, "lon": -87.6241197 }
+  ],
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "Divvy",
+    "brand:wikidata": "Q16973938",
+    "capacity": "35",
+    "divvy:id": "90",
+    "fee": "yes",
+    "name": "Millennium Park",
+    "network": "Divvy",
+    "network:wikidata": "Q16973938",
+    "network:wikipedia": "en:Divvy",
+    "opening_hours": "24/7",
+    "operator": "Lyft",
+    "operator:type": "private",
+    "operator:wikidata": "Q17077936",
+    "operator:wikipedia": "en:Lyft",
+    "payment:app": "yes",
+    "payment:credit_cards": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1272363178,
+  "bounds": {
+    "minlat": 41.8881067,
+    "minlon": -87.6274852,
+    "maxlat": 41.8881514,
+    "maxlon": -87.6274237
+  },
+  "nodes": [
+    11228620278,
+    11815165717,
+    11815165718,
+    11815165719,
+    11815165720,
+    11815165721,
+    11228620278
+  ],
+  "geometry": [
+    { "lat": 41.8881514, "lon": -87.6274247 },
+    { "lat": 41.8881374, "lon": -87.6274237 },
+    { "lat": 41.8881071, "lon": -87.6274633 },
+    { "lat": 41.8881067, "lon": -87.6274852 },
+    { "lat": 41.8881204, "lon": -87.6274852 },
+    { "lat": 41.8881514, "lon": -87.6274460 },
+    { "lat": 41.8881514, "lon": -87.6274247 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Ju Ming",
+    "artwork_type": "sculpture",
+    "name": "The Gentlemen Statues",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1274706626,
+  "bounds": {
+    "minlat": 41.8885664,
+    "minlon": -87.6325424,
+    "maxlat": 41.8885833,
+    "maxlon": -87.6325203
+  },
+  "nodes": [
+    11835824620,
+    11835824621,
+    11835824622,
+    11835824623,
+    11835824620
+  ],
+  "geometry": [
+    { "lat": 41.8885833, "lon": -87.6325422 },
+    { "lat": 41.8885666, "lon": -87.6325424 },
+    { "lat": 41.8885664, "lon": -87.6325205 },
+    { "lat": 41.8885831, "lon": -87.6325203 },
+    { "lat": 41.8885833, "lon": -87.6325422 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Hubertus Von Der Goltz",
+    "artwork_type": "sculpture",
+    "name": "Crossing",
+    "tourism": "artwork",
+    "wikidata": "Q122396858",
+    "wikipedia": "en:Crossing (sculpture)"
+  }
+},
+{
+  "type": "way",
+  "id": 1276578246,
+  "bounds": {
+    "minlat": 41.8862341,
+    "minlon": -87.6389695,
+    "maxlat": 41.8862944,
+    "maxlon": -87.6388885
+  },
+  "nodes": [
+    10722391412,
+    11851459544,
+    11851459545,
+    11851459546,
+    11851459547,
+    11851459548,
+    11851459549,
+    11851459532,
+    11851459533,
+    11851459536,
+    11851459537,
+    11851459538,
+    11851459539,
+    11851459540,
+    11851459541,
+    11851459542,
+    11851459543,
+    11851459534,
+    11851459535,
+    10722391412
+  ],
+  "geometry": [
+    { "lat": 41.8862433, "lon": -87.6388995 },
+    { "lat": 41.8862518, "lon": -87.6388919 },
+    { "lat": 41.8862617, "lon": -87.6388885 },
+    { "lat": 41.8862719, "lon": -87.6388897 },
+    { "lat": 41.8862812, "lon": -87.6388955 },
+    { "lat": 41.8862886, "lon": -87.6389051 },
+    { "lat": 41.8862931, "lon": -87.6389174 },
+    { "lat": 41.8862944, "lon": -87.6389310 },
+    { "lat": 41.8862923, "lon": -87.6389438 },
+    { "lat": 41.8862874, "lon": -87.6389550 },
+    { "lat": 41.8862801, "lon": -87.6389636 },
+    { "lat": 41.8862711, "lon": -87.6389686 },
+    { "lat": 41.8862614, "lon": -87.6389695 },
+    { "lat": 41.8862520, "lon": -87.6389663 },
+    { "lat": 41.8862438, "lon": -87.6389592 },
+    { "lat": 41.8862377, "lon": -87.6389490 },
+    { "lat": 41.8862344, "lon": -87.6389367 },
+    { "lat": 41.8862341, "lon": -87.6389237 },
+    { "lat": 41.8862371, "lon": -87.6389106 },
+    { "lat": 41.8862433, "lon": -87.6388995 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artist_name": "Santiago Calatrava",
+    "artwork_type": "sculpture",
+    "height": "8.8",
+    "material": "aluminium",
+    "name": "Constellation",
+    "start_date": "2020",
+    "tourism": "artwork",
+    "wikidata": "Q121988921",
+    "wikipedia": "en:Constellation (sculpture)"
+  }
+},
+{
+  "type": "way",
+  "id": 1295952285,
+  "bounds": {
+    "minlat": 41.8867247,
+    "minlon": -87.6479839,
+    "maxlat": 41.8868708,
+    "maxlon": -87.6479717
+  },
+  "nodes": [
+    12008712381,
+    12008712382,
+    12008712383,
+    12008712384,
+    12008712381
+  ],
+  "geometry": [
+    { "lat": 41.8868708, "lon": -87.6479839 },
+    { "lat": 41.8868708, "lon": -87.6479740 },
+    { "lat": 41.8867248, "lon": -87.6479717 },
+    { "lat": 41.8867247, "lon": -87.6479815 },
+    { "lat": 41.8868708, "lon": -87.6479839 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "city_entrance",
+    "name": "Fulton Market District Gateway",
+    "start_date": "2014",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1303164742,
+  "bounds": {
+    "minlat": 41.8685933,
+    "minlon": -87.6162043,
+    "maxlat": 41.8752934,
+    "maxlon": -87.6153200
+  },
+  "nodes": [
+    11664046415,
+    12094223682,
+    12094223681,
+    12094223683,
+    12094223684,
+    992006194
+  ],
+  "geometry": [
+    { "lat": 41.8752934, "lon": -87.6162043 },
+    { "lat": 41.8748685, "lon": -87.6156265 },
+    { "lat": 41.8746031, "lon": -87.6154823 },
+    { "lat": 41.8692161, "lon": -87.6153200 },
+    { "lat": 41.8688629, "lon": -87.6154293 },
+    { "lat": 41.8685933, "lon": -87.6156365 }
+  ],
+  "tags": {
+    "bicycle": "yes",
+    "foot": "yes",
+    "from": "Buckingham Fountain",
+    "motor_vehicle": "no",
+    "name": "Buckingham Fountain - Museum Campus",
+    "oneway": "yes",
+    "operator": "Shoreline Sightseeing",
+    "route": "ferry",
+    "to": "Navy Pier"
+  }
+},
+{
+  "type": "way",
+  "id": 1349703130,
+  "bounds": {
+    "minlat": 41.8922267,
+    "minlon": -87.6098495,
+    "maxlat": 41.8933204,
+    "maxlon": -87.6009289
+  },
+  "nodes": [
+    2780811793,
+    13021586711,
+    2780811781,
+    12485789634,
+    13021586757,
+    2104842244,
+    11838825234,
+    1699135812,
+    1699135811,
+    6939664349,
+    269447828,
+    13021586799,
+    13021586793,
+    13021586802,
+    13021586782,
+    13021586783,
+    13021586779,
+    13021586770,
+    13021586771,
+    13021586767,
+    2780811793
+  ],
+  "geometry": [
+    { "lat": 41.8923665, "lon": -87.6009292 },
+    { "lat": 41.8923803, "lon": -87.6009291 },
+    { "lat": 41.8924097, "lon": -87.6009289 },
+    { "lat": 41.8930789, "lon": -87.6009875 },
+    { "lat": 41.8932655, "lon": -87.6020592 },
+    { "lat": 41.8933204, "lon": -87.6023146 },
+    { "lat": 41.8932977, "lon": -87.6023428 },
+    { "lat": 41.8932705, "lon": -87.6023767 },
+    { "lat": 41.8931498, "lon": -87.6098495 },
+    { "lat": 41.8922267, "lon": -87.6098187 },
+    { "lat": 41.8922278, "lon": -87.6097504 },
+    { "lat": 41.8922668, "lon": -87.6072839 },
+    { "lat": 41.8922669, "lon": -87.6072717 },
+    { "lat": 41.8922676, "lon": -87.6072550 },
+    { "lat": 41.8922830, "lon": -87.6062178 },
+    { "lat": 41.8922831, "lon": -87.6062020 },
+    { "lat": 41.8922833, "lon": -87.6061793 },
+    { "lat": 41.8923053, "lon": -87.6048333 },
+    { "lat": 41.8923055, "lon": -87.6048217 },
+    { "lat": 41.8923057, "lon": -87.6048101 },
+    { "lat": 41.8923665, "lon": -87.6009292 }
+  ],
+  "tags": {
+    "addr:city": "Chicago",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Grand Avenue",
+    "area": "yes",
+    "fee": "yes",
+    "leisure": "marina",
+    "name": "Navy Pier Marina",
+    "operator": "Chicago Harbors",
+    "power_supply": "yes",
+    "seamark:harbour:category": "marina",
+    "seamark:type": "harbour",
+    "website": "https://navypiermarina.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 1417040524,
+  "bounds": {
+    "minlat": 41.8923350,
+    "minlon": -87.6063967,
+    "maxlat": 41.8924401,
+    "maxlon": -87.6062135
+  },
+  "nodes": [
+    13021582250,
+    13021582251,
+    13021582252,
+    13021582253,
+    13021582250
+  ],
+  "geometry": [
+    { "lat": 41.8924373, "lon": -87.6063967 },
+    { "lat": 41.8923350, "lon": -87.6063938 },
+    { "lat": 41.8923378, "lon": -87.6062135 },
+    { "lat": 41.8924401, "lon": -87.6062163 },
+    { "lat": 41.8924373, "lon": -87.6063967 }
+  ],
+  "tags": {
+    "access": "customers",
+    "addr:city": "Chicago",
+    "addr:housenumber": "797",
+    "addr:postcode": "60611",
+    "addr:state": "IL",
+    "addr:street": "East Grand Avenue",
+    "building": "boathouse",
+    "building:levels": "2",
+    "name": "Navy Pier Marina Boat House",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1467696911,
+  "bounds": {
+    "minlat": 41.8914934,
+    "minlon": -87.5987862,
+    "maxlat": 41.8915133,
+    "maxlon": -87.5987545
+  },
+  "nodes": [
+    10866524856,
+    13461359375,
+    13461359376,
+    13461359377,
+    10866524856
+  ],
+  "geometry": [
+    { "lat": 41.8915133, "lon": -87.5987799 },
+    { "lat": 41.8915000, "lon": -87.5987545 },
+    { "lat": 41.8914934, "lon": -87.5987607 },
+    { "lat": 41.8915067, "lon": -87.5987862 },
+    { "lat": 41.8915133, "lon": -87.5987799 }
+  ],
+  "tags": {
+    "area": "yes",
+    "artwork_type": "statue",
+    "name": "Bob Newhart Statue & Couch",
+    "subject:wikidata": "Q718078",
+    "subject:wikimedia_commons": "File:Comedian_Bob_Newhart.jpg",
+    "subject:wikipedia": "en:Bob Newhart",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1499188763,
+  "bounds": {
+    "minlat": 41.8754486,
+    "minlon": -87.6327331,
+    "maxlat": 41.8754557,
+    "maxlon": -87.6327110
+  },
+  "nodes": [
+    8732586636,
+    13728798386,
+    13728798387,
+    13728798388,
+    8732586636
+  ],
+  "geometry": [
+    { "lat": 41.8754556, "lon": -87.6327331 },
+    { "lat": 41.8754486, "lon": -87.6327331 },
+    { "lat": 41.8754487, "lon": -87.6327110 },
+    { "lat": 41.8754557, "lon": -87.6327110 },
+    { "lat": 41.8754556, "lon": -87.6327331 }
+  ],
+  "tags": {
+    "area": "yes",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1499188764,
+  "bounds": {
+    "minlat": 41.8754493,
+    "minlon": -87.6328263,
+    "maxlat": 41.8754564,
+    "maxlon": -87.6328041
+  },
+  "nodes": [
+    13728798389,
+    13728798390,
+    13728798391,
+    13728798392,
+    13728798389
+  ],
+  "geometry": [
+    { "lat": 41.8754563, "lon": -87.6328263 },
+    { "lat": 41.8754493, "lon": -87.6328262 },
+    { "lat": 41.8754494, "lon": -87.6328041 },
+    { "lat": 41.8754564, "lon": -87.6328042 },
+    { "lat": 41.8754563, "lon": -87.6328263 }
+  ],
+  "tags": {
+    "area": "yes",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "way",
+  "id": 1499188765,
+  "bounds": {
+    "minlat": 41.8754479,
+    "minlon": -87.6329173,
+    "maxlat": 41.8754551,
+    "maxlon": -87.6328951
+  },
+  "nodes": [
+    13728798393,
+    13728798394,
+    13728798395,
+    13728798396,
+    13728798393
+  ],
+  "geometry": [
+    { "lat": 41.8754549, "lon": -87.6329173 },
+    { "lat": 41.8754479, "lon": -87.6329172 },
+    { "lat": 41.8754481, "lon": -87.6328951 },
+    { "lat": 41.8754551, "lon": -87.6328952 },
+    { "lat": 41.8754549, "lon": -87.6329173 }
+  ],
+  "tags": {
+    "area": "yes",
+    "highway": "street_lamp",
+    "tourism": "artwork"
+  }
+}
+
+  ]
+}

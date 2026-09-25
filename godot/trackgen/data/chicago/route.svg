@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1030" viewBox="0 0 1320 1030">
+<rect width="1320" height="1030" fill="#101c28"/>
+<text x="60" y="52" font-family="sans-serif" font-size="28" fill="#f4f1e7">CHICAGO / RIVER &amp; LAKE</text>
+<text x="60" y="82" font-family="sans-serif" font-size="16" fill="#a7b8c5">8.12 km authored circuit · road scaffold, not navigation · north ↑</text>
+<path d="M965 120 L1320 120 L1320 960 L965 960Z" fill="#174655"/>
+<text x="1060" y="650" fill="#96bdc9" font-family="sans-serif" font-size="19">Lake Michigan</text>
+<path d="M629.0,470.5 L629.0,604.5" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M629.0,604.5 L629.0,781.6" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M629.0,781.6 L882.0,776.9" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M882.0,776.9 L882.0,657.2" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M882.0,657.2 L899.8,590.2" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M899.8,590.2 L946.1,537.5" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M946.1,537.5 L996.0,504.0" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M996.0,504.0 L1003.1,403.5" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M1003.1,403.5 L1003.1,336.5" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M1003.1,336.5 L946.1,331.7" stroke="#c09ade" stroke-width="5" fill="none" stroke-dasharray="7 6"/>
+<path d="M946.1,331.7 L874.8,334.1" stroke="#c09ade" stroke-width="5" fill="none" stroke-dasharray="7 6"/>
+<path d="M877.8,334.1 L762.0,321.6" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M762.0,321.6 L703.3,307.8" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M703.3,307.8 L628.4,305.4" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M628.4,305.4 L585.7,316.4" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M585.7,316.4 L528.7,370.0" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M528.7,370.0 L261.5,370.0" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M261.5,370.0 L215.1,393.9" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M215.1,393.9 L186.6,425.0" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M186.6,425.0 L186.6,609.3" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M186.6,609.3 L186.6,843.9" stroke="#52b9cb" stroke-width="5" fill="none" stroke-dasharray="5 7"/>
+<path d="M183.6,843.9 L269.1,843.9" stroke="#c09ade" stroke-width="5" fill="none" stroke-dasharray="7 6"/>
+<path d="M269.1,843.9 L269.1,796.0" stroke="#c09ade" stroke-width="5" fill="none" stroke-dasharray="7 6"/>
+<path d="M269.1,796.0 L183.6,796.0" stroke="#c09ade" stroke-width="5" fill="none" stroke-dasharray="7 6"/>
+<path d="M183.6,796.0 L183.6,609.3" stroke="#efa85d" stroke-width="5" fill="none"/>
+<path d="M183.6,609.3 L183.6,425.0" stroke="#efa85d" stroke-width="5" fill="none"/>
+<path d="M183.6,425.0 L212.1,393.9" stroke="#efa85d" stroke-width="5" fill="none"/>
+<path d="M212.1,393.9 L258.5,370.0" stroke="#efa85d" stroke-width="5" fill="none"/>
+<path d="M258.5,370.0 L525.7,370.0" stroke="#efa85d" stroke-width="5" fill="none"/>
+<path d="M525.7,370.0 L582.7,316.4" stroke="#efa85d" stroke-width="5" fill="none"/>
+<path d="M582.7,316.4 L625.4,305.4" stroke="#efa85d" stroke-width="5" fill="none"/>
+<path d="M625.4,305.4 L629.0,350.8" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<path d="M629.0,350.8 L629.0,470.5" stroke="#d8d9c8" stroke-width="5" fill="none"/>
+<circle cx="668.2" cy="572.9" r="6" fill="#f7de99"/><text x="680.2" y="562.9" fill="#f7de99" font-family="sans-serif" font-size="17">Bean</text>
+<circle cx="218.5" cy="753.9" r="6" fill="#f7de99"/><text x="230.5" y="743.9" fill="#f7de99" font-family="sans-serif" font-size="17">Willis Tower</text>
+<circle cx="1288.2" cy="140.2" r="6" fill="#f7de99"/><text x="1300.2" y="130.2" fill="#f7de99" font-family="sans-serif" font-size="17">Navy Pier</text>
+<circle cx="393.8" cy="331.7" r="6" fill="#f7de99"/><text x="405.8" y="321.7" fill="#f7de99" font-family="sans-serif" font-size="17">Chicago River</text>
+<circle cx="1177.7" cy="556.7" r="6" fill="#f7de99"/><text x="1189.7" y="546.7" fill="#f7de99" font-family="sans-serif" font-size="17">Lake Michigan</text>
+<circle cx="629.0" cy="470.5" r="8" fill="#ffffff"/><text x="641.0" y="470.5" fill="white" font-family="sans-serif" font-size="16">START / Michigan Avenue</text>
+<path d="M60 890 L95 890" stroke="#d8d9c8" stroke-width="5"/><text x="110" y="895" fill="#cbd7df" font-family="sans-serif" font-size="16">Michigan / Jackson / Lake Shore Drive</text>
+<path d="M60 917 L95 917" stroke="#52b9cb" stroke-width="5"/><text x="110" y="922" fill="#cbd7df" font-family="sans-serif" font-size="16">Lower Wacker · 0 m deck (dashed)</text>
+<path d="M60 944 L95 944" stroke="#efa85d" stroke-width="5"/><text x="110" y="949" fill="#cbd7df" font-family="sans-serif" font-size="16">Upper Wacker · 8 m deck</text>
+<path d="M60 971 L95 971" stroke="#c09ade" stroke-width="5"/><text x="110" y="976" fill="#cbd7df" font-family="sans-serif" font-size="16">Game-only connectors (dashed)</text>
+<text x="670" y="1005" fill="#90a4b4" font-family="sans-serif" font-size="13">© OpenStreetMap contributors · ODbL 1.0 · openstreetmap.org/copyright</text></svg>

@@ -26,7 +26,8 @@ const V2_TRACKS = {
 	"proving_ground": "Proving Ground",
 	"spa": "Spa-Francorchamps",
 	"nordschleife_s1": "Nordschleife (T13 - Aremberg)",
-	"nordschleife": "Nürburgring Nordschleife"
+	"nordschleife": "Nürburgring Nordschleife",
+	"chicago": "Chicago — River & Lake"
 }
 
 

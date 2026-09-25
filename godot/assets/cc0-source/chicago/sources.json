@@ -1,0 +1,130 @@
+[
+  {
+    "name": "models/kenney-city-kit-commercial/*.glb",
+    "url": "https://kenney.nl/media/pages/assets/city-kit-commercial/a742d900eb-1753115042/kenney_city-kit-commercial_2.1.zip",
+    "license": "CC0-1.0",
+    "source": "Kenney City Kit (Commercial) 2.1",
+    "note": "GLB models only (FBX/OBJ duplicates in the pack were not extracted) plus Models/GLB format/Textures/colormap.png and the pack's own License.txt.",
+    "sha256_of_download": "f8b09b081c2bb88bcc126e2dec1cb40fd0dad7e7e591b6c26aaefe96fb35276b"
+  },
+  {
+    "name": "models/kenney-city-kit-roads/*.glb",
+    "url": "https://kenney.nl/media/pages/assets/city-kit-roads/74288c9459-1787042796/kenney_city-kit-roads.zip",
+    "license": "CC0-1.0",
+    "source": "Kenney City Kit (Roads)",
+    "note": "GLB models only, plus colormap.png and License.txt. Road-tile geometry (road-straight, road-bend, tile-*, etc.) is included but is not expected to be used as-is — this project generates its own road mesh from RoadPath/RoadBuilder; the street-furniture pieces (traffic-light*, light-curved/light-square*, electricity-pole/side/wires*, road-sign*, bridge-pillar*, dumpster, construction-*) are the ones likely to matter.",
+    "sha256_of_download": "22058af3d68173a7cf9bda9f0e243a8cef6bd68168c302ebc76327063849674e"
+  },
+  {
+    "name": "models/kenney-car-kit/*.glb",
+    "url": "https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip",
+    "license": "CC0-1.0",
+    "source": "Kenney Car Kit",
+    "note": "GLB models only, plus colormap.png and License.txt. sedan/sedan-sports/suv/suv-luxury/taxi/hatchback-sports/delivery/van/truck are the likely parked-car dressing; ambulance/firetruck/police/garbage-truck read as city-service vehicles; kart-*/race*/debris-* are unrelated to this task and can be ignored.",
+    "sha256_of_download": "fac7dacac5c7874348cf19729af3ef205f3d366493edaf0a827d93f4fdf3d0c4"
+  },
+  {
+    "name": "textures/Facade001/*, textures/Facade009/*",
+    "url": "https://ambientcg.com/get?file=Facade001_1K-JPG.zip, https://ambientcg.com/get?file=Facade009_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG Facade001 / Facade009 (1K-JPG)",
+    "note": "Glass curtain-wall facades for the Loop/Streeterville skyscrapers (Willis Tower area, generic office towers). Color/NormalGL/Roughness/Metalness JPGs only — Displacement, AmbientOcclusion, .blend/.usdc/.mtlx/.tres and the ambientCG preview PNG were dropped.",
+    "sha256_of_download": ["e804ad49d692ca60b260394db2ec05d8a274ad319759f536a042471b58d38ea9", "a559cfa0f8bb5abc8e9f41e2f669cb400db61a371d1e5c1676ae4a2d8f280571"]
+  },
+  {
+    "name": "textures/Concrete034/*",
+    "url": "https://ambientcg.com/get?file=Concrete034_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG Concrete034 (1K-JPG)",
+    "note": "Plaza/sidewalk/Wacker-deck-underside concrete.",
+    "sha256_of_download": "5839d284d94ffb8d2a56df742ec522b13dd311c52dbd42b8fd33f0409ceedb81"
+  },
+  {
+    "name": "textures/Bricks097/*",
+    "url": "https://ambientcg.com/get?file=Bricks097_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG Bricks097 (1K-JPG)",
+    "note": "Older Loop-era brick facade.",
+    "sha256_of_download": "97b5df360161e48bcfed609aef361e8115b680ddc0aea4ad9321d4b00e222ad0"
+  },
+  {
+    "name": "textures/Travertine009/*",
+    "url": "https://ambientcg.com/get?file=Travertine009_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG Travertine009 (1K-JPG)",
+    "note": "Michigan Avenue classic limestone/travertine facade stone.",
+    "sha256_of_download": "09fa1ce1cd590e87ed4053864ebaf0186718fba6373559a8458eb4fa6146fdb7"
+  },
+  {
+    "name": "textures/CorrugatedSteel009/*",
+    "url": "https://ambientcg.com/get?file=CorrugatedSteel009_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG CorrugatedSteel009 (1K-JPG)",
+    "note": "Lower Wacker structural steel / loading-dock roller doors.",
+    "sha256_of_download": "fa917cba8bbf4ceb645cf27e4c1a4a17621d3b1ad44a4125997cdd05662711fb"
+  },
+  {
+    "name": "textures/Metal063/*",
+    "url": "https://ambientcg.com/get?file=Metal063_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG Metal063 (1K-JPG)",
+    "note": "Weathered/rusted metal for bridge structure and fire escapes.",
+    "sha256_of_download": "cc0a7f83d4bfd6c5d38638d17a0c214a004ccd295b8c554c959537bc278167ed"
+  },
+  {
+    "name": "textures/GlazedTerracotta001/*",
+    "url": "https://ambientcg.com/get?file=GlazedTerracotta001_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG GlazedTerracotta001 (1K-JPG)",
+    "note": "Chicago-School glazed terracotta facade cladding (Wrigley Building-style).",
+    "sha256_of_download": "54f921a07013a89066774f94d51837aa8258b1bfcf293c90cd652a37e3a0f66d"
+  },
+  {
+    "name": "textures/PaintedMetal004/*",
+    "url": "https://ambientcg.com/get?file=PaintedMetal004_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG PaintedMetal004 (1K-JPG)",
+    "note": "Painted steel for bridge houses, lamp posts, rail structure.",
+    "sha256_of_download": "02c243e8e8441f0ee24e68645f5d8c9bd6d8ee0a3b9bfa3d952840902653f978"
+  },
+  {
+    "name": "textures/Granite002A/*",
+    "url": "https://ambientcg.com/get?file=Granite002A_1K-JPG.zip",
+    "license": "CC0-1.0",
+    "source": "ambientCG Granite002A (1K-JPG)",
+    "note": "Granite curbs / plaza paving.",
+    "sha256_of_download": "551e8b2a0fac2b41eaa83e111d8f9d462c2e4d1271280746beb175fbc1981b9a"
+  },
+  {
+    "name": "roadmap/downtown-roads.json",
+    "url": "https://overpass.openstreetmap.fr/api/interpreter",
+    "license": "ODbL-1.0",
+    "source": "OpenStreetMap contributors, via Overpass (query in roadmap/README.md)",
+    "note": "All highway=* ways (motorway through service, plus link ramps) in the downtown bounding box, not just the named CHI-01 route streets.",
+    "sha256_of_download": "2d866a7b17f7acdc0cb0e58ecc1c408cb34a623bf46517ee700d7b2e19f1ebd9"
+  },
+  {
+    "name": "roadmap/downtown-buildings.json",
+    "url": "https://overpass.openstreetmap.fr/api/interpreter",
+    "license": "ODbL-1.0",
+    "source": "OpenStreetMap contributors, via Overpass (query in roadmap/README.md)",
+    "note": "building=* ways and relations (footprints, and building:levels/height where tagged) in the same box.",
+    "sha256_of_download": "a670c6e71f35ea4d56c7d370e9231acb870d85b1876be90a70780db9080d193d"
+  },
+  {
+    "name": "roadmap/downtown-water-leisure.json",
+    "url": "https://overpass.openstreetmap.fr/api/interpreter",
+    "license": "ODbL-1.0",
+    "source": "OpenStreetMap contributors, via Overpass (query in roadmap/README.md)",
+    "note": "Chicago River (waterway=riverbank), Lake Michigan and other natural=water, parks/leisure=park and landuse=grass, and bridge=yes ways.",
+    "sha256_of_download": "8e63d047fb411dea86770e5e796743690a94dc98e67ad6452f730da56a00f4d3"
+  },
+  {
+    "name": "roadmap/downtown-landmarks.json",
+    "url": "https://overpass.openstreetmap.fr/api/interpreter",
+    "license": "ODbL-1.0",
+    "source": "OpenStreetMap contributors, via Overpass (query in roadmap/README.md)",
+    "note": "Named POIs/artwork/attractions plus explicit name-matched nodes/ways for Willis Tower, Navy Pier, Cloud Gate, Millennium Park, Buckingham Fountain, Trump Tower, Marina City.",
+    "sha256_of_download": "b077e4e639c87f82a1a658ace33b277eeaa00d4144435e04663ae5e8219c4918"
+  }
+]

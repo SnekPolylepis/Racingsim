@@ -27,6 +27,16 @@ const CAM_BONNET = 2
 const SCENIC = {
 	"spa": [["eau-rouge-valley", ["Eau Rouge", 40.0]], ["kemmel-crest", ["Raidillon", 250.0]]],
 	"nordschleife_s1": [["flugplatz-crest", ["Flugplatz", -20.0]]],
+	"chicago":
+	[
+		["river-from-bridge", ["Upper River Bend", 30.0]],
+		["skyline-from-lsd", ["Lake Shore Drive", 60.0]],
+		["lower-wacker", ["Lower Wacker Portal", 250.0]],
+		["navy-pier-view", ["Navy Pier View", 60.0]],
+		["willis-tower-sightline", ["Willis Tower View", -150.0]],
+		["l-line-michigan", 396.0],
+		["l-line-upper-wacker", 6604.0],
+	],
 	"nordschleife":
 	[
 		["flugplatz-crest", ["Flugplatz", -20.0]],
@@ -139,6 +149,9 @@ func run():
 			if image.save_png(dir + "/" + file) != OK:
 				failures.append("save " + dir + "/" + file)
 			var entry = {"file": file, "kind": item[0], "name": item[1], "station": snappedf(item[2], 0.1)}
+			entry.draws = RenderingServer.get_rendering_info(
+				RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME
+			)
 			var before = _baseline_image(id, file)
 			if before:
 				entry.score = snappedf(_score(before, image), 0.01)
@@ -148,9 +161,16 @@ func run():
 			var thumb = image.duplicate()
 			thumb.resize(SHEET_THUMB.x, SHEET_THUMB.y, Image.INTERPOLATE_BILINEAR)
 			thumbs.append(thumb)
-			print("VISUAL SHOT ", id, " ", file, " ", entry.get("score", "-"))
+			print("VISUAL SHOT ", id, " ", file, " ", entry.get("score", "-"), " draws ", entry.draws)
 		_save_sheet(thumbs, folder + "/" + id + "-sheet.png")
-		manifest.tracks[id] = {"length": app.track.length, "shots": shots}
+		var draws = 0
+		for entry in shots:
+			draws += int(entry.draws)
+		manifest.tracks[id] = {
+			"length": app.track.length,
+			"shots": shots,
+			"mean_draws": snappedf(float(draws) / maxi(1, shots.size()), 0.1)
+		}
 	var f = FileAccess.open(folder + "/manifest.json", FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(manifest, "  "))
