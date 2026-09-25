@@ -374,6 +374,8 @@ static func armco_rail_mesh(
 	closed: bool,
 	dist: Array
 ) -> ArrayMesh:
+	# The corrugated face only (open, bottom to top): armco_material() renders both sides, so a closed
+	# profile doubled the triangles for nothing and pushed the proving ground past its 5 MB scene budget.
 	const PROFILE = [
 		Vector2(0.0, 0.0),
 		Vector2(0.035, 0.045),
@@ -381,14 +383,7 @@ static func armco_rail_mesh(
 		Vector2(0.045, 0.145),
 		Vector2(0.005, 0.20),
 		Vector2(0.04, 0.255),
-		Vector2(0.0, 0.31),
-		Vector2(0.025, 0.31),
-		Vector2(0.065, 0.255),
-		Vector2(0.03, 0.20),
-		Vector2(0.07, 0.145),
-		Vector2(0.03, 0.09),
-		Vector2(0.065, 0.045),
-		Vector2(0.025, 0.0)
+		Vector2(0.0, 0.31)
 	]
 	const RAIL_TOPS = [0.45, 0.75]
 	const RAIL_SPAN = 0.31
@@ -409,8 +404,8 @@ static func armco_rail_mesh(
 			var seg_len = base[i].distance_to(base[j])
 			var outward0 = outward[i].normalized()
 			var outward1 = outward[j].normalized()
-			for k in PROFILE.size():
-				var k2 = (k + 1) % PROFILE.size()
+			for k in PROFILE.size() - 1:
+				var k2 = k + 1
 				var q0 = PROFILE[k]
 				var q1 = PROFILE[k2]
 				var a0 = base[i] + outward0 * q0.x + up * (rail_bottom + q0.y)
