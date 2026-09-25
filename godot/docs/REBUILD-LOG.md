@@ -2299,3 +2299,6 @@ Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+
 
 ## 2026-09-24  CLAIM P6-02b  (Gemini)
 Claimed P6-02b "Nordschleife: the full lap" on `rb/P6-02b-nordschleife`. Full ~20.8 km lap data from OSM and DGM1 tiles, godot/trackgen/nordschleife.gd generator, corners, botline, sectors, tests, baseline and export check.
+
+## 2026-09-25  DONE P6-02b  (Claude Opus 5.5, from Gemini's WIP)
+Took over Gemini's full-lap Nordschleife (`trackgen/nordschleife.gd`, 20.8 km from OSM + DGM1 5 m DEM), merged with main (kerbs, NS-bumps O(n) spline); the export filter and `check_exported_v2_assets` carry the `*_full` data. Gates `-All -Features` 38/38; nordschleife suite 7/7; laps baselined. Review shots: Adenauer Forst, Bergwerk, Karussell, Bruennchen, Pflanzgarten, Doettinger Hoehe. Follow-ups: Karussell concrete-bowl surface look, reviewed kerbs beyond S1.
