@@ -11,6 +11,9 @@ KIND is one of `CLAIM`, `DONE`, `PAUSED`, `FAILED`, `CONTRACT`, `DECISION`, `NOT
 
 ---
 
+## 2026-09-24  CLAIM Look-7  (Luna)
+Claimed the armco rail-and-post rendering task on `rb/look-7-armco` per the owner's branch-only PR instruction.
+
 ## 2026-09-22  DECISION D1–D4  (owner)
 Editor removed; 6-DOF chassis; authored 3D tracks; old track format, records and ghosts not carried forward. The CLAUDE.md "don't replace the custom solver" rule is withdrawn. D5–D10 proceed on the plan's defaults until the owner says otherwise.
 
