@@ -1739,6 +1739,33 @@ Found while checking main after Look-3: `front_end.gd::cycle_v2_track()` toggled
 
 Gates (Linux cloud, Godot 4.6.2): `python tools/ci_gates.py` **34/34** (`front_end` 29/0), stderr empty; parse check clean; `gdformat -l 110 --check` clean. No windowed change: the picker is the same button, and `--v2-present` opens on the drive page.
 
+## 2026-09-24  DONE F-P4-03-corners  (Claude Opus 5.5) — branch `rb/F-P4-03-corners`
+Sol's P4-03 review found that `WallQuery.contacts()` took the wall kind from the first body `intersect_shape` returned and one face normal from the deepest pair, and applied both to every contact. In a corner of two walls, the second wall's contacts were then pushed along the first wall's normal with the first wall's restitution and friction.
+
+- **`scripts/surface/wall_query.gd`:**
+  - `contacts()` collects every touching body (`intersect_shape(near, max_results)`) and runs one `collide_shape` per body, with the other bodies excluded.
+  - Each body's contacts carry its own `wall_kind` and its own face normal, from the same ray-to-deepest-point as before.
+  - With one wall touching (the usual case) no exclude lists are built.
+  - The face-normal ray is now `face_normal()`.
+- **`scripts/vehicle/wall_contact.gd`:**
+  - Push-out clears each contact's normal in turn, deepest first; a later contact only gets the depth the earlier pushes have not already cleared along its normal.
+  - Impulses use each contact's own kind's restitution and friction.
+  - Simcade's arcade response removes the closing speed along every normal touched, then bleeds speed and yaw once per tick.
+  - With one wall, all three are exactly the old behaviour.
+  - Props already used each contact's own normal (`prop_body.gd`) and needed no change.
+- **`tests/v2/barrier.gd`** (6 → 9 checks):
+  - A concrete wall and a tyre wall meet at a right angle.
+  - A hull pressed 1 cm into both must report both kinds, each with its own face normal. On main's code this check fails (4 contacts, all "concrete").
+  - 150 km/h at 45° into that corner, and into one L-shaped concrete wall bending 90°, in both handling models: never past either face, energy only lost. These drive tests also pass on main's code: the old bug produced wrong normals and restitution in corners, not pass-through at this speed. They stay as regression guards.
+- **Tried and dropped:** a per-face split inside one wall body (a sharp freehand bend). A ray to every contact point hits a rail's top or end faces, which broke the glancing (rebound 1.38 of closing speed) and resting (0.058 m/s creep) checks. A guarded version needed eight pairs per body and still missed faces, at 183 µs a tick. A single body keeps one normal (PHYSICS.md). No track has a sharp bend inside one wall; road-following walls bend in 2 m steps.
+
+Single-wall results are identical to main: head-on, glancing rebound 0.06, resting creep 0.012 m/s. Cost touching one wall, same machine, alternating runs, three each: main 119.7-130.8 µs (mean 124.5), branch 125.7-138.4 µs (mean 131.4), against a 150 µs budget; clear of walls 4 µs either way. These are Linux cloud numbers; the Windows `-Perf` pass is owed.
+
+Gates (Linux cloud, Godot 4.6.2):
+- `python tools/ci_gates.py`: **34/34**, stderr empty (`barrier` 9/0, `props` 13/0, all three `laps` suites).
+- Windowed `--v2-present`: V2 PRESENT PASS, FEATURE RESULTS 77/0, stderr empty.
+- Parse check and `gdformat -l 110 --check` clean.
+
 ## 2026-09-24  REVIEW P6-02a (Gemini): accepted  (Claude Opus 5.5)
 Nordschleife section 1 on main:
 - `TrackAsset.validate()` is clean.

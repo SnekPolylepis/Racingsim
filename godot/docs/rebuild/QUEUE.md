@@ -19,7 +19,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 |---|---|---|---|---|---|
 | M-TRAIN | Merge train into main: workflow-gates (P4-03 + workflow), F-P2-08 (P2-08), F-P3-02c (P3-02c), P3-03-terrain (F-P3-03), scenery-kit, P4-07-bot-laps, P6-01-spa, P4-01-game-port | owner (GitHub PR) | | done | merged on main; read "MERGE train" |
 | R-P4-03 | Review P4-03 car-vs-wall contact (WallQuery, WallContact) | Sol | M-TRAIN | done | corner-contact fix queued as F-P4-03-corners |
-| F-P4-03-corners | WallQuery.contacts() assigns the first hit body's kind and one face normal to all collide_shape pairs; split simultaneous contacts by collider/face and test a two-wall corner | Claude | R-P4-03 | open | scripts/surface/wall_query.gd, tests/v2/barrier.gd |
+| F-P4-03-corners | WallQuery.contacts() assigns the first hit body's kind and one face normal to all collide_shape pairs; split simultaneous contacts by collider/face and test a two-wall corner | Claude | R-P4-03 | review: Sol | rb/F-P4-03-corners; read "DONE F-P4-03-corners" |
 | R-WF | Review the workflow change: tools/run_gates.ps1, tools/gates.json, §9 rules 2/5/6/10/11, suite cuts | Sol | M-TRAIN | done | reviewed on main; no fix row |
 | R-P4-07 | Review P4-07 bot driver and laps gate, including P4-07b | Sol | M-TRAIN | done | reviewed on main; no fix row |
 | F-P4-01 | P4-01 follow-ups (Claude's review): Esc on the v2 path quits the app instead of returning to the front end; WallContact not yet called after car.step(); game.gd and track_drive.gd preload trackgen/*.gd but export_presets.cfg excludes trackgen/* so an exported exe breaks | Sol | M-TRAIN | review: owner | folded into P4-core; branch `rb/P4-06-front-end` awaits owner merge; export checked |
