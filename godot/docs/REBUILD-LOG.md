@@ -1833,3 +1833,5 @@ From the owner's Mac check: a TrackAsset baked by a headless run (the gates) was
 - Merged today: #25 F-track-picker, #26 F-P4-03-corners, #28 F-ci-ui, #27 Look-tracks, #29 Look-5. Only docs conflicted; a duplicated LLM-GUIDE paragraph was merged into one.
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0. After the run, `tracks3d-headless/` holds the gate bakes and `tracks3d/` only windowed ones.
+## 2026-09-24  CLAIM CAR-01  (GPT-6 Sol) — branch `rb/CAR-01-miata`
+Owner-assigned real Mazda MX-5 NA body replacement. Source and licence to be recorded with the asset; Claude will review the branch PR.
