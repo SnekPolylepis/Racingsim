@@ -67,7 +67,7 @@ static func load_asset(id: String = "spa", scene_path: String = "") -> Node3D:
 	if generator == null:
 		return null
 	var revision = _cache_revision(id, generator_path)
-	var cache_path = "user://tracks3d/%s.scn" % id
+	var cache_path = cache_dir().path_join("%s.scn" % id)
 	var revision_path = cache_path + ".revision"
 	# Older packed scenes can reference resources removed from an export. Read the plain-text
 	# revision first so Godot never tries to load an incompatible scene just to inspect its meta.
@@ -96,7 +96,7 @@ static func load_asset(id: String = "spa", scene_path: String = "") -> Node3D:
 		built.free()
 		return null
 	built.set_meta("generator_revision", revision)
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://tracks3d"))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(cache_dir()))
 	var packed = PackedScene.new()
 	var save_error = packed.pack(built)
 	if save_error == OK:
@@ -112,9 +112,17 @@ static func load_asset(id: String = "spa", scene_path: String = "") -> Node3D:
 	return built
 
 
+## The bake cache folder. A headless run (the gates) has no real renderer, so every MultiMesh it packs loses its
+## instance transforms (trees, lamps, posts all saved at the origin); it keeps its own cache so the windowed game
+## never loads that scene.
+static func cache_dir() -> String:
+	return "user://tracks3d-headless" if DisplayServer.get_name() == "headless" else "user://tracks3d"
+
+
 ## Include authoring tools and acquired inputs so a data/tool update cannot reuse stale geometry.
 static func _cache_revision(id: String, generator_path: String) -> String:
-	var files: Array[String] = [generator_path]
+	# This file too: a change to how the cache is written (e.g. the headless split) invalidates old bakes.
+	var files: Array[String] = [generator_path, "res://scripts/proving/track_drive.gd"]
 	var directories: Array[String] = ["res://scripts/track", "res://shaders", "res://trackgen/data/" + id]
 	while not directories.is_empty():
 		var directory = directories.pop_back()
