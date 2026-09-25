@@ -2680,3 +2680,14 @@ Brought CHI-01, CHI-prelim, CHI-02 (city), CHI-03 (Sol: references, water) and C
 - **Water shader (CHI-03):** dropped the screen-texture "reflection" (it never rendered on Sol's host and wrote lit colour into albedo). At the grazing angle the near-mirror showed only the warm horizon haze, so roughness is now 0.24-0.3 and specular 0.35.
 Visual review (tools/visual_review.ps1 -Tracks chicago): only the nine lakefront shots changed (scores 7.6-9.8). Gates `-All -Features` 39/39.
 Open: Wrigley and Tribune facades, the red/white kerbs on the street edge, night road glare (LOOK-NIGHT-01), about 900 draw calls.
+
+## 2026-09-25  DONE NS-karussell  (Claude Opus 5.5)
+The full lap's Caracciola-Karussell read as a normal corner with red/white kerbs. Fixes in `trackgen/nordschleife.gd`:
+- **Direction:** it is a left-hand hairpin. Gemini's spec had it as a right-hander (+1, bank +6). Now -1 with inward banking (-3/-6/-2).
+- **The bowl:** a concrete ditch on the inside, about 0.6 m deep with a 27-degree wall. It was a 0.18 m dip. Centred 1.9 m left, with the wall top about 1.2 m inside the tarmac edge.
+- **Kerbs:** none within 60 m of the apex.
+- **Concrete slabs:** `road_v2.gdshader` gained an optional per-instance `concrete_band` (station and lateral range in road UV metres), set only on the Nordschleife's Road/Main. Pale slabs every 2.5 m with dark joints and a trough joint; matte.
+- **Station:** a `KARUSSELL_S` constant replaces the hardcoded 12115 literals.
+`scripts/track/terrain.gd`: under a section with an inset ditch, the ground also sinks by the ditch's depth. Coarse 5 m terrain triangles poked green through the concave floor. The tapered under-road drop is unchanged everywhere else.
+Visual review (nordschleife vs a fresh main run): only the 7 Karussell shots changed, plus a small car-pose shift at Kleines Karussell. The nordschleife suite passes 7/7 (terrain poke 0). Laps: roadster full lap -0.34 %, within baseline. Gates `-All -Features` 39/39. One earlier parallel run lost `laps roadster` without a RESULTS line or error; alone it passed 10/10, and the rerun of all gates passed.
+Shot: docs/rebuild/screenshots/ns-karussell/karussell-bowl.png.
