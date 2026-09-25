@@ -7,6 +7,7 @@ extends RefCounted
 const ROAD_SHADER = preload("res://shaders/road_v2.gdshader")
 const GROUND_SHADER = preload("res://shaders/ground.gdshader")
 const TEX = "res://assets/textures/"
+const HD = "res://assets/textures_hd/"
 ## SURF ids (scripts/surface/surface_table.gd): 0 tarmac, 1 kerb, 2 grass, 3 gravel, 4 tarmac runoff.
 const TARMAC = 0
 const GRASS = 2
@@ -32,8 +33,10 @@ static func surface(sid: int) -> Material:
 		TARMAC:
 			mat = ShaderMaterial.new()
 			mat.shader = ROAD_SHADER
-			mat.set_shader_parameter("albedo_tex", tex("asphalt_track", "diff"))
-			mat.set_shader_parameter("rough_tex", tex("asphalt_track", "rough"))
+			# Look-8: the 2K photographic asphalt set (ART-DIRECTION.md "Road"), not the 256 px palette tile.
+			mat.set_shader_parameter("albedo_tex", load(HD + "asphalt_pit_lane/asphalt_pit_lane_diff.jpg"))
+			mat.set_shader_parameter("rough_tex", load(HD + "asphalt_pit_lane/asphalt_pit_lane_rough.jpg"))
+			mat.set_shader_parameter("normal_tex", load(HD + "asphalt_pit_lane/asphalt_pit_lane_nor_gl.jpg"))
 		GRASS, GRAVEL, RUNOFF:
 			mat = ground(sid)
 	cache[sid] = mat

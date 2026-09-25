@@ -1957,6 +1957,21 @@ Sonnet's measurements and gaps 1-4 (edge lines, road contrast, horizon silhouett
 - **Gap table:** gaps 5-8 added (trees, cars, armco, fog).
 - **Captures:** `track_screenshots.gd` pairs three Nordschleife shots with GT4 "look target" frames. The baseline was recaptured on current main, including NS-section 1-2: 26 shots and 4 comparison strips.
 
+## 2026-09-24  DONE Look-8 Road surface and edge lines  (Claude Opus 5.5)
+Gaps 1 and 2 of ART-DIRECTION.md, judged against the GT4 Nordschleife frames.
+- **Texture:** Poly Haven `asphalt_pit_lane` 2K (albedo, roughness and normal; CC0) in `assets/textures_hd/`. Imported with mipmaps and VRAM compression; the first import had no mipmaps, and the resulting aliasing looked like gravel.
+- **`shaders/road_v2.gdshader`:**
+  - The texture tiles every 3.5 m in both directions; it used to be stretched across the width.
+  - A second rotated sample, blended by noise, hides the repeat.
+  - 18 % of the sharp grain is kept over a softer mip, and the colour is pulled to near-neutral grey.
+  - Macro layer: broad drift, irregular stains and repair patches with tar seams.
+  - A normal map. Matte by day (metallic 0, roughness 0.72-0.95); wet-looking at night. The lamp streaks are unchanged.
+- **Edge lines:** `RoadBuilder.build()` writes UV2.x = metres to the nearer tarmac edge (the widths come from each station's section, keyed through 32-bit rounding to match the UVs), and `road_path.gd` passes it to `mesh()`. The shader paints a 0.12 m white line 0.25 m inside each edge, on every circuit.
+- **Measured road crops:** luminance std-dev 0.078-0.097 in three of four views, where the target is ≥ 0.07 (it was 0.036). The bonnet crop is 0.052, being mostly the car's shadow. Saturation is 0.21-0.27, a little over the 0.20 target.
+- **Baseline:** `docs/art/baseline/` recaptured.
+
+Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
+
 ## 2026-09-24  DONE Look-7  (Luna)
 Implemented only the kind-0 visible wall mesh: double 0.31 m corrugated rails with tops at 0.45 m and 0.75 m, a third rail for barriers taller than 0.9 m, and dark posts at no more than 3 m spacing. Rails use the existing galvanized armco texture and rails/posts share one material and one mesh per wall. `WallBuilder.faces()` and `wall_path.gd` collision generation are unchanged. Triangle count: 396 triangles for a 10 m open double-rail wall sampled every 2 m (280 rail, 56 end-cap, 60 post); generally `28 × segment_count × rail_count + 28 × rail_count` for open-end rails, plus `12 × post_count`.
 
