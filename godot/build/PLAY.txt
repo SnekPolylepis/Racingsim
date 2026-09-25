@@ -33,6 +33,8 @@ DRIVING
   Esc pauses. Controllers work too (left stick, triggers, bumpers); rebind in Settings > Controls.
 
 NEW IN PREVIEW 6
+  - NFS Underground-style nights: wet-road light streaks, glowing trackside buildings, and a
+    night sky that is never black.
   - Mixed forests with undergrowth: beech, oak, birch and spruce, ferns, brambles, long verge
     grass and hedges (Flugplatz).
   - Kerbs traced from aerial photos at Spa and the Nordschleife, placed where the paint really is.

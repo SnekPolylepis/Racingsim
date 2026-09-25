@@ -2292,3 +2292,6 @@ Sonnet paused this with verification owed. Finished here:
 - **Gates:** `run_gates.ps1 -All -Features` 37/37. The windowed features check passes 77/0; the earlier timeouts were CPU contention during bakes.
 - **Night shots** recaptured on the merged tree (`docs/rebuild/screenshots/look-9/`): wet headlight streak, sodium halos, lit structures, and a sky that is never black.
 - **Cost:** a full Spa lap sweep at night averages 0.96 ms per frame, worst 1.74 ms.
+
+## 2026-09-25  RELEASE Preview 6 updated with Look-9  (Claude Opus 5.5)
+Rebuilt v0.1.0-preview.6 from main with NFSU nights and replaced both zips and the release notes. The exported exe gave V2 EXPORT PASS and features 77/0 with empty stderr.
