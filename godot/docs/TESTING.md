@@ -134,3 +134,13 @@ There is no macOS CI workflow; macOS exports are built locally from the macOS pr
 The preset embeds resources in one Windows x64 executable. Keep the Godot license and third-party notices beside it, plus `PLAY.txt`. `tests/*`, `tools/*`, `packaging/*` and `build/*` are excluded from game resources; the runtime verification script is included so the exported product can be exercised. JSON data/tracks and Markdown docs must be explicitly included. The macOS preset creates a universal ad-hoc signed app; see MACOS.md. Public notarization, installers, multiplayer, steering-wheel FFB and nonlocal GPU validation are not established by local delivery.
 
 Historical PS2/Simcade and console-frontend acceptance records for the deleted game are in [PS2-SIMCADE-REPORT.md](PS2-SIMCADE-REPORT.md) and [PS2-FOLLOWUP-REPORT.md](PS2-FOLLOWUP-REPORT.md).
+
+## CHI-01 acceptance (2026-09-25)
+
+Chicago joins the existing all-car / both-mode lap suite. Its `tests/v2/chicago.gd` gate validates
+road coverage, grade, headroom and stacked-deck timing/contact separation. For targeted laps use
+`--script tests/v2/laps.gd -- --track=chicago`; optional `--car roadster` etc. still applies.
+Windowed `--script tests/v2/chicago_screenshots.gd -- --v2-flow-test --v2-track=chicago` captures
+20 real-renderer views, including labelled head-turn sightlines. Recorded M4 validation and
+portable command arguments live in `docs/rebuild/chicago/`; screenshots are in
+`docs/rebuild/screenshots/chicago/`. These runs do not establish Intel or Windows GPU performance.

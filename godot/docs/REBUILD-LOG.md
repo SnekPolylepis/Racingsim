@@ -2301,3 +2301,35 @@ Rebuilt v0.1.0-preview.6 from main with NFSU nights and replaced both zips and t
 
 ## 2026-09-25 CLAIM CHI-01 (Codex)
 Owner assigned the complete Chicago circuit; branch `rb/CHI-01-chicago`. All work, including this claim, stays on the branch; no main changes or merge, overriding the queue default. Scope: Chicago generator/data/scenery, track registration and export integration, probes/laps/screenshots, and corresponding documentation. Jev route HIGH 0.37.
+
+## 2026-09-25 VERIFY CHI-01 (Codex)
+
+Implemented on `rb/CHI-01-chicago`; owner explicitly requires an unmerged branch. The 8,123.44 m
+Chicago circuit includes Michigan Avenue, Jackson Drive, Lake Shore Drive and overlapping Lower /
+Upper Wacker decks, with authored harbor/south connectors. Approximate OSM geography and original
+low-poly landmarks (Bean, Willis Tower, Navy Pier), river/lake, park trees, city facades, barriers,
+markings and street signs. Maximum authored grade 6.01%; lower/upper road elevations 0 / 8 m.
+Track registration, export inputs/probe, cache invalidation, four-circuit picker expectation and lap
+baselines are integrated. Other tracks' physics/geometry and vehicle code are unchanged.
+
+Mac M4 / Godot 4.6.2 evidence is in `docs/rebuild/chicago/`:
+- Final `python3 godot/tools/ci_gates.py --godot <Godot> --jobs 2`: **37/37**, zero allowed failures.
+  First run was 36/37 due to the front-end test's old three-track expectation; corrected to four
+  and the complete suite re-run successfully. Includes 24 all-track/car/mode lap combinations.
+- All **6** performance-marked suites re-run serially with `RACINGSIM_PERF_GATES=1`: PASS.
+- Chicago geometry probe: **21/21**, including full road-width sampling, headroom, both deck
+  contacts/projection and timing-gate isolation. All six Chicago laps: zero off-track, wall or prop
+  contacts. Simulation / Simcade seconds: roadster 250.896 / 246.492; GT 189.742 / 187.000;
+  296 GT3 187.529 / 183.337. Baselines preserve the other tracks' recorded values.
+- Windowed `-- --features --v2-flow-test`: **77/77**. Real renderer, mouse/key/pad UI checks.
+- `chicago_screenshots.gd`: **20** day/night driving and head-turn sightline captures reviewed,
+  zero errors after fixing the harness's initial null-track access and freeing its helper tree.
+  Geometry winding corrected during visual review; repeated deck/column visuals batched (Lower
+  Wacker night view 533 -> 115 draw calls); geometry/collisions remain aligned.
+- `bash godot/packaging/build-macos.sh`: PASS, universal Mac app and zip generated locally; ad-hoc
+  signature verified. Packaged `--v2-export-check`: PASS (includes Chicago); packaged Chicago
+  `--v2-smoke`: PASS. No public release replaced and no main merge.
+
+Geographic scaffold and route map: `trackgen/data/chicago/README.md` / `route.svg`. The city is an
+authored PS2-style blockout, not a surveyed city model or the NASCAR circuit. Daylight and night
+sightlines are separate from full driving tests; Intel/Windows hardware were not tested locally.

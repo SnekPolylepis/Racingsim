@@ -1,0 +1,24 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+
+PASS TrackAsset contract: []
+PASS Bake without warnings
+PASS Closed lap length 8123.4 m
+PASS Full lap tarmac width ±7 m: 0 misses
+PASS Surface/line height error 0.0048 m
+PASS Maximum grade 6.01%
+PASS 3 m headroom throughout lap: 0 intrusions
+PASS Wacker deck at 0 m
+PASS Projection selects 0 m deck
+PASS Wacker deck at 8 m
+PASS Projection selects 8 m deck
+PASS Upper road cannot trigger lower timing gates
+PASS Grid slot on tarmac
+PASS Grid slot on tarmac
+PASS Grid slot on tarmac
+PASS Grid slot on tarmac
+PASS Landmark: Bean
+PASS Landmark: Willis Tower
+PASS Landmark: Navy Pier
+PASS Landmark: Chicago River
+PASS Landmark: Lake Michigan
+CHICAGO RESULTS {"checks":21,"failures":[],"length_m":8123.43618232012,"max_grade":0.0601496277112701}

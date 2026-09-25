@@ -1,0 +1,154 @@
+{
+  "final-gates": {
+    "command": [
+      "python3",
+      "godot/tools/ci_gates.py",
+      "--godot",
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--jobs",
+      "2"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 314.4,
+    "log": "chicago-final-gates.log"
+  },
+  "perf-chassis_spike": {
+    "command": [
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/chassis_spike.gd",
+      "--",
+      "--part",
+      "cost"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 1.0,
+    "log": "chicago-perf-chassis_spike.log"
+  },
+  "perf-footprint": {
+    "command": [
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/footprint.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 4.5,
+    "log": "chicago-perf-footprint.log"
+  },
+  "perf-barrier": {
+    "command": [
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/barrier.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 1.5,
+    "log": "chicago-perf-barrier.log"
+  },
+  "perf-props": {
+    "command": [
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/props.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 6.4,
+    "log": "chicago-perf-props.log"
+  },
+  "perf-track_asset": {
+    "command": [
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/track_asset.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 3.3,
+    "log": "chicago-perf-track_asset.log"
+  },
+  "perf-terrain": {
+    "command": [
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--headless",
+      "--path",
+      "godot",
+      "--script",
+      "tests/v2/terrain.gd"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 10.7,
+    "log": "chicago-perf-terrain.log"
+  },
+  "features": {
+    "command": [
+      "tools/Godot.app/Contents/MacOS/Godot",
+      "--path",
+      "godot",
+      "--",
+      "--features",
+      "--v2-flow-test"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 85.4,
+    "log": "chicago-features.log"
+  },
+  "mac-build": {
+    "command": [
+      "bash",
+      "godot/packaging/build-macos.sh"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 11.0,
+    "log": "chicago-mac-build.log"
+  },
+  "export-check": {
+    "command": [
+      "build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
+      "--headless",
+      "--",
+      "--v2-export-check",
+      "--v2-flow-test"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 15.3,
+    "log": "chicago-export-check.log"
+  },
+  "export-chicago-smoke": {
+    "command": [
+      "build/macos/Racing Sim.app/Contents/MacOS/Racing Sim",
+      "--headless",
+      "--",
+      "--v2-smoke",
+      "--v2-track=chicago",
+      "--v2-flow-test"
+    ],
+    "pass": true,
+    "exit": 0,
+    "seconds": 1.0,
+    "log": "chicago-export-chicago-smoke.log"
+  }
+}

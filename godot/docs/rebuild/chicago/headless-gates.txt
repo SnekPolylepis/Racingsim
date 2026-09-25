@@ -1,0 +1,44 @@
+Gates CI: 37 selected, 1 skipped. Logs: <checkout>/godot/tests/logs/ci
+Running up to 2 suites concurrently using <source-snapshot>/godot/tools/Godot.app/Contents/MacOS/Godot
+
+PASS  surfaces                             217.4s  34 checks, 0 failures
+PASS  suspension                             8.8s  12 checks, 0 failures
+PASS  static_friction                        4.0s  6 checks, 0 failures
+PASS  energy_wall                            9.4s  4 checks, 0 failures
+PASS  chassis_spike                        248.3s  13 checks, 0 failures
+PASS  flat_equivalence roadster             22.8s  4 checks, 0 failures
+PASS  flat_equivalence gt                   22.0s  4 checks, 0 failures
+PASS  aids_simcade roadster simulation       3.7s  10 checks, 0 failures
+PASS  flat_equivalence f296gt3              16.8s  4 checks, 0 failures
+PASS  aids_simcade roadster simcade          8.5s  28 checks, 0 failures
+PASS  aids_simcade gt simulation             4.0s  10 checks, 0 failures
+PASS  aids_simcade f296gt3 simulation        4.1s  10 checks, 0 failures
+PASS  aids_simcade gt simcade                9.2s  28 checks, 0 failures
+PASS  footprint                              4.5s  10 checks, 0 failures
+PASS  aids_simcade f296gt3 simcade           9.5s  28 checks, 0 failures
+PASS  barrier                                1.5s  9 checks, 0 failures
+PASS  props                                  6.5s  13 checks, 0 failures
+PASS  front_end                              1.3s  29 checks, 0 failures
+PASS  car_models                             0.4s  56 checks, 0 failures
+PASS  track_asset                            3.4s  23 checks, 0 failures
+PASS  kerb_map                               0.4s  12 checks, 0 failures
+PASS  race                                  11.4s  10 checks, 0 failures
+PASS  particles                              0.3s  9 checks, 0 failures
+PASS  road_tool_v2                           1.4s  11 checks, 0 failures
+PASS  road_tool                              3.2s  16 checks, 0 failures
+PASS  walls                                  3.0s  8 checks, 0 failures
+PASS  proving_ground                        21.0s  26 checks, 0 failures
+PASS  laps roadster                        110.2s  8 checks, 0 failures
+PASS  laps gt                               92.2s  8 checks, 0 failures
+PASS  terrain                               12.9s  7 checks, 0 failures
+PASS  road_density                           1.6s  6 checks, 0 failures
+PASS  scenery                                9.9s  11 checks, 0 failures
+PASS  test_surfaces_scene                    1.8s  14 checks, 0 failures
+PASS  chicago                                1.7s  21 checks, 0 failures
+PASS  nordschleife_s1                       10.8s  7 checks, 0 failures
+PASS  parse check                            0.4s  clean
+PASS  laps f296gt3                          89.5s  8 checks, 0 failures
+
+======================================================================
+ALL GATES PASSED: 37 run (37 pass, 0 allowed failure, 0 failed) in 513.2s wall clock
+======================================================================
