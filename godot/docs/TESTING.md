@@ -135,6 +135,28 @@ The preset embeds resources in one Windows x64 executable. Keep the Godot licens
 
 Historical PS2/Simcade and console-frontend acceptance records for the deleted game are in [PS2-SIMCADE-REPORT.md](PS2-SIMCADE-REPORT.md) and [PS2-FOLLOWUP-REPORT.md](PS2-FOLLOWUP-REPORT.md).
 
+## CHI-01 acceptance (2026-09-25)
+
+Chicago joins the existing all-car / both-mode lap suite. Its `tests/v2/chicago.gd` gate validates
+road coverage, grade, headroom and stacked-deck timing/contact separation. For targeted laps use
+`--script tests/v2/laps.gd -- --track=chicago`; optional `--car roadster` etc. still applies.
+Windowed `--script tests/v2/chicago_screenshots.gd -- --v2-flow-test --v2-track=chicago` captures
+20 real-renderer views, including labelled head-turn sightlines. Recorded M4 validation and
+portable command arguments live in `docs/rebuild/chicago/`; screenshots are in
+`docs/rebuild/screenshots/chicago/`. These runs do not establish Intel or Windows GPU performance.
+
+Nighttime refinement evidence is recorded separately in `docs/rebuild/chicago/night-refinement/`
+and `docs/rebuild/screenshots/chicago-night-refined/` (the capture script's current destination).
+The Chicago probe also saves/reloads a packed track, then checks four Afterhours/daylight toggles
+of both the wheel's emissive material and plaza floodlight visibility.
+
+For the night integration check against an exported Mac pack, run the Godot editor binary with
+`--main-pack "godot/build/macos/Racing Sim.app/Contents/Resources/Racing Sim.pck" --script
+<absolute-path-to-godot/tests/v2/chicago_export_night.gd> -- --v2-flow-test` (with a timeout).
+It loads the shipped resources, switches night/day/night, and saves a windowed capture in
+`user://native-tests/chicago-export-night.png`. Use the editor's script runner for this harness;
+the release executable is tested separately with `--v2-export-check` and `--v2-smoke`.
+
 ## Visual review (graphics only, not a gate)
 
 `tests/visual/track_review.gd` is kept apart from the physics and drivability gates. It judges nothing about

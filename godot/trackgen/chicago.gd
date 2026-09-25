@@ -11,11 +11,30 @@ const NightGlow = preload("res://scripts/track/night_glow.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
+const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
 const DATA = "res://trackgen/data/chicago/route.json"
+## Named corners for the visual review: [route.json point index, name]. Stations are found on the road.
+const CORNERS = [
+	[2, "Jackson Turn"],
+	[3, "Lakefront Turn"],
+	[5, "Lake Shore Drive"],
+	[8, "Navy Pier View"],
+	[9, "Harbor Connector"],
+	[11, "Lower Wacker Portal"],
+	[14, "Michigan Crossing"],
+	[17, "River Bend"],
+	[20, "Wacker West Bend"],
+	[23, "South Connector"],
+	[26, "Upper Wacker Portal"],
+	[27, "Willis Tower View"],
+	[29, "Upper Wacker Bend"],
+	[33, "Upper River Bend"],
+	[36, "Michigan Turn"]
+]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 6
+const CACHE_REVISION = 12
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -165,6 +184,10 @@ static func build_asset() -> Node3D:
 	)
 	attach(asset, asset, road, "Main")
 	road.bake()
+	var corners = {}
+	for corner in CORNERS:
+		corners[corner[1]] = road.curve.get_closest_offset(world(data().points[corner[0]]))
+	asset.set_meta("corners", corners)
 	var timing = asset.get_node("TimingLine")
 	timing.set_meta("sector_offsets", [road.last_bake.length / 3.0, road.last_bake.length * 2.0 / 3.0])
 	var bot = Path3D.new()
@@ -192,6 +215,8 @@ static func build_asset() -> Node3D:
 	add_lower_deck(asset, scenery, road)
 	add_road_details(asset, scenery, road)
 	add_night_details(asset, scenery, road)
+	# CHI-LOOK-01: signals, crosswalks and stop lines at the cross streets.
+	ChicagoFurniture.build(asset, scenery, road.last_bake.stations, facade_box, night_material, attach)
 	add_park_trees(asset)
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
 	add_parked_cars(asset, scenery, road)
@@ -470,7 +495,8 @@ static func add_loop_landmarks(
 	asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material
 ) -> void:
 	# Wrigley Building: twin cream glazed-terra-cotta towers and clock crown.
-	var wrigley = world([41.8882, -87.6246, 8])
+	# CHI-LOOK-01: on the east side of Michigan Avenue, as in the city; it stood on the Michigan turn's road.
+	var wrigley = world([41.8882, -87.6246, 8]) + Vector3(ChicagoCity.WRIGLEY_SHIFT, 0, 0)
 	var terra_cotta_bands: Array = []
 	for tower in [[-31.0, 138.0, 35.0], [27.0, 91.0, 31.0]]:
 		var center = wrigley + Vector3(tower[0], tower[1] * .5, 0)
@@ -545,24 +571,27 @@ static func add_river_bridges(asset: Node3D, parent: Node) -> void:
 	var steel_boxes: Array = []
 	var deck_boxes: Array = []
 	var house_boxes: Array = []
+	# CHI-LOOK-01: the bridges run north-south across the east-west river (they were laid along it), and sit
+	# under the street level instead of 1.2 m above it. Bridge houses stand at the far (north) corners only,
+	# clear of the Michigan turn.
 	for span in spans:
-		var anchor = world([span[1], span[2], 8])
+		var anchor = world([span[1], span[2], 8]) + Vector3(0, -1.25, 0)
 		var length: float = span[3]
-		deck_boxes.append([anchor, Vector3(length, 2.4, 23)])
+		deck_boxes.append([anchor, Vector3(23, 2.4, length)])
 		for side in [-1, 1]:
-			steel_boxes.append([anchor + Vector3(0, 8, side * 10.4), Vector3(length, 1.1, 1.1)])
+			steel_boxes.append([anchor + Vector3(side * 10.4, 8, 0), Vector3(1.1, 1.1, length)])
 			for i in range(0, int(length), 8):
-				var x = -length * .5 + i
-				steel_boxes.append([anchor + Vector3(x, 5.0, side * 10.4), Vector3(.75, 7.0, .75)])
+				var z = -length * .5 + i
+				steel_boxes.append([anchor + Vector3(side * 10.4, 5.0, z), Vector3(.75, 7.0, .75)])
 				steel_boxes.append(
 					[
-						anchor + Vector3(x + 4, 5.0, side * 10.4),
+						anchor + Vector3(side * 10.4, 5.0, z + 4),
 						Vector3(8.5, .55, .55),
-						Basis(Vector3.UP, -0.74)
+						Basis(Vector3.UP, PI * .5 + 0.74)
 					]
 				)
 		for side in [-1, 1]:
-			var house = anchor + Vector3(0, 0, side * 26)
+			var house = anchor + Vector3(side * 22, 0, -(length * .5 + 12))
 			house_boxes.append([house + Vector3(0, 8, 0), Vector3(18, 16, 21)])
 			house_boxes.append([house + Vector3(0, 16.5, 0), Vector3(20, 1.2, 23)])
 			var roof = PrismMesh.new()
@@ -583,6 +612,10 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var count = 0
 	var deck_tool = SurfaceTool.new()
 	deck_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# CHI-LOOK-01: exposed steel beams and girders under the deck (visual only, no collision), as in real
+	# Lower Wacker. They stay above the 6.05 m luminaires' clearance line.
+	var beam_tool = SurfaceTool.new()
+	beam_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in range(0, st.size(), 8):
 		var at = st[i]
 		# Only the lower Wacker road, not the exposed game-only connector at the south end.
@@ -592,6 +625,10 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		var basis = Basis.looking_at(tangent, Vector3.UP)
 		var p = at.pos + Vector3(0, 6.7, 0)
 		facade_box(deck_tool, p, Vector3(23, 1.1, 13), Color.WHITE, basis)
+		facade_box(beam_tool, at.pos + Vector3(0, 5.85, 0), Vector3(22.6, 0.6, 0.55), Color.WHITE, basis)
+		for side in [-1, 1]:
+			var girder = at.pos + basis.x * side * 5.0 + Vector3(0, 5.75, 0)
+			facade_box(beam_tool, girder, Vector3(0.45, 0.8, 12.6), Color.WHITE, basis)
 		solid_box(asset, "Ceiling%d" % count, Transform3D(basis, p), Vector3(23, 1.1, 13))
 		if count % 2 == 0:
 			for side in [-1, 1]:
@@ -608,6 +645,10 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var deck_mesh = deck_tool.commit()
 	deck_mesh.surface_set_material(0, concrete)
 	mesh_node(asset, parent, "WackerDeckAndColumns", deck_mesh, Vector3.ZERO)
+	beam_tool.generate_normals()
+	var beam_mesh = beam_tool.commit()
+	beam_mesh.surface_set_material(0, material(Color("3f4443")))
+	mesh_node(asset, parent, "WackerBeams", beam_mesh, Vector3.ZERO)
 
 
 static func add_road_details(asset: Node3D, parent: Node, road: RoadPath) -> void:
@@ -712,6 +753,8 @@ static func night_material(color: Color, energy: float) -> StandardMaterial3D:
 static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var warm = night_material(Color("ffd19a"), 1.7)
 	var cool = night_material(Color("a6d6ef"), 1.5)
+	# High-pressure sodium orange for Lower Wacker's ceiling fixtures (lower-wacker-drive.jpg).
+	var sodium = night_material(Color("ffa540"), 2.0)
 	var fixtures = SurfaceTool.new()
 	fixtures.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# Batched ceiling luminaires stay above the unchanged driving clearance.
@@ -730,7 +773,7 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 			)
 	fixtures.generate_normals()
 	var mesh = fixtures.commit()
-	mesh.surface_set_material(0, warm)
+	mesh.surface_set_material(0, sodium)
 	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
 	var pier = world(data().landmarks["Navy Pier"])
 	for i in 6:
@@ -872,13 +915,26 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 	var f = road_frame(road)
 	var c = f[0]
 	var length = c.get_baked_length()
-	var scenes = []
+	# CHI-LOOK-01: one MultiMesh per car model and 400 m chunk instead of a node per car (825 draw calls
+	# in the worst view before), still culled beyond 320 m.
+	var pieces = []
 	for m in PARKED:
-		scenes.append(load("res://assets/chicago/cars/%s.glb" % m))
+		var root = load("res://assets/chicago/cars/%s.glb" % m).instantiate()
+		var model = []
+		for mi in root.find_children("*", "MeshInstance3D", true, false):
+			var local = Transform3D.IDENTITY
+			var node: Node3D = mi
+			while node != null and node != root:
+				local = node.transform * local
+				node = node.get_parent() as Node3D
+			model.append([mi.mesh, local])
+		root.free()
+		pieces.append(model)
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 60601
 	var holder = Node3D.new()
 	attach(asset, parent, holder, "ParkedCars")
+	var groups = {}
 	var count = 0
 	var s = 40.0
 	while s < length - 40.0:
@@ -893,14 +949,29 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 			if rng.randf() < 0.5:
 				fwd = -fwd
 			if not keep_clear(p, 40.0) and fwd.length_squared() > 1e-4:
-				var car = scenes[rng.randi() % scenes.size()].instantiate()
+				var model = rng.randi() % pieces.size()
 				# Kenney cars are 2.75 m long along +Z; 1.65 makes a 4.5 m car.
 				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.65)
-				car.transform = Transform3D(basis, p)
-				attach(asset, holder, car, "Car%03d" % count)
-				for mi in car.find_children("*", "MeshInstance3D", true, false):
-					mi.visibility_range_end = 320.0
-					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				var key = Vector3i(model, floori(p.x / 400.0), floori(p.z / 400.0))
+				if not groups.has(key):
+					groups[key] = []
+				groups[key].append(Transform3D(basis, p))
 				count += 1
 		s += rng.randf_range(11.0, 26.0)
+	for key in groups:
+		var list: Array = groups[key]
+		var piece_index = 0
+		for piece in pieces[key.x]:
+			var instances = MultiMesh.new()
+			instances.transform_format = MultiMesh.TRANSFORM_3D
+			instances.mesh = piece[0]
+			instances.instance_count = list.size()
+			for i in list.size():
+				instances.set_instance_transform(i, list[i] * piece[1])
+			var node = MultiMeshInstance3D.new()
+			node.multimesh = instances
+			node.visibility_range_end = 320.0
+			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			attach(asset, holder, node, "Cars_%d_%d_%d_%d" % [key.x, key.y, key.z, piece_index])
+			piece_index += 1
 	asset.set_meta("parked_cars", count)

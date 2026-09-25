@@ -48,7 +48,7 @@ $m = Get-Content $manifest -Raw | ConvertFrom-Json
 foreach ($t in $m.tracks.PSObject.Properties) {
     $shots = $t.Value.shots
     $changed = @($shots | Where-Object { $_.changed })
-    Write-Host ("{0}: {1} shots, {2} changed vs baseline" -f $t.Name, $shots.Count, $changed.Count)
+    Write-Host ("{0}: {1} shots, {2} changed vs baseline, mean draw calls {3}" -f $t.Name, $shots.Count, $changed.Count, $t.Value.mean_draws)
     foreach ($s in ($changed | Sort-Object score -Descending)) { Write-Host ("    {0,6}  {1}" -f $s.score, $s.file) }
 }
 Write-Host "Contact sheets: $out\<track>-sheet.png"

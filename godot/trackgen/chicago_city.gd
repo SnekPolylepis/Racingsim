@@ -37,6 +37,14 @@ const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
 
+## The Wrigley Building stands this far east of its route.json point (CHI-LOOK-01), clear of the road.
+const WRIGLEY_SHIFT = 58.0
+
+## Buildings under this height, and flat surfaces, are culled beyond these distances (m); fog ends at 1900-2800.
+const LOW_BUILDING_M = 40.0
+const LOW_RANGE_M = 900.0
+const FLAT_RANGE_M = 1800.0
+
 static var _mats = {}
 
 
@@ -50,8 +58,14 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	for name in OWN_LANDMARKS:
 		if landmarks.has(name):
 			var p = world_of.call(landmarks[name])
+			if name == "Wrigley Building":
+				p.x += WRIGLEY_SHIFT
 			skip_at.append([Vector2(p.x, p.z), OWN_LANDMARKS[name]])
 	var chunks = {}
+	# LOD (CHI-LOOK-01): low buildings and flat ground/street surfaces go to their own chunk sets with a
+	# visibility range; towers stay in `chunks` so the skyline reaches the fog.
+	var low_chunks = {}
+	var flat_chunks = {}
 	var stats = {"buildings": 0, "roads": 0, "ground_tiles": 0, "water": 0, "parks": 0}
 	var holder = Node3D.new()
 	holder.name = "City"
@@ -65,9 +79,10 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if ring.size() < 3 or _touches_route(route, ring, 6.0) or _near_any(skip_at, _centroid(ring)):
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
+		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
 		_building(
-			_st(chunks, _centroid(ring), kind),
-			_st(chunks, _centroid(ring), "roof"),
+			_st(target, _centroid(ring), kind),
+			_st(target, _centroid(ring), "roof"),
 			ring,
 			float(b.h),
 			fmod(i * 0.6180339, 1.0)
@@ -77,7 +92,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	for r in doc.roads:
 		var pts = _ring(r.p)
 		var w = float(r.w)
-		var kept = _road(chunks, route, pts, w)
+		var kept = _road(flat_chunks, route, pts, w)
 		if kept:
 			stats.roads += 1
 	# Water, river walls and parks.
@@ -108,23 +123,27 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		while z < hi.y:
 			var c = Vector2(x + tile * 0.5, z + tile * 0.5)
 			if not _in_water(water_polys, c) and not _near_low_route(route, c, 26.0):
-				_quad_flat(_st(chunks, c, "ground"), Vector2(x, z), tile, STREET_Y - 0.04)
+				_quad_flat(_st(flat_chunks, c, "ground"), Vector2(x, z), tile, STREET_Y - 0.04)
 				stats.ground_tiles += 1
 			z += tile
 		x += tile
 	# Commit every chunk's surfaces.
-	for key in chunks:
-		var mesh = ArrayMesh.new()
-		for mat_name in chunks[key]:
-			var st: SurfaceTool = chunks[key][mat_name]
-			st.set_material(material(mat_name))
-			st.commit(mesh)
-		var node = MeshInstance3D.new()
-		node.name = "Chunk_%d_%d" % [key.x, key.y]
-		node.mesh = mesh
-		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-		holder.add_child(node)
-		node.owner = asset
+	for group in [
+		[chunks, 0.0, "Chunk"], [low_chunks, LOW_RANGE_M, "Low"], [flat_chunks, FLAT_RANGE_M, "Flat"]
+	]:
+		for key in group[0]:
+			var mesh = ArrayMesh.new()
+			for mat_name in group[0][key]:
+				var st: SurfaceTool = group[0][key][mat_name]
+				st.set_material(material(mat_name))
+				st.commit(mesh)
+			var node = MeshInstance3D.new()
+			node.name = "%s_%d_%d" % [group[2], key.x, key.y]
+			node.mesh = mesh
+			node.visibility_range_end = group[1]
+			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+			holder.add_child(node)
+			node.owner = asset
 	return stats
 
 
