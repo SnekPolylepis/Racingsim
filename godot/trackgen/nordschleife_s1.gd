@@ -19,7 +19,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
-const CACHE_REVISION = 5
+const CACHE_REVISION = 6
 
 
 static func read_json(path: String) -> Dictionary:
