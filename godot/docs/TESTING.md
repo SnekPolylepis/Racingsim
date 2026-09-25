@@ -134,3 +134,27 @@ There is no macOS CI workflow; macOS exports are built locally from the macOS pr
 The preset embeds resources in one Windows x64 executable. Keep the Godot license and third-party notices beside it, plus `PLAY.txt`. `tests/*`, `tools/*`, `packaging/*` and `build/*` are excluded from game resources; the runtime verification script is included so the exported product can be exercised. JSON data/tracks and Markdown docs must be explicitly included. The macOS preset creates a universal ad-hoc signed app; see MACOS.md. Public notarization, installers, multiplayer, steering-wheel FFB and nonlocal GPU validation are not established by local delivery.
 
 Historical PS2/Simcade and console-frontend acceptance records for the deleted game are in [PS2-SIMCADE-REPORT.md](PS2-SIMCADE-REPORT.md) and [PS2-FOLLOWUP-REPORT.md](PS2-FOLLOWUP-REPORT.md).
+
+## Visual review (graphics only, not a gate)
+
+`tests/visual/track_review.gd` is kept apart from the physics and drivability gates. It judges nothing about
+handling, lap times or collision; it only captures what each track looks like, so graphics and scenery changes
+can be checked shot by shot. It is windowed (never `--headless`) and not listed in `tools/gates.json`.
+
+    powershell -ExecutionPolicy Bypass -File tools/visual_review.ps1 [-Tracks spa,nordschleife] [-Label look-13] [-Night] [-Bonnet]
+
+- **What it captures, per track:**
+  - every corner at approach (-120 m), apex and exit (+80 m);
+  - every straight longer than 300 m (another frame every 400 m on long ones);
+  - the scenic spots listed in `SCENIC`.
+- **Where runs go:** `godot/visual-review/<stamp>[-label]/` (gitignored), with one PNG per shot,
+  `<track>-sheet.png` contact sheets and `manifest.json`.
+- **Comparison:** each run is diffed against the previous run, or the one named with `-Baseline`. Every shot gets
+  a change score and a before/after `-diff.png`, and shots scoring above 6 are listed as changed.
+- **Determinism:** the same build reruns at 0.0 on every shot, so any score means the image really changed.
+
+Workflow for a graphics change:
+1. Run a baseline.
+2. Make the change.
+3. Run again.
+4. Review the changed list and its diffs, plus the contact sheets for anything the change missed.
