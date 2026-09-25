@@ -94,7 +94,8 @@ void fragment() {
 	float line = exp(-pow(abs(lat * 1.6), 2.0));
 	shade *= 1.0 - rubber * 0.3 * line;
 	// Day: near-neutral grey (ART-DIRECTION: saturation <= 0.20); night: darker, slightly cool.
-	vec3 col = afterhours ? base * 0.95 * shade + vec3(.004, .005, .007) : base * 1.55 * shade;
+	// LOOK-NIGHT-01: night asphalt stays dark (GT4/NFSU nights): at 0.95 it lit to a cream sheet.
+	vec3 col = afterhours ? base * 0.6 * shade + vec3(.003, .004, .006) : base * 1.55 * shade;
 	// White edge lines, `edge_line_inset` inside each tarmac edge, softened a little and worn by grain.
 	float line_d = abs(edge_dist - (edge_line_inset + edge_line_width * 0.5));
 	float aa = max(fwidth(edge_dist), 0.01);
@@ -124,8 +125,10 @@ void fragment() {
 				float lateral = exp(-pow(abs((lat - side * 0.65) * 1.7), 2.0));
 				float pool = fall * fall * exp(-pow(abs(lat - side * 0.8) * 0.9, 2.0));
 				float reflection = exp(-abs((lat - side * .35) * 5.5));
-				glow += fall * lateral + pool * .25;
-				reflected += neon * (fall * lateral * (.06 + reflection * 1.2) + pool * .12);
+				glow += (fall * lateral + pool * .25) * .6;
+				// LOOK-NIGHT-01: streak 1.2 -> .45; at full strength the painted streaks of a lamp-lined
+				// straight merged into one cream band from the camera to the horizon.
+				reflected += neon * (fall * lateral * (.03 + reflection * .45) + pool * .08);
 			}
 		}
 	}
@@ -139,14 +142,19 @@ void fragment() {
 		float near_cam = pow(max(0.0, 1.0 - cam_dist / 26.0), 2.2);
 		float head_lat = exp(-pow(lat * 2.0, 2.0));
 		float head_glow = near_cam * head_lat;
-		glow += head_glow * 0.4;
-		reflected += vec3(1.0, 0.96, 0.88) * head_glow * 0.5;
+		// LOOK-NIGHT-01: faint, so it no longer paints a white patch round the car.
+		glow += head_glow * 0.1;
+		reflected += vec3(1.0, 0.96, 0.88) * head_glow * 0.12;
 	}
-	glow = min(glow, 1.2);
-	reflected = min(reflected, vec3(1.1));
+	// LOOK-NIGHT-01: lower caps, so a lamp-lined straight (Spa) is a row of pools, not one amber sheet.
+	glow = min(glow, 0.6);
+	reflected = min(reflected, vec3(0.55));
 	EMISSION = (OUTPUT_IS_SRGB ? to_srgb(reflected) : reflected) + col * 0.045;
 	ALBEDO = col + neon * glow * 0.18;
 	// Matte by day (no glare toward the sun); a wet-looking sheen at night for the NFSU lamp streaks.
-	METALLIC = afterhours ? 0.18 : 0.0;
-	ROUGHNESS = afterhours ? mix(0.3, 0.5, wear) : mix(0.72, 0.95, wear) - seam * 0.1 + paint * 0.05;
+	// LOOK-NIGHT-01: a damp sheen, not a mirror: at roughness 0.3 / metallic 0.18 the headlights and sky
+	// washed the whole road cream. The amber streaks are emission and keep their gloss.
+	METALLIC = afterhours ? 0.04 : 0.0;
+	SPECULAR = afterhours ? 0.3 : 0.5;
+	ROUGHNESS = afterhours ? mix(0.55, 0.75, wear) : mix(0.72, 0.95, wear) - seam * 0.1 + paint * 0.05;
 }

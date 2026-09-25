@@ -2680,3 +2680,14 @@ Brought CHI-01, CHI-prelim, CHI-02 (city), CHI-03 (Sol: references, water) and C
 - **Water shader (CHI-03):** dropped the screen-texture "reflection" (it never rendered on Sol's host and wrote lit colour into albedo). At the grazing angle the near-mirror showed only the warm horizon haze, so roughness is now 0.24-0.3 and specular 0.35.
 Visual review (tools/visual_review.ps1 -Tracks chicago): only the nine lakefront shots changed (scores 7.6-9.8). Gates `-All -Features` 39/39.
 Open: Wrigley and Tribune facades, the red/white kerbs on the street edge, night road glare (LOOK-NIGHT-01), about 900 draw calls.
+
+## 2026-09-25  DONE LOOK-NIGHT-01  (Claude Opus 5.5)
+Night road glare. Judged with tools/visual_review.ps1 -Night on spa, nordschleife_s1 and chicago (runs night-base to night-5). The tarmac washed to a cream sheet from four causes, fixed in order:
+1. **`road_v2.gdshader` night surface:** albedo 0.95 to 0.6, metallic 0.18 to 0.04, roughness 0.3-0.5 to 0.55-0.75, specular 0.3. It's a damp sheen, not a mirror.
+2. **Headlights (`visuals.gd`):** energy 16 to 4.5, attenuation 0.5 to 1.1, range 80 to 60, angle 18 with a firmer edge. They were flooding the road instead of throwing a pool.
+3. **Look-9 camera-proximity streak:** cut to a quarter; it painted a white patch round the car.
+4. **Lamp streak emission and pool spotlights:**
+   - painted wet streaks 1.2 to 0.45, glow x0.6, caps 1.2 / 1.1 to 0.6 / 0.55;
+   - sodium pool spots energy 3.2 to 1.7, specular 0.6 to 0.2.
+   On lamp-lined straights the streaks had merged into one band.
+Day unchanged (Spa day run: 0 of 53 shots changed). Before/after: docs/rebuild/screenshots/look-night-01/before-after.png. Gates `-All -Features` 39/39.

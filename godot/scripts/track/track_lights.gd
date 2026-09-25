@@ -457,7 +457,7 @@ static func make_pool(parent: Node, count = POOL) -> Array:
 		light.rotation.x = -PI / 2
 		light.light_color = SODIUM
 		light.light_energy = 0.0
-		light.light_specular = .6
+		light.light_specular = .2
 		light.spot_range = POOL_RANGE
 		light.spot_angle = 64.0
 		light.spot_attenuation = .8
@@ -471,7 +471,9 @@ static func make_pool(parent: Node, count = POOL) -> Array:
 
 ## Move the pool to the lamps nearest `eye`. Each light fades to zero as its lamp's distance reaches the
 ## next-nearest lamp left out of the pool, so reassigning a light never pops.
-static func update_pool(pool: Array, asset: Node, eye: Vector3, night: bool, energy = 3.2) -> void:
+## LOOK-NIGHT-01: energy 3.2 with specular .6 turned the tarmac round the camera into a cream fan on
+## lamp-lined straights; pools should read as amber patches under each lamp.
+static func update_pool(pool: Array, asset: Node, eye: Vector3, night: bool, energy = 1.7) -> void:
 	var lights = asset.get_node_or_null("Lights") if asset != null else null
 	var heads: PackedVector3Array = (
 		lights.get_meta("lamp_heads", PackedVector3Array()) if lights != null else PackedVector3Array()
