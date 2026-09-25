@@ -2630,3 +2630,9 @@ Setup: branch `rb/CHI-LOOK-01` from `rb/CHI-02-city` plus `main`. Chicago had no
 ## 2026-09-25  CHI-LOOK-01 iteration 5: elevated L lines  (Claude Sonnet 5)
 - **Problem:** no L structure anywhere; in the Loop it crosses the streets overhead (`michigan-ave-street.jpg`, far end).
 - **Fix:** `chicago_furniture.gd` `_elevated()`: at every 6th cross street (s = 441, 6649, 7424, and the ramp at 5797) a steel deck with girders, rails, piers and a two-car train whose window band glows at night, 7.2 m above the street (no collision, road headroom untouched). Scenic spots `l-line-michigan` and `l-line-upper-wacker` added to `track_review.gd`. Runs `20260925-1344-it5b` (day) and `-it5b-Night`, no baseline (new shots).
+
+## 2026-09-25  CHI-LOOK-01 iteration 6: bridges across the river, Wrigley off the road  (Claude Sonnet 5)
+- **Problem:** at the Michigan turn a 138 m grey slab stood in the road ahead (frame `056`/`058`). It was the Wrigley Building, placed on the route's own corner (x -43..-19 beside route point 35), and the three river bridges were laid east-west along the river instead of across it, with their decks 1.2 m above the street.
+- **Fix:** `add_river_bridges` builds the deck, trusses and diagonals along Z (north-south) with the deck top 5 cm under the street, and puts the bridge houses at the far corners only. The Wrigley towers are shifted 58 m east of the route (`ChicagoCity.WRIGLEY_SHIFT`, also moving the OSM clearing circle), which matches their side of Michigan Avenue. `CACHE_REVISION` 10.
+- **Runs:** `20260925-1346-it6-bridges`, `20260925-1347-it6-wrigley` (baseline: it4 day); changed: `058-corner-upper-river-bend-exit` (11.5), before/after in its diff. The bridge house and truss now read from the Michigan turn (`057-scenic-river-from-bridge`).
+- **Note for CHI-03:** the river ribbon centre (lat 41.889 at Michigan Ave) and the route's Michigan turn are about 80 m apart, so the route never crosses the river.

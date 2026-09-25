@@ -37,6 +37,9 @@ const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
 
+## The Wrigley Building stands this far east of its route.json point (CHI-LOOK-01), clear of the road.
+const WRIGLEY_SHIFT = 58.0
+
 static var _mats = {}
 
 
@@ -50,6 +53,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	for name in OWN_LANDMARKS:
 		if landmarks.has(name):
 			var p = world_of.call(landmarks[name])
+			if name == "Wrigley Building":
+				p.x += WRIGLEY_SHIFT
 			skip_at.append([Vector2(p.x, p.z), OWN_LANDMARKS[name]])
 	var chunks = {}
 	var stats = {"buildings": 0, "roads": 0, "ground_tiles": 0, "water": 0, "parks": 0}

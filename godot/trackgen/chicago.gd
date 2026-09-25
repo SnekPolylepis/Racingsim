@@ -34,7 +34,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 9
+const CACHE_REVISION = 10
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -495,7 +495,8 @@ static func add_loop_landmarks(
 	asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material
 ) -> void:
 	# Wrigley Building: twin cream glazed-terra-cotta towers and clock crown.
-	var wrigley = world([41.8882, -87.6246, 8])
+	# CHI-LOOK-01: on the east side of Michigan Avenue, as in the city; it stood on the Michigan turn's road.
+	var wrigley = world([41.8882, -87.6246, 8]) + Vector3(ChicagoCity.WRIGLEY_SHIFT, 0, 0)
 	var terra_cotta_bands: Array = []
 	for tower in [[-31.0, 138.0, 35.0], [27.0, 91.0, 31.0]]:
 		var center = wrigley + Vector3(tower[0], tower[1] * .5, 0)
@@ -570,24 +571,27 @@ static func add_river_bridges(asset: Node3D, parent: Node) -> void:
 	var steel_boxes: Array = []
 	var deck_boxes: Array = []
 	var house_boxes: Array = []
+	# CHI-LOOK-01: the bridges run north-south across the east-west river (they were laid along it), and sit
+	# under the street level instead of 1.2 m above it. Bridge houses stand at the far (north) corners only,
+	# clear of the Michigan turn.
 	for span in spans:
-		var anchor = world([span[1], span[2], 8])
+		var anchor = world([span[1], span[2], 8]) + Vector3(0, -1.25, 0)
 		var length: float = span[3]
-		deck_boxes.append([anchor, Vector3(length, 2.4, 23)])
+		deck_boxes.append([anchor, Vector3(23, 2.4, length)])
 		for side in [-1, 1]:
-			steel_boxes.append([anchor + Vector3(0, 8, side * 10.4), Vector3(length, 1.1, 1.1)])
+			steel_boxes.append([anchor + Vector3(side * 10.4, 8, 0), Vector3(1.1, 1.1, length)])
 			for i in range(0, int(length), 8):
-				var x = -length * .5 + i
-				steel_boxes.append([anchor + Vector3(x, 5.0, side * 10.4), Vector3(.75, 7.0, .75)])
+				var z = -length * .5 + i
+				steel_boxes.append([anchor + Vector3(side * 10.4, 5.0, z), Vector3(.75, 7.0, .75)])
 				steel_boxes.append(
 					[
-						anchor + Vector3(x + 4, 5.0, side * 10.4),
+						anchor + Vector3(side * 10.4, 5.0, z + 4),
 						Vector3(8.5, .55, .55),
-						Basis(Vector3.UP, -0.74)
+						Basis(Vector3.UP, PI * .5 + 0.74)
 					]
 				)
 		for side in [-1, 1]:
-			var house = anchor + Vector3(0, 0, side * 26)
+			var house = anchor + Vector3(side * 22, 0, -(length * .5 + 12))
 			house_boxes.append([house + Vector3(0, 8, 0), Vector3(18, 16, 21)])
 			house_boxes.append([house + Vector3(0, 16.5, 0), Vector3(20, 1.2, 23)])
 			var roof = PrismMesh.new()
