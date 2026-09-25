@@ -208,12 +208,53 @@ static func material(name: String) -> Material:
 	elif name == "roof":
 		mat = _plain(Color(0.24, 0.25, 0.26), 0.9)
 	elif name == "road":
-		mat = _triplanar(
-			"res://assets/textures_hd/asphalt_pit_lane/asphalt_pit_lane_diff.jpg",
-			4.0,
-			Color(0.62, 0.62, 0.64)
+		var road = StandardMaterial3D.new()
+		road.albedo_texture = load("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_diff_1k.jpg")
+		road.normal_enabled = true
+		road.normal_texture = load("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_nor_gl_1k.jpg")
+		road.roughness_texture = load("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_rough_1k.jpg")
+		road.uv1_triplanar = true
+		road.uv1_world_triplanar = true
+		road.uv1_scale = Vector3.ONE / 4.0
+		road.albedo_color = Color(0.74, 0.74, 0.76)
+		road.roughness = 0.9
+		road.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat = road
+	elif name == "sidewalk":
+		var pavement = StandardMaterial3D.new()
+		pavement.albedo_texture = load("res://assets/chicago/surfaces/pavement_05/pavement_05_diff_1k.jpg")
+		pavement.normal_enabled = true
+		pavement.normal_texture = load("res://assets/chicago/surfaces/pavement_05/pavement_05_nor_gl_1k.jpg")
+		pavement.roughness_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_rough_1k.jpg"
 		)
-	elif name == "sidewalk" or name == "ground" or name == "wall":
+		pavement.uv1_triplanar = true
+		pavement.uv1_world_triplanar = true
+		pavement.uv1_scale = Vector3.ONE / 3.0
+		pavement.albedo_color = Color(0.78, 0.77, 0.74)
+		pavement.roughness = 0.9
+		pavement.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat = pavement
+	elif name == "ground":
+		var pavement_ground = StandardMaterial3D.new()
+		pavement_ground.albedo_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_diff_1k.jpg"
+		)
+		pavement_ground.normal_enabled = true
+		pavement_ground.normal_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_nor_gl_1k.jpg"
+		)
+		pavement_ground.roughness_texture = load(
+			"res://assets/chicago/surfaces/pavement_05/pavement_05_rough_1k.jpg"
+		)
+		pavement_ground.uv1_triplanar = true
+		pavement_ground.uv1_world_triplanar = true
+		pavement_ground.uv1_scale = Vector3.ONE / 3.0
+		pavement_ground.albedo_color = Color(0.44, 0.45, 0.46)
+		pavement_ground.roughness = 0.95
+		pavement_ground.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat = pavement_ground
+	elif name == "wall":
 		mat = _triplanar(
 			TEX + "Concrete034/Concrete034_color.jpg",
 			3.0,

@@ -12,6 +12,10 @@ const POOL = 700
 const TARMAC = [0, 1, 4]
 const GRASS = 2
 const GRAVEL = 3
+## Atlas frame indices: smoke, dust, grass, gravel, sparks, scrape, scorch, backfire.
+const EFFECT_FRAMES = {
+	"smoke": 0, "dust": 1, "grass": 2, "gravel": 3, "sparks": 4, "scrape": 5, "scorch": 6, "backfire": 7
+}
 
 var soft: MultiMesh
 var glow: MultiMesh
@@ -27,6 +31,7 @@ var col = PackedColorArray()
 var gravity = PackedFloat32Array()
 var drag = PackedFloat32Array()
 var layer = PackedByteArray()
+var frame = PackedByteArray()
 var cursor = 0
 ## Emission carried between frames, per wheel and effect, so rates don't depend on frame rate.
 var owed = {}
@@ -43,6 +48,7 @@ func _init():
 		arr.resize(POOL)
 	col.resize(POOL)
 	layer.resize(POOL)
+	frame.resize(POOL)
 	for i in POOL:
 		life[i] = 0.0
 		age[i] = 1.0
@@ -54,23 +60,19 @@ func _layer(title: String, additive: bool) -> MultiMesh:
 	var mm = MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.use_colors = true
+	mm.use_custom_data = true
 	var quad = QuadMesh.new()
 	quad.size = Vector2.ONE
 	mm.mesh = quad
 	mm.instance_count = POOL
 	mm.visible_instance_count = 0
-	var mat = StandardMaterial3D.new()
-	mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	mat.billboard_keep_scale = true
-	mat.vertex_color_use_as_albedo = true
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_texture = _puff(additive)
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	if additive:
-		mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-	mat.no_depth_test = false
-	mat.disable_receive_shadows = true
+	var mat = ShaderMaterial.new()
+	mat.shader = (
+		preload("res://shaders/particles_atlas_add.gdshader")
+		if additive
+		else preload("res://shaders/particles_atlas.gdshader")
+	)
+	mat.set_shader_parameter("atlas", preload("res://assets/particles/particle_atlas.png"))
 	quad.material = mat
 	var inst = MultiMeshInstance3D.new()
 	inst.name = title
@@ -82,18 +84,6 @@ func _layer(title: String, additive: bool) -> MultiMesh:
 	return mm
 
 
-## A soft round puff (smoke and dust) or a hard bright dot (sparks and flames), 32 px.
-static func _puff(hard: bool) -> ImageTexture:
-	var img = Image.create(32, 32, false, Image.FORMAT_RGBA8)
-	for y in 32:
-		for x in 32:
-			var d = Vector2(x - 15.5, y - 15.5).length() / 15.5
-			var a = clampf(1.0 - d, 0.0, 1.0)
-			a = pow(a, 0.6) if hard else a * a * (3.0 - 2.0 * a)
-			img.set_pixel(x, y, Color(1, 1, 1, a))
-	return ImageTexture.create_from_image(img)
-
-
 func emit(
 	at: Vector3,
 	v: Vector3,
@@ -103,7 +93,8 @@ func emit(
 	c: Color,
 	g: float,
 	dr: float,
-	glow_layer: bool
+	glow_layer: bool,
+	effect_frame: int
 ) -> void:
 	var i = cursor
 	cursor = (cursor + 1) % POOL
@@ -117,6 +108,7 @@ func emit(
 	gravity[i] = g
 	drag[i] = dr
 	layer[i] = 1 if glow_layer else 0
+	frame[i] = effect_frame
 
 
 func live_count() -> int:
@@ -150,10 +142,12 @@ func advance(dt: float) -> void:
 		if layer[i] == 1:
 			glow.set_instance_transform(ng, xf)
 			glow.set_instance_color(ng, c)
+			glow.set_instance_custom_data(ng, Color(frame[i], 0.0, 0.0, 0.0))
 			ng += 1
 		else:
 			soft.set_instance_transform(ns, xf)
 			soft.set_instance_color(ns, c)
+			soft.set_instance_custom_data(ns, Color(frame[i], 0.0, 0.0, 0.0))
 			ns += 1
 	soft.visible_instance_count = ns
 	glow.visible_instance_count = ng
@@ -193,7 +187,8 @@ func update_car(car, dt: float) -> void:
 					Color(grey, grey, grey, 0.38),
 					-0.25,
 					0.9,
-					false
+					false,
+					EFFECT_FRAMES.smoke
 				)
 		elif sid == GRASS and speed > 6.0:
 			for k in _count("grass%d" % i, minf(speed / 20.0, 2.0) * 30.0, dt):
@@ -201,7 +196,9 @@ func update_car(car, dt: float) -> void:
 				var green = (
 					Color(0.24, 0.36, 0.12, 0.95) if rng.randf() < 0.7 else Color(0.33, 0.26, 0.16, 0.95)
 				)
-				emit(at, kick, 0.8 + rng.randf() * 0.5, 0.16, 0.12, green, 9.8, 0.4, false)
+				emit(
+					at, kick, 0.8 + rng.randf() * 0.5, 0.16, 0.12, green, 9.8, 0.4, false, EFFECT_FRAMES.grass
+				)
 			if sliding:
 				for k in _count("gdust%d" % i, 6.0, dt):
 					emit(
@@ -213,7 +210,8 @@ func update_car(car, dt: float) -> void:
 						Color(0.46, 0.43, 0.33, 0.28),
 						-0.2,
 						1.0,
-						false
+						false,
+						EFFECT_FRAMES.dust
 					)
 		elif sid == GRAVEL and speed > 3.0:
 			for k in _count("stones%d" % i, minf(speed / 15.0, 2.5) * 26.0, dt):
@@ -223,12 +221,13 @@ func update_car(car, dt: float) -> void:
 					at,
 					fling,
 					0.8 + rng.randf() * 0.5,
-					0.06,
-					0.05,
+					0.18,
+					0.07,
 					Color(shade, shade * 0.95, shade * 0.85, 1.0),
 					9.8,
 					0.2,
-					false
+					false,
+					EFFECT_FRAMES.gravel
 				)
 			for k in _count("dust%d" % i, minf(speed / 15.0, 2.0) * 8.0, dt):
 				emit(
@@ -240,21 +239,39 @@ func update_car(car, dt: float) -> void:
 					Color(0.62, 0.55, 0.42, 0.3),
 					-0.15,
 					0.7,
-					false
+					false,
+					EFFECT_FRAMES.dust
 				)
 	# Sparks: walls and body scrapes.
 	var hits = []
 	for c in car.wall_hits:
-		hits.append(c.point)
+		hits.append([c.point, EFFECT_FRAMES.sparks])
 	for s in car.scrape_hits:
 		if s[1] > 3.0:
-			hits.append(s[0])
+			hits.append([s[0], EFFECT_FRAMES.scrape])
 	if not hits.is_empty() and speed > 4.0:
 		for k in _count("sparks", minf(speed / 10.0, 4.0) * 110.0, dt):
-			var at2: Vector3 = hits[rng.randi() % hits.size()]
+			var impact = hits[rng.randi() % hits.size()]
+			var at2: Vector3 = impact[0]
 			var v = car.vel * (0.3 + rng.randf() * 0.5) + Vector3(_r(3.0), 1.0 + rng.randf() * 3.0, _r(3.0))
 			var c = Color(1.0, 0.62 + rng.randf() * 0.3, 0.25, 1.0)
-			emit(at2, v, 0.3 + rng.randf() * 0.35, 0.16, 0.06, c, 9.8, 0.3, true)
+			emit(at2, v, 0.3 + rng.randf() * 0.35, 0.36, 0.12, c, 9.8, 0.3, true, impact[1])
+	for s in car.scrape_hits:
+		if s[1] <= 3.0:
+			continue
+		for k in _count("scorch", 10.0, dt):
+			emit(
+				s[0],
+				Vector3.UP * 0.2,
+				0.14,
+				0.42,
+				0.12,
+				Color(1.0, 0.58, 0.22, 0.9),
+				0.0,
+				2.0,
+				true,
+				EFFECT_FRAMES.scorch
+			)
 	_backfire(car, dt)
 	last_throttle = car.input.get("throttle", 0.0)
 	last_gear = car.gear
@@ -284,7 +301,8 @@ func _backfire(car, dt: float) -> void:
 			Color(1.0, 0.5 + rng.randf() * 0.3, 0.15, 1.0),
 			0.0,
 			2.0,
-			true
+			true,
+			EFFECT_FRAMES.backfire
 		)
 
 
