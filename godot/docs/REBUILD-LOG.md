@@ -1850,3 +1850,82 @@ Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
 
 ## 2026-09-25  CLAIM Look-0  (Claude Sonnet 5)
 Art bible and reference board on branch `rb/look-0-art-bible`: `godot/docs/art/reference/` (real PS2/GT4/NFSU and real-world Nordschleife photos), an extended `tests/v2/track_screenshots.gd` with a `--compare` mode, `godot/docs/art/baseline/` captures, and a rewritten `ART-DIRECTION.md` with a measured gap table. This is a new team slot ("Sonnet" added to QUEUE.md's model roster); the owner assigned it directly rather than via the queue's claim protocol.
+
+## 2026-09-25  DONE Look-0 Art bible and reference board  (Claude Sonnet 5) — branch `rb/look-0-art-bible`
+The owner's "devbox, not a game" complaint, checked against code and measurement rather than eyeballed:
+the road texture, the sky, and the tree canopy are each confirmed gaps with a specific cause; the
+overall colour grade is not.
+
+**Reference board (`docs/art/reference/`, README.md there has full attribution).** Two infrastructure
+walls cut this short of the 20-30 frame target: MobyGames/GameFAQs return a Cloudflare JS challenge to
+non-browser requests, so the working path was the Wayback Machine's archived copies of MobyGames'
+screenshot galleries — and partway through, `web.archive.org` itself went "temporarily offline" (their
+own status page), before NFS Underground, a confirmed-Nordschleife GT4 shot, a second GT4 European
+circuit (Circuit de la Sarthe — GT4 has no Spa, confirmed by search) and any close-up texture shot were
+reached. What's collected (8 frames, real, verified, properly licensed/attributed, 1.4 MB total):
+- 6 real-world Nordschleife photos via the Openverse API (Flickr, CC-licensed, fetched directly, no
+  Wayback needed): confirmed Flugplatz, Adenauer Forst, Brünnchen, plus two honestly-labelled
+  unidentified overviews and one unidentified banked corner (kept because their enclosure/horizon
+  information is real and useful, not because the corner is known).
+- 2 verified GT4 (PS2) screenshots via MobyGames-through-Wayback: a cockpit/HUD view (track not
+  identified — MobyGames' default contributor set captions by UI screen, not by track) and a photo-mode
+  car render (confirms the warm-key/cool-fill daylight balance `game.gd` already implements).
+Queued as `Look-0-refs` (`needs owner`) in QUEUE.md for the rest, with exact reproduction steps.
+
+**Capture set.** `tests/v2/track_screenshots.gd` gained 9 Proving Ground stations, a per-shot camera
+override (chase/bonnet — `helper.pose()` hardcodes chase, so the camera is set again with
+`update_camera()` after posing), and a `--compare` mode that composites each shot against its matched
+reference into a labelled side-by-side PNG via an offscreen SubViewport/Control layout. Only
+`ns-flugplatz` has a confirmed match today. Run windowed (Godot 4.6.2, xvfb + opengl3/llvmpipe on the
+Linux cloud): the first attempt hit a 300 s timeout mid-Nordschleife-bake; a second run reused the cached
+Proving Ground/Spa bakes (`user://tracks3d`) and finished in under 15 minutes. 26 PNGs committed to
+`docs/art/baseline/` — trees are present (checked visually; this was a windowed run, not the headless
+cache path CLAUDE.md warns about).
+
+**Measured colour stats** (`docs/art/reference/color_stats.py`: HSV saturation, Rec. 709 luminance, full
+frame thumbnailed to 512 px):
+
+| Set | mean saturation | mean luminance | luminance std-dev |
+|---|---:|---:|---:|
+| Reference (9 frames) | 0.251 | 0.379 | 0.219 |
+| Ours, Proving Ground (9) | 0.192 | 0.485 | 0.217 |
+| Ours, Spa (9) | 0.229 | 0.421 | 0.206 |
+| Ours, Nordschleife (8) | 0.304 | 0.319 | 0.223 |
+
+Whole-frame, we're close to the reference — not the "everything reads as one flat value" a global
+tonemap bug would produce. A road-surface-only crop tells the real story: our road patch measures
+saturation 0.157 / contrast (luminance std-dev) 0.036, against the reference road patch's 0.072 / 0.078.
+Our road is **more tinted and less than half the contrast** of real asphalt. The flatness is in specific
+surfaces, not the global grade.
+
+**Five biggest gaps, ranked by how much they read as a devbox:**
+1. **No white edge line anywhere on the road** — confirmed absent from `road_v2.gdshader` and
+   `road_builder.gd` by direct inspection; every reference frame with a road edge has one.
+2. **Road contrast and tint** — measured above: half the real luminance variance, more saturated
+   (tinted) than real near-neutral asphalt. `asphalt_track_diff.png` (256x256, indexed) is itself
+   near-uniform noise with no patches, seams or rubber line to give the shader anything to work with.
+3. **No distant horizon silhouette** — `scripts/retro_assets.gd::panorama()` generates the sky as a
+   flat procedural gradient with no hill/tree-line layer at all; `pg-start.png` shows the resulting hard
+   flat sky/ground cut. (This also corrects a stale ART-DIRECTION.md claim that the sky was "downsampled
+   CC0 photographs".)
+4. **Tree canopy doesn't close overhead** even where density is now reasonable (34/100 m on the
+   Nordschleife's near band, after today's NS-section part 1 fix) — `ns-flugplatz-compare.png` shows
+   visible sky gaps between individual cone-shaped cards that the reference's unbroken canopy doesn't
+   have.
+5. **Nordschleife sits on the terrain, not in it** — NS-section part 1's own log entry already states
+   this isn't fixed: the 20 m/pixel DEM can't carry roadside bank/cutting relief. Needs a 1-2 m corridor
+   DEM re-fetch (owner approval pending), not a rendering change.
+
+Root cause of the "256 px palette-reduced" framing this replaces: a small, palette-reduced texture is
+not inherently flat — GT4's own screenshots show real contrast in a similarly small, similarly
+palette-constrained texture. `asphalt_track_diff.png` is flat because nothing authored variation into
+it, not because of its resolution or colour count. ART-DIRECTION.md now says this explicitly.
+
+**Gates** (Linux cloud, Godot 4.6.2): `--check-only` clean; `gdformat -l 110 --check scripts tests`
+clean (85 files); `python tools/ci_gates.py` **34/34**, 476 s wall clock. Capture script: `TRACK SHOTS
+RESULTS {"failures":[]}`; stderr carries only the container's expected ALSA/dummy-audio-driver warnings
+and Godot's normal RID-leak-at-exit noise, not script errors. Not run: `-Perf`, a Windows GPU pass, or
+an export check (docs/tests-only change, already excluded from every preset's `include_filter`).
+
+Left for later Look tasks, per the gap table above and `Look-0-refs`. I looked at every baseline capture
+and reference frame myself before writing this.
