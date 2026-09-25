@@ -1956,3 +1956,8 @@ Sonnet's measurements and gaps 1-4 (edge lines, road contrast, horizon silhouett
   - Nordschleife banks marked fixed (NS-section 2).
 - **Gap table:** gaps 5-8 added (trees, cars, armco, fog).
 - **Captures:** `track_screenshots.gd` pairs three Nordschleife shots with GT4 "look target" frames. The baseline was recaptured on current main, including NS-section 1-2: 26 shots and 4 comparison strips.
+
+## 2026-09-24  DONE Look-7  (Luna)
+Implemented only the kind-0 visible wall mesh: double 0.31 m corrugated rails with tops at 0.45 m and 0.75 m, a third rail for barriers taller than 0.9 m, and dark posts at no more than 3 m spacing. Rails use the existing galvanized armco texture and rails/posts share one material and one mesh per wall. `WallBuilder.faces()` and `wall_path.gd` collision generation are unchanged. Triangle count: 396 triangles for a 10 m open double-rail wall sampled every 2 m (280 rail, 56 end-cap, 60 post); generally `28 × segment_count × rail_count + 28 × rail_count` for open-end rails, plus `12 × post_count`.
+
+Formatting/parser: `python -m gdtoolkit.formatter -l 110 scripts tests` reformatted only `scripts/track/scenery_builder.gd` (86 other files unchanged); `python -m gdtoolkit.parser scripts/track/scenery_builder.gd` passed. Verification is blocked by this Windows host's Godot 4.6.2 executable crashing with signal 11 / exit `-1073741819`: `--check-only` and all 35 gates from `run_gates.ps1 -All -Features` failed before RESULTS output, including unrelated suites. The requested windowed `track_screenshots.gd -- --v2-flow-test --out=...` also crashed before producing shots, so the two Nordschleife PR screenshots are not attached. Sent to Claude review without claiming those checks or captures passed.
