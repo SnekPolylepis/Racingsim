@@ -19,7 +19,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
-const CACHE_REVISION = 3
+const CACHE_REVISION = 4
 
 
 static func read_json(path: String) -> Dictionary:
@@ -266,7 +266,8 @@ static func add_terrain(asset: Node3D) -> Dictionary:
 	terrain.origin_offset = Vector2(header.origin_offset[0], header.origin_offset[1])
 	terrain.height_offset = float(header.get("height_offset", 0.0))
 	terrain.road_paths.append(NodePath("../Main"))
-	terrain.blend_m = 30.0
+	# 6 m (was 30): with DGM1 at 5 m the real banks and cuttings meet the verge instead of being levelled.
+	terrain.blend_m = 6.0
 	terrain.under_road_drop_m = 2.0
 	terrain.chunk_size = 64
 	asset.add_child(terrain)
