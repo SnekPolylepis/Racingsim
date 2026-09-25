@@ -74,6 +74,14 @@ func run() -> void:
 		"car picker changes body"
 	)
 	app.frontend.show_page("circuit")
+	var picked = []
+	for i in app.frontend.V2_TRACKS.size():
+		app.frontend.cycle_v2_track()
+		picked.append(app.frontend.selected_track)
+	check(
+		picked == ["spa", "nordschleife_s1", "proving_ground"],
+		"circuit picker cycles every circuit: " + str(picked)
+	)
 	app.frontend.cycle_v2_track()
 	check(app.frontend.selected_track == "spa", "circuit picker lists Spa")
 	app.frontend.prepare_v2_race()
