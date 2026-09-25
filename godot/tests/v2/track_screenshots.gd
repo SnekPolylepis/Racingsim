@@ -109,6 +109,12 @@ func run():
 		if image.save_png(path) != OK:
 			failures.append("save " + path)
 		print("TRACK SHOT ", ProjectSettings.globalize_path(path))
+		print(
+			"TRACK SHOT DRAWS ",
+			shot[1],
+			" ",
+			RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
+		)
 		if compare and REFERENCE_MAP.has(shot[1]):
 			await write_compare(shot[1], image)
 	app.queue_free()

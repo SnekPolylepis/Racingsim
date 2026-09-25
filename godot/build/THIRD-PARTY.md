@@ -66,3 +66,7 @@ Exact requests, SHA-256 hashes, source limitations, the heightmap header and sou
 ## Mazda MX-5 / Miata NA car exterior
 
 "Mazda Miata MX-5 NA" by Lexyc16: https://sketchfab.com/3d-models/mazda-miata-mx-5-na-d51fcd44b74f4daf8012c41e0400c041. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/. The model was reoriented, resized, stripped of the source wheels/display plane/unneeded interior mesh, repainted from the game preset and combined with game wheel and lamp assemblies. Full source attribution and the author's original `license.txt` are in `assets/cars/mx5na/` and `THIRD-PARTY.md` in the source distribution. No author endorsement is implied.
+
+## Tree cards and horizon (Look-6; downloaded 2026-09-24)
+
+Four Poly Haven models, all **CC0 1.0** ([legal text](assets/licenses/CC0-1.0.txt)): [fir_tree_01](https://polyhaven.com/a/fir_tree_01) and [fir_sapling_medium](https://polyhaven.com/a/fir_sapling_medium) (Rob Tuytel photography, Rico Cilliers modelling), [tree_small_02](https://polyhaven.com/a/tree_small_02) and [shrub_02](https://polyhaven.com/a/shrub_02) (Rico Cilliers). The 1K glTF downloads (about 640 MB, never committed) were rendered by `tools/bake_tree_cards.gd` and packed by `tools/finish_tree_cards.py` into the single 2048 px alpha atlas `assets/trees/tree_atlas.png` (4 MB, nine cards: three spruce, two tall fir, one deciduous, two bush) that `scripts/track/road_scatter.gd` scatters as crossed cards. The hill silhouettes in the sky are painted by code (`RetroAssets.hills_panorama`) and use no download.
