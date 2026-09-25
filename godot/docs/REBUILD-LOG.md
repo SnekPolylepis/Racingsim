@@ -2302,3 +2302,303 @@ Claimed P6-02b "Nordschleife: the full lap" on `rb/P6-02b-nordschleife`. Full ~2
 
 ## 2026-09-25  DONE P6-02b  (Claude Opus 5.5, from Gemini's WIP)
 Took over Gemini's full-lap Nordschleife (`trackgen/nordschleife.gd`, 20.8 km from OSM + DGM1 5 m DEM), merged with main (kerbs, NS-bumps O(n) spline); the export filter and `check_exported_v2_assets` carry the `*_full` data. Gates `-All -Features` 38/38; nordschleife suite 7/7; laps baselined. Review shots: Adenauer Forst, Bergwerk, Karussell, Bruennchen, Pflanzgarten, Doettinger Hoehe. Follow-ups: Karussell concrete-bowl surface look, reviewed kerbs beyond S1.
+- Revisited both sides across the 51 Spa (17 corners) and 48 Nordschleife S1 (16 corners) 40 m, 1200 × 1200 apex crops, their ±60 m neighbours, and supplemental between-corner crops. Consolidated continuous painted strips; separate inside/outside strips are separate entries. Bounds are read from 5 m ticks to the nearest 2 m. Spa colours recorded as red-cream; no clearly raised sausage kerb is visible.
+- Spa: 29 physical runs, 3,820 m total; types flat 29; confidence high 5, medium 20, low 4. Low confidence: Fagnes left/right 4280-4500 m (shadow and paved margins soften the exact ends) and Paul Frere left/right 4876-5024 m (paddock structures and shadows partly obscure the painted boundaries).
+- Nordschleife S1: 13 runs, 1,076 m; types flat 10, ribbed 3; confidence high 4, medium 7, low 2. The lower count than 20-40 is because the crops show only white edge lines or canopy/shadow at most remaining bends; no kerb was entered unless its paint or ribbed profile was visible. Low confidence: Hocheichen right 1370-1450 m and Hocheichen exit right 1536-1566 m, where canopy shadow softens the outer edge. No entries are shorter than 12 m.
+- Examples (before → after): La Source had left 156-166, 196-206 and 216-226 m; now the continuous outside strip is left 144-258 m, and the separate inside strip is right 150-168 m. Hatzenbogen right 322-360 m is now 322-460 m, following the same painted strip through the adjacent crop. Pouhon right 3678-3688, 3748-3768 and 3798-3818 m is now one right 3640-3838 m run; the separate left 3640-3838 m strip is also recorded.
+- `kerb_report.py` Spa profile comparison: profile-only right 3978-3998 m; photo-only left 165-195, 225-258, 826-846, 926-946, 966-1006, 1046-1150, 2204-2347, 2357-2452, 2767-2788, 2907-2947, 2957-3200, 3640-3838, 4280-4308, 4318-4500, 4876-5024, 5188-5248, 5379-5439 and 6496-6519, 6529-6559 m; photo-only right 878-1150, 2204-2452, 3007-3107, 3117-3187, 3640-3677, 3687-3747, 3767-3797, 3817-3838, 4280-4500, 4876-4898, 4948-4988, 5048-5068 and 6496-6600 m. These are comparison gaps against the coarse road-profile kerb flags.
+- JSON validation and the no-overlap / 4 m spacing check pass; all crop references resolve. The sanity script found no entry shorter than 12 m. Queue status remains `review: Claude`.
+
+Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+1) "leaked at exit", which fails the windowed gate on stderr. Cause: quitting with the eleven looping players (8 engine layers, intake, tyres, road) still active let the audio server hold their playbacks past the exit check. `audio.gd` and `front_end.gd` now stop their players and drop the streams in `_exit_tree()`. Three `--verbose -- --features` runs: 77/0, zero leaks. **Correction:** the gate run for #43 actually failed `features`, and it was merged by mistake. Using `_exit_tree()` broke the menu tones, because the Look-3 presentation chain re-parents the UI root, which exits and re-enters the tree, so the cleanup cleared `ui_sounds` mid-game. Fixed in F-audio-leak-2.
+
+## 2026-09-24  DONE F-audio-leak-2  (Claude Opus 5.5)
+The cleanup in `audio.gd` and `front_end.gd` moves from `_exit_tree()` to `_notification(NOTIFICATION_PREDELETE)`, so it runs only when the node is freed and not when it is re-parented. Three `--verbose -- --features` runs gave 77/0 with no leaks and no script errors. `run_gates.ps1 -All -Features` 35/35.
+
+## 2026-09-24  DONE K-02 Kerb map loader (inactive until reviewed data)  (Claude Opus 5.5)
+- **`trackgen/kerb_map.gd`:** reads `trackgen/data/<track>/kerbs.json`.
+  - It is used only when the file has `"status": "reviewed"`, and low-confidence entries are skipped.
+  - It maps flat → low RAMP (2 cm), ribbed → RIBBED, sausage → SAUSAGE and unsure → RAMP.
+  - Its `marks()` add section keys at every kerb start and end, so kerbs begin and end where the paint does. Kerb types step at keys in `RoadBuilder.section_at`.
+- **Generators:** `spa.gd` and `nordschleife_s1.gd` call `KerbMap.apply()` at the end of `profile_at()` and add the marks in `sections()`. With no reviewed file (the case today: the K-01 draft is unreviewed) nothing changes.
+- **Export:** both kerbs.json files are in the export `include_filter` and `check_exported_v2_assets()`, since generators read them at bake time.
+- **New gate `kerb_map` (12 checks):** station lookup including wrap-around, exclusive ends, the low-confidence skip and the reviewed-only rule on the shipped files. A Spa build with a forced map puts a sausage kerb exactly over 1500-1540 m.
+- **Activation:** once K-01b is re-traced and passes review, set `"status": "reviewed"` in each kerbs.json. The track caches rebuild by themselves, because the data folder is part of the cache revision.
+
+Gates: `run_gates.ps1 -All -Features` 36/36.
+
+Frame spikes: on the RTX 4080, `--v2-look --v2-track=nordschleife_s1` shows a worst frame of 6.3-7.8 ms in all six modes, with no spikes. The Mac's 114-119 ms spikes (720p Authentic, Native) came right after mode switches, which fits Metal compiling pipelines on first use. That needs a Mac re-check; it can't be reproduced on Windows.
+
+
+## 2026-09-24  DONE DOC-01 release docs and queue tidy (GPT-6 Luna)
+Updated PLAY.txt and CHANGELOG.md with Preview 3–5 features, Preview 5 known limits and credits. No queue rows changed: P6-02a was already done. The other merged candidates (P4-core, P4-vis, P4-menus, Look-1, P6-01-polish, P7-02, CI, F-CI, F-P4-01, F-P4-03-corners and F-track-picker) remain `review:*` and were left untouched as required.
+
+## 2026-09-24  REVIEW DOC-01 (Luna): accepted with two fixes  (Claude Opus 5.5)
+Restored two known limits that are still true (the Spa runoff approximations; old-game records don't carry over). The QUEUE tidy (item 3) was not done and stays open.
+
+## 2026-09-24  DONE Look-11 Spa braking boards  (Claude Opus 5.5)
+`scripts/track/track_boards.gd`: 300/200/100 m countdown boards before Spa corners where the BotLine target speed drops more than 40 km/h from the approach (150-450 m before) to the apex (-80 to +40 m), so flat-out kinks stay clean. They sit on the corner outside, 1.2 m beyond the verge edge, angled towards oncoming cars, with no collision and faded out past 420 m. Boards that would stand inside the previous corner are skipped. Spa only, at the owner's request; no corner-name boards. Spa CACHE_REVISION 4. Checked in the Bus Stop capture ("100" board on the outside). Gates `run_gates.ps1 -All -Features` 36/36.
+
+## 2026-09-24  DONE Look-12 Particle effects  (Claude Opus 5.5)
+`scripts/particles.gd`, presentation only:
+- **Tyre smoke** when a tyre slides past its grip peak on tarmac or a kerb (the skid-mark test); darker at Afterhours.
+- **Grass clods** and dust.
+- **Gravel stones** and a dust cloud.
+- **Sparks** from wall contacts and body scrapes.
+- **Exhaust backfire** on a lift-off or gear change above 70 % of the redline.
+
+**How it's built:** one CPU pool of 700 camera-facing quads in two MultiMeshes (alpha and additive), so the whole system costs 2 draw calls. Emission is rate-based with carry-over, so it doesn't depend on frame rate.
+- **Car telemetry:** `CarBody.wall_hits` (set by `WallContact.step`) and `CarBody.scrape_hits` (body points touching the ground, with their sliding speed). Physics never reads them, and all lap and handling gates are unchanged.
+- **Game:** `game.gd` creates the node beside the skid marks and updates it in `render_v2()` when not paused.
+
+**New gate `particles` (9 checks):** a stand-in car; `-- --shots` saves a capture of each effect.
+
+Gates: `run_gates.ps1 -All -Features` 37/37.
+
+## 2026-09-25  REVIEW K-01b (Luna): accepted with 3 corrections; traced kerbs live  (Claude Opus 5.5)
+The retrace is whole physical kerbs now: Spa 29 (La Source outside 144-258 and inside 150-168 match the crop), Nordschleife 13. Spot-checked La Source, Bruxelles-No Name and Hatzenbogen against their crops:
+- **Spa right 2964-3220:** over-merged across the No Name apex gap, so split into 2964-3060 and 3108-3220.
+- **Spa left 2884-3200:** trimmed to 3122; beyond that is the white line with the pit lane behind it.
+- **Nordschleife Hatzenbogen:** added the missing left kerb, 318-360.
+
+Both kerbs.json files are marked `"status": "reviewed"`, so the K-02 kerb map now drives Spa and Nordschleife S1 kerbs. `run_gates.ps1 -All -Features` 36/36 with the kerbs live (laps within baseline).
+
+## 2026-09-25  CLAIM Look-9  (Claude Sonnet 5)
+NFSU nights on branch `rb/look-9-nights` (not on `main`): wet-road specular streaks from lamps and the
+car's own headlights, colour tuned against `docs/art/reference/nfsu-night-*.jpg`, glowing trackside
+structures, speed blur verified. Paused mid-verification for a task switch to Look-10; full state in
+`rb/look-9-nights`'s own REBUILD-LOG entries (CLAIM/PAUSED), not repeated here. Not merged, no PR yet.
+
+## 2026-09-25  CLAIM Look-10  (Claude Sonnet 5)
+Forest floor and roadside vegetation on branch `rb/look-10-undergrowth`: undergrowth cards (ferns,
+brambles, long grass, bushes, saplings) between and under the trees so no bare lawn shows at driving
+distance, a darker forest-floor ground tint under canopy, at least 3 more deciduous species in the tree
+atlas, and Nordschleife hedges/uncut verge grass. Not touching kerbs (`trackgen/data/*/kerbs.json`), car
+bodies (`scripts/cars/`, `assets/cars/`), Look-9's night lighting (`road_v2.gdshader`'s night branch,
+`track_lights.gd`, `apply_time_of_day()` — that branch is unmerged WIP, out of scope here regardless),
+or the full Nordschleife (`trackgen/nordschleife.gd`, `trackgen/data/nordschleife/` — Gemini's;
+`nordschleife_s1.gd` is fair game).
+
+## 2026-09-25  PAUSED Look-10  (Claude Sonnet 5)
+Stopped mid-verification on user instruction; left as WIP for a later session to pick up. Implementation
+is complete and committed/pushed to `rb/look-10-undergrowth` (commits through `76ee8b0`); no gates have
+been run against it yet, no screenshots recaptured, no PR opened.
+
+**Done:**
+- A second photographic card atlas, `assets/undergrowth/undergrowth_atlas.png`/`.json` (1.8 MB, 14
+  cards: 2 fern, 3 bramble, 3 long grass, 3 flowering shrub, 3 conifer sapling), from 5 more Poly Haven
+  CC0 1.0 models (`fern_02`, `wild_rooibos_bush`, `grass_medium_01`, `shrub_04`, `pine_sapling_small`),
+  baked/packed with the same `tools/bake_tree_cards.gd` + `tools/finish_tree_cards.py` pipeline as the
+  tree atlas (extended, not replaced).
+- `scripts/track/road_scatter.gd`: new `AtlasKind` enum (`TREES`/`UNDERGROWTH`) and `atlas_kind` export
+  so one RoadScatter node picks either atlas; static caches (`_mats`, card/species tables) generalized
+  from single-value to kind-keyed. New `species_indices` export + `pick_card()` param restricts a band to
+  a subset of `species_for(kind)` (re-weighted against just those rows), for a verge-grass or hedge band
+  that reads as one plant kind instead of the full mix.
+- `tree_atlas.png` regenerated to 10 cards: 3 spruce, 2 fir, 3 deciduous (beech, oak, birch — oak/birch
+  are `island_tree_02`/`island_tree_03`, the closest CC0 broadleaf/multi-stem stand-ins Poly Haven has,
+  documented as a substitution in `road_scatter.gd`'s `CARDS` comment and both THIRD-PARTY.md files), 2
+  bush.
+- `trackgen/nordschleife_s1.gd`, `trackgen/spa.gd`: `add_forest()` gained `atlas_kind`/`clear_m` params
+  (backward compatible); new `add_undergrowth()` wrapper (4 m clearance vs. a tree's 9.5/24 m) and
+  `add_forest_floor()` (a semi-transparent dark ribbon mesh at terrain height, unshaded alpha-blended
+  `StandardMaterial3D`, doesn't touch grip or surface ids). Call sites: `EifelFloor`/`EifelNear`/
+  `EifelDeep` (Nordschleife) and `ArdennesFloor` (Spa) scatter the mixed undergrowth band from just
+  behind the barrier through the near forest; `EifelVergeGrass` (grass-only, `species_indices=[2]`) is a
+  dedicated uncut strip right at the verge edge (0.3-1.6 m); `FlugplatzHedge` (bramble+shrub only,
+  `species_indices=[1,3]`) runs from Quiddelbacher Höhe to Flugplatz exit+80 m, standing in for the real
+  corner's open-airfield hedge line (`real-nordschleife-flugplatz.jpg`) without thinning the continuous
+  forest elsewhere. `trackgen/proving_ground.gd` gets a plain `Undergrowth` RoadScatter node (no
+  terrain-height correction needed there, matching its existing `Trees` node).
+- `CACHE_REVISION` bumped: Nordschleife S1 7→8, Spa 3→4.
+- `scripts/game.gd::check_exported_v2_assets()` now also checks
+  `res://assets/undergrowth/undergrowth_atlas.png`. No `export_presets.cfg` change needed — all three
+  presets use `export_filter="all_resources"`, and `assets/undergrowth/*` isn't in any
+  `exclude_filter`, so it's already included the same way `assets/trees/tree_atlas.png` is.
+- Both THIRD-PARTY.md files (repo root and `build/`) record the 7 new Poly Haven CC0 1.0 models with
+  author credits and the oak/birch substitution note. New committed assets: 4.4 MB total (tree +
+  undergrowth atlases), well under the ~40 MB budget.
+- ART-DIRECTION.md gap table rows 4 and 5 updated (ground-level closure done, deciduous count to 3); a
+  new "Ground layer (Look-10)" paragraph added under "Trackside enclosure".
+- `gdformat -l 110 scripts tests` clean; `--headless --path . --script scripts/game.gd --check-only`
+  clean (run twice, after the `road_scatter.gd`/`nordschleife_s1.gd` edits and again after the
+  `game.gd` export-probe edit).
+
+**Not done — pick up here:**
+- No gates have passed on this branch yet. A headless `python tools/ci_gates.py` run was started and
+  killed partway through (user asked to pause, not because anything failed) — the killed run showed
+  early suites (`static_friction`, `suspension`, `surfaces`, `energy_wall`) passing before it was
+  stopped; that is not a verified result, re-run the whole suite from scratch.
+- No windowed `-- --features` run yet.
+- Tracks have not been baked windowed since these changes landed, so `user://tracks3d/` (the windowed
+  cache; headless gates use the separate `user://tracks3d-headless/`, see `track_drive.gd:119`) is stale
+  for Nordschleife S1, Spa and the Proving Ground. Bake windowed before trusting any screenshot or
+  draw-call number — a headless-first bake places every scatter instance at the origin
+  (`add_forest()`'s known issue, see the 2026-09 entries on the headless track cache above).
+  `CACHE_REVISION` bumps mean the next windowed load rebuilds all three from scratch.
+- No `tests/v2/track_screenshots.gd --compare` recapture, so no updated `docs/art/baseline/` and no
+  before/after look at `ns-flugplatz-compare.png` against `real-nordschleife-flugplatz.jpg` for the new
+  verge grass and hedge.
+- No draw-call or GPU-time before/after numbers (`TRACK SHOT DRAWS` from `track_screenshots.gd`); no
+  check against the +10%-per-view budget.
+- No DONE log entry; QUEUE.md's Look-10 row is still `claimed: Sonnet`, not `review: Claude`.
+- No PR opened for `rb/look-10-undergrowth`.
+
+Next session: run `python tools/ci_gates.py` alone (not parallel with another windowed Godot process —
+that contention caused the `--features` timeouts the Look-9 PAUSED entry above describes), then a
+windowed bake/screenshot pass, then finish the DONE entry, QUEUE row, and PR.
+
+## 2026-09-25  REVIEW Look-10 (Sonnet): finished and accepted  (Claude Opus 5.5)
+Sonnet paused this before running anything. Finished here:
+- **Bug:** `road_scatter.gd` used `@export_enum` on an enum-typed variable, which Godot rejects. Every generator failed to compile (13 gates red). Changed to `@export var atlas_kind: AtlasKind`.
+- **Merge:** main merged in. The Spa CACHE_REVISION collided with the braking boards (both 4), so it is now 5; the Nordschleife S1 stays 8.
+- **Gates:** `run_gates.ps1 -All -Features` 37/37.
+- **Baseline recaptured:** Hatzenbach and Flugplatz read as mixed Eifel forest (beech, oak, birch, spruce) with undergrowth at the base.
+- **Draw calls:** **corrected:** the 16 % figure came from the first three shots only. The per-view averages over all shots are Proving Ground 487 (was 482), Spa 581 (was 573) and Nordschleife 450 (was 440), within about 2 % and well inside the 10 % budget.
+
+## 2026-09-25  RELEASE Rebuild Preview 6  (Claude Opus 5.5)
+v0.1.0-preview.6 contains Look-10 undergrowth, the K-01b/K-02 traced kerbs, the Spa braking boards (Look-11), the particle effects (Look-12) and NS-bumps. The exported Windows exe gave V2 EXPORT PASS and a windowed `-- --features` 77/0 with empty stderr. The macOS zip was built from the same commit. Look-9 (nights) is still unmerged WIP.
+
+## 2026-09-25  CLAIM Look-9  (Claude Sonnet 5)
+NFSU nights on branch `rb/look-9-nights`, per ART-DIRECTION.md's "Nights (NFS Underground)" rules and
+`docs/art/reference/nfsu-night-*.jpg`: wet-road specular streaks from lamps and the car's own headlights
+(`shaders/road_v2.gdshader`), teal/blue-vs-amber colour tuned and measured against the NFSU frames
+(`apply_time_of_day()`), glowing trackside structures so nothing reads as a black void (new
+`scripts/track/night_glow.gd`/`shaders/night_glow.gdshader`, wired into `pit_building.gd`,
+`grandstand.gd`, `gantry.gd`, `billboards.gd`), and speed blur (already generic in Look-3's
+`retro_renderer.gd` history chain — verified active, not rebuilt). Not touching kerbs
+(`trackgen/data/*/kerbs.json`), car bodies (`scripts/cars/`, `assets/cars/`), or
+`trackgen/nordschleife_s1.gd`'s elevation keys, per the task's stated scope.
+
+## 2026-09-25  PAUSED Look-9  (Claude Sonnet 5)
+All implementation and colour-tuning work is done and pushed to `rb/look-9-nights` (not merged):
+- `shaders/road_v2.gdshader`: camera-proximity headlight streak.
+- `shaders/night_glow.gdshader` + `scripts/track/night_glow.gd`: glowing trackside structures, wired
+  into `pit_building.gd`/`grandstand.gd`/`gantry.gd`/`billboards.gd` and `game.gd::apply_track_night()`.
+  Confirmed working with a close-up day/night comparison (a billboard panel visibly backlit at night,
+  identical to day otherwise).
+- `scripts/retro_assets.gd`, `scripts/game.gd::apply_time_of_day()`: three rounds of colour tuning
+  against `docs/art/reference/nfsu-night-*.jpg`, measured with `color_stats.py`. Final: mean saturation
+  0.31, luminance 0.21 against the NFSU target of 0.28/0.20 (started at 0.36/0.17). Open circuits land
+  close (0.25-0.31); the Nordschleife's forest enclosure stays near 0.41 — no further tuning closed
+  this, and it's likely the tree cards' own albedo, not ambient colour (see ART-DIRECTION.md "Nights").
+- `tests/v2/night_screenshots.gd`: output folder to `docs/rebuild/screenshots/look-9`; final 10 shots
+  committed, draw calls identical shot-for-shot to the pre-Look-9 baseline.
+- `docs/ART-DIRECTION.md`: "Nights" section and gap table (new row 9) updated with the above; also
+  corrected two stale rows in passing (row 6 cars, row 7 armco — both shipped since this table was last
+  touched).
+
+**Left to do, next session:** `python tools/ci_gates.py` and the windowed `-- --features` check hadn't
+finished on the final tree (both were interrupted by a task switch to Look-10, not by a failure — the
+last gates attempt had run 27 of 34 suites, 0 failures, before being stopped for the task switch;
+`scenery`, `test_surfaces_scene`, `nordschleife_s1`, the parse check and the three `laps` suites hadn't
+run yet; the two `--features` attempts hit the harness's own 300 s/900 s timeout while baking tracks
+under CPU contention, not a game error). Also owed: the DONE log entry and QUEUE row (`claimed: Sonnet`
+→ `review: Claude`), and the PR. Re-run both checks alone (not parallel with other Godot processes —
+that contention is likely why `--features` timed out), read stderr, then write DONE and open the PR
+from `rb/look-9-nights` (already pushed through commit `768c9db`).
+
+## 2026-09-25  REVIEW Look-9 (Sonnet): finished and accepted  (Claude Opus 5.5)
+Sonnet paused this with verification owed. Finished here:
+- **Merge:** main merged in; the ART-DIRECTION gap rows now take 4-5 from Look-10 and 6-7 from Look-9.
+- **Gates:** `run_gates.ps1 -All -Features` 37/37. The windowed features check passes 77/0; the earlier timeouts were CPU contention during bakes.
+- **Night shots** recaptured on the merged tree (`docs/rebuild/screenshots/look-9/`): wet headlight streak, sodium halos, lit structures, and a sky that is never black.
+- **Cost:** a full Spa lap sweep at night averages 0.96 ms per frame, worst 1.74 ms.
+
+## 2026-09-25  RELEASE Preview 6 updated with Look-9  (Claude Opus 5.5)
+Rebuilt v0.1.0-preview.6 from main with NFSU nights and replaced both zips and the release notes. The exported exe gave V2 EXPORT PASS and features 77/0 with empty stderr.
+
+## 2026-09-25  CI on pushes only  (Claude Opus 5.5; owner decision)
+`.github/workflows/gates.yml` no longer triggers on `pull_request`. A PR's branch is already tested by its own pushes, so the second run only cost Actions minutes. TESTING.md updated.
+
+## 2026-09-25 CLAIM CHI-01 (Codex)
+Owner assigned the complete Chicago circuit; branch `rb/CHI-01-chicago`. All work, including this claim, stays on the branch; no main changes or merge, overriding the queue default. Scope: Chicago generator/data/scenery, track registration and export integration, probes/laps/screenshots, and corresponding documentation. Jev route HIGH 0.37.
+
+## 2026-09-25 DONE CHI-01 (Codex)
+
+Implemented on `rb/CHI-01-chicago`; owner explicitly requires an unmerged branch. The 8,123.44 m
+Chicago circuit includes Michigan Avenue, Jackson Drive, Lake Shore Drive and overlapping Lower /
+Upper Wacker decks, with authored harbor/south connectors. Approximate OSM geography and original
+low-poly landmarks (Bean, Willis Tower, Navy Pier), river/lake, park trees, city facades, barriers,
+markings and street signs. Maximum authored grade 6.01%; lower/upper road elevations 0 / 8 m.
+Track registration, export inputs/probe, cache invalidation, four-circuit picker expectation and lap
+baselines are integrated. Other tracks' physics/geometry and vehicle code are unchanged.
+
+Mac M4 / Godot 4.6.2 evidence is in `docs/rebuild/chicago/`:
+- Final `python3 godot/tools/ci_gates.py --godot <Godot> --jobs 2`: **37/37**, zero allowed failures.
+  First run was 36/37 due to the front-end test's old three-track expectation; corrected to four
+  and the complete suite re-run successfully. Includes 24 all-track/car/mode lap combinations.
+- All **6** performance-marked suites re-run serially with `RACINGSIM_PERF_GATES=1`: PASS.
+- Chicago geometry probe: **21/21**, including full road-width sampling, headroom, both deck
+  contacts/projection and timing-gate isolation. All six Chicago laps: zero off-track, wall or prop
+  contacts. Simulation / Simcade seconds: roadster 250.896 / 246.492; GT 189.742 / 187.000;
+  296 GT3 187.529 / 183.337. Baselines preserve the other tracks' recorded values.
+- Windowed `-- --features --v2-flow-test`: **77/77**. Real renderer, mouse/key/pad UI checks.
+- `chicago_screenshots.gd`: **20** day/night driving and head-turn sightline captures reviewed,
+  zero errors after fixing the harness's initial null-track access and freeing its helper tree.
+  Geometry winding corrected during visual review; repeated deck/column visuals batched (Lower
+  Wacker night view 533 -> 115 draw calls); geometry/collisions remain aligned.
+- `bash godot/packaging/build-macos.sh`: PASS, universal Mac app and zip generated locally; ad-hoc
+  signature verified. Packaged `--v2-export-check`: PASS (includes Chicago); packaged Chicago
+  `--v2-smoke`: PASS. No public release replaced and no main merge.
+
+Geographic scaffold and route map: `trackgen/data/chicago/README.md` / `route.svg`. The city is an
+authored PS2-style blockout, not a surveyed city model or the NASCAR circuit. Daylight and night
+sightlines are separate from full driving tests; Intel/Windows hardware were not tested locally.
+
+Final decision: **Jev gate COMPLETE 0.94**. Implementation and required local checks complete;
+branch remains unmerged for Claude/owner review.
+
+## 2026-09-25 — CHI-01 nighttime refinement (owner follow-up)
+
+Owner requested a nighttime version and further refinement on the existing unmerged branch.
+Presentation scope includes Chicago generator accents, a local night-toggle helper wired through
+`game.gd`, and cached-scene day/night regression coverage. Driving geometry and record version stay
+unchanged. Two shadowless plaza lights illuminate the Bean; emissive wheel, pier, Willis crown and
+ceiling fixtures provide landmark contrast without adding hundreds of real lights. Lower Wacker's
+new luminaires are one batched mesh. Chicago facade windows now use 22% lit probability and
+45% glow energy; other circuits retain the shared shader's default. The second visual pass moved
+pier roofline lights onto the visible lakeside face.
+
+DONE CHI-01 nighttime follow-up — Apple M4 / Godot 4.6.2:
+- All 37 headless suites PASS; all six serial performance suites PASS.
+- Chicago probe 27/27, including packed-cache serialization and four night/day toggles.
+- Windowed features 77/77; 20 day/night captures generated, key driving and landmark views
+  inspected. Lower Wacker night capture: 120 draw calls (original capture: 115).
+- Mac universal export and signature verification PASS; packaged asset check and Chicago smoke PASS.
+- Formatting and diff checks PASS. Evidence: `docs/rebuild/chicago/night-refinement/`; new images:
+  `docs/rebuild/screenshots/chicago-night-refined/`. Prior evidence is preserved.
+
+Select Chicago — River & Lake and Afterhours in Settings to see the nighttime presentation.
+Branch remains `rb/CHI-01-chicago`, unmerged per owner. No Windows/Intel hardware run recorded.
+
+Additional verification after Jev's first COMPLETE confidence (0.76) fell below the required 0.90:
+re-read the presentation diff and ran `chicago_export_night.gd` against the exported PCK using the
+editor's `--main-pack` runner. All four checks PASS: night/day/night material and light state, plus
+windowed screenshot save. Inspected the resulting exported-resource night view. The first attempt
+passed `--script` to the release executable; it produced no test result and was stopped after 95 s.
+The corrected harness uses the editor binary with the shipped PCK; actual release-binary asset and
+Chicago driving smoke checks remain separate PASS results. This is not a full night driving lap.
+
+Final nighttime decision: **Jev gate COMPLETE 0.93**. MEDIUM (gpt-6-luna medium) lane sufficient.
+
+## 2026-09-25  WIP CHI-02 Real downtown Chicago from OpenStreetMap  (Claude Opus 5.5)
+Owner: "a legit Chicago, but the track only is the drivable part."
+- **`trackgen/data/chicago/build_city.py`:** reads the staged OSM extracts and writes `city.json` (1.2 MB) in CHI-01's frame.
+  - 3,962 buildings: footprints, with heights from tags; landmark towers have known roof heights (Willis 442 m); the rest get a stable heuristic.
+  - Facade classes, and 4,386 roads with widths by class; tunnels are dropped.
+  - River and lake polygons are stitched from relation segments and clipped to the area; 606 parks. Douglas-Peucker simplification throughout.
+- **`trackgen/chicago_city.gd`:**
+  - Buildings are extruded from y 0 to street level (8 m) plus their height, with photo facades (`shaders/chicago_facade.gdshader`, windows lit at night; `NightGlow.set_night` toggles it) and flat roofs.
+  - Every street is an asphalt carriageway on a sidewalk, cut back 10.5 m from the circuit.
+  - 20 m concrete ground tiles, left open over water and around the lower level and ramps.
+  - River and lake use the water shader, with river walls. Parks are grass.
+  - Batched per 600 m chunk and material: about 199k triangles and 501 surfaces; the build takes 2.8 s. Nothing collides.
+  - It replaces `add_city()` (procedural skyline) and the prelim street walls. CHI-01 keeps its own Willis, Wrigley, Tribune and Board of Trade models; OSM outlines near them are skipped.
+- **Textures:** Concrete034, Bricks097 and GlazedTerracotta001 copied to runtime. All Chicago textures now import with mipmaps and VRAM compression.
+- **Fix, `track_drive.gd` cache revision:** it now also hashes every `trackgen/*.gd`. Before, edits to generator helpers (`chicago_city.gd`, `kerb_map.gd`) reused stale caches.
+- **Captures:** day shows a dense street canyon along Wacker and Michigan; night shows the skyline lit window by window. Busiest view: about 1,130 draw calls (Lake Shore).
+- **Gates:** `run_gates.ps1 -All -Features` 38/38.
+- **Open:**
+  - street furniture (Kenney roads kit), the L tracks, and the bridge decks over the river;
+  - LOD for draw calls;
+  - comparison against real photos (CHI-03, Sol).

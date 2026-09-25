@@ -158,3 +158,24 @@ Workflow for a graphics change:
 2. Make the change.
 3. Run again.
 4. Review the changed list and its diffs, plus the contact sheets for anything the change missed.
+## CHI-01 acceptance (2026-09-25)
+
+Chicago joins the existing all-car / both-mode lap suite. Its `tests/v2/chicago.gd` gate validates
+road coverage, grade, headroom and stacked-deck timing/contact separation. For targeted laps use
+`--script tests/v2/laps.gd -- --track=chicago`; optional `--car roadster` etc. still applies.
+Windowed `--script tests/v2/chicago_screenshots.gd -- --v2-flow-test --v2-track=chicago` captures
+20 real-renderer views, including labelled head-turn sightlines. Recorded M4 validation and
+portable command arguments live in `docs/rebuild/chicago/`; screenshots are in
+`docs/rebuild/screenshots/chicago/`. These runs do not establish Intel or Windows GPU performance.
+
+Nighttime refinement evidence is recorded separately in `docs/rebuild/chicago/night-refinement/`
+and `docs/rebuild/screenshots/chicago-night-refined/` (the capture script's current destination).
+The Chicago probe also saves/reloads a packed track, then checks four Afterhours/daylight toggles
+of both the wheel's emissive material and plaza floodlight visibility.
+
+For the night integration check against an exported Mac pack, run the Godot editor binary with
+`--main-pack "godot/build/macos/Racing Sim.app/Contents/Resources/Racing Sim.pck" --script
+<absolute-path-to-godot/tests/v2/chicago_export_night.gd> -- --v2-flow-test` (with a timeout).
+It loads the shipped resources, switches night/day/night, and saves a windowed capture in
+`user://native-tests/chicago-export-night.png`. Use the editor's script runner for this harness;
+the release executable is tested separately with `--v2-export-check` and `--v2-smoke`.

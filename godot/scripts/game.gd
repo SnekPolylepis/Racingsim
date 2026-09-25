@@ -100,7 +100,9 @@ var retro
 var applied_time = -1
 var applied_horizon = ""
 ## Which wooded-hill silhouette each circuit's sky carries (RetroAssets.HILLS).
-const HORIZON_STYLES = {"proving_ground": "generic", "spa": "ardennes", "nordschleife_s1": "eifel"}
+const HORIZON_STYLES = {
+	"chicago": "flat", "proving_ground": "generic", "spa": "ardennes", "nordschleife_s1": "eifel"
+}
 var ui
 var instruments
 var sound
@@ -459,7 +461,9 @@ func check_exported_v2_assets() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var inputs = (
-		FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
+		FileAccess.file_exists("res://trackgen/data/chicago/route.json")
+		and FileAccess.file_exists("res://trackgen/data/chicago/city.json")
+		and FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
@@ -477,6 +481,7 @@ func check_exported_v2_assets() -> void:
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
 	ok = ok and load_v2_track("nordschleife") and track.id == "nordschleife" and track.length > 20000.0
+	ok = ok and load_v2_track("chicago") and track.id == "chicago" and track.length > 5000.0
 	print("V2 EXPORT ", "PASS" if ok else "FAIL")
 	var scene_tree = get_tree()
 	for player in find_children("*", "AudioStreamPlayer", true, false):
@@ -1134,6 +1139,11 @@ func apply_time_of_day():
 		sun.light_color = Color("a1b4df") if night else Color("ffd79a")
 		sun.light_energy = .32 if night else 1.5
 		camera.far = 650 if night else 1250
+		if v2_track_id == "chicago":
+			# Preserve the lake horizon and Navy Pier/Willis sightlines in this flat city.
+			environment.fog_depth_begin = 180 if night else 350
+			environment.fog_depth_end = 1900 if night else 2800
+			camera.far = 3200
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
 			warm_ghost.call_deferred()
@@ -1148,3 +1158,4 @@ func apply_track_night() -> void:
 	if track is Node3D:
 		TrackLights.set_night(track, night)
 		NightGlow.set_night(track, night)
+		preload("res://scripts/track/chicago_night.gd").set_night(track, night)

@@ -1,0 +1,6 @@
+PASS  chicago roadster simulation: lap 250.90 s, 0 off-track wheel-ticks, 0 wall-contact ticks, 0 prop-contact ticks (0 props), max 1.8 m off the line, top 175 km/h; baseline 250.90 s (-0.00%)
+PASS  chicago roadster simcade: lap 246.49 s, 0 off-track wheel-ticks, 0 wall-contact ticks, 0 prop-contact ticks (0 props), max 1.4 m off the line, top 175 km/h; baseline 246.49 s (-0.00%)
+PASS  chicago gt simulation: lap 189.74 s, 0 off-track wheel-ticks, 0 wall-contact ticks, 0 prop-contact ticks (0 props), max 1.7 m off the line, top 246 km/h; baseline 189.74 s (-0.00%)
+PASS  chicago gt simcade: lap 187.00 s, 0 off-track wheel-ticks, 0 wall-contact ticks, 0 prop-contact ticks (0 props), max 1.7 m off the line, top 247 km/h; baseline 187.00 s (-0.00%)
+PASS  chicago f296gt3 simulation: lap 187.53 s, 0 off-track wheel-ticks, 0 wall-contact ticks, 0 prop-contact ticks (0 props), max 1.6 m off the line, top 253 km/h; baseline 187.53 s (+0.00%)
+PASS  chicago f296gt3 simcade: lap 183.34 s, 0 off-track wheel-ticks, 0 wall-contact ticks, 0 prop-contact ticks (0 props), max 1.7 m off the line, top 255 km/h; baseline 183.34 s (+0.00%)

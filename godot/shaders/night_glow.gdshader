@@ -14,6 +14,7 @@ render_mode cull_back;
 uniform bool afterhours = false;
 uniform float window_scale = 1.35;
 uniform float lit_chance = 0.4;
+uniform float glow_energy = 1.0;
 
 varying vec3 world_pos;
 varying vec3 world_normal;
@@ -53,5 +54,5 @@ void fragment() {
 			}
 		}
 	}
-	EMISSION = glow;
+	EMISSION = glow * glow_energy;
 }
