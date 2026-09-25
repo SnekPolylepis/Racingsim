@@ -1847,3 +1847,6 @@ Owner feedback: the Nordschleife felt flat and open, not planted in the landscap
 - **Not fixed:** banks and cuttings. `dem.raw` is DGM1 resampled to 20 m per pixel, and the elevation keys are every 20 m, so the data holds no roadside relief. NS-section part 2 needs the 20 DGM1 1 m tiles re-fetched and a corridor DEM at 1–2 m (owner approval for the download pending).
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
+
+## 2026-09-25  CLAIM Look-0  (Claude Sonnet 5)
+Art bible and reference board on branch `rb/look-0-art-bible`: `godot/docs/art/reference/` (real PS2/GT4/NFSU and real-world Nordschleife photos), an extended `tests/v2/track_screenshots.gd` with a `--compare` mode, `godot/docs/art/baseline/` captures, and a rewritten `ART-DIRECTION.md` with a measured gap table. This is a new team slot ("Sonnet" added to QUEUE.md's model roster); the owner assigned it directly rather than via the queue's claim protocol.
