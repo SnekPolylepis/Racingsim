@@ -263,7 +263,8 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	water.shader = WATER_SHADER
 	var pier_walk = pbr_texture_set("large_square_pattern_01", "large_square_pattern_01", "diff")
 	box(asset, parent, "CityBase", Vector3(-500, -3.8, 0), Vector3(4000, 1, 4000), concrete)
-	var lake = box(asset, parent, "LakeMichigan", Vector3(2600, -3, 0), Vector3(3900, .2, 6500), water)
+	# Open lake beyond city.json's clipped lake ring (x 2700), at the lake level in ChicagoCity.LAKE_Y.
+	var lake = box(asset, parent, "LakeMichigan", Vector3(4600, 6.35, 0), Vector3(3900, .2, 6500), water)
 	lake.material_override = water
 	# River ribbon follows the main and south branches; 80 m wide, below both Wacker decks.
 	var river = [

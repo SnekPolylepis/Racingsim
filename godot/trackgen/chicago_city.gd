@@ -18,6 +18,12 @@ const DATA = "res://trackgen/data/chicago/city.json"
 const TEX = "res://assets/textures/chicago/"
 const STREET_Y = 8.0
 const WATER_Y = -2.8
+## Lake Michigan and its harbours sit just below the lakefront (the Chicago Harbor Lock separates them from
+## the river). At the river's WATER_Y, 10.8 m under the street, the lake was hidden in a pit and Lake
+## Shore Drive looked out over a bare concrete plain.
+const LAKE_Y = 6.5
+## Open ground this close to the lake is lakefront lawn (the Lakefront Trail strip OSM leaves unmapped).
+const LAKEFRONT_M = 150.0
 const CHUNK = 600.0
 ## The route's half width plus verge: streets and buildings keep this far (plus their own margin) from it.
 const ROUTE_CLEAR = 9.5
@@ -101,12 +107,20 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var ring = _ring(poly)
 		if ring.size() >= 3:
 			water_polys.append(ring)
-			_flat(_st(chunks, _centroid(ring), "water"), ring, WATER_Y)
-			_walls(_st(chunks, _centroid(ring), "wall"), ring, WATER_Y - 0.4, STREET_Y - 0.04)
+			var wy = _water_level(ring)
+			_flat(_st(chunks, _centroid(ring), "water"), ring, wy)
+			_walls(_st(chunks, _centroid(ring), "wall"), ring, wy - 0.4, STREET_Y - 0.04)
 			stats.water += 1
+	# A park the circuit crosses (Grant Park) can't be one raised polygon over the road; its ground tiles
+	# below turn to lawn instead, so it no longer falls back to bare concrete.
+	var crossed_parks = []
 	for poly in doc.parks:
 		var ring = _ring(poly)
-		if ring.size() >= 3 and not _touches_route(route, ring, 2.0):
+		if ring.size() < 3:
+			continue
+		if _touches_route(route, ring, 2.0):
+			crossed_parks.append(ring)
+		else:
 			_flat(_st(chunks, _centroid(ring), "park"), ring, STREET_Y + 0.02)
 			stats.parks += 1
 	# Street-level ground, in 20 m tiles, open over water and around the circuit's lower level and ramps.
@@ -117,13 +131,17 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			lo = lo.min(Vector2(p[0], p[1]))
 			hi = hi.max(Vector2(p[0], p[1]))
 	var tile = 20.0
+	var shore = _lakefront_cells(water_polys, tile, LAKEFRONT_M)
 	var x = floorf(lo.x / tile) * tile
 	while x < hi.x:
 		var z = floorf(lo.y / tile) * tile
 		while z < hi.y:
 			var c = Vector2(x + tile * 0.5, z + tile * 0.5)
 			if not _in_water(water_polys, c) and not _near_low_route(route, c, 26.0):
-				_quad_flat(_st(flat_chunks, c, "ground"), Vector2(x, z), tile, STREET_Y - 0.04)
+				var cell = Vector2i(floori(c.x / tile), floori(c.y / tile))
+				var lawn = shore.has(cell) or _in_water(crossed_parks, c)
+				var kind = "park" if lawn else "ground"
+				_quad_flat(_st(flat_chunks, c, kind), Vector2(x, z), tile, STREET_Y - 0.04)
 				stats.ground_tiles += 1
 			z += tile
 		x += tile
@@ -277,6 +295,34 @@ static func _near_low_route(route: Dictionary, p: Vector2, reach: float) -> bool
 	return _route_dist(route, p, reach, true) < reach
 
 
+## Tile cells within `reach` of a lake-level shoreline, marked by walking each lake ring edge.
+static func _lakefront_cells(polys: Array, tile: float, reach: float) -> Dictionary:
+	var cells = {}
+	var r = ceili(reach / tile)
+	for ring in polys:
+		if _water_level(ring) != LAKE_Y:
+			continue
+		for i in ring.size():
+			var a: Vector2 = ring[i]
+			var b: Vector2 = ring[(i + 1) % ring.size()]
+			var steps = maxi(1, ceili(a.distance_to(b) / tile))
+			for k in steps + 1:
+				var p = a.lerp(b, float(k) / steps)
+				var c = Vector2i(floori(p.x / tile), floori(p.y / tile))
+				for dx in range(-r, r + 1):
+					for dz in range(-r, r + 1):
+						if dx * dx + dz * dz <= r * r:
+							cells[c + Vector2i(dx, dz)] = true
+	return cells
+
+
+## Lake level for the lake and harbours (east of the lock, or south of the river), else the river's level.
+static func _water_level(ring: PackedVector2Array) -> float:
+	var c = _centroid(ring)
+	return LAKE_Y if c.x > 850.0 or c.y > 0.0 else WATER_Y
+
+
+## True when `p` is inside any of `polys` (water rings, or the crossed parks).
 static func _in_water(polys: Array, p: Vector2) -> bool:
 	for poly in polys:
 		if Geometry2D.is_point_in_polygon(p, poly):
