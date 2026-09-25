@@ -74,6 +74,15 @@ func initialize(owner_app):
 	v2_panels.initialize(app)
 
 
+## Release the menu-sound player when the node is freed, like audio.gd, so no playback outlives the leak
+## check. Not _exit_tree(): the presentation chain re-parents the UI root into its viewport (Look-3), which
+## exits and re-enters the tree, and clearing there broke every menu tone.
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE and ui_player != null:
+		ui_player.stop()
+		ui_player.stream = null
+
+
 func make_tone(kind):
 	var stream = AudioStreamWAV.new()
 	stream.format = AudioStreamWAV.FORMAT_16_BITS

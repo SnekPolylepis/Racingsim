@@ -226,8 +226,13 @@ for i in range(1, len(all_pts)):
 total_circuit_length = circuit_dists[-1] + math.hypot(all_pts[0][0] - all_pts[-1][0], all_pts[0][1] - all_pts[-1][1])
 print(f"Total circuit length: {total_circuit_length:.2f} m ({total_circuit_length/1000.0:.2f} km)")
 
-# 5. Sample and smooth elevation keys every 20 m along circuit
-num_ele_keys = int(total_circuit_length / 20.0)
+# 5. Sample and smooth elevation keys every KEY_SPACING m along circuit.
+# 5 m keys with ~20 m Gaussian smoothing (NS-bumps; was 20 m keys and ~30 m): the road's crests, dips and
+# compressions of about 40 m and longer survive. Peak vertical curvature on section 1 is then about 0.0055 1/m
+# (a hard compression), where ~10 m smoothing gave 0.025 1/m of survey noise (7 g at 200 km/h).
+KEY_SPACING = 5.0
+SMOOTH_SIGMA_KEYS = 4.0
+num_ele_keys = int(total_circuit_length / KEY_SPACING)
 s_step = total_circuit_length / num_ele_keys
 
 # Sample raw DEM elevations along the circuit path
@@ -265,12 +270,12 @@ for i in range(n_ele):
     w_pts = [raw_elevs[(i - 1) % n_ele], raw_elevs[i], raw_elevs[(i + 1) % n_ele]]
     med_elevs.append(sorted(w_pts)[1])
 
-# Apply Gaussian filter with periodic boundary (sigma = 1.5 samples = ~30 m)
-gauss_w = [math.exp(-k*k / (2 * 1.5**2)) for k in range(-5, 6)]
+# Apply Gaussian filter with periodic boundary (sigma = SMOOTH_SIGMA_KEYS samples = ~20 m)
+gauss_w = [math.exp(-k*k / (2 * SMOOTH_SIGMA_KEYS**2)) for k in range(-12, 13)]
 gw_sum = sum(gauss_w)
 smooth_elevs = []
 for i in range(n_ele):
-    val = sum(gauss_w[k + 5] * med_elevs[(i + k) % n_ele] for k in range(-5, 6)) / gw_sum
+    val = sum(gauss_w[k + 12] * med_elevs[(i + k) % n_ele] for k in range(-12, 13)) / gw_sum
     smooth_elevs.append(val)
 
 # Normalize heights relative to start line (H0)
@@ -288,9 +293,16 @@ for k in range(int(tot_s1_len / s_step), n_ele):
     cur = 0
     while cur + 1 < len(circuit_dists) and circuit_dists[cur + 1] < s_val:
         cur += 1
-    t = (s_val - circuit_dists[cur]) / (circuit_dists[cur + 1] - circuit_dists[cur])
-    x = all_pts[cur][0] + t * (all_pts[cur + 1][0] - all_pts[cur][0])
-    z = all_pts[cur][1] + t * (all_pts[cur + 1][1] - all_pts[cur][1])
+    if cur + 1 < len(circuit_dists):
+        t = (s_val - circuit_dists[cur]) / (circuit_dists[cur + 1] - circuit_dists[cur])
+        x = all_pts[cur][0] + t * (all_pts[cur + 1][0] - all_pts[cur][0])
+        z = all_pts[cur][1] + t * (all_pts[cur + 1][1] - all_pts[cur][1])
+    else:
+        # Past the last point: the closing segment back to the start.
+        seg = total_circuit_length - circuit_dists[-1]
+        t = (s_val - circuit_dists[-1]) / max(seg, 1e-6)
+        x = all_pts[-1][0] + t * (all_pts[0][0] - all_pts[-1][0])
+        z = all_pts[-1][1] + t * (all_pts[0][1] - all_pts[-1][1])
     h = smooth_elevs[k]
     ret_road_samples.append((x, z, h))
 

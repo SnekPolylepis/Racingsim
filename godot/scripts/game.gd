@@ -126,6 +126,7 @@ var record_writer
 var settings_path = "user://settings.json"
 var skid_root: MultiMeshInstance3D
 var skid_multi: MultiMesh
+var particles = null
 var skid_cursor = 0
 var skid_retire_cursor = 0
 var skid_timer = 0.0
@@ -452,7 +453,8 @@ func setup_v2():
 		call_deferred("check_exported_v2_assets")
 
 
-## A packaged-build probe: both generators, Spa's raw heightmap and the tree atlas must be inside the PCK.
+## A packaged-build probe: both generators, Spa's raw heightmap and the tree/undergrowth atlases must be
+## inside the PCK.
 func check_exported_v2_assets() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -461,10 +463,13 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
+		and FileAccess.file_exists("res://trackgen/data/spa/kerbs.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/kerbs.json")
 		and ResourceLoader.exists("res://assets/trees/tree_atlas.png")
+		and ResourceLoader.exists("res://assets/undergrowth/undergrowth_atlas.png")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
@@ -883,6 +888,9 @@ func render_v2(dt):
 		message(record_writer.errors.pop_front())
 	if v2_props:
 		v2_props.sync_nodes()
+	if particles and not paused and not in_menu:
+		particles.night = settings.time_of_day == 1
+		particles.update_car(car, dt)
 	var pose = blend_v2(prev_pose, snapshot_v2(), Engine.get_physics_interpolation_fraction())
 	var xf: Transform3D = pose.xform
 	model.root.transform = Transform3D(xf.basis, xf.origin - xf.basis.y * car.setup.cgHeight)
@@ -1011,6 +1019,10 @@ func setup_skids():
 	skid_root.multimesh = skid_multi
 	skid_root.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(skid_root)
+	# Tyre smoke, grass, gravel, sparks and backfires (Look-12), beside the skid marks.
+	particles = preload("res://scripts/particles.gd").new()
+	particles.name = "Particles"
+	add_child(particles)
 
 
 func add_skids():

@@ -1,13 +1,12 @@
-"""Split the rendered tree sheets into single cards, bleed colour into the transparent border, and pack
-one 2048x2048 atlas (assets/trees/tree_atlas.png) plus assets/trees/tree_atlas.json.
+"""Split the rendered plant sheets into single cards, bleed colour into the transparent border, and pack
+two atlases: assets/trees/tree_atlas.png (canopy: spruce, fir, three deciduous species, bush) and
+assets/undergrowth/undergrowth_atlas.png (Look-10: fern, bramble, long grass, bush, sapling).
 Usage: python tools/finish_tree_cards.py <cards_dir> (the output of tools/bake_tree_cards.gd)"""
 import json, sys
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image
 
 src = sys.argv[1]
-OUT = "assets/trees/"
-ATLAS = 2048
 PAD = 6
 
 
@@ -58,36 +57,62 @@ def bleed(im, iters=24):
     return Image.fromarray(arr.astype(np.uint8), "RGBA")
 
 
+def pack(out_path, json_path, atlas_w, atlas_h, cols, rows, items):
+    """items: [(kind, PIL image), ...], bottom-aligned in a cols x rows grid of equal cells."""
+    cell_w = atlas_w // cols
+    cell_h = atlas_h // rows
+    atlas = Image.new("RGBA", (atlas_w, atlas_h), (0, 0, 0, 0))
+    cards = []
+    for i, (kind, im) in enumerate(items):
+        col, row = i % cols, i // cols
+        x, y, w, h = col * cell_w, row * cell_h, cell_w, cell_h
+        im = bleed(im)
+        fit = min((w - 2 * PAD) / im.width, (h - 2 * PAD) / im.height)
+        nw, nh = max(1, int(im.width * fit)), max(1, int(im.height * fit))
+        im = im.resize((nw, nh), Image.LANCZOS)
+        ox, oy = x + (w - nw) // 2, y + h - PAD - nh
+        atlas.paste(im, (ox, oy))
+        cards.append({"kind": kind, "uv": [ox / atlas_w, oy / atlas_h, nw / atlas_w, nh / atlas_h], "aspect": nw / nh})
+    atlas = bleed(atlas, 12)
+    atlas.save(out_path, optimize=True)
+    json.dump(cards, open(json_path, "w"), indent=1)
+    for c in cards:
+        print(c["kind"], round(c["aspect"], 2))
+
+
+# --- Canopy atlas (Look-6 originals + Look-10's three deciduous species) ---
 spruce = split("fir_sapling_medium")
 tall = split("fir_tree_01")
-decid = split("tree_small_02")
-shrub = split("shrub_02")
-print(len(spruce), len(tall), len(decid), len(shrub))
-# slot rectangles (x, y, w, h) in the atlas: 4 tall slots per row, the last two are split in halves
-S = ATLAS // 4
-slots = [(i * S, 0, S, 1024) for i in range(4)]
-slots += [(0, 1024, S, 1024), (S, 1024, S, 1024)]
-slots += [(2 * S, 1024, S, 512), (2 * S, 1536, S, 512), (3 * S, 1024, S, 512), (3 * S, 1536, S, 512)]
-items = (
+beech = split("tree_small_02")
+bush = split("shrub_02")
+oak = split("island_tree_02")
+birch = split("island_tree_03")
+print("canopy source counts:", len(spruce), len(tall), len(beech), len(bush), len(oak), len(birch))
+tree_items = (
     [("spruce", p) for p in spruce[:3]]
     + [("fir", p) for p in tall[:3]]
-    + [("beech", decid[0])]
-    + [("bush", p) for p in shrub[:2]]
+    + [("beech", beech[0])]
+    + [("oak", oak[0])]
+    + [("birch", birch[0])]
+    + [("bush", p) for p in bush[:2]]
 )
-atlas = Image.new("RGBA", (ATLAS, ATLAS), (0, 0, 0, 0))
-cards = []
-for (kind, im), (x, y, w, h) in zip(items, slots):
-    im = bleed(im)
-    fit = min((w - 2 * PAD) / im.width, (h - 2 * PAD) / im.height)
-    nw, nh = int(im.width * fit), int(im.height * fit)
-    im = im.resize((nw, nh), Image.LANCZOS)
-    # bottom-align inside the slot; trunks sit on the ground line
-    ox, oy = x + (w - nw) // 2, y + h - PAD - nh
-    atlas.paste(im, (ox, oy))
-    cards.append({"kind": kind, "uv": [ox / ATLAS, oy / ATLAS, nw / ATLAS, nh / ATLAS], "aspect": nw / nh})
-# bleed the whole atlas once more so cell borders carry colour
-atlas = bleed(atlas, 12)
-atlas.save(OUT + "tree_atlas.png", optimize=True)
-json.dump(cards, open(OUT + "tree_atlas.json", "w"), indent=1)
-for c in cards:
-    print(c["kind"], round(c["aspect"], 2))
+pack("assets/trees/tree_atlas.png", "assets/trees/tree_atlas.json", 2048, 1536, 4, 3, tree_items)
+
+# --- Undergrowth atlas (Look-10, ART-DIRECTION.md "Trackside enclosure") ---
+fern = split("fern_02")
+bramble = split("wild_rooibos_bush")
+grass = split("grass_medium_01", min_w=15)
+flower_shrub = split("shrub_04")
+sapling = split("pine_sapling_small")
+print("undergrowth source counts:", len(fern), len(bramble), len(grass), len(flower_shrub), len(sapling))
+# Widest/most distinct instances first from each split (bramble and grass over-produce near-duplicates).
+bramble.sort(key=lambda im: -im.width)
+grass.sort(key=lambda im: -im.width)
+undergrowth_items = (
+    [("fern", p) for p in fern[:2]]
+    + [("bramble", p) for p in bramble[:3]]
+    + [("grass", p) for p in grass[:3]]
+    + [("shrub", p) for p in flower_shrub[:3]]
+    + [("sapling", p) for p in sapling[:3]]
+)
+pack("assets/undergrowth/undergrowth_atlas.png", "assets/undergrowth/undergrowth_atlas.json", 2048, 1024, 5, 3, undergrowth_items)

@@ -5,8 +5,22 @@ extends SceneTree
 ## <model_dir> holds one folder per model (<name>/<name>.gltf). Writes <out_dir>/<name>_raw.png and
 ## <name>.json (world size in metres). tools/finish_tree_cards.py crops, bleeds the colour into the
 ## transparent border and packs the final PNGs. The downloads themselves are never committed.
+## Look-10 added island_tree_02/03 (deciduous, canopy atlas) and fern_02, wild_rooibos_bush,
+## grass_medium_01, shrub_04, pine_sapling_small (undergrowth atlas).
 
-const MODELS = ["fir_tree_01", "fir_sapling_medium", "tree_small_02", "shrub_02"]
+const MODELS = [
+	"fir_tree_01",
+	"fir_sapling_medium",
+	"tree_small_02",
+	"shrub_02",
+	"island_tree_02",
+	"island_tree_03",
+	"fern_02",
+	"wild_rooibos_bush",
+	"grass_medium_01",
+	"shrub_04",
+	"pine_sapling_small",
+]
 
 
 func _init():

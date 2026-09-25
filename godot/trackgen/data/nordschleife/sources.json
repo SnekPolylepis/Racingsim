@@ -27,16 +27,16 @@
   ],
   "files": {
     "build_data.py": {
-      "bytes": 17873,
-      "sha256": "5c6e6629ec59f6d6bf03d688803c5120cec6ed02cc5562c76bc785e2a22313dd"
+      "bytes": 18651,
+      "sha256": "00675e7c3d41e6730df10429fd66552dc1f865fac031fca7a0ad285a59ae5cbf"
     },
     "centreline.json": {
-      "bytes": 72698,
-      "sha256": "5cadb35ea7efb3b12b24275dd694639e7ac8dfe7f03dae1627c668af1cb62dc2"
+      "bytes": 157700,
+      "sha256": "91c8c2951110437abd500b110b75a6bbb4e71cfe3c320837263c1b315f168b56"
     },
     "dem.raw": {
       "bytes": 2560004,
-      "sha256": "3df46fb1e0e48eec09584935f4271671543bac763254f64accf44eae1a717b36"
+      "sha256": "dc39f853b3516235b21d3b0a94da9f13d08f94341fe4b4df24c84dab4826904f"
     },
     "terrain.json": {
       "bytes": 278,
