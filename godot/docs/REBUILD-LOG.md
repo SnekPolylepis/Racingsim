@@ -2069,3 +2069,16 @@ Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71
 - Text readable at 480p; car size and shape consistent across modes including 4:3 RGB555; no black or garbled frames.
 
 **Repo hygiene (#27):** the six `docs/rebuild/screenshots/look-tracks/*-before-after.png` are committed without `.png.import`, so `--import` leaves six untracked files.
+
+## 2026-09-24  DONE NS-bumps: real road undulation on the Nordschleife  (Claude Opus 5.5)
+- **Elevation keys:** `build_data.py` keys every 5 m (was 20 m), sampled from the 1 m DGM1 mosaic, with a 3-key (15 m) median to remove spikes and a 20 m Gaussian (was about 30 m at 20 m keys). The keys went from 452 to 1,811.
+  - Section 1's peak vertical curvature is now +0.0055 / −0.0035 1/m (it was ±0.0011), in line with the real track's compressions and crests.
+  - A 10 m smoothing was tried and rejected: 0.025 1/m of survey noise, about 7 g at 200 km/h.
+  - A closing-segment bug that the denser sampling exposed is fixed. `dem.raw` changed only through the return-road grading, which is sampled more densely now.
+  - CACHE_REVISION 6.
+- **`RoadBuilder.elevation_spline()`:** the dense O(n³) Gaussian elimination is replaced by an O(n) tridiagonal solve (Thomas, plus Sherman–Morrison for the closed road's corner terms), and `elevation_at()` uses a binary search.
+  - The same C2 spline results: road_tool_v2 C2 and crest checks pass.
+  - At 1,811 keys the old solve timed out every Nordschleife suite at 600 s.
+  - It was also a hidden cost everywhere: the full `-All -Features` run went from about 280 s to 115 s, and nordschleife_s1 from about 130 s to 15 s.
+
+Gates: `run_gates.ps1 -All -Features` 35/35; laps are within the 2 % baselines.

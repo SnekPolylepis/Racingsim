@@ -78,51 +78,72 @@ static func elevation_spline(keys: PackedVector2Array, length: float, closed: bo
 	m.fill(0.0)
 	if n < 3:
 		return [pts, m]
-	# Solve A m = r for the second derivatives (dense Gaussian elimination; key counts are small).
-	var a = []
+	# Solve A m = r for the second derivatives. A is tridiagonal (cyclic on a closed road): Thomas'
+	# algorithm, with Sherman-Morrison for the two corner terms, is O(n). The dense elimination this
+	# replaced was O(n^3) and stalled a bake at 1,800 keys (the Nordschleife's 5 m keys, NS-bumps).
+	var lower = []
+	var diag = []
+	var upper = []
 	var r = []
-	for i in n:
-		var row = []
-		row.resize(n)
-		row.fill(0.0)
-		a.append(row)
-		r.append(0.0)
 	for i in n:
 		var has_prev = i > 0 or closed
 		var has_next = i < n - 1 or closed
 		if not (has_prev and has_next):
-			a[i][i] = 1.0  # natural end: zero curvature
+			lower.append(0.0)
+			diag.append(1.0)  # natural end: zero curvature
+			upper.append(0.0)
+			r.append(0.0)
 			continue
 		var ip = posmod(i - 1, n)
 		var inx = (i + 1) % n
 		var h0 = pts[i].x - pts[ip].x if i > 0 else pts[i].x + length - pts[ip].x
 		var h1 = pts[inx].x - pts[i].x if i < n - 1 else pts[inx].x + length - pts[i].x
-		a[i][ip] += h0 / 6.0
-		a[i][i] += (h0 + h1) / 3.0
-		a[i][inx] += h1 / 6.0
-		r[i] = (pts[inx].y - pts[i].y) / h1 - (pts[i].y - pts[ip].y) / h0
-	for c in n:
-		var pivot = c
-		for k in range(c + 1, n):
-			if absf(a[k][c]) > absf(a[pivot][c]):
-				pivot = k
-		var tmp = a[c]
-		a[c] = a[pivot]
-		a[pivot] = tmp
-		var tr = r[c]
-		r[c] = r[pivot]
-		r[pivot] = tr
-		for k in range(c + 1, n):
-			var factor = a[k][c] / a[c][c]
-			for j in range(c, n):
-				a[k][j] -= factor * a[c][j]
-			r[k] -= factor * r[c]
-	for c in range(n - 1, -1, -1):
-		var acc = r[c]
-		for j in range(c + 1, n):
-			acc -= a[c][j] * m[j]
-		m[c] = acc / a[c][c]
+		lower.append(h0 / 6.0)
+		diag.append((h0 + h1) / 3.0)
+		upper.append(h1 / 6.0)
+		r.append((pts[inx].y - pts[i].y) / h1 - (pts[i].y - pts[ip].y) / h0)
+	if not closed:
+		m = _tridiagonal(lower, diag, upper, r)
+		return [pts, m]
+	# Cyclic: A[0][n-1] = lower[0] (beta), A[n-1][0] = upper[n-1] (alpha).
+	var alpha = upper[n - 1]
+	var beta = lower[0]
+	var gamma = -diag[0]
+	var bb = diag.duplicate()
+	bb[0] = diag[0] - gamma
+	bb[n - 1] = diag[n - 1] - alpha * beta / gamma
+	var x = _tridiagonal(lower, bb, upper, r)
+	var u = []
+	u.resize(n)
+	u.fill(0.0)
+	u[0] = gamma
+	u[n - 1] = alpha
+	var z = _tridiagonal(lower, bb, upper, u)
+	var fact = (x[0] + beta * x[n - 1] / gamma) / (1.0 + z[0] + beta * z[n - 1] / gamma)
+	for i in n:
+		m[i] = x[i] - fact * z[i]
 	return [pts, m]
+
+
+## Solve a tridiagonal system (sub-diagonal `a`, diagonal `b`, super-diagonal `c`; a[0] and c[n-1] unused).
+static func _tridiagonal(a: Array, b: Array, c: Array, d: Array) -> Array:
+	var n = b.size()
+	var cp = []
+	cp.resize(n)
+	var dp = []
+	dp.resize(n)
+	cp[0] = c[0] / b[0]
+	dp[0] = d[0] / b[0]
+	for i in range(1, n):
+		var den = b[i] - a[i] * cp[i - 1]
+		cp[i] = c[i] / den if i < n - 1 else 0.0
+		dp[i] = (d[i] - a[i] * dp[i - 1]) / den
+	var x = []
+	x.resize(n)
+	x[n - 1] = dp[n - 1]
+	for i in range(n - 2, -1, -1):
+		x[i] = dp[i] - cp[i] * x[i + 1]
+	return x
 
 
 ## Evaluate the spline from elevation_spline() at arc distance s.
@@ -136,10 +157,17 @@ static func elevation_at(spline: Array, s: float, length: float, closed: bool) -
 		return pts[0].y
 	if closed:
 		s = fposmod(s, length)
+	# The last key at or before s (binary search; keys are sorted).
 	var i = -1
-	for k in n:
-		if pts[k].x <= s:
-			i = k
+	var lo = 0
+	var hi = n - 1
+	while lo <= hi:
+		var mid = (lo + hi) >> 1
+		if pts[mid].x <= s:
+			i = mid
+			lo = mid + 1
+		else:
+			hi = mid - 1
 	var a
 	var b
 	var ma

@@ -22,11 +22,3 @@ widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections.
 
 Surrounding terrain is exported as a 5 m grid in `dem.raw` (761 columns × 841 rows,
 2560004 bytes) referenced to start line elevation 619.38 m.
-
-## Kerbs
-
-`kerbs.json` records eight visible red/white kerb stretches traced from LVermGeoRP
-DOP20 2025 crops (`kerb-crops/`, 80 m square at 40 m spacing). The crop set covers
-Section 1 through Aremberg; tree canopy and deep shadows obscure many road edges,
-so only clearly striped runs are included. Overhead imagery cannot distinguish a
-flat painted strip from a raised kerb, and entries are marked `unsure`.
