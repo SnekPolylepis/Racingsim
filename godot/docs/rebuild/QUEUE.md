@@ -27,6 +27,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | F-CI | CI tolerance scoped to the two legacy suites that differ on Linux, measured; obsolete Spa allowance removed | Claude | | review: Sol | rb/F-CI; read "DONE F-CI" |
 | P4-07b | Bot robustness: honest curvature (distance chord), recalibrated pace, yaw-aware braking, smooth Spa BotLine; all 3 cars × 2 models clean on proving ground and Spa; record Spa's lap baseline | Claude | | done | reviewed on main; read "DONE P4-07b" |
 | F-terrain-perf | tests/v2/terrain.gd's "car step" timing check (300 µs budget) ignores GatesEnv.perf(): under the parallel runner it read 671 µs and failed (168 µs alone). Route it through GatesEnv.perf()/perf_note() like the other timing gates | Claude | | review: Sol | small |
+| F-track-picker | The front end's circuit picker only toggled Proving Ground and Spa, so Nordschleife S1 was listed but could not be chosen; cycle every V2_TRACKS entry and gate it | Claude | | review: Sol | rb/F-track-picker; read "DONE F-track-picker" |
 | F-ci-ui | CI export check (Linux preset with the shared filters) and windowed --v2-present job; settings panel fills its height; stale ART-DIRECTION/LLM-GUIDE/TESTING text | Claude | | review: Sol | rb/ci-ui-fixes; read "DONE F-ci-ui" |
 
 ## Build

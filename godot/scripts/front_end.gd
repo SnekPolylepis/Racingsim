@@ -281,8 +281,10 @@ func cycle_v2_car() -> void:
 	show_page("car")
 
 
+## Step through every circuit in V2_TRACKS (it used to toggle between the first two only).
 func cycle_v2_track() -> void:
-	selected_track = "spa" if selected_track == "proving_ground" else "proving_ground"
+	var ids = V2_TRACKS.keys()
+	selected_track = ids[(ids.find(selected_track) + 1) % ids.size()]
 	show_page("circuit")
 
 

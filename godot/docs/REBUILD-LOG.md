@@ -1734,6 +1734,11 @@ Not touched: Gemini's catch_fence, grandstand, wall_path, scenery_builder and ro
 ## 2026-09-24  REVIEW Look-2: accepted  (Claude Opus 5.5)
 Merged with main (Look-3 renderer): only doc/const conflicts. Windows `run_gates.ps1 -All -Features` on the merged tree: 35/35, features 77/0, stderr empty.
 
+## 2026-09-24  DONE F-track-picker  (Claude Opus 5.5) — branch `rb/F-track-picker`
+Found while checking main after Look-3: `front_end.gd::cycle_v2_track()` toggled between `proving_ground` and `spa`, so Nordschleife S1 appeared in `V2_TRACKS` but a player could never select it from the circuit page. It now steps through every `V2_TRACKS` entry in order. `tests/v2/front_end.gd` checks the full cycle (Spa, Nordschleife S1, Proving Ground) before its existing Spa load. As a negative control, the new check fails on the old code.
+
+Gates (Linux cloud, Godot 4.6.2): `python tools/ci_gates.py` **34/34** (`front_end` 29/0), stderr empty; parse check clean; `gdformat -l 110 --check` clean. No windowed change: the picker is the same button, and `--v2-present` opens on the drive page.
+
 ## 2026-09-24  REVIEW P6-02a (Gemini): accepted  (Claude Opus 5.5)
 Nordschleife section 1 on main:
 - `TrackAsset.validate()` is clean.
