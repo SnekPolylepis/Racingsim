@@ -1,5 +1,14 @@
 # Native changelog
 
+## 2026-09-25 — Rebuild Preview 6
+
+- Mixed forests with undergrowth, deciduous species, verge grass and hedges (Look-10).
+- Kerbs traced from aerial photos at Spa and Nordschleife S1 (K-01b, K-02).
+- Spa braking countdown boards (Look-11).
+- Particle effects: tyre smoke, grass, gravel, sparks, backfire (Look-12).
+- Nordschleife road undulation from 5 m DGM1 keys; O(n) elevation spline (NS-bumps).
+- The intermittent audio leak at exit is fixed.
+
 ## 2026-09-24 — Rebuild Preview 5
 
 - Cars: replaced the procedural roadster with a modelled Mazda MX-5 NA body and pop-up lights.
