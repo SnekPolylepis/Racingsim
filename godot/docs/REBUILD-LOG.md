@@ -2369,3 +2369,8 @@ The corrected harness uses the editor binary with the shipped PCK; actual releas
 Chicago driving smoke checks remain separate PASS results. This is not a full night driving lap.
 
 Final nighttime decision: **Jev gate COMPLETE 0.93**. MEDIUM (gpt-6-luna medium) lane sufficient.
+
+## 2026-09-25 — CLAIM CHI-03 Sol
+
+Claimed CHI-03 on b/CHI-03-refs-water, based on origin/rb/CHI-prelim (CHI-01 and asset prep). Scope: Chicago reference board, screenshot comparison tooling and the Chicago water shader. The separate CHI-02 OSM city build is not part of this branch.
+
