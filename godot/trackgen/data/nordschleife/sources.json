@@ -27,28 +27,28 @@
   ],
   "files": {
     "build_data.py": {
-      "bytes": 17756,
-      "sha256": "183b5a4b39d144379fe541d69e57e66c9a5944f15b6a33f899581aa85bf09fa3"
+      "bytes": 17873,
+      "sha256": "5c6e6629ec59f6d6bf03d688803c5120cec6ed02cc5562c76bc785e2a22313dd"
     },
     "centreline.json": {
       "bytes": 72698,
       "sha256": "5cadb35ea7efb3b12b24275dd694639e7ac8dfe7f03dae1627c668af1cb62dc2"
     },
     "dem.raw": {
-      "bytes": 161204,
-      "sha256": "3fc43e98149cd0b8d7eb7385732744395faf552e4cf726ac1f63ba56399c8583"
+      "bytes": 2560004,
+      "sha256": "3df46fb1e0e48eec09584935f4271671543bac763254f64accf44eae1a717b36"
     },
     "terrain.json": {
-      "bytes": 279,
-      "sha256": "05451b81af225e521300efbdfa86bec4b362507e61d89ce32abcf6f8142727e7"
+      "bytes": 278,
+      "sha256": "1bac1797f55f4507c063866011b4ba9dcfe3ea13f983f1fc168dab131eb494e3"
     },
     "README.md": {
       "bytes": 1493,
-      "sha256": "91a30022a2d23316436cbdf390cbd5ff8fad355bfbcfa9b2f76312b4a6d70ac7"
+      "sha256": "9abca2ebf3fe2f7c9b30ef77df7b7d2416cb9d4cfdc81d74a8d59de1cc36ed5a"
     },
     "licenses/dl-de-by-2.0.txt": {
-      "bytes": 1413,
-      "sha256": "3e5a253de2e97f5db33e0754ce8cb2a75677de552f54a46512915dd72517944e"
+      "bytes": 1394,
+      "sha256": "725bb7dcaca6fdb523b405517c3d9770a168cfe6bee01d1a8b8fe8965b9b8ad6"
     },
     "licenses/ODbL-1.0.txt": {
       "bytes": 25278,

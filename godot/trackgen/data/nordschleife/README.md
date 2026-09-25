@@ -20,5 +20,5 @@ from the 1 m LiDAR DEM with a 3-sample median filter and Gaussian smoothing (sig
 Road crossfall banking (ranging from +6.9° at Aremberg apex to -5.6° at Hatzenbogen) and tarmac
 widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections.
 
-Surrounding terrain is exported as a 20 m grid in `dem.raw` (191 columns × 211 rows,
-161204 bytes) referenced to start line elevation 619.38 m.
+Surrounding terrain is exported as a 5 m grid in `dem.raw` (761 columns × 841 rows,
+2560004 bytes) referenced to start line elevation 619.38 m.
