@@ -1733,3 +1733,40 @@ Not touched: Gemini's catch_fence, grandstand, wall_path, scenery_builder and ro
 
 ## 2026-09-24  REVIEW Look-2: accepted  (Claude Opus 5.5)
 Merged with main (Look-3 renderer): only doc/const conflicts. Windows `run_gates.ps1 -All -Features` on the merged tree: 35/35, features 77/0, stderr empty.
+
+## 2026-09-24  MAC CHECK five open PRs on a real GPU  (Claude Opus 5.5, macOS)
+Host: Mac16,12 (Apple M4), macOS 27.2 (26B5091g). Godot 4.6.2.stable.official.71f334935, `Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 (Apple9)`. Fresh clone, `tracks3d` cache deleted before each branch, `--import`, then the owner's steps. No code changed.
+
+| Branch | Parse | `ci_gates.py` | `--v2-present` | Stderr (windowed) |
+|---|---|---|---|---|
+| rb/F-track-picker (#25) 9379b53 | clean | 34/34 | 77 checks, 0 failures | empty (verbose re-run: ObjectDB leak, see below) |
+| rb/F-P4-03-corners (#26) 749e19f | clean | 34/34 | 77/0 | `WARNING: ObjectDB instances leaked at exit` |
+| rb/ci-ui-fixes (#28) a3c990c | clean | 34/34 | 77/0 | empty |
+| rb/look-tracks (#27) f72b9e7 | clean | 34/34 | 77/0; look spa 72/0, nordschleife_s1 72/0; track shots 0 failures | features: ObjectDB leak; track_screenshots: 6 `ERROR: ... RID allocations ... leaked at exit` + 2 WARNING |
+| rb/look-5-scenery (#29) 16f4214 | clean | 34/34 | 77/0; look spa 72/0, nordschleife_s1 72/0; track shots 0 failures; car_models 51/0 | look nordschleife: ObjectDB leak; track_screenshots: 7 `ERROR` RID leaks (adds FontAdvanced) + ObjectDB leak |
+
+`ci_gates.py` does not check v2 stderr; every suite's `.err` was empty on all five branches. Export (branch 5): `build-macos.sh` OK, `Racing Sim.app --headless -- --v2-export-check` → `V2 EXPORT PASS`, stderr empty.
+
+**Bug, headless track cache (on main, not fixed by #27):** a track baked by a headless run is cached with every MultiMesh instance at (0,0,0). Read from the cache written during `ci_gates.py` (17:08): Spa ArdennesNear 1702/1702, ArdennesDeep 2250/2250, ArdennesFar 616/616, PaddockTrees 128/128 at the origin, plus billboards, catch-fence posts, marshal posts and every lamp fixture/halo; proving ground `Scenery/Trees` 200/200. The Nordschleife cache, first written by a windowed run, is correct (0 at origin). With the cache baked windowed (`--v2-look --v2-track=spa` first), Spa's forest positions are correct and render. Consequence: following the owner's order (gates before the windowed runs), every look-3 and track-shots image of Spa and the proving ground is treeless, and branch 5's first Spa draw counts were low for the same reason. #27 grounds trees without the readback, but the transforms are still lost when a headless run saves the MultiMesh.
+
+**ObjectDB leak (pre-existing, intermittent):** 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (23 instances) leaked at exit, reproduced with `--verbose` on #26 and on #25 (whose first run was clean). #26 touches no audio. Candidates: `scripts/audio.gd:102`, `scripts/front_end.gd:78`. Under `run_gates.ps1 -Features` a non-empty stderr fails the suite.
+
+**LOOK TIMINGS:** `world_gpu_ms` is 0.0 in every mode on every branch: `viewport_get_measured_render_time_gpu` returns 0 under Metal here, so no GPU time was measured. `frame_ms` sits on vsync steps (16.67 or 8.33 ms; about 9.0 when the window was not display-paced), so it measures pacing, not cost. Recorded (frame_ms / worst_ms):
+- Proving ground: #25 16.66–16.68 / 18.28–18.58; #26 9.03–9.31 / 12.88–17.53; #28 8.99–9.28 / 13.55–15.27; #27 8.97–9.21 / 13.26–15.72; #29 16.66–16.67 / 17.65–17.93.
+- Spa: #27 8.32–8.34 / 10.09–10.44; #29 16.65–16.67 / 17.58–18.22.
+- Nordschleife: #27 720p-authentic 14.14 / **114.59**, native-sharp-ui 10.96 / **118.62**, other modes 9.05–9.33 / 13.37–17.17; #29 16.65–16.67 / 17.91–18.06.
+
+**Draw calls per view** (branch 5's `track_screenshots.gd` run against both branches, Spa baked windowed): Spa #27 → #29: pit straight 584 → 134, La Source 566 → 116, Eau Rouge 499 → 147, Raidillon 603 → 153, Kemmel 570 → 120, Les Combes 558 → 108, Pouhon 608 → 158, Blanchimont 599 → 149, Bus Stop 587 → 137 (mean 574.9 → 135.8, −76.4%). Nordschleife #27 465 in all six views → #29 start 165, Hatzenbach 144, Hocheichen 115, Flugplatz 128, Schwedenkreuz 118, Aremberg 89 (mean 465 → 126.5, −72.8%). `car_models` #27 → #29: draws roadster 58 → 36, GT 58 → 26, 296 187 → 37; triangles unchanged (5032, 3744, 8466).
+
+**Barrier alone (#26, `RACINGSIM_PERF_GATES=1`):** `wall contact costs 2.2 µs per tick clear of walls, 57.4 µs touching one` (budget 150), 9/0.
+
+**Visual:**
+- Settings panel: empty band of about 75 px under the list on #25 and #26 (`proving_ground-sd-authentic-settings.png`); filled to the border on #28 (480p and native).
+- Spa and proving ground treeless in the in-order runs (headless cache bug above), e.g. #27 `track-shots/spa-kemmel.png`, `spa-les-combes.png`, #25 `look-3/proving_ground-sd-authentic-drive.png`. With a windowed bake Kemmel, Les Combes, Pouhon, Blanchimont and the Nordschleife have forest and match the Linux after-shots.
+- A thin pale horizontal streak at the far-left horizon in proving-ground day modes (`proving_ground-sd-authentic-drive.png`, `-native-sharp-ui-drive.png`, `-sd-sharp-ui-4x3-rgb555-drive.png`), longer than in the Linux reference.
+- Road slightly darker on Metal than in the Linux software-GL references; grass green, runoff the same brown-grey as the references.
+- Eau Rouge (#29 windowed bake, `spa-eau-rouge.png`): a large conifer just outside the right barrier, possibly inside 20 m of the road edge; not measured.
+- "TYRES °C" HUD label is low-contrast and breaks up in 480i (`proving_ground-crt-480i-drive.png`); same in the Linux reference.
+- Text readable at 480p; car size and shape consistent across modes including 4:3 RGB555; no black or garbled frames.
+
+**Repo hygiene (#27):** the six `docs/rebuild/screenshots/look-tracks/*-before-after.png` are committed without `.png.import`, so `--import` leaves six untracked files.
