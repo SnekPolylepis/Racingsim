@@ -74,6 +74,14 @@ func initialize(owner_app):
 	v2_panels.initialize(app)
 
 
+## Release the menu-sound player on exit, like audio.gd, so no playback outlives the leak check.
+func _exit_tree():
+	if ui_player != null:
+		ui_player.stop()
+		ui_player.stream = null
+	ui_sounds.clear()
+
+
 func make_tone(kind):
 	var stream = AudioStreamWAV.new()
 	stream.format = AudioStreamWAV.FORMAT_16_BITS

@@ -63,6 +63,16 @@ func _ready():
 			p.play()
 
 
+## Stop every player and drop its stream before the node goes: quitting with the eleven looping players
+## still active let the audio server hold their playbacks past Godot's exit leak check (intermittently
+## 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV "leaked at exit", which fails the windowed gate on stderr).
+func _exit_tree():
+	for p in players.values():
+		p.stop()
+		p.stream = null
+	players.clear()
+
+
 ## Create a deterministic 22,050 Hz signed-16-bit mono stream; loops are one second.
 func make_sound(kind):
 	var loop = kind not in ["impact", "shift"]
