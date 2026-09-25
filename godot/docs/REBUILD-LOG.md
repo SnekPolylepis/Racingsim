@@ -2112,3 +2112,19 @@ Restored two known limits that are still true (the Spa runoff approximations; ol
 
 ## 2026-09-24  DONE Look-11 Spa braking boards  (Claude Opus 5.5)
 `scripts/track/track_boards.gd`: 300/200/100 m countdown boards before Spa corners where the BotLine target speed drops more than 40 km/h from the approach (150-450 m before) to the apex (-80 to +40 m), so flat-out kinks stay clean. They sit on the corner outside, 1.2 m beyond the verge edge, angled towards oncoming cars, with no collision and faded out past 420 m. Boards that would stand inside the previous corner are skipped. Spa only, at the owner's request; no corner-name boards. Spa CACHE_REVISION 4. Checked in the Bus Stop capture ("100" board on the outside). Gates `run_gates.ps1 -All -Features` 36/36.
+
+## 2026-09-24  DONE Look-12 Particle effects  (Claude Opus 5.5)
+`scripts/particles.gd`, presentation only:
+- **Tyre smoke** when a tyre slides past its grip peak on tarmac or a kerb (the skid-mark test); darker at Afterhours.
+- **Grass clods** and dust.
+- **Gravel stones** and a dust cloud.
+- **Sparks** from wall contacts and body scrapes.
+- **Exhaust backfire** on a lift-off or gear change above 70 % of the redline.
+
+**How it's built:** one CPU pool of 700 camera-facing quads in two MultiMeshes (alpha and additive), so the whole system costs 2 draw calls. Emission is rate-based with carry-over, so it doesn't depend on frame rate.
+- **Car telemetry:** `CarBody.wall_hits` (set by `WallContact.step`) and `CarBody.scrape_hits` (body points touching the ground, with their sliding speed). Physics never reads them, and all lap and handling gates are unchanged.
+- **Game:** `game.gd` creates the node beside the skid marks and updates it in `render_v2()` when not paused.
+
+**New gate `particles` (9 checks):** a stand-in car; `-- --shots` saves a capture of each effect.
+
+Gates: `run_gates.ps1 -All -Features` 37/37.
