@@ -1094,9 +1094,13 @@ func apply_time_of_day():
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient
 		# was close enough to the sun energy that afternoon read as overcast: everything sat in
 		# one mid value and nothing had a shaded side. Afterhours (Look-2) keeps the moon and fill low so
-		# the amber sodium lamps carry the scene, NFS Underground style.
-		environment.ambient_light_color = Color("56628c") if night else Color("9db7d6")
-		environment.ambient_light_energy = .34 if night else .42
+		# the amber sodium lamps carry the scene, NFS Underground style. Look-9: measured against
+		# docs/art/reference/nfsu-night-*.jpg (mean saturation 0.28, luminance 0.20) with
+		# docs/art/reference/color_stats.py, the night captures ran oversaturated (0.36) and a touch dark
+		# (0.17): 56628c (sat 0.39) is now 656e8c (sat 0.28, same value), and the energy is up slightly
+		# for luminance.
+		environment.ambient_light_color = Color("656e8c") if night else Color("9db7d6")
+		environment.ambient_light_energy = .40 if night else .42
 		environment.tonemap_exposure = 1.0
 		# Daylight aerial perspective (GT4): a haze toward the sky's horizon blue that clears the middle
 		# distance (curve > 1) and closes at 1.15 km, where the painted hill silhouette in the sky takes over
