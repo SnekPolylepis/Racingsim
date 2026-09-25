@@ -2242,4 +2242,7 @@ Sonnet paused this before running anything. Finished here:
 - **Merge:** main merged in. The Spa CACHE_REVISION collided with the braking boards (both 4), so it is now 5; the Nordschleife S1 stays 8.
 - **Gates:** `run_gates.ps1 -All -Features` 37/37.
 - **Baseline recaptured:** Hatzenbach and Flugplatz read as mixed Eifel forest (beech, oak, birch, spruce) with undergrowth at the base.
-- **Draw calls:** about 16 % over the Proving Ground average (482 -> ~563 per view), above the 10 % budget; acceptable for now, noted for a later trim.
+- **Draw calls:** **corrected:** the 16 % figure came from the first three shots only. The per-view averages over all shots are Proving Ground 487 (was 482), Spa 581 (was 573) and Nordschleife 450 (was 440), within about 2 % and well inside the 10 % budget.
+
+## 2026-09-25  RELEASE Rebuild Preview 6  (Claude Opus 5.5)
+v0.1.0-preview.6 contains Look-10 undergrowth, the K-01b/K-02 traced kerbs, the Spa braking boards (Look-11), the particle effects (Look-12) and NS-bumps. The exported Windows exe gave V2 EXPORT PASS and a windowed `-- --features` 77/0 with empty stderr. The macOS zip was built from the same commit. Look-9 (nights) is still unmerged WIP.
