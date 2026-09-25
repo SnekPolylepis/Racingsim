@@ -34,7 +34,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 10
+const CACHE_REVISION = 12
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -915,13 +915,26 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 	var f = road_frame(road)
 	var c = f[0]
 	var length = c.get_baked_length()
-	var scenes = []
+	# CHI-LOOK-01: one MultiMesh per car model and 400 m chunk instead of a node per car (825 draw calls
+	# in the worst view before), still culled beyond 320 m.
+	var pieces = []
 	for m in PARKED:
-		scenes.append(load("res://assets/chicago/cars/%s.glb" % m))
+		var root = load("res://assets/chicago/cars/%s.glb" % m).instantiate()
+		var model = []
+		for mi in root.find_children("*", "MeshInstance3D", true, false):
+			var local = Transform3D.IDENTITY
+			var node: Node3D = mi
+			while node != null and node != root:
+				local = node.transform * local
+				node = node.get_parent() as Node3D
+			model.append([mi.mesh, local])
+		root.free()
+		pieces.append(model)
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 60601
 	var holder = Node3D.new()
 	attach(asset, parent, holder, "ParkedCars")
+	var groups = {}
 	var count = 0
 	var s = 40.0
 	while s < length - 40.0:
@@ -936,14 +949,29 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 			if rng.randf() < 0.5:
 				fwd = -fwd
 			if not keep_clear(p, 40.0) and fwd.length_squared() > 1e-4:
-				var car = scenes[rng.randi() % scenes.size()].instantiate()
+				var model = rng.randi() % pieces.size()
 				# Kenney cars are 2.75 m long along +Z; 1.65 makes a 4.5 m car.
 				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.65)
-				car.transform = Transform3D(basis, p)
-				attach(asset, holder, car, "Car%03d" % count)
-				for mi in car.find_children("*", "MeshInstance3D", true, false):
-					mi.visibility_range_end = 320.0
-					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				var key = Vector3i(model, floori(p.x / 400.0), floori(p.z / 400.0))
+				if not groups.has(key):
+					groups[key] = []
+				groups[key].append(Transform3D(basis, p))
 				count += 1
 		s += rng.randf_range(11.0, 26.0)
+	for key in groups:
+		var list: Array = groups[key]
+		var piece_index = 0
+		for piece in pieces[key.x]:
+			var instances = MultiMesh.new()
+			instances.transform_format = MultiMesh.TRANSFORM_3D
+			instances.mesh = piece[0]
+			instances.instance_count = list.size()
+			for i in list.size():
+				instances.set_instance_transform(i, list[i] * piece[1])
+			var node = MultiMeshInstance3D.new()
+			node.multimesh = instances
+			node.visibility_range_end = 320.0
+			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			attach(asset, holder, node, "Cars_%d_%d_%d_%d" % [key.x, key.y, key.z, piece_index])
+			piece_index += 1
 	asset.set_meta("parked_cars", count)
