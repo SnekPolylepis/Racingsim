@@ -9,9 +9,12 @@ const WallPath = preload("res://scripts/track/wall_path.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const NightGlow = preload("res://scripts/track/night_glow.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
+const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
+const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
 const DATA = "res://trackgen/data/chicago/route.json"
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 4
+const CACHE_REVISION = 5
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -186,6 +189,9 @@ static func build_asset() -> Node3D:
 	add_road_details(asset, scenery, road)
 	add_night_details(asset, scenery, road)
 	add_park_trees(asset)
+	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
+	add_street_walls(asset, scenery, road)
+	add_parked_cars(asset, scenery, road)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
 	var lamps = TrackLights.place(road, 42.0, [], 1.2)
 	# Lower Wacker's fixtures hang below the deck; no 10 m poles through the upper roadway.
@@ -254,7 +260,14 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	box(asset, parent, "GrantPark", world([41.8800, -87.6210, 7.3]), Vector3(440, .5, 260), lawn)
 	box(asset, parent, "Lakefront", world([41.8800, -87.6166, 6.8]), Vector3(65, .5, 470), pier_walk)
 	box(asset, parent, "RiverwalkPromenade", world([41.8871, -87.6261, 8.2]), Vector3(22, .3, 170), pier_walk)
-	box(asset, parent, "RiverwalkPromenadeWest", world([41.8870, -87.6309, 8.2]), Vector3(16, .3, 135), pier_walk)
+	box(
+		asset,
+		parent,
+		"RiverwalkPromenadeWest",
+		world([41.8870, -87.6309, 8.2]),
+		Vector3(16, .3, 135),
+		pier_walk
+	)
 
 
 static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
@@ -307,7 +320,6 @@ static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	mesh.surface_set_material(0, facade)
 	mesh_node(asset, parent, "LoopSkyline", mesh, Vector3.ZERO)
 
-
 	var brick = pbr_texture_set("red_brick_03", "red_brick_03", "diff")
 	var tan_brick = pbr_texture_set("brick_wall_003", "brick_wall_003", "diffuse")
 	var pavement = pbr_texture_set("concrete_floor_damaged_01", "concrete_floor_damaged_01", "diff")
@@ -321,11 +333,19 @@ static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
 			iron_boxes.append([block + Vector3(30, y, 0), Vector3(9, .4, 2), Basis(Vector3.UP, .12)])
 			for side in [-1, 1]:
 				iron_boxes.append([block + Vector3(30, y + .9, side * .9), Vector3(9, .12, .12)])
-				iron_boxes.append([block + Vector3(30 + side * 3, y + 5.7, 0), Vector3(.12, 11.5, .12), Basis(Vector3.FORWARD, -.45)])
+				iron_boxes.append(
+					[
+						block + Vector3(30 + side * 3, y + 5.7, 0),
+						Vector3(.12, 11.5, .12),
+						Basis(Vector3.FORWARD, -.45)
+					]
+				)
 	for block in [Vector3(-560, 0, 610), Vector3(-350, 0, 720)]:
 		textured_building(asset, parent, "LoopTerraCottaStreetfront", block, Vector3(72, 58, 48), tan_brick)
 	# Broadly repeated sidewalk slabs stay outside the unchanged road surface.
-	var walk = box(asset, parent, "LoopStoneSidewalk", Vector3(-350, 1.1, 520), Vector3(460, .24, 18), pavement)
+	var walk = box(
+		asset, parent, "LoopStoneSidewalk", Vector3(-350, 1.1, 520), Vector3(460, .24, 18), pavement
+	)
 	walk.material_override = pavement
 	multimesh_boxes(asset, parent, "FireEscapeMetalwork", iron, iron_boxes)
 
@@ -443,7 +463,9 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	add_loop_landmarks(asset, parent, stone, dark, silver)
 
 
-static func add_loop_landmarks(asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material) -> void:
+static func add_loop_landmarks(
+	asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material
+) -> void:
 	# Wrigley Building: twin cream glazed-terra-cotta towers and clock crown.
 	var wrigley = world([41.8882, -87.6246, 8])
 	var terra_cotta_bands: Array = []
@@ -457,7 +479,14 @@ static func add_loop_landmarks(asset: Node3D, parent: Node, stone: Material, dar
 		cap.material = stone
 		mesh_node(asset, parent, "WrigleyCrown", cap, wrigley + Vector3(tower[0], tower[1] + 4, 0))
 	multimesh_boxes(asset, parent, "WrigleyTerraCottaBands", material(Color("e5ddc7")), terra_cotta_bands)
-	box(asset, parent, "WrigleyClock", wrigley + Vector3(-30, 112, 15), Vector3(7, 7, .8), night_material(Color("f0dfb1"), .75))
+	box(
+		asset,
+		parent,
+		"WrigleyClock",
+		wrigley + Vector3(-30, 112, 15),
+		Vector3(7, 7, .8),
+		night_material(Color("f0dfb1"), .75)
+	)
 	# Tribune Tower: pale neo-Gothic vertical piers with a steep central spire.
 	var tribune = world([41.8905, -87.6230, 8])
 	var tribune_piers: Array = []
@@ -478,8 +507,22 @@ static func add_loop_landmarks(asset: Node3D, parent: Node, stone: Material, dar
 	var board = world([41.8787, -87.6325, 8])
 	var tiers = [[0.0, 100.0, 84.0], [100.0, 48.0, 66.0], [148.0, 36.0, 44.0]]
 	for tier in tiers:
-		box(asset, parent, "BoardOfTradeSetback", board + Vector3(0, tier[1] * .5 + tier[0], 0), Vector3(tier[2], tier[1], tier[2] * .78), material(Color("b9aa8e")))
-		box(asset, parent, "BoardOfTradeCornice", board + Vector3(0, tier[1] + tier[0], 0), Vector3(tier[2] + 2, 1.8, tier[2] * .78 + 2), stone)
+		box(
+			asset,
+			parent,
+			"BoardOfTradeSetback",
+			board + Vector3(0, tier[1] * .5 + tier[0], 0),
+			Vector3(tier[2], tier[1], tier[2] * .78),
+			material(Color("b9aa8e"))
+		)
+		box(
+			asset,
+			parent,
+			"BoardOfTradeCornice",
+			board + Vector3(0, tier[1] + tier[0], 0),
+			Vector3(tier[2] + 2, 1.8, tier[2] * .78 + 2),
+			stone
+		)
 	var pyramid = PrismMesh.new()
 	pyramid.size = Vector3(39, 34, 32)
 	pyramid.material = material(Color("8f7959"))
@@ -508,7 +551,13 @@ static func add_river_bridges(asset: Node3D, parent: Node) -> void:
 			for i in range(0, int(length), 8):
 				var x = -length * .5 + i
 				steel_boxes.append([anchor + Vector3(x, 5.0, side * 10.4), Vector3(.75, 7.0, .75)])
-				steel_boxes.append([anchor + Vector3(x + 4, 5.0, side * 10.4), Vector3(8.5, .55, .55), Basis(Vector3.UP, -0.74)])
+				steel_boxes.append(
+					[
+						anchor + Vector3(x + 4, 5.0, side * 10.4),
+						Vector3(8.5, .55, .55),
+						Basis(Vector3.UP, -0.74)
+					]
+				)
 		for side in [-1, 1]:
 			var house = anchor + Vector3(0, 0, side * 26)
 			house_boxes.append([house + Vector3(0, 8, 0), Vector3(18, 16, 21)])
@@ -723,3 +772,132 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 				Vector3(.5, 1.6, .5),
 				warm
 			)
+
+
+## Road sampling helpers shared by the street dressing: [curve, sorted section keys, elevation spline].
+static func road_frame(road: RoadPath) -> Array:
+	var c = road.working_curve()
+	var keys = road.sections.duplicate()
+	keys.sort_custom(func(a, b): return a.at < b.at)
+	var spline = (
+		RoadBuilder.elevation_spline(road.elevation_keys, c.get_baked_length(), road.closed)
+		if not road.elevation_keys.is_empty()
+		else []
+	)
+	return [c, keys, spline]
+
+
+## Open ground add_city() keeps clear (lakefront, parks, river corridor), and landmark sightlines.
+static func keep_clear(p: Vector3, margin: float) -> bool:
+	if p.x > 20 and p.z > -210:
+		return true
+	if p.z < -250 and p.x > -50:
+		return true
+	if p.z < -285 and p.z > -400:
+		return true
+	if p.x < -1110 and p.x > -1250:
+		return true
+	for key in data().landmarks:
+		if p.distance_to(world(data().landmarks[key])) < margin:
+			return true
+	return false
+
+
+## An ambientCG CC0 facade/stone set (Color, NormalGL, Roughness at 1K), tiled about every `tile_m` metres.
+static func cc0_material(folder: String) -> StandardMaterial3D:
+	var mat = material(Color.WHITE)
+	mat.albedo_texture = load(TEXTURE_ROOT + folder + "/" + folder + "_color.jpg")
+	mat.normal_enabled = true
+	mat.normal_texture = load(TEXTURE_ROOT + folder + "/" + folder + "_normal.jpg")
+	mat.roughness_texture = load(TEXTURE_ROOT + folder + "/" + folder + "_roughness.jpg")
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	mat.uv1_triplanar = true
+	mat.uv1_world_triplanar = true
+	mat.uv1_scale = Vector3(1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0)
+	return mat
+
+
+## A street wall of textured mid-rise blocks between the road and the skyline massing (which stays 65 m
+## back), so the route is lined by buildings as a real Loop street is. No collision: the barriers
+## (WallPath, offset .4) already contain the car.
+static func add_street_walls(asset: Node3D, parent: Node, road: RoadPath) -> void:
+	var f = road_frame(road)
+	var c = f[0]
+	var length = c.get_baked_length()
+	var mats = [
+		cc0_material("Facade001"),
+		cc0_material("Facade009"),
+		cc0_material("Granite002A"),
+		cc0_material("Travertine009")
+	]
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 312
+	var holder = Node3D.new()
+	attach(asset, parent, holder, "StreetWalls")
+	var count = 0
+	var s = 30.0
+	while s < length - 30.0:
+		for side in [-1, 1]:
+			var e = RoadBuilder.beyond_edge(c, f[1], road.closed, f[2], s, side, 22.0)
+			var p = road.transform * e.point
+			if p.y < 3.0 or keep_clear(p, 90.0):
+				continue
+			# Never over another part of the route (bends, the parallel decks).
+			var near = c.get_closest_point(p)
+			if Vector2(near.x - p.x, near.z - p.z).length() < 17.0:
+				continue
+			var h = rng.randf_range(18.0, 46.0)
+			var size = Vector3(rng.randf_range(34.0, 52.0), h, rng.randf_range(16.0, 22.0))
+			var mesh = BoxMesh.new()
+			mesh.size = size
+			var out = e.outward
+			out.y = 0.0
+			var basis = Basis.looking_at(-out.normalized(), Vector3.UP)
+			var node = MeshInstance3D.new()
+			node.mesh = mesh
+			node.material_override = mats[rng.randi() % mats.size()]
+			node.transform = Transform3D(basis, p + Vector3(0, h * 0.5 - 1.0, 0))
+			node.visibility_range_end = 900.0
+			attach(asset, holder, node, "Block%03d" % count)
+			count += 1
+		s += rng.randf_range(58.0, 76.0)
+	asset.set_meta("street_walls", count)
+
+
+## Parked Kenney cars along the kerbside behind the barriers, on straight stretches only.
+static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void:
+	var f = road_frame(road)
+	var c = f[0]
+	var length = c.get_baked_length()
+	var scenes = []
+	for m in PARKED:
+		scenes.append(load("res://assets/chicago/cars/%s.glb" % m))
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 60601
+	var holder = Node3D.new()
+	attach(asset, parent, holder, "ParkedCars")
+	var count = 0
+	var s = 40.0
+	while s < length - 40.0:
+		var a = RoadBuilder.station_at(c, road.closed, length, f[2], s - 15.0).tangent
+		var b = RoadBuilder.station_at(c, road.closed, length, f[2], s + 15.0).tangent
+		if a.dot(b) > 0.995 and rng.randf() < 0.75:
+			var side = -1 if rng.randf() < 0.5 else 1
+			var e = RoadBuilder.beyond_edge(c, f[1], road.closed, f[2], s, side, 3.4)
+			var p = road.transform * e.point
+			var fwd = b
+			fwd.y = 0.0
+			if rng.randf() < 0.5:
+				fwd = -fwd
+			if not keep_clear(p, 40.0) and fwd.length_squared() > 1e-4:
+				var car = scenes[rng.randi() % scenes.size()].instantiate()
+				# Kenney cars are 2.75 m long along +Z; 1.65 makes a 4.5 m car.
+				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.65)
+				car.transform = Transform3D(basis, p)
+				attach(asset, holder, car, "Car%03d" % count)
+				for mi in car.find_children("*", "MeshInstance3D", true, false):
+					mi.visibility_range_end = 320.0
+					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				count += 1
+		s += rng.randf_range(11.0, 26.0)
+	asset.set_meta("parked_cars", count)
