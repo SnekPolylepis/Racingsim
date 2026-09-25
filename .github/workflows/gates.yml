@@ -1,8 +1,9 @@
 name: Gates
 
+# Pushes only (owner decision, 2026-09-25): a PR's branch is already tested by its own pushes, so a
+# pull_request trigger would only run the same code twice.
 on:
   push:
-  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
