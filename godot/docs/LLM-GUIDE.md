@@ -131,6 +131,8 @@ All paths below are relative to `godot/`.
 
 ## Known boundaries
 
+Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. All three cars have dedicated procedural models (`ferrari_296.gd`, `scripts/cars/mx5.gd`, `scripts/cars/gt.gd`); These are not licensed manufacturer models. On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
+
 Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. All three cars have dedicated procedural models; `visuals.merge_static()` merges each body's static parts into one mesh per material (keep switched lamps in `visuals.headlights`, or they get merged). These are not licensed manufacturer models. On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. The legacy game's planar barriers ignore elevation. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
 
 ## PS2-era art direction (2026-09-21)

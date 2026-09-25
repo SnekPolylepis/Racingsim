@@ -102,7 +102,7 @@ The Spa bank warning recorded in earlier rebuild runs was resolved by F-P6-01b. 
 `.github/workflows/gates.yml` runs on every push and pull request on ubuntu-latest (`tools/ci_gates.py`): `gdformat --check`, the script parse check and every headless suite in `tools/gates.json`, with timing gates off (`RACINGSIM_PERF_GATES=0`).
 
 - **Numbers:** suites compare against their recorded baselines on Linux exactly as on Windows (`ci_gates.py` `PLATFORM_TOLERANCE` is empty).
-- **Not in CI:** the windowed feature suite, `--v2-present` and exports. Run them locally before a release.
+- **Windowed and export jobs:** `.github/workflows/gates.yml` also runs `features` (`--v2-present` under xvfb with Mesa software GL; fails on any failed check or any stderr) and `export-check` (a Linux export through the "Linux Check" preset, which shares the Windows and macOS file filters, then `--v2-export-check` on the packaged binary; the job also fails if the presets' filters differ). Windows and macOS exports and real-GPU timing still run locally before a release.
 
 Format before committing with `gdformat -l 110 scripts tests` (`pip install "gdtoolkit==4.*"`).
 
