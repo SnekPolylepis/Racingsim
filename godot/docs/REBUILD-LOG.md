@@ -1848,6 +1848,15 @@ Owner feedback: the Nordschleife felt flat and open, not planted in the landscap
 
 Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
 
+## 2026-09-24  DONE NS-section part 2: real DGM1 relief beside the Nordschleife  (Claude Opus 5.5)
+Owner approved re-downloading the 20 LVermGeo DGM1 1 m tiles (32 MB, git-ignored in `trackgen/data/nordschleife/raw-dgm1/`).
+- **Terrain data:** `build_data.py` `SPACING` 20 → 5 m. `dem.raw` is now 761×841 at 5 m (2.5 MB, was 191×211 at 20 m), resampled from the 1 m mosaic, so roadside banks and cuttings survive. The centreline content is unchanged (checked field by field); README and sources.json were regenerated.
+- **Generator:** `terrain.blend_m` 30 → 6 m, so the relief meets the verge instead of being levelled over 30 m. CACHE_REVISION 4. The terrain mesh was already 5 m (part 1).
+- **Capture:** Hatzenbach now shows the real bank rising behind the right-hand armco.
+- **Not yet:** the road's own elevation keys are still every 20 m and smoothed, so road micro-undulation is next if the owner wants it. Tree cards and textures are Look-0's scope.
+
+Gates: `run_gates.ps1 -All -Features` 35/35, features 77/0.
+
 ## 2026-09-25  CLAIM Look-0  (Claude Sonnet 5)
 Art bible and reference board on branch `rb/look-0-art-bible`: `godot/docs/art/reference/` (real PS2/GT4/NFSU and real-world Nordschleife photos), an extended `tests/v2/track_screenshots.gd` with a `--compare` mode, `godot/docs/art/baseline/` captures, and a rewritten `ART-DIRECTION.md` with a measured gap table. This is a new team slot ("Sonnet" added to QUEUE.md's model roster); the owner assigned it directly rather than via the queue's claim protocol.
 

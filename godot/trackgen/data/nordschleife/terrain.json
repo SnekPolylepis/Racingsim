@@ -1,9 +1,9 @@
 {
   "file": "dem.raw",
   "format": "RF",
-  "width": 191,
-  "height": 211,
-  "metres_per_pixel": 20.0,
+  "width": 761,
+  "height": 841,
+  "metres_per_pixel": 5.0,
   "origin_offset": [
     -2800.0,
     -3200.0
@@ -11,5 +11,5 @@
   "height_offset": 0.0,
   "absolute_height_offset_m": 619.3788,
   "min_height": -619.38,
-  "max_height": 57.73
+  "max_height": 60.93
 }
