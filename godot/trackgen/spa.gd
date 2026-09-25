@@ -4,6 +4,8 @@ extends SceneTree
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const RoadPath = preload("res://scripts/track/road_path.gd")
 const RoadSection = preload("res://scripts/track/road_section.gd")
+const KerbMap = preload("res://trackgen/kerb_map.gd")
+const TrackBoards = preload("res://scripts/track/track_boards.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
@@ -18,7 +20,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 3
+const CACHE_REVISION = 4
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -206,6 +208,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 				values["kerb_" + side] = RoadSection.Kerb.NONE
 		if kerb_w > 0.0:
 			values.kerb_width = clampf(kerb_w, .6, 1.8)
+	# Traced kerbs (K-02) replace the rules above once the kerbs.json is reviewed.
+	KerbMap.apply(KerbMap.for_track("spa", DATA + "kerbs.json"), values, s, length)
 	return values
 
 
@@ -220,6 +224,7 @@ static func sections(data: Dictionary, measured: float, corners: Array) -> Array
 	for corner in corners:
 		for offset in [-130.0, -55.0, -45.0, 0.0, 30.0, 35.0, 120.0, 145.0]:
 			marks.append(fposmod(corner[1] + offset, length))
+	marks.append_array(KerbMap.marks(KerbMap.for_track("spa", DATA + "kerbs.json"), length))
 	marks.sort()
 	var keys: Array[RoadSection] = []
 	var previous = -1.0
@@ -888,6 +893,8 @@ static func build_asset() -> Node3D:
 		604
 	)
 	add_scenery_kit(asset, road, positions, measured)
+	# Braking countdown and corner name boards (Look-11).
+	asset.set_meta("boards", TrackBoards.build(asset, road, corners, scale_s))
 	add_lighting(asset, road, positions, measured)
 	return asset
 

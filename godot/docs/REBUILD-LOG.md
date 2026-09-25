@@ -2102,3 +2102,27 @@ Mac check found an intermittent 11 AudioStreamWAV + 11 AudioStreamPlaybackWAV (+
 
 ## 2026-09-24  DONE F-audio-leak-2  (Claude Opus 5.5)
 The cleanup in `audio.gd` and `front_end.gd` moves from `_exit_tree()` to `_notification(NOTIFICATION_PREDELETE)`, so it runs only when the node is freed and not when it is re-parented. Three `--verbose -- --features` runs gave 77/0 with no leaks and no script errors. `run_gates.ps1 -All -Features` 35/35.
+
+## 2026-09-24  DONE K-02 Kerb map loader (inactive until reviewed data)  (Claude Opus 5.5)
+- **`trackgen/kerb_map.gd`:** reads `trackgen/data/<track>/kerbs.json`.
+  - It is used only when the file has `"status": "reviewed"`, and low-confidence entries are skipped.
+  - It maps flat → low RAMP (2 cm), ribbed → RIBBED, sausage → SAUSAGE and unsure → RAMP.
+  - Its `marks()` add section keys at every kerb start and end, so kerbs begin and end where the paint does. Kerb types step at keys in `RoadBuilder.section_at`.
+- **Generators:** `spa.gd` and `nordschleife_s1.gd` call `KerbMap.apply()` at the end of `profile_at()` and add the marks in `sections()`. With no reviewed file (the case today: the K-01 draft is unreviewed) nothing changes.
+- **Export:** both kerbs.json files are in the export `include_filter` and `check_exported_v2_assets()`, since generators read them at bake time.
+- **New gate `kerb_map` (12 checks):** station lookup including wrap-around, exclusive ends, the low-confidence skip and the reviewed-only rule on the shipped files. A Spa build with a forced map puts a sausage kerb exactly over 1500-1540 m.
+- **Activation:** once K-01b is re-traced and passes review, set `"status": "reviewed"` in each kerbs.json. The track caches rebuild by themselves, because the data folder is part of the cache revision.
+
+Gates: `run_gates.ps1 -All -Features` 36/36.
+
+Frame spikes: on the RTX 4080, `--v2-look --v2-track=nordschleife_s1` shows a worst frame of 6.3-7.8 ms in all six modes, with no spikes. The Mac's 114-119 ms spikes (720p Authentic, Native) came right after mode switches, which fits Metal compiling pipelines on first use. That needs a Mac re-check; it can't be reproduced on Windows.
+
+
+## 2026-09-24  DONE DOC-01 release docs and queue tidy (GPT-6 Luna)
+Updated PLAY.txt and CHANGELOG.md with Preview 3–5 features, Preview 5 known limits and credits. No queue rows changed: P6-02a was already done. The other merged candidates (P4-core, P4-vis, P4-menus, Look-1, P6-01-polish, P7-02, CI, F-CI, F-P4-01, F-P4-03-corners and F-track-picker) remain `review:*` and were left untouched as required.
+
+## 2026-09-24  REVIEW DOC-01 (Luna): accepted with two fixes  (Claude Opus 5.5)
+Restored two known limits that are still true (the Spa runoff approximations; old-game records don't carry over). The QUEUE tidy (item 3) was not done and stays open.
+
+## 2026-09-24  DONE Look-11 Spa braking boards  (Claude Opus 5.5)
+`scripts/track/track_boards.gd`: 300/200/100 m countdown boards before Spa corners where the BotLine target speed drops more than 40 km/h from the approach (150-450 m before) to the apex (-80 to +40 m), so flat-out kinks stay clean. They sit on the corner outside, 1.2 m beyond the verge edge, angled towards oncoming cars, with no collision and faded out past 420 m. Boards that would stand inside the previous corner are skipped. Spa only, at the owner's request; no corner-name boards. Spa CACHE_REVISION 4. Checked in the Bus Stop capture ("100" board on the outside). Gates `run_gates.ps1 -All -Features` 36/36.
