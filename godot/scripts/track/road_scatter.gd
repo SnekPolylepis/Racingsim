@@ -9,6 +9,7 @@ extends Node3D
 ## Ground height beyond the verge continues the verge's fall; terrain (P3-03) will replace that.
 
 enum Sides { LEFT, RIGHT, BOTH }
+enum AtlasKind { TREES, UNDERGROWTH }
 
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 
@@ -24,11 +25,18 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 @export var random_seed = 1
 @export var scale_min = .8
 @export var scale_max = 1.3
-## Mesh to scatter; empty scatters photographic tree cards (assets/trees/tree_atlas.png) of mixed species and
-## heights, one MultiMesh and one draw call. Cards ignore scale_min/scale_max and use CARDS' own heights.
+## Mesh to scatter; empty scatters photographic cards of mixed species and heights from `atlas_kind`, one
+## MultiMesh and one draw call. Cards ignore scale_min/scale_max and use each species' own height range.
 @export var mesh: Mesh
+## Trees: the canopy atlas (assets/trees/tree_atlas.png). Undergrowth (Look-10): ferns, brambles, long
+## grass, bushes and saplings (assets/undergrowth/undergrowth_atlas.png), 0.3-2.5 m tall.
+@export_enum("Trees", "Undergrowth") var atlas_kind = AtlasKind.TREES
 ## Multiplies every card's height, to raise or lower a whole band.
 @export var height_scale = 1.0
+## Restricts card picks to these indices into `species_for(atlas_kind)` (e.g. UNDERGROWTH_SPECIES' grass
+## or bramble/shrub rows), for a band that reads as one kind of plant instead of the full mix. Empty uses
+## every species, weighted as usual.
+@export var species_indices: PackedInt32Array = []
 @export_tool_button("Bake scatter", "Callable") var bake_button = bake
 
 var last_bake = {}
@@ -67,8 +75,9 @@ func layout() -> Dictionary:
 			var yaw = rng.randf() * TAU
 			var basis: Basis
 			if mesh == null:
-				var pick = pick_card(rng)
-				var card = CARDS[pick.card]
+				var cards = cards_for(atlas_kind)
+				var pick = pick_card(rng, atlas_kind, species_indices)
+				var card = cards[pick.card]
 				var height = pick.height * height_scale
 				var width = height * (1.0 + SINK) * card[2] / card[3] * rng.randf_range(1.0, 1.4)
 				basis = Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3(width, height, width))
@@ -84,51 +93,110 @@ func layout() -> Dictionary:
 
 
 const TREE_ATLAS_PATH = "res://assets/trees/tree_atlas.png"
+## Look-10: low vegetation between and under the trees (ART-DIRECTION.md "Trackside enclosure").
+const UNDERGROWTH_ATLAS_PATH = "res://assets/undergrowth/undergrowth_atlas.png"
 const RETRO_TREE_SHADER = preload("res://shaders/retro_tree.gdshader")
 ## Atlas cells as [u, v, w, h] in 0..1 (tools/finish_tree_cards.py writes assets/trees/tree_atlas.json), by
-## kind: 0-2 spruce, 3-4 fir, 5 beech, 6-7 bush. CC0 Poly Haven models rendered to cut-outs (THIRD-PARTY.md).
+## kind: 0-2 spruce, 3-4 fir, 5 beech, 6 oak, 7 birch, 8-9 bush. CC0 Poly Haven models rendered to
+## cut-outs (THIRD-PARTY.md). oak/birch stand in for Poly Haven's lack of a literal oak/birch model:
+## island_tree_02/03, the closest broadleaf/multi-stem CC0 renders by inspection.
 const CARDS = [
-	[0.00293, 0.06543, 0.24414, 0.43164],
-	[0.25293, 0.05176, 0.24414, 0.44531],
-	[0.50293, 0.16162, 0.24414, 0.33545],
-	[0.75293, 0.12061, 0.24414, 0.37646],
-	[0.01758, 0.50293, 0.21436, 0.49414],
-	[0.25293, 0.61670, 0.24414, 0.38037],
-	[0.53027, 0.75293, 0.17920, 0.24414],
-	[0.78516, 0.50293, 0.17920, 0.24414],
+	[0.05615, 0.00391, 0.13770, 0.32552],
+	[0.30811, 0.00391, 0.13330, 0.32552],
+	[0.53613, 0.00391, 0.17725, 0.32552],
+	[0.79590, 0.00391, 0.15820, 0.32552],
+	[0.07178, 0.33724, 0.10596, 0.32552],
+	[0.29688, 0.33724, 0.15625, 0.32552],
+	[0.50293, 0.39909, 0.24414, 0.26367],
+	[0.75293, 0.37630, 0.24414, 0.28646],
+	[0.03027, 0.67057, 0.18896, 0.32552],
+	[0.28516, 0.67057, 0.17920, 0.32552],
 ]
 ## Species mix: [weight, first card, card count, min height m, max height m]. Mixed heights make the
 ## canopy overlap into one wall.
 const SPECIES = [
-	[0.32, 0, 3, 9.0, 24.0],
-	[0.22, 3, 2, 15.0, 30.0],
-	[0.26, 5, 1, 8.0, 19.0],
-	[0.20, 6, 2, 2.5, 5.5],
+	[0.30, 0, 3, 9.0, 24.0],
+	[0.18, 3, 2, 15.0, 30.0],
+	[0.10, 5, 1, 8.0, 19.0],
+	[0.10, 6, 1, 10.0, 22.0],
+	[0.08, 7, 1, 9.0, 20.0],
+	[0.24, 8, 2, 2.5, 5.5],
+]
+## First card index of each deciduous species (beech, oak, birch): eligible for the autumn tint below.
+const DECIDUOUS_FIRST_CARDS = [5, 6, 7]
+
+## Atlas cells for undergrowth (assets/undergrowth/undergrowth_atlas.json): 0-1 fern, 2-4 bramble, 5-7
+## long grass, 8-10 flowering shrub, 11-13 sapling.
+const UNDERGROWTH_CARDS = [
+	[0.00293, 0.16016, 0.19385, 0.16699],
+	[0.20264, 0.17188, 0.19385, 0.15527],
+	[0.40234, 0.14941, 0.19385, 0.17773],
+	[0.62305, 0.00586, 0.15186, 0.32129],
+	[0.83594, 0.00586, 0.12500, 0.32129],
+	[0.00293, 0.46680, 0.19385, 0.19336],
+	[0.20264, 0.42773, 0.19385, 0.23242],
+	[0.40234, 0.46289, 0.19385, 0.19727],
+	[0.64307, 0.33887, 0.11133, 0.32129],
+	[0.84326, 0.33887, 0.11035, 0.32129],
+	[0.00293, 0.70117, 0.19385, 0.29199],
+	[0.25098, 0.67188, 0.09717, 0.32129],
+	[0.45850, 0.67188, 0.08105, 0.32129],
+	[0.65625, 0.67188, 0.08545, 0.32129],
+]
+## Even mix, heights within the task's 0.3-2.5 m range for roadside undergrowth.
+const UNDERGROWTH_SPECIES = [
+	[0.20, 0, 2, 0.30, 0.60],
+	[0.20, 2, 3, 0.40, 1.20],
+	[0.20, 5, 3, 0.30, 0.70],
+	[0.20, 8, 3, 0.50, 1.50],
+	[0.20, 11, 3, 1.00, 2.50],
 ]
 
 ## Fraction of a card's height that sits below the ground.
 const SINK = 0.11
 
-static var _tree_mat: ShaderMaterial = null
+static var _mats: Dictionary = {}
 static var _card_mesh: ArrayMesh = null
 
 
-static func tree_material() -> ShaderMaterial:
-	if _tree_mat != null:
-		return _tree_mat
+static func cards_for(kind: int) -> Array:
+	return UNDERGROWTH_CARDS if kind == AtlasKind.UNDERGROWTH else CARDS
+
+
+static func species_for(kind: int) -> Array:
+	return UNDERGROWTH_SPECIES if kind == AtlasKind.UNDERGROWTH else SPECIES
+
+
+static func tree_material(kind: int = AtlasKind.TREES) -> ShaderMaterial:
+	if _mats.has(kind):
+		return _mats[kind]
 	var mat = ShaderMaterial.new()
 	mat.shader = RETRO_TREE_SHADER
-	if ResourceLoader.exists(TREE_ATLAS_PATH):
-		mat.set_shader_parameter("tree_atlas", load(TREE_ATLAS_PATH))
-	_tree_mat = mat
+	var path = UNDERGROWTH_ATLAS_PATH if kind == AtlasKind.UNDERGROWTH else TREE_ATLAS_PATH
+	if ResourceLoader.exists(path):
+		mat.set_shader_parameter("tree_atlas", load(path))
+	_mats[kind] = mat
 	return mat
 
 
-## One species, card and height from the weighted table, plus an instance tint.
-static func pick_card(rng: RandomNumberGenerator) -> Dictionary:
-	var r = rng.randf()
-	var sp = SPECIES[SPECIES.size() - 1]
-	for row in SPECIES:
+## One species, card and height from the weighted table, plus an instance tint. `subset`, indices into
+## species_for(kind), restricts picks to those rows (re-weighted against just their own weights); empty
+## uses the whole table.
+static func pick_card(
+	rng: RandomNumberGenerator, kind: int = AtlasKind.TREES, subset: PackedInt32Array = []
+) -> Dictionary:
+	var species = species_for(kind)
+	if not subset.is_empty():
+		var filtered = []
+		for idx in subset:
+			filtered.append(species[idx])
+		species = filtered
+	var total_weight = 0.0
+	for row in species:
+		total_weight += row[0]
+	var r = rng.randf() * total_weight
+	var sp = species[species.size() - 1]
+	for row in species:
 		r -= row[0]
 		if r <= 0.0:
 			sp = row
@@ -139,7 +207,7 @@ static func pick_card(rng: RandomNumberGenerator) -> Dictionary:
 	var val = rng.randf_range(0.7, 1.0)
 	var hue_shift = rng.randf_range(-0.05, 0.05)
 	var tint = Color(val * (0.82 + hue_shift), val * 0.92, val * (0.84 - hue_shift))
-	if sp[1] == 5 and rng.randf() < 0.3:
+	if kind == AtlasKind.TREES and sp[1] in DECIDUOUS_FIRST_CARDS and rng.randf() < 0.3:
 		tint = Color(val * 1.15, val * 1.0, val * 0.65)
 	return {"card": card, "height": height, "tint": tint}
 
@@ -178,7 +246,7 @@ func bake():
 	inst.name = name
 	inst.multimesh = mm
 	if mesh == null:
-		inst.material_override = tree_material()
+		inst.material_override = tree_material(atlas_kind)
 	scenery.add_child(inst)
 	inst.owner = owner_node
 

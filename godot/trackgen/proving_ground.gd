@@ -404,6 +404,20 @@ static func build_asset() -> Node3D:
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
+	# Look-10: low vegetation from just behind the verge to under the tree band, so the strip between
+	# the mown shoulder and the trees isn't bare lawn.
+	var undergrowth = RoadScatter.new()
+	undergrowth.name = "Undergrowth"
+	undergrowth.follow_road = NodePath("../Main")
+	undergrowth.sides = RoadScatter.Sides.BOTH
+	undergrowth.random_seed = 504
+	undergrowth.per_100m = 22.0
+	undergrowth.offset_min = 2.0
+	undergrowth.offset_max = 10.0
+	undergrowth.atlas_kind = RoadScatter.AtlasKind.UNDERGROWTH
+	asset.add_child(undergrowth)
+	undergrowth.owner = asset
+	undergrowth.bake()
 	add_lighting(asset, road)
 	add_scenery_kit(asset, road)
 	add_props(asset, road)
