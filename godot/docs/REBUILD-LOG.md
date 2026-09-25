@@ -2680,3 +2680,10 @@ Brought CHI-01, CHI-prelim, CHI-02 (city), CHI-03 (Sol: references, water) and C
 - **Water shader (CHI-03):** dropped the screen-texture "reflection" (it never rendered on Sol's host and wrote lit colour into albedo). At the grazing angle the near-mirror showed only the warm horizon haze, so roughness is now 0.24-0.3 and specular 0.35.
 Visual review (tools/visual_review.ps1 -Tracks chicago): only the nine lakefront shots changed (scores 7.6-9.8). Gates `-All -Features` 39/39.
 Open: Wrigley and Tribune facades, the red/white kerbs on the street edge, night road glare (LOOK-NIGHT-01), about 900 draw calls.
+
+## 2026-09-25  DONE ASSET-01  (GPT-6 Sol; finished by Claude Opus 5.5)
+Sol integrated its CC0 asset inbox before its session broke; Claude reviewed and finished it.
+- **Particles:** eight Kenney Particle Pack sprites packed into `assets/particles/particle_atlas.png` (4x2): smoke, dust, grass, gravel, sparks, scrape, scorch, backfire. The effect frame is chosen per instance through MultiMesh custom data (`particles_atlas*.gdshader`), still 2 draws. The particles suite checks the atlas and each effect's frame. Captures are in tests/visual/particle-captures/.
+- **Chicago surfaces:** Poly Haven `worn_asphalt` on city streets and `pavement_05` on sidewalks and ground (1K, mipmapped, in assets/chicago/surfaces/). The ground tint is dark, which removes the beige "concrete desert".
+- **Claude's fixes:** reverted Sol's additions of the raw source images to `include_filter` (imported textures export anyway, so they would have been packed twice); `.gdignore` on the captures folder; dropped a no-op EMISSION in the additive shader.
+Chicago visual review: street/ground shots change (max score 4.6); nothing else changed. Gates `-All -Features` 39/39.

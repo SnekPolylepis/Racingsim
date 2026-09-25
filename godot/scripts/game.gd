@@ -477,6 +477,13 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/kerbs.json")
 		and ResourceLoader.exists("res://assets/trees/tree_atlas.png")
 		and ResourceLoader.exists("res://assets/undergrowth/undergrowth_atlas.png")
+		and ResourceLoader.exists("res://assets/particles/particle_atlas.png")
+		and ResourceLoader.exists("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_diff_1k.jpg")
+		and ResourceLoader.exists("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_nor_gl_1k.jpg")
+		and ResourceLoader.exists("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_rough_1k.jpg")
+		and ResourceLoader.exists("res://assets/chicago/surfaces/pavement_05/pavement_05_diff_1k.jpg")
+		and ResourceLoader.exists("res://assets/chicago/surfaces/pavement_05/pavement_05_nor_gl_1k.jpg")
+		and ResourceLoader.exists("res://assets/chicago/surfaces/pavement_05/pavement_05_rough_1k.jpg")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
