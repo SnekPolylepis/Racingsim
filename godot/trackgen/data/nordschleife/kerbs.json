@@ -29,6 +29,18 @@
     },
     {
       "corner": "Hatzenbogen",
+      "side": "left",
+      "s_start": 318,
+      "s_end": 360,
+      "type": "flat",
+      "colours": "red-white",
+      "width_m": 0.8,
+      "position": "inside",
+      "confidence": "medium",
+      "crop": "apex-hatzenbogen-00340.jpg"
+    },
+    {
+      "corner": "Hatzenbogen",
       "side": "right",
       "s_start": 322,
       "s_end": 460,
@@ -171,5 +183,7 @@
       "s_start": 0,
       "s_end": 4220
     }
-  ]
+  ],
+  "status": "reviewed",
+  "review": "Claude Opus 5.5, 2026-09-25: spot-checked Hatzenbogen; added the missing left kerb 318-360 m."
 }

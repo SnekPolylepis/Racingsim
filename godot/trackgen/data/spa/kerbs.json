@@ -139,7 +139,7 @@
       "corner": "Bruxelles–No Name",
       "side": "left",
       "s_start": 2884,
-      "s_end": 3200,
+      "s_end": 3122,
       "type": "flat",
       "colours": "red-cream",
       "width_m": 1.0,
@@ -151,13 +151,25 @@
       "corner": "Bruxelles–No Name",
       "side": "right",
       "s_start": 2964,
-      "s_end": 3220,
+      "s_end": 3060,
       "type": "flat",
       "colours": "red-cream",
       "width_m": 1.0,
       "position": "inside",
       "confidence": "high",
-      "crop": "trace-03001.jpg"
+      "crop": "apex-no-name-03036.jpg"
+    },
+    {
+      "corner": "Bruxelles–No Name",
+      "side": "right",
+      "s_start": 3108,
+      "s_end": 3220,
+      "type": "flat",
+      "colours": "red-cream",
+      "width_m": 1.0,
+      "position": "outside",
+      "confidence": "high",
+      "crop": "apex-no-name-03156.jpg"
     },
     {
       "corner": "Straight",
@@ -363,5 +375,7 @@
       "s_start": 0,
       "s_end": 6995
     }
-  ]
+  ],
+  "status": "reviewed",
+  "review": "Claude Opus 5.5, 2026-09-25: spot-checked La Source and Bruxelles-No Name; split the over-merged right kerb 2964-3220 into 2964-3060 and 3108-3220, and trimmed the left 2884-3200 to 3122 (white line and pit lane beyond)."
 }

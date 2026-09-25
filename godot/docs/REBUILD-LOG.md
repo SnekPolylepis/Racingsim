@@ -2126,3 +2126,11 @@ Restored two known limits that are still true (the Spa runoff approximations; ol
 
 ## 2026-09-24  DONE Look-11 Spa braking boards  (Claude Opus 5.5)
 `scripts/track/track_boards.gd`: 300/200/100 m countdown boards before Spa corners where the BotLine target speed drops more than 40 km/h from the approach (150-450 m before) to the apex (-80 to +40 m), so flat-out kinks stay clean. They sit on the corner outside, 1.2 m beyond the verge edge, angled towards oncoming cars, with no collision and faded out past 420 m. Boards that would stand inside the previous corner are skipped. Spa only, at the owner's request; no corner-name boards. Spa CACHE_REVISION 4. Checked in the Bus Stop capture ("100" board on the outside). Gates `run_gates.ps1 -All -Features` 36/36.
+
+## 2026-09-25  REVIEW K-01b (Luna): accepted with 3 corrections; traced kerbs live  (Claude Opus 5.5)
+The retrace is whole physical kerbs now: Spa 29 (La Source outside 144-258 and inside 150-168 match the crop), Nordschleife 13. Spot-checked La Source, Bruxelles-No Name and Hatzenbogen against their crops:
+- **Spa right 2964-3220:** over-merged across the No Name apex gap, so split into 2964-3060 and 3108-3220.
+- **Spa left 2884-3200:** trimmed to 3122; beyond that is the white line with the pit lane behind it.
+- **Nordschleife Hatzenbogen:** added the missing left kerb, 318-360.
+
+Both kerbs.json files are marked `"status": "reviewed"`, so the K-02 kerb map now drives Spa and Nordschleife S1 kerbs. `run_gates.ps1 -All -Features` 36/36 with the kerbs live (laps within baseline).
