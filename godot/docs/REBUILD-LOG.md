@@ -1953,3 +1953,6 @@ Sonnet's measurements and gaps 1-4 (edge lines, road contrast, horizon silhouett
   - Nordschleife banks marked fixed (NS-section 2).
 - **Gap table:** gaps 5-8 added (trees, cars, armco, fog).
 - **Captures:** `track_screenshots.gd` pairs three Nordschleife shots with GT4 "look target" frames. The baseline was recaptured on current main, including NS-section 1-2: 26 shots and 4 comparison strips.
+
+## 2026-09-24  CLAIM Look-6  (Claude Sonnet 5)
+Enclosure: gaps 3, 4, 5, 8 in ART-DIRECTION.md. Photographic tree cards, hill silhouette ring, day fog. Branch `rb/look-6-enclosure`. Not touching road_v2/road_builder (edge lines), the wall mesh, scripts/cars or kerbs.
