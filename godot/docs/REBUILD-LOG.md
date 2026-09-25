@@ -2372,5 +2372,29 @@ Final nighttime decision: **Jev gate COMPLETE 0.93**. MEDIUM (gpt-6-luna medium)
 
 ## 2026-09-25 — CLAIM CHI-03 Sol
 
-Claimed CHI-03 on b/CHI-03-refs-water, based on origin/rb/CHI-prelim (CHI-01 and asset prep). Scope: Chicago reference board, screenshot comparison tooling and the Chicago water shader. The separate CHI-02 OSM city build is not part of this branch.
+Claimed CHI-03 on `rb/CHI-03-refs-water`, based on `origin/rb/CHI-prelim` (CHI-01 and asset prep). Scope: Chicago reference board, screenshot comparison tooling and the Chicago water shader. The separate CHI-02 OSM city build is not part of this branch.
 
+## 2026-09-25 — DONE CHI-03 Sol
+
+Added a private comparison board in `docs/art/reference/chicago/`: 19 sourced Chicago photographs
+for the requested river, bridge, street, lake, landmark and aerial locations, plus nine PS2 street-
+racing game frames (eight NFS Underground and one Midnight Club II). Each image's source and licence
+are recorded in the board README. The README also contains the 13 camera-to-reference/game-frame
+mappings and the per-view building, street-furniture, water, lighting and colour gaps. Comparison
+captures now write to `user://chicago-shots` by default, accept `--out=`, and can generate separate
+photo and game-frame strips with `--compare`; the 13 positions include a bonnet Lower Wacker view.
+
+Reworked the single Chicago water material with animated crossing procedural waves, slower river
+flow, tighter lake chop, dark green-blue water, low roughness/high specular and a Fresnel-weighted
+screen-colour reflection for skyline and city-light pickup. It remains on the existing meshes and
+uses one material; no reflection camera or probe was added. Visual quality and day/night GPU time
+were not verified on this Windows host.
+
+Verification: import and the headless `--check-only` parse passed; all 37 headless suites in
+`run_gates.ps1 -All -Features` passed, including the Chicago suite (33 checks, zero failures).
+The windowed feature gate exited without a RESULTS line and reproduces a Godot 4.6.2 native signal
+11 crash (`-1073741819`); the Chicago screenshot script also crashes before its first capture, both
+windowed and headless. This is consistent with the Windows Godot executable limitation recorded
+earlier in this log. No before/after captures or comparison strips were produced or reviewed, so the
+requested PR water screenshots and measured day/night render timings are unavailable. The requested
+formatter command ran with gdtoolkit 4.5.0: 0 files reformatted, 95 unchanged. The code and reference board remain available for Claude review; rerun visual captures and GPU timing checks in a working Godot environment before treating those gates as complete.
