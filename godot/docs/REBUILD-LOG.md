@@ -2752,3 +2752,14 @@ Gates `-All -Features` 39/39.
    - **Problem:** round Lower Wacker's portals the street tiles within 26 m of the lower route were simply skipped. That left a hole down to CityBase at y -3, with the street tiles' raw edge floating above the lower road as a tan slab.
    - **Fix:** skipped cells now get a floor at `LOW_FLOOR_Y` (-0.08) and a two-sided retaining wall up to street level on every edge that meets street ground (not water). The Upper Wacker Portal exit and South Connector shots changed (6.8 and 7.4) and read as a walled cut. A sliver of slab edge is still visible top-left at the portal exit.
    Gates 39/39.
+
+## 2026-09-25  LOOK-14 graphics loop  (Claude Opus 5.5)
+6. **Chicago window scale:**
+   - **Problem:** the facade grid was 3.6 m bays with panes covering 72 % x 64 %, giving 2.6 x 2.5 m square windows, toy-like against the Loop's punched vertical windows.
+   - **Fix:** bays are 1.9 m. Masonry gets about 1.1 x 2.3 m panes with a light trim frame, glass towers a curtain-wall ribbon, and the night lit panes use the same shapes.
+   - **Regression caught and fixed:** the anti-shimmer fade now weighs width at half, since narrower bays had faded mid-distance towers to flat grey.
+- **Test windows:**
+  - `tools/window_placement.ps1` runs every windowed test (visual review and the features gate) with `--audio-driver Dummy` and on the rightmost monitor.
+  - Minimising is deliberately not used: a minimised Godot window stops rendering. One run froze from shot 19 and scored 43 frozen frames as "changed".
+  - `track_review.gd` now fails on byte-identical consecutive frames ("frozen frame").
+Gates 39/39.
