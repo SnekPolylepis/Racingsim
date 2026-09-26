@@ -496,15 +496,23 @@ static func _walls(st: SurfaceTool, ring: PackedVector2Array, y0: float, y1: flo
 ## One street: kept segment by segment where it is clear of the circuit. Returns whether any part was kept.
 static func _road(chunks: Dictionary, route: Dictionary, pts: PackedVector2Array, w: float) -> bool:
 	var kept = false
+	# LOOK-19: pieces of at most 10 m, and none over the lower-level cut. Long segments were only tested at their
+	# ends and middle, so streets crossing the Lower Wacker trench floated over it as street-level slabs.
+	var pieces = []
 	for i in pts.size() - 1:
-		var a = pts[i]
-		var b = pts[i + 1]
+		var n = maxi(1, ceili(pts[i].distance_to(pts[i + 1]) / 10.0))
+		for k in n:
+			pieces.append([pts[i].lerp(pts[i + 1], float(k) / n), pts[i].lerp(pts[i + 1], float(k + 1) / n)])
+	for piece in pieces:
+		var a: Vector2 = piece[0]
+		var b: Vector2 = piece[1]
 		var mid = (a + b) * 0.5
 		var clear = ROUTE_CLEAR + 1.0
 		if (
 			_route_dist(route, mid, clear + w) < clear + w * 0.5
 			or _route_dist(route, a, clear) < clear
 			or _route_dist(route, b, clear) < clear
+			or _near_low_route(route, mid, 26.0 + w * 0.5)
 		):
 			continue
 		var d = b - a
