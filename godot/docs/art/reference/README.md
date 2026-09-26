@@ -88,3 +88,7 @@ This closes the gaps listed above. Found through Bing Images in a real browser, 
 | `nfsu-night-wet-start-grid.jpg` | [YouTube 6qFj7UtP4eE](https://www.youtube.com/watch?v=6qFj7UtP4eE), NFSU demo (PCSX2) | Wet start grid: reflections of the cars and lamps in the road, a city wall, a tree-lined avenue. |
 
 Still missing: a GT4 Spa or Le Mans frame (GT4 has no Spa), and close-up texture shots. Spa is judged against the real-world photos and the GT4 Nordschleife rules above.
+
+## Karussell (LOOK-16)
+- `real-nordschleife-karussell-lauda-1973.jpg` and `real-nordschleife-karussell-capri-1973.jpg`: Lothar Spurzem, Wikimedia Commons, CC BY-SA 2.0 de. Both are 1973 photos in the Karussell. Inside out, they show the narrow asphalt strip, the banked concrete slab band with transverse joints, and the outer asphalt and armco.
+- Geometry notes: nring.info ("Caracciola-Karussell"), Porsche Newsroom 2020 ("Banking on the Nürburgring-Nordschleife"), oversteer48.com. Near-180-degree left hairpin, concreted 1932, concrete banked ~17-20 degrees, outer asphalt ~10 degrees, radii ~15 m (concrete) and ~25 m (asphalt), 70 mm minimum ground clearance for GT3 cars.
