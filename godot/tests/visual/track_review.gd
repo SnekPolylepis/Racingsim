@@ -58,6 +58,7 @@ var folder = "user://visual-review/latest"
 var baseline = ""
 var night = false
 var bonnet = false
+var last_digest = 0
 
 
 func _initialize():
@@ -145,6 +146,11 @@ func run():
 			for i in 10:
 				await process_frame
 			var image = root.get_texture().get_image()
+			# A minimised or occluded window stops rendering, and every later capture is the same frozen frame.
+			var digest = hash(image.get_data())
+			if digest == last_digest:
+				failures.append("frozen frame at %s %s (window minimised or not rendering?)" % [id, item[1]])
+			last_digest = digest
 			var file = "%03d-%s-%s.png" % [index, item[0], item[1]]
 			index += 1
 			if image.save_png(dir + "/" + file) != OK:

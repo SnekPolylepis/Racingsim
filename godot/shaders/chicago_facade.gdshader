@@ -16,7 +16,9 @@ uniform float kind_glassy[6];
 uniform float kind_tile[6];
 uniform bool afterhours = false;
 // Floor height and bay width (m) of the night window grid, and the share of lit windows.
-uniform vec2 window_cell = vec2(3.6, 3.9);
+// LOOK-14: 1.9 m bays (was 3.6). The old grid made 2.6 x 2.5 m square panes, toy-like against the Loop's
+// punched vertical windows.
+uniform vec2 window_cell = vec2(1.9, 3.9);
 uniform float lit_chance = 0.32;
 uniform float glow_energy = 1.4;
 // Daytime window grid (CHI-LOOK-01): the same cells as the night windows, drawn as dark glass panes with
@@ -62,9 +64,17 @@ void fragment() {
 	if (!afterhours && day_windows > 0.0) {
 		// Fade the grid out where a cell is under about 3 pixels, so distant towers do not shimmer.
 		vec2 w = fwidth(UV / window_cell);
-		float fade = 1.0 - smoothstep(0.2, 0.55, max(w.x, w.y));
+		// Narrow bays (LOOK-14) would fade twice as soon on width; judge width at half weight so mid-distance towers
+		// keep their grid.
+		float fade = 1.0 - smoothstep(0.25, 0.6, max(w.x * 0.5, w.y));
 		float ground = 1.0 - step(1.0, cell.y);
-		float pane = step(0.14, f.x) * step(f.x, 0.86) * step(0.16, f.y) * step(f.y, 0.8);
+		// Masonry: a punched vertical window (about 1.1 x 2.3 m) with a light trim frame. Glass towers: a
+		// curtain-wall ribbon, mullions only.
+		float pane_m = step(0.21, f.x) * step(f.x, 0.79) * step(0.2, f.y) * step(f.y, 0.8);
+		float trim = step(0.17, f.x) * step(f.x, 0.83) * step(0.17, f.y) * step(f.y, 0.83) * (1.0 - pane_m);
+		float pane_g = step(0.04, f.x) * step(f.x, 0.96) * step(0.1, f.y) * step(f.y, 0.9);
+		float pane = mix(pane_m, pane_g, step(0.5, glassy));
+		trim *= 1.0 - step(0.5, glassy);
 		// Ground floor: one continuous darker storefront band instead of separate panes.
 		pane = mix(pane, step(0.05, f.x) * step(f.x, 0.95) * step(0.12, f.y) * step(f.y, 0.85), ground);
 		float sill = step(f.y, 0.16) * (1.0 - ground);
@@ -72,7 +82,7 @@ void fragment() {
 		// Glass towers reflect more sky; masonry windows are darker and deeper set.
 		vec3 glass = mix(vec3(0.07, 0.09, 0.12), vec3(0.32, 0.4, 0.5), glassy * (0.35 + 0.5 * tone));
 		glass = mix(glass, vec3(0.11, 0.1, 0.09), ground * 0.6);
-		vec3 lit_base = base * mix(1.0, 0.82, sill);
+		vec3 lit_base = base * mix(1.0, 0.82, sill) * mix(1.0, 1.18, trim * (1.0 - ground));
 		ALBEDO = mix(base, mix(lit_base, glass, pane), fade * day_windows);
 		float glossy = pane * fade * day_windows;
 		ROUGHNESS = mix(ROUGHNESS, 0.18, glossy);
@@ -81,7 +91,7 @@ void fragment() {
 	}
 	if (afterhours) {
 		// A window pane inside each cell (not the spandrel or mullions), above the ground floor.
-		float pane = step(0.18, f.x) * step(f.x, 0.82) * step(0.22, f.y) * step(f.y, 0.78) * step(1.0, cell.y);
+		float pane = mix(step(0.21, f.x) * step(f.x, 0.79) * step(0.2, f.y) * step(f.y, 0.8), step(0.04, f.x) * step(f.x, 0.96) * step(0.1, f.y) * step(f.y, 0.9), step(0.5, glassy)) * step(1.0, cell.y);
 		float lit = step(1.0 - lit_chance - glassy * 0.12, hash21(cell + seed * 97.0));
 		vec3 warm = vec3(1.0, 0.72, 0.38);
 		vec3 cool = vec3(0.72, 0.84, 1.0);

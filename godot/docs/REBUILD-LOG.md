@@ -2754,4 +2754,14 @@ Gates `-All -Features` 39/39.
    Gates 39/39.
 7. **Chicago kit shopfronts:** close-up, the Quaternius kit stacked two storeys of pieces, with its wall modules reading as pale suburban siding. The second storey clashed with the facade shader's window grid behind it. Now there is only street-level shopfront glass (the `*_Window` piece), and the shader draws the masonry windows above. Loop blocks read as shopfronts under punched windows.
 8. **Spa haze, second pass:** day ridge mix 0.10/0.22/0.36 to 0.04/0.12/0.24. The La Source horizon now reads as uniform haze; Kemmel keeps a faint patch at the frame edge.
+
+## 2026-09-25  LOOK-14 graphics loop  (Claude Opus 5.5)
+6. **Chicago window scale:**
+   - **Problem:** the facade grid was 3.6 m bays with panes covering 72 % x 64 %, giving 2.6 x 2.5 m square windows, toy-like against the Loop's punched vertical windows.
+   - **Fix:** bays are 1.9 m. Masonry gets about 1.1 x 2.3 m panes with a light trim frame, glass towers a curtain-wall ribbon, and the night lit panes use the same shapes.
+   - **Regression caught and fixed:** the anti-shimmer fade now weighs width at half, since narrower bays had faded mid-distance towers to flat grey.
+- **Test windows:**
+  - `tools/window_placement.ps1` runs every windowed test (visual review and the features gate) with `--audio-driver Dummy` and on the rightmost monitor.
+  - Minimising is deliberately not used: a minimised Godot window stops rendering. One run froze from shot 19 and scored 43 frozen frames as "changed".
+  - `track_review.gd` now fails on byte-identical consecutive frames ("frozen frame").
 Gates 39/39.
