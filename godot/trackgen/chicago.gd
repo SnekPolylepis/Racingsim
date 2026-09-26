@@ -13,6 +13,7 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
+const CatchFence = preload("res://scripts/track/catch_fence.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const NO_SHADOW = [
 	"CityBase",
@@ -216,6 +217,18 @@ static func build_asset() -> Node3D:
 		wall.step_m = 3.0
 		attach(asset, asset, wall, "LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier")
 		wall.bake()
+		# CHI-SC-1: debris fencing on top of every barrier, the look of a street circuit (Long Beach, Macau,
+		# NFSU's closed-street courses). Without it the route read as a grey blockout. Visual only; the barrier
+		# keeps collision.
+		var fence = CatchFence.new()
+		fence.follow_wall = NodePath("../" + wall.name)
+		fence.side = side
+		fence.offset = 0.0
+		fence.post_spacing = 4.0
+		fence.fence_height = 3.2
+		fence.solid = false
+		attach(asset, asset, fence, wall.name + "Fence")
+		fence.bake()
 	var scenery = Node3D.new()
 	attach(asset, asset, scenery, "Scenery")
 	add_water_and_parks(asset, scenery)
