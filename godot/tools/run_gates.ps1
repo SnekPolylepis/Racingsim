@@ -99,12 +99,14 @@ if (-not (Test-Path (Join-Path $godotDir ".godot"))) {
     if (-not $p.WaitForExit(300000)) { $p.Kill(); Write-Host "import timed out"; exit 2 }
 }
 
+. (Join-Path $PSScriptRoot "window_placement.ps1")
+
 function Start-Suite($s, $tag, $perfGates) {
     $safe = ($s.name -replace '[^A-Za-z0-9_-]', '_')
     $out = "$logs\$safe$tag.out"
     $err = "$logs\$safe$tag.err"
     $args = @()
-    if (-not $s.window) { $args += "--headless" }
+    if (-not $s.window) { $args += "--headless" } else { $args += (Get-TestWindowArgs) }
     $args += @("--path", "`"$godotDir`"")
     if ($s.kind -eq "parse") { $args += @("--script", $s.script, "--check-only") }
     elseif ($s.kind -eq "features") { $args += @("--", "--features") }
