@@ -41,6 +41,7 @@
     {"name": "scenery", "script": "tests/v2/scenery.gd", "groups": ["vehicle", "track"]},
     {"name": "test_surfaces_scene", "script": "tests/v2/test_surfaces_scene.gd", "groups": ["vehicle"], "deps": ["scripts/proving/", "scenes/proving/"]},
     {"name": "chicago", "script": "tests/v2/chicago.gd", "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/data/chicago/"]},
+    {"name": "chicago_clip", "script": "tests/visual/clip_scan.gd", "args": ["--track=chicago"], "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "trackgen/chicago_kit.gd", "trackgen/data/chicago/"]},
     {"name": "nordschleife_s1", "script": "tests/v2/nordschleife_s1.gd", "groups": ["track"], "deps": ["trackgen/nordschleife_s1.gd", "trackgen/data/nordschleife/"]},
     {"name": "nordschleife", "script": "tests/v2/nordschleife.gd", "groups": ["track"], "deps": ["trackgen/nordschleife.gd", "trackgen/data/nordschleife/"]},
     {"name": "parse check", "kind": "parse", "script": "scripts/game.gd", "groups": ["game"]},

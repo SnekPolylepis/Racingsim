@@ -48,8 +48,10 @@ const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
 
-## The Wrigley Building stands this far east of its route.json point (CHI-LOOK-01), clear of the road.
-const WRIGLEY_SHIFT = 58.0
+## The Wrigley Building's offset from its route.json point (CHI-LOOK-01, CHI-SC-4): east of Michigan Avenue and
+## north of the lower route. At 58 m east only, its towers straddled the lower route (z ~ -382) and the west tower
+## overlapped Michigan's track edge (clip_scan.gd).
+const WRIGLEY_OFFSET = Vector3(70.0, 0.0, -31.0)
 
 ## Buildings under this height, and flat surfaces, are culled beyond these distances (m); fog ends at 1900-2800.
 const LOW_BUILDING_M = 40.0
@@ -70,7 +72,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if landmarks.has(name):
 			var p = world_of.call(landmarks[name])
 			if name == "Wrigley Building":
-				p.x += WRIGLEY_SHIFT
+				p += WRIGLEY_OFFSET
 			skip_at.append([Vector2(p.x, p.z), OWN_LANDMARKS[name]])
 	var chunks = {}
 	# LOD (CHI-LOOK-01): low buildings and flat ground/street surfaces go to their own chunk sets with a
@@ -284,11 +286,12 @@ static func material(name: String) -> Material:
 		pavement_ground.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		mat = pavement_ground
 	elif name == "wall":
-		mat = _triplanar(
-			TEX + "Concrete034/Concrete034_color.jpg",
-			3.0,
-			Color(0.85, 0.85, 0.83) if name != "wall" else Color(0.7, 0.7, 0.68)
-		)
+		# CHI-SC-2: poured-concrete retaining/river walls (panels, coping, grime, streaks), not a flat tint.
+		var wall = ShaderMaterial.new()
+		wall.shader = preload("res://shaders/chicago_wall.gdshader")
+		wall.set_shader_parameter("concrete_tex", load(TEX + "Concrete034/Concrete034_color.jpg"))
+		wall.set_shader_parameter("street_y", STREET_Y)
+		mat = wall
 	elif name == "park":
 		mat = Ps2Materials.ground(2)
 	elif name == "water":
@@ -378,9 +381,16 @@ static func _route_dist(route: Dictionary, p: Vector2, reach: float, low_only: b
 
 
 static func _touches_route(route: Dictionary, ring: PackedVector2Array, margin: float) -> bool:
-	for p in ring:
-		if _route_dist(route, p, ROUTE_CLEAR + margin) < ROUTE_CLEAR + margin:
-			return true
+	# CHI-SC-4: walk every edge (at most 3 m apart), not just the corners. A footprint with a long wall across
+	# the route but corners far from it passed, and the building stood in the track.
+	var reach = ROUTE_CLEAR + margin
+	for i in ring.size():
+		var a = ring[i]
+		var b = ring[(i + 1) % ring.size()]
+		var n = maxi(1, ceili(a.distance_to(b) / 3.0))
+		for k in n:
+			if _route_dist(route, a.lerp(b, float(k) / n), reach) < reach:
+				return true
 	# A footprint can straddle the route between its corners: test the centroid too.
 	var c = _centroid(ring)
 	return Geometry2D.is_point_in_polygon(c, ring) and _route_dist(route, c, 60.0) < 30.0
@@ -507,9 +517,11 @@ static func _road(chunks: Dictionary, route: Dictionary, pts: PackedVector2Array
 		var a: Vector2 = piece[0]
 		var b: Vector2 = piece[1]
 		var mid = (a + b) * 0.5
-		var clear = ROUTE_CLEAR + 1.0
+		# The ribbon's full half-width is the road plus a 3 m sidewalk; all of it must clear the circuit
+		# (CHI-SC-4: wide streets overhung the track by several metres).
+		var clear = ROUTE_CLEAR + 1.0 + w * 0.5 + 3.0
 		if (
-			_route_dist(route, mid, clear + w) < clear + w * 0.5
+			_route_dist(route, mid, clear) < clear
 			or _route_dist(route, a, clear) < clear
 			or _route_dist(route, b, clear) < clear
 			or _near_low_route(route, mid, 26.0 + w * 0.5)
