@@ -2777,3 +2777,15 @@ Gates 39/39.
 - **LOOK-18, Lower Wacker at night:** the ceiling fixtures glowed but lit nothing; the route's 42 m alternating lamps plus LOOK-NIGHT-01's softer streaks left the lower level near black. `lower_level_zones()` samples the road height and gives every stretch below 3 m a lamp zone at 16 m spacing, both sides. The lower level now has rows of amber pools on the road and walls. Upper-level shots shift slightly because the alternating lamp sequence moved. Spa and Nordschleife nights were reviewed (unchanged from LOOK-NIGHT-01). Gates 39/39.
 - **LOOK-19, floating street slabs:** the new `tests/visual/probe_pixel.gd` located the Upper Wacker Portal sliver. It was an OSM street's sidewalk ribbon at y 8.03 crossing the Lower Wacker trench, because `_road()` only tested a segment's ends and middle against the circuit. Streets are now split into pieces of at most 10 m, and any piece within 26 m (plus half its width) of the lower route is dropped. The sliver is gone, and so is a larger sunlit slab over the South Connector. Gates 39/39.
 - **LOOK-21, full-lap kerbs (stopgap):** the full Nordschleife gave every turning corner an inside ramp kerb and an outside exit kerb, whatever its spec, so the lap was red and white nearly everywhere. Kerbs are now placed only where `corner_specs()` flags kerb_type 1 (sausage) or 2 (ribbed); kerb-free corners keep just edge lines, as on much of the real circuit. Traced kerbs (K-03) will replace this. Laps are unchanged (the removed kerbs were flush and off the bot line). Gates 39/39.
+
+## 2026-09-26  CHI-SC (self-contained Chicago)  (Claude Opus 5.5)
+Goal: Chicago should read as a finished street circuit, not a blockout.
+1. **Catch fences:** `CatchFence` on top of both barriers, 3.2 m on 4 m posts, visual only. It bakes after Scenery exists; baked earlier, it created its own Scenery node and broke `Scenery/CentennialWheel` (the chicago suite caught this).
+2. **Poured-concrete walls:** `shaders/chicago_wall.gdshader` for retaining and river walls (pour panels with joints, coping, rain streaks, grime at the base). Before, they were a flat tint.
+3. **News boxes:** real size with a pedestal, sloped hood and a door window. Before, they were a 0.8 x 1.6 m blue block.
+4. **Clipping (owner report: a building and roads clipping into the track):**
+   - `tests/visual/clip_scan.gd` hit-tests all non-road scenery above and across the drivable corridor every 5 m. It is now the `chicago_clip` gate; the deliberate overhead structures are allowlisted.
+   - **Found on main:** both Wrigley towers straddled the lower route and the west tower overlapped Michigan's edge; both Riverwalk slabs crossed Upper Wacker 0.4 m above the road; city ground tiles poked through near Jackson.
+   - **Fixes:** `WRIGLEY_OFFSET` (70, 0, -31); the Riverwalk moved down to the water (-1.5); building clearance now tests every footprint edge every 3 m, not just the corners; street ribbons must clear the route by their full half-width plus the sidewalk.
+   - The scan is now clean.
+Gates 40/40.

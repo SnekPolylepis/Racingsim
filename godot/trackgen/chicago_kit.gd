@@ -283,7 +283,7 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		"bench": _bench_mesh(),
 		"bin": _bin_mesh(),
 	}
-	var scales = {"planter": 1.0, "bollard": 1.5, "hydrant": 1.6, "paper": 1.6, "bench": 1.5, "bin": 1.5}
+	var scales = {"planter": 1.0, "bollard": 1.5, "hydrant": 1.6, "paper": 1.0, "bench": 1.5, "bin": 1.5}
 	var crossings = []
 	for i in ChicagoFurniture.find_crossings(stations):
 		crossings.append(stations[i].s)
@@ -376,11 +376,25 @@ static func _hydrant_mesh() -> Mesh:
 	)
 
 
+## CHI-SC-3: a street news box at real size (it was a plain 0.8 x 1.6 m blue block): a pedestal, the body with a
+## sloped hood, and a pale coin-door window on the street-facing front (+Z faces the kerb).
 static func _paper_mesh() -> Mesh:
-	return _compose(
-		[[_box(Vector3(0.5, 1.0, 0.45)), Transform3D(Basis.IDENTITY, Vector3(0, 0.5, 0))]],
+	var body = _compose(
+		[
+			[_box(Vector3(0.12, 0.22, 0.12)), Transform3D(Basis.IDENTITY, Vector3(0, 0.11, 0))],
+			[_box(Vector3(0.48, 0.7, 0.42)), Transform3D(Basis.IDENTITY, Vector3(0, 0.57, 0))],
+			[_box(Vector3(0.5, 0.08, 0.46)), Transform3D(Basis(Vector3.RIGHT, 0.22), Vector3(0, 0.95, 0.0))]
+		],
 		Color(0.12, 0.28, 0.6)
 	)
+	var door = _compose(
+		[[_box(Vector3(0.36, 0.3, 0.02)), Transform3D(Basis.IDENTITY, Vector3(0, 0.7, 0.215))]],
+		Color(0.72, 0.74, 0.7)
+	)
+	var mesh = body as ArrayMesh
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, door.surface_get_arrays(0))
+	mesh.surface_set_material(1, door.surface_get_material(0))
+	return mesh
 
 
 static func _bench_mesh() -> Mesh:

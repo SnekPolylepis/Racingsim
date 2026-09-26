@@ -13,6 +13,7 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
+const CatchFence = preload("res://scripts/track/catch_fence.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const NO_SHADOW = [
 	"CityBase",
@@ -218,6 +219,20 @@ static func build_asset() -> Node3D:
 		wall.bake()
 	var scenery = Node3D.new()
 	attach(asset, asset, scenery, "Scenery")
+	# CHI-SC-1: debris fencing on top of both barriers, the look of a street circuit (Long Beach, Macau, NFSU's
+	# closed-street courses); without it the route read as a grey blockout. Visual only (the barrier keeps
+	# collision). Baked after Scenery exists: CatchFence parents its mesh under Scenery and would otherwise
+	# create its own, renaming the city's node (and losing Scenery/CentennialWheel etc.).
+	for barrier in ["LeftBarrier", "RightBarrier"]:
+		var fence = CatchFence.new()
+		fence.follow_wall = NodePath("../" + barrier)
+		fence.side = WallPath.Side.LEFT if barrier == "LeftBarrier" else WallPath.Side.RIGHT
+		fence.offset = 0.0
+		fence.post_spacing = 4.0
+		fence.fence_height = 3.2
+		fence.solid = false
+		attach(asset, asset, fence, barrier + "Fence")
+		fence.bake()
 	add_water_and_parks(asset, scenery)
 	# CHI-02: the real downtown from OpenStreetMap (buildings, every street, water, parks) replaces the
 	# procedural skyline. add_city() stays for reference but is no longer called.
@@ -308,12 +323,16 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	box(asset, parent, "MillenniumPark", world([41.8821, -87.6226, 7.6]), Vector3(210, .6, 380), lawn)
 	box(asset, parent, "GrantPark", world([41.8800, -87.6210, 7.3]), Vector3(440, .5, 260), lawn)
 	box(asset, parent, "Lakefront", world([41.8800, -87.6166, 6.8]), Vector3(65, .5, 470), pier_walk)
-	box(asset, parent, "RiverwalkPromenade", world([41.8871, -87.6261, 8.2]), Vector3(22, .3, 170), pier_walk)
+	# The Riverwalk runs along the water below both road levels (CHI-SC-4): at street height (8.2) these slabs
+	# crossed Upper Wacker 0.4 m above the road.
+	box(
+		asset, parent, "RiverwalkPromenade", world([41.8871, -87.6261, -1.5]), Vector3(22, .3, 170), pier_walk
+	)
 	box(
 		asset,
 		parent,
 		"RiverwalkPromenadeWest",
-		world([41.8870, -87.6309, 8.2]),
+		world([41.8870, -87.6309, -1.5]),
 		Vector3(16, .3, 135),
 		pier_walk
 	)
@@ -548,7 +567,7 @@ static func add_loop_landmarks(
 ) -> void:
 	# Wrigley Building: twin cream glazed-terra-cotta towers and clock crown.
 	# CHI-LOOK-01: on the east side of Michigan Avenue, as in the city; it stood on the Michigan turn's road.
-	var wrigley = world([41.8882, -87.6246, 8]) + Vector3(ChicagoCity.WRIGLEY_SHIFT, 0, 0)
+	var wrigley = world([41.8882, -87.6246, 8]) + ChicagoCity.WRIGLEY_OFFSET
 	var terra_cotta_bands: Array = []
 	for tower in [[-31.0, 138.0, 35.0], [27.0, 91.0, 31.0]]:
 		var center = wrigley + Vector3(tower[0], tower[1] * .5, 0)
