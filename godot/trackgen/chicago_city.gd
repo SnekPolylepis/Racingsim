@@ -23,6 +23,8 @@ const WATER_Y = -2.8
 ## the river). At the river's WATER_Y, 10.8 m under the street, the lake was hidden in a pit and Lake
 ## Shore Drive looked out over a bare concrete plain.
 const LAKE_Y = 6.5
+## Floor of the lower-level cut round Lower Wacker, just under the lower road (y 0).
+const LOW_FLOOR_Y = -0.08
 ## Open ground this close to the lake is lakefront lawn (the Lakefront Trail strip OSM leaves unmapped).
 const LAKEFRONT_M = 150.0
 const CHUNK = 600.0
@@ -138,19 +140,46 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			hi = hi.max(Vector2(p[0], p[1]))
 	var tile = 20.0
 	var shore = _lakefront_cells(water_polys, tile, LAKEFRONT_M)
+	var water_cells = {}
+	var low_cells = {}
 	var x = floorf(lo.x / tile) * tile
 	while x < hi.x:
 		var z = floorf(lo.y / tile) * tile
 		while z < hi.y:
 			var c = Vector2(x + tile * 0.5, z + tile * 0.5)
-			if not _in_water(water_polys, c) and not _near_low_route(route, c, 26.0):
-				var cell = Vector2i(floori(c.x / tile), floori(c.y / tile))
+			var cell = Vector2i(floori(c.x / tile), floori(c.y / tile))
+			if _in_water(water_polys, c):
+				water_cells[cell] = true
+			elif _near_low_route(route, c, 26.0):
+				low_cells[cell] = true
+			else:
 				var lawn = shore.has(cell) or _in_water(crossed_parks, c)
 				var kind = "park" if lawn else "ground"
 				_quad_flat(_st(flat_chunks, c, kind), Vector2(x, z), tile, STREET_Y - 0.04)
 				stats.ground_tiles += 1
 			z += tile
 		x += tile
+	# LOOK-13: the lower-level cut (Lower Wacker and its portal ramps) was a hole in the street down to CityBase
+	# at y -3, with the street tiles' raw edge floating above the lower road. It is now a trench: a floor at
+	# the lower level and retaining walls up to the street wherever it meets street-level ground.
+	for cell in low_cells:
+		var at = Vector2(cell.x * tile, cell.y * tile)
+		var mid = at + Vector2(tile, tile) * 0.5
+		_quad_flat(_st(flat_chunks, mid, "ground"), at, tile, LOW_FLOOR_Y)
+		var sides = [
+			[Vector2i(1, 0), Vector2(tile, 0), Vector2(tile, tile)],
+			[Vector2i(-1, 0), Vector2(0, tile), Vector2(0, 0)],
+			[Vector2i(0, 1), Vector2(tile, tile), Vector2(0, tile)],
+			[Vector2i(0, -1), Vector2(0, 0), Vector2(tile, 0)]
+		]
+		for side in sides:
+			var next = cell + side[0]
+			if low_cells.has(next) or water_cells.has(next):
+				continue
+			var a = at + side[1]
+			var b = at + side[2]
+			# A two-point ring gives both faces (a->b, then b->a).
+			_walls(_st(chunks, mid, "wall"), PackedVector2Array([a, b]), LOW_FLOOR_Y, STREET_Y - 0.04)
 	# Commit every chunk's surfaces.
 	for group in [
 		[chunks, 0.0, "Chunk"], [low_chunks, LOW_RANGE_M, "Low"], [flat_chunks, FLAT_RANGE_M, "Flat"]

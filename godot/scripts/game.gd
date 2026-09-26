@@ -1138,10 +1138,13 @@ func apply_time_of_day():
 		# (RetroAssets.hills_panorama), so the world fades into wooded hills like GT4's Nordschleife overview
 		# instead of ending in a bare horizon. At 2.4 km the sky met flat ground; the old 950 m wall turned
 		# every hill into one pale mint band.
-		environment.fog_light_color = Color("2a2433") if night else Color("a9bfd3")
+		# LOOK-13: the day haze is a darker blue-green (7a929a, about a third of the way from a9bfd3 to the
+		# painted ridges' forest). Pale a9bfd3 made fogged valleys and distant tree lines lighter than the
+		# painted ridges behind them, and at Spa they read as lakes.
+		environment.fog_light_color = Color("2a2433") if night else Color("7a929a")
 		environment.fog_depth_begin = 60 if night else 150
-		environment.fog_depth_end = 520 if night else 1150
-		environment.fog_depth_curve = 1.0 if night else 1.8
+		environment.fog_depth_end = 520 if night else 1400
+		environment.fog_depth_curve = 1.0
 		environment.fog_density = 1.0
 		environment.fog_sky_affect = .15
 		# Look-9: the moon was 8ca6df (sat 0.37); the Nordschleife's dense forest reads it directly on the

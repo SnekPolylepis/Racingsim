@@ -237,6 +237,7 @@ static func build_asset() -> Node3D:
 			if node is GeometryInstance3D and str(node.name).begins_with(prefix):
 				node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_park_trees(asset)
+	add_lakefront_trees(asset)
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
 	add_parked_cars(asset, scenery, road)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
@@ -791,6 +792,36 @@ static func add_park_trees(asset: Node3D) -> void:
 		trees.random_seed = 251
 		trees.species_indices = PackedInt32Array([2, 3, 4])
 		attach(asset, asset, trees, "ParkTrees%d" % int(band[0]))
+		trees.bake()
+
+
+## Grant Park and lakefront trees (LOOK-13): Jackson Drive crosses the park and Lake Shore Drive runs between
+## the park (left, beyond LSD's own carriageways) and the lakefront trail (right, short of the harbour wall).
+## They were bare lawn to the horizon.
+static func add_lakefront_trees(asset: Node3D) -> void:
+	var at = asset.get_meta("corners", {})
+	if not (at.has("Jackson Turn") and at.has("Lakefront Turn") and at.has("Navy Pier View")):
+		return
+	var bands = [
+		[at["Jackson Turn"] + 30.0, at["Lakefront Turn"] - 20.0, RoadScatter.Sides.BOTH, 14.0, 90.0, 16.0],
+		[at["Lakefront Turn"] + 30.0, at["Navy Pier View"] - 40.0, RoadScatter.Sides.LEFT, 45.0, 130.0, 18.0],
+		[at["Lakefront Turn"] + 30.0, at["Navy Pier View"] - 40.0, RoadScatter.Sides.RIGHT, 12.0, 42.0, 10.0],
+	]
+	for i in bands.size():
+		var b = bands[i]
+		if b[1] <= b[0]:
+			continue
+		var trees = RoadScatter.new()
+		trees.follow_road = NodePath("../Main")
+		trees.sides = b[2]
+		trees.from_m = b[0]
+		trees.to_m = b[1]
+		trees.offset_min = b[3]
+		trees.offset_max = b[4]
+		trees.per_100m = b[5]
+		trees.random_seed = 3101 + i
+		trees.species_indices = PackedInt32Array([2, 3, 4])
+		attach(asset, asset, trees, "LakefrontTrees%d" % i)
 		trees.bake()
 
 
