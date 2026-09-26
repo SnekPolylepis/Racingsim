@@ -39,7 +39,9 @@ void fragment() {
 	// Tarmac runoff keeps a crisp edge (it is laid, not spread) and reads a little lighter than the circuit.
 	float t = smoothstep(.46, .54, mask.g);
 	vec2 r1 = w * 0.32; vec2 r2 = w * 0.074 + vec2(0.37, 0.61);
-	vec3 runoff = mix(linear_sample(texture(runoff_albedo, r1).rgb), linear_sample(texture(runoff_albedo, r2).rgb), 0.35 + far * 0.65) * 4.8 * vec3(0.84, 0.98, 1.2);
+	// LOOK-13: 4.8 x (0.84, 0.98, 1.2) made runoff a pale blue-grey sheet; beyond ~700 m, fogged, Spa's big
+	// runoffs read as lakes on the horizon. Now just a touch lighter than the circuit's asphalt, neutral.
+	vec3 runoff = mix(linear_sample(texture(runoff_albedo, r1).rgb), linear_sample(texture(runoff_albedo, r2).rgb), 0.35 + far * 0.65) * 2.9 * vec3(0.96, 0.98, 1.02);
 	// Graded to a lush Ardennes/Eifel green (mean about sRGB 70,100,40 in sun) from the dry-grass photo;
 	// the old (1.65, 1.6, 1.2) grade read khaki on whole hillsides once terrain used this shader.
 	vec3 styled_grass = grass * vec3(0.62, 1.08, 0.7);
@@ -47,7 +49,13 @@ void fragment() {
 	ALBEDO = mix(mix(styled_grass, styled_gravel, m), runoff, t) * COLOR.rgb;
 	if (OUTPUT_IS_SRGB) ALBEDO = pow(max(ALBEDO, vec3(0.)), vec3(1. / 2.2));
 	EMISSION = ALBEDO * 0.025;
-	ROUGHNESS = mix(mix(texture(grass_rough, g1).r, texture(gravel_rough, p1).r, m) * 0.95 + 0.05, texture(runoff_rough, r1).r, t);
+	// LOOK-13: grass and gravel never below 0.85 roughness, with low specular. From ~0.3 roughness, distant
+	// valley grass at a grazing angle mirrored the pale horizon sky and read as lakes (Spa, Nordschleife).
+	float rough_nat = max(mix(texture(grass_rough, g1).r, texture(gravel_rough, p1).r, m), 0.85);
+	ROUGHNESS = mix(rough_nat, texture(runoff_rough, r1).r, t);
+	// Zero specular on grass and gravel: Godot's grazing Fresnel is clamp(50 * F0), so even rough grass at
+	// SPECULAR 0.2 mirrored about a third of the sky on distant flat ground, the "lakes" on Spa's horizon.
+	SPECULAR = mix(0.0, 0.3, t);
 	vec3 ng = mix(texture(grass_normal, g1).rgb, texture(grass_normal, g2).rgb, far);
 	vec3 np = texture(gravel_normal, p1).rgb;
 }

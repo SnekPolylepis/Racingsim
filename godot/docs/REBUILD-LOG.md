@@ -2728,3 +2728,21 @@ Sol integrated its CC0 asset inbox before its session broke; Claude reviewed and
 - **Chicago surfaces:** Poly Haven `worn_asphalt` on city streets and `pavement_05` on sidewalks and ground (1K, mipmapped, in assets/chicago/surfaces/). The ground tint is dark, which removes the beige "concrete desert".
 - **Claude's fixes:** reverted Sol's additions of the raw source images to `include_filter` (imported textures export anyway, so they would have been packed twice); `.gdignore` on the captures folder; dropped a no-op EMISSION in the additive shader.
 Chicago visual review: street/ground shots change (max score 4.6); nothing else changed. Gates `-All -Features` 39/39.
+
+## 2026-09-25  LOOK-13 graphics loop  (Claude Opus 5.5)
+Iterations judged with tools/visual_review.ps1 (day baseline `day-base`).
+1. **Chicago, bare parkland:** Jackson Drive and Lake Shore Drive ran through lawn to the horizon. Added `add_lakefront_trees`, three RoadScatter bands keyed to the corner stations:
+   - Jackson Drive, both sides, 14-90 m;
+   - Lake Shore Drive, Grant Park side 45-130 m (past LSD's own carriageways);
+   - Lake Shore Drive, lakefront side 12-42 m (short of the harbour wall).
+   8 shots changed (6.3-9.9), all on that stretch.
+2. **Spa, "lakes" on the horizon:** pale blue-white sheets under the painted ridges in about a third of Spa's shots. Probes showed three things:
+   - they are valley terrain and distant tree cards 0.8-1.2 km out, fogged to the pale a9bfd3, lighter than the painted ridges behind (hiding every tree layer left a pale hillside);
+   - distant grass also mirrored the sky at grazing angles (a magenta-sky test tinted it), because Godot's grazing Fresnel is clamp(50 * F0) and grass had specular 0.5;
+   - the tree and undergrowth atlases had mipmaps off, against the project's texture rule.
+   Changes:
+   - day fog colour a9bfd3 to 7a929a, end 1150 to 1400 m, curve 1.8 to 1.0;
+   - `ground.gdshader`: grass/gravel roughness at least 0.85, specular 0 (runoff 0.3); runoff graded down from x4.8 blue-tinted to x2.9 neutral;
+   - atlas mipmaps on.
+   The grass reads deeper green. The bands are much reduced but not gone at Kemmel and the Pouhon approach; next step is to derive the painted ridges from the same haze colour.
+Gates `-All -Features` 39/39.
