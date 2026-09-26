@@ -2746,3 +2746,4 @@ Iterations judged with tools/visual_review.ps1 (day baseline `day-base`).
    - atlas mipmaps on.
    The grass reads deeper green. The bands are much reduced but not gone at Kemmel and the Pouhon approach; next step is to derive the painted ridges from the same haze colour.
 Gates `-All -Features` 39/39.
+3. **Spa horizon, painted ridges:** a dump of the live panorama confirmed the dark hills are `RetroAssets.hills_panorama`. By day its ridges were up to 84 % forest, darker than the fogged world at the 1250 m clip, which inverted aerial perspective. The day haze base is now 7a929a (matching the fog) and the ridge mix is 0.10/0.22/0.36. The band-to-ridge gap at the La Source exit went from about 32 to 16 levels, and the valley reads as haze. (An earlier attempt appeared to do nothing because the review's automatic baseline was a Chicago-only run; compare against a run with the same tracks.) Gates 39/39.

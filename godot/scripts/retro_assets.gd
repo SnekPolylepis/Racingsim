@@ -33,11 +33,14 @@ static func hills_panorama(night: bool, style: String):
 	var h = 512
 	img.resize(w, h, Image.INTERPOLATE_BILINEAR)
 	var par = HILLS[style]
-	var fog = Color("56506b") if night else Color("a9bfd3")
+	# LOOK-13: by day the haze matches game.gd's fog colour (7a929a).
+	var fog = Color("56506b") if night else Color("7a929a")
 	# Look-9: 0b121c was saturation 0.61. First pass (141a22, sat 0.41) still measured overall frame
 	# saturation 0.32 against the 0.28 target; 181c22 (sat 0.30) is the second pass.
 	var forest = Color("181c22") if night else Color("22402f")
-	var mix = [.55, .78, .95] if night else [.5, .68, .84]
+	# By day the painted ridges stand for hills beyond the 1250 m clip, so they sit close to the fogged world at
+	# the clip. Dark ridges (up to 84 % forest) made the fogged valleys in front read as pale lakes.
+	var mix = [.55, .78, .95] if night else [.1, .22, .36]
 	var rng = RandomNumberGenerator.new()
 	rng.seed = par[2]
 	# Periodic sine sums, integer cycles per turn, so the ridge closes at the panorama seam.
