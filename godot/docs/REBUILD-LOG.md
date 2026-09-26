@@ -2752,6 +2752,8 @@ Gates `-All -Features` 39/39.
    - **Problem:** round Lower Wacker's portals the street tiles within 26 m of the lower route were simply skipped. That left a hole down to CityBase at y -3, with the street tiles' raw edge floating above the lower road as a tan slab.
    - **Fix:** skipped cells now get a floor at `LOW_FLOOR_Y` (-0.08) and a two-sided retaining wall up to street level on every edge that meets street ground (not water). The Upper Wacker Portal exit and South Connector shots changed (6.8 and 7.4) and read as a walled cut. A sliver of slab edge is still visible top-left at the portal exit.
    Gates 39/39.
+7. **Chicago kit shopfronts:** close-up, the Quaternius kit stacked two storeys of pieces, with its wall modules reading as pale suburban siding. The second storey clashed with the facade shader's window grid behind it. Now there is only street-level shopfront glass (the `*_Window` piece), and the shader draws the masonry windows above. Loop blocks read as shopfronts under punched windows.
+8. **Spa haze, second pass:** day ridge mix 0.10/0.22/0.36 to 0.04/0.12/0.24. The La Source horizon now reads as uniform haze; Kemmel keeps a faint patch at the frame edge.
 
 ## 2026-09-25  LOOK-14 graphics loop  (Claude Opus 5.5)
 6. **Chicago window scale:**
@@ -2763,3 +2765,4 @@ Gates `-All -Features` 39/39.
   - Minimising is deliberately not used: a minimised Godot window stops rendering. One run froze from shot 19 and scored 43 frozen frames as "changed".
   - `track_review.gd` now fails on byte-identical consecutive frames ("frozen frame").
 Gates 39/39.
+- **Test audio:** `--audio-driver Dummy` leaked an ObjectDB instance at exit, which failed the features gate on stderr twice. Windowed tests now pass the user argument `--mute-audio` (game.gd mutes the Master bus), and `window_placement.ps1` only positions the window. Gates 39/39.
