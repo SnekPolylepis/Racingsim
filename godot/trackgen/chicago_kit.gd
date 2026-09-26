@@ -98,19 +98,12 @@ static func build(asset: Node3D, holder: Node, buildings: Array, route: Dictiona
 				basis = Basis(Vector3(dir.x, 0, dir.y), Vector3.UP, Vector3(out.x, 0, out.y))
 			for k in count:
 				var at = start + dir * (k * MODULE_M) + out * WALL_OFFSET_M
-				var roll = _hash(idx * 31 + k, i)
-				var name = shop[0] if roll < 0.7 else shop[1]
+				# LOOK-15: street-level shopfront glass only. The kit's wall panels read as pale suburban siding,
+				# and a second kit storey clashed with the facade shader's window grid behind it. Loop blocks
+				# are shopfronts at street level with masonry windows above, which the shader already draws.
 				var storey = basis.scaled_local(Vector3(1.0, STOREY_SCALE, 1.3))
-				_add(groups, name, Transform3D(storey, Vector3(at.x, STREET_Y, at.y)))
+				_add(groups, shop[0], Transform3D(storey, Vector3(at.x, STREET_Y, at.y)))
 				stats.kit_instances += 1
-				if h >= 14.0:
-					var second = shop[0] if _hash(idx * 17 + k, i + 3) < 0.6 else shop[1]
-					_add(
-						groups,
-						second,
-						Transform3D(storey, Vector3(at.x, STREET_Y + 3.0 * STOREY_SCALE, at.y))
-					)
-					stats.kit_instances += 1
 				if h >= 9.0 and h <= CORNICE_MAX_H:
 					var top = basis.scaled_local(CORNICE_SCALE)
 					_add(groups, cornice, Transform3D(top, Vector3(at.x, STREET_Y + h - 2.2, at.y)))

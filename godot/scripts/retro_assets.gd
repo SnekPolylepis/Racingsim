@@ -40,7 +40,7 @@ static func hills_panorama(night: bool, style: String):
 	var forest = Color("181c22") if night else Color("22402f")
 	# By day the painted ridges stand for hills beyond the 1250 m clip, so they sit close to the fogged world at
 	# the clip. Dark ridges (up to 84 % forest) made the fogged valleys in front read as pale lakes.
-	var mix = [.55, .78, .95] if night else [.1, .22, .36]
+	var mix = [.55, .78, .95] if night else [.04, .12, .24]
 	var rng = RandomNumberGenerator.new()
 	rng.seed = par[2]
 	# Periodic sine sums, integer cycles per turn, so the ridge closes at the panorama seam.
