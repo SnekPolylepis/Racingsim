@@ -201,3 +201,11 @@ For the night integration check against an exported Mac pack, run the Godot edit
 It loads the shipped resources, switches night/day/night, and saves a windowed capture in
 `user://native-tests/chicago-export-night.png`. Use the editor's script runner for this harness;
 the release executable is tested separately with `--v2-export-check` and `--v2-smoke`.
+
+### What is under this pixel? (`tests/visual/probe_pixel.gd`)
+
+Poses exactly as the visual review does for one shot. It maps screenshot pixels through the presentation's letterbox (the 3D view is its own 640x448-class viewport inside the 1280x800 frame) and names the mesh, surface, hit point and material under each pixel:
+
+    tools/Godot.exe --position X,Y --path . --script tests/visual/probe_pixel.gd -- --v2-flow-test --mute-audio --track=chicago --shot=040-corner-upper-wacker-portal-exit.png --px=100,205 [--px=...] [--night]
+
+Use it before tuning a shader: several "shader" problems turned out to be other geometry.
