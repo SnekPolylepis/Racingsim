@@ -19,7 +19,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife/nordschleife.scn"
-const CACHE_REVISION = 7
+const CACHE_REVISION = 8
 ## Caracciola-Karussell apex station (source metres): the concrete bowl on the inside of the right-hander.
 const KARUSSELL_S = 12115.0
 ## The bowl's reach either side of the apex (source metres); no kerbs anywhere in it.
@@ -214,9 +214,10 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 				values.kerb_height = 0.070
 			elif corner[5] == 2:
 				values["kerb_" + inside] = RoadSection.Kerb.RIBBED
-			elif corner[4] != 0:
-				values["kerb_" + inside] = RoadSection.Kerb.RAMP
-		elif delta >= 25.0 and delta < 80.0 and corner[4] != 0:
+		elif delta >= 25.0 and delta < 80.0 and corner[5] != 0:
+			# LOOK-21: kerbs only where the corner spec flags them (kerb_type 1/2). Every turning corner used to
+			# get an inside ramp and an outside exit kerb, so the lap was red and white nearly everywhere, where
+			# many real Nordschleife corners have only edge lines. A stopgap until traced kerbs (K-03) land.
 			values["kerb_" + outside] = RoadSection.Kerb.RIBBED
 
 	values.bank_deg = total_bank / maxf(total_bank_weight, 1.0)
