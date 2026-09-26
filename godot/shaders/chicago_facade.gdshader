@@ -92,12 +92,22 @@ void fragment() {
 	if (afterhours) {
 		// A window pane inside each cell (not the spandrel or mullions), above the ground floor.
 		float pane = mix(step(0.21, f.x) * step(f.x, 0.79) * step(0.2, f.y) * step(f.y, 0.8), step(0.04, f.x) * step(f.x, 0.96) * step(0.1, f.y) * step(f.y, 0.9), step(0.5, glassy)) * step(1.0, cell.y);
-		float lit = step(1.0 - lit_chance - glassy * 0.12, hash21(cell + seed * 97.0));
+		// LOOK-17: occupancy varies by floor (dark floors and busy floors) and brightness per window. Every
+		// window rolling the same odds made each tower a uniform white speckle.
+		float occupancy = mix(0.05, 0.75, hash21(vec2(cell.y, seed * 53.0))) * (lit_chance / 0.32);
+		float lit = step(1.0 - occupancy - glassy * 0.08, hash21(cell + seed * 97.0));
+		float level = mix(0.55, 1.0, hash21(cell * 1.7 + seed * 5.0));
 		vec3 warm = vec3(1.0, 0.72, 0.38);
 		vec3 cool = vec3(0.72, 0.84, 1.0);
 		vec3 light = mix(warm, cool, glassy * step(0.5, hash21(cell.yx + seed * 13.0)));
 		ALBEDO = base * 0.35;
-		EMISSION = light * pane * lit * glow_energy;
+		vec3 detail = light * pane * lit * level * glow_energy;
+		// Past a few pixels per cell the grid aliases into white noise, so it settles into the facade's
+		// average glow (about a third of each cell is pane, a third of panes lit, at 0.8 level).
+		vec2 w = fwidth(UV / window_cell);
+		float far = smoothstep(0.25, 0.6, max(w.x * 0.5, w.y));
+		vec3 average = mix(warm, cool, glassy * 0.5) * 0.36 * lit_chance * 0.8 * glow_energy;
+		EMISSION = mix(detail, average, far);
 	}
 }
 }
