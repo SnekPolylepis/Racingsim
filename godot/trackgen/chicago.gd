@@ -241,7 +241,7 @@ static func build_asset() -> Node3D:
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
 	add_parked_cars(asset, scenery, road)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
-	var lamps = TrackLights.place(road, 42.0, [], 1.2)
+	var lamps = TrackLights.place(road, 42.0, lower_level_zones(road), 1.2)
 	# Lower Wacker's fixtures hang below the deck; no 10 m poles through the upper roadway.
 	for lamp in lamps:
 		if lamp.base.y < 3.0:
@@ -793,6 +793,29 @@ static func add_park_trees(asset: Node3D) -> void:
 		trees.species_indices = PackedInt32Array([2, 3, 4])
 		attach(asset, asset, trees, "ParkTrees%d" % int(band[0]))
 		trees.bake()
+
+
+## LOOK-18: Lower Wacker is lit by close-set fixtures on both sides. At the route's 42 m alternating spacing
+## (and LOOK-NIGHT-01's softer streaks) the lower level was nearly black at night. Lamp zones for every stretch
+## below 3 m: 16 m spacing, both sides.
+static func lower_level_zones(road: RoadPath) -> Array:
+	var f = road_frame(road)
+	var c = f[0]
+	var length = c.get_baked_length()
+	var zones = []
+	var start = -1.0
+	var s = 0.0
+	while s < length:
+		var low = RoadBuilder.station_at(c, road.closed, length, f[2], s).pos.y < 3.0
+		if low and start < 0.0:
+			start = s
+		elif not low and start >= 0.0:
+			zones.append({"from_m": start, "to_m": s, "spacing": 16.0, "sides": "both", "extra": 0.6})
+			start = -1.0
+		s += 5.0
+	if start >= 0.0:
+		zones.append({"from_m": start, "to_m": length, "spacing": 16.0, "sides": "both", "extra": 0.6})
+	return zones
 
 
 ## Grant Park and lakefront trees (LOOK-13): Jackson Drive crosses the park and Lake Shore Drive runs between
