@@ -2773,3 +2773,4 @@ Gates 39/39.
   - **Surface:** concrete only on the bank, darkened from 0.47 to 0.30 grey (it read as snow).
   - **Checks:** the nordschleife suite passes 7/7; the full lap is within baseline for all cars. The before/after is docs/rebuild/screenshots/ns-karussell/karussell-bank-before-after.png.
 - **Features gate leak:** the "ObjectDB instances leaked at exit" warning is intermittent and only appears in parallel gate runs (6 clean solo runs with and without `--mute-audio`); a rerun passes. Gates 39/39.
+- **LOOK-17, Chicago night windows:** every window rolled the same odds, so each tower was a uniform white speckle that aliased into noise at distance. Now occupancy varies by floor (0.05-0.75, scaled by `lit_chance`), brightness varies per window (0.55-1.0), and past a few pixels per cell the grid settles into the facade's average glow (the same fwidth fade as the day grid). 18 night shots changed; the towers show dark and busy floors. Gates 39/39.
