@@ -109,7 +109,7 @@ function Start-Suite($s, $tag, $perfGates) {
     if (-not $s.window) { $args += "--headless" } else { $args += (Get-TestWindowArgs) }
     $args += @("--path", "`"$godotDir`"")
     if ($s.kind -eq "parse") { $args += @("--script", $s.script, "--check-only") }
-    elseif ($s.kind -eq "features") { $args += @("--", "--features") }
+    elseif ($s.kind -eq "features") { $args += @("--", "--features", "--mute-audio") }
     else {
         $args += @("--script", $s.script)
         $extra = $s.args

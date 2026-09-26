@@ -2765,3 +2765,4 @@ Gates `-All -Features` 39/39.
   - Minimising is deliberately not used: a minimised Godot window stops rendering. One run froze from shot 19 and scored 43 frozen frames as "changed".
   - `track_review.gd` now fails on byte-identical consecutive frames ("frozen frame").
 Gates 39/39.
+- **Test audio:** `--audio-driver Dummy` leaked an ObjectDB instance at exit, which failed the features gate on stderr twice. Windowed tests now pass the user argument `--mute-audio` (game.gd mutes the Master bus), and `window_placement.ps1` only positions the window. Gates 39/39.

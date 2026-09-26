@@ -34,7 +34,7 @@ if (-not $NoBaseline) {
 }
 
 . (Join-Path $PSScriptRoot "window_placement.ps1")
-$argsList = @(Get-TestWindowArgs) + @("--path", $godotDir, "--script", "tests/visual/track_review.gd", "--", "--v2-flow-test", "--out=$($out -replace '\\','/')")
+$argsList = @(Get-TestWindowArgs) + @("--path", $godotDir, "--script", "tests/visual/track_review.gd", "--", "--v2-flow-test", "--mute-audio", "--out=$($out -replace '\\','/')")
 if ($Tracks) { $argsList += "--tracks=$Tracks" }
 if ($base) { $argsList += "--baseline=$($base -replace '\\','/')" }
 if ($Night) { $argsList += "--night" }

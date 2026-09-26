@@ -159,6 +159,10 @@ func _ready():
 	v2_visual_smoke = "--v2-visual-smoke" in OS.get_cmdline_user_args()
 	v2_flow_test = "--v2-flow-test" in OS.get_cmdline_user_args()
 	v2_export_check = "--v2-export-check" in OS.get_cmdline_user_args()
+	# Windowed test runs (tools/window_placement.ps1) are silent. The Dummy audio driver would do it, but it
+	# leaks an ObjectDB instance at exit, which fails the features gate on stderr.
+	if "--mute-audio" in OS.get_cmdline_user_args():
+		AudioServer.set_bus_mute(0, true)
 	# `--features` (tools/run_gates.ps1 -Features) runs the same windowed v2 check since P7-01 retired the
 	# legacy feature suite; it also prints a FEATURE RESULTS line.
 	v2_look_only = "--v2-look" in OS.get_cmdline_user_args()
