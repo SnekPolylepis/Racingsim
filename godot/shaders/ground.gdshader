@@ -44,7 +44,10 @@ void fragment() {
 	vec3 runoff = mix(linear_sample(texture(runoff_albedo, r1).rgb), linear_sample(texture(runoff_albedo, r2).rgb), 0.35 + far * 0.65) * 2.9 * vec3(0.96, 0.98, 1.02);
 	// Graded to a lush Ardennes/Eifel green (mean about sRGB 70,100,40 in sun) from the dry-grass photo;
 	// the old (1.65, 1.6, 1.2) grade read khaki on whole hillsides once terrain used this shader.
-	vec3 styled_grass = grass * vec3(0.62, 1.08, 0.7);
+	// LOOK-13: yellower and a little less saturated. Measured on the Nordschleife verges, (0.62, 1.08, 0.7) gave
+	// hue 0.27 / saturation 0.74 against GT4's 0.19 / 0.64 and the real circuit's 0.21 / ~0.5.
+	vec3 styled_grass = grass * vec3(0.95, 1.0, 0.4);
+	styled_grass = mix(vec3(dot(styled_grass, vec3(0.2126, 0.7152, 0.0722))), styled_grass, 0.85);
 	vec3 styled_gravel = gravel * vec3(1.1, 1.12, 1.0);
 	ALBEDO = mix(mix(styled_grass, styled_gravel, m), runoff, t) * COLOR.rgb;
 	if (OUTPUT_IS_SRGB) ALBEDO = pow(max(ALBEDO, vec3(0.)), vec3(1. / 2.2));
