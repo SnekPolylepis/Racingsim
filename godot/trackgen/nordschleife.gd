@@ -109,7 +109,7 @@ static func corner_specs(data: Dictionary) -> Array:
 		["Steilstrecke", 11750.0, 3.5, 9.5, 1, 0],
 		# The Karussell is a left-hand hairpin (inside banked down to the left).
 		["Karussell approach", 12050.0, -3.0, 9.5, -1, 0],
-		["Karussell", 12115.0, -6.0, 11.5, -1, 0],
+		["Karussell", 12115.0, -9.0, 14.0, -1, 0],
 		["Karussell exit", 12180.0, -2.0, 9.5, -1, 0],
 		["Hohe Acht", 12750.0, 4.0, 9.5, 1, 2],
 		["Hedwigshoehe", 13150.0, -2.5, 9.5, -1, 0],
@@ -172,18 +172,19 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		"ditch_fillet": 0.2
 	}
 
-	# Caracciola-Karussell: a banked concrete bowl on the inside (left) of the left-hander, about 0.6 m
-	# deep with a 27-degree outer wall, tapered in and out over 15 m. (It was a 0.18 m dip before, which
-	# read as a normal corner.)
+	# Caracciola-Karussell (references: docs/art/reference/real-nordschleife-karussell-*.jpg, nring.info,
+	# Porsche Newsroom): a near-180 degree left hairpin. Inside out: a narrow asphalt strip at the lowest point,
+	# a ~4.5 m band of concrete slabs banked ~20 degrees rising outward, then the outer asphalt banked more
+	# gently (the whole road here, -9 degrees). One continuous slope, not a trench: the ditch profile is used
+	# one-sided, with its floor as the inner strip at the tarmac edge and its outer wall as the concrete bank.
 	var kar_delta = circular_delta(s, KARUSSELL_S, length)
 	if absf(kar_delta) <= 55.0:
-		# Centred 1.9 m left with a 1.1 m floor: the outer wall tops out ~1.2 m inside the tarmac edge, so the
-		# 5 m terrain grid's triangles can't poke through the wall.
-		values.ditch_offset = -1.9
-		values.ditch_floor = 1.1
-		values.ditch_wall = 1.2
-		values.ditch_angle_deg = 27.0
-		values.ditch_fillet = 0.3
+		# With the 7 m left half-width at the apex: floor -7.4..-5.8 (1.2 m strip on the tarmac), bank -5.8..-1.4.
+		values.ditch_offset = -6.6
+		values.ditch_floor = 0.8
+		values.ditch_wall = 4.4
+		values.ditch_angle_deg = 20.0
+		values.ditch_fillet = 0.4
 		if absf(kar_delta) <= 40.0:
 			values.ditch = 1.0
 		elif kar_delta < 0.0:
@@ -839,7 +840,7 @@ static func build_asset() -> Node3D:
 	# Concrete slabs in the Karussell bowl: road_v2's per-instance band, in the road's UV metres
 	# (UV.y along the working curve, UV.x across it, + right).
 	var kar_s = KARUSSELL_S * scale_s
-	var band = Vector4(kar_s - 55.0 * scale_s, kar_s + 55.0 * scale_s, -4.7, -0.2)
+	var band = Vector4(kar_s - 55.0 * scale_s, kar_s + 55.0 * scale_s, -5.9, -1.3)
 	# The render mesh is the asset's Road/Main (built by prepare()), not a child of the RoadPath.
 	var road_mesh = asset.get_node_or_null("Road/Main") as GeometryInstance3D
 	if road_mesh:

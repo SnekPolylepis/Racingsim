@@ -2766,3 +2766,10 @@ Gates `-All -Features` 39/39.
   - `track_review.gd` now fails on byte-identical consecutive frames ("frozen frame").
 Gates 39/39.
 - **Test audio:** `--audio-driver Dummy` leaked an ObjectDB instance at exit, which failed the features gate on stderr twice. Windowed tests now pass the user argument `--mute-audio` (game.gd mutes the Master bus), and `window_placement.ps1` only positions the window. Gates 39/39.
+
+## 2026-09-26  LOOK-16  (Claude Opus 5.5)
+- **Karussell rebuilt as a bank, per the references.** The owner flagged that it should be a bank, not a ditch. References are in docs/art/reference/README.md: two 1973 photos, plus nring.info and Porsche Newsroom. The old profile was a symmetric trench.
+  - **Now:** the road is banked -9 degrees and is 14 m wide at the apex. The ditch profile is used one-sided: its floor is a 1.2 m asphalt strip at the inner edge (the lowest point), and its outer wall is a 20-degree concrete bank 4.4 m wide rising to the outer asphalt.
+  - **Surface:** concrete only on the bank, darkened from 0.47 to 0.30 grey (it read as snow).
+  - **Checks:** the nordschleife suite passes 7/7; the full lap is within baseline for all cars. The before/after is docs/rebuild/screenshots/ns-karussell/karussell-bank-before-after.png.
+- **Features gate leak:** the "ObjectDB instances leaked at exit" warning is intermittent and only appears in parallel gate runs (6 clean solo runs with and without `--mute-audio`); a rerun passes. Gates 39/39.

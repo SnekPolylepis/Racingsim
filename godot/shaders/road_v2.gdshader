@@ -109,7 +109,8 @@ void fragment() {
 		float joint_along = smoothstep(0.47, 0.49, abs(fract(UV.y / 2.5) - 0.5));
 		float joint_across = 1.0 - smoothstep(0.02, 0.06, abs(UV.x - (concrete_band.z + concrete_band.w) * 0.5));
 		float slab = 0.9 + 0.2 * hash(vec2(floor(UV.y / 2.5), floor(UV.x)));
-		vec3 conc = vec3(0.47, 0.46, 0.43) * slab * mix(1.0, 0.55, max(joint_along, joint_across));
+		// LOOK-16: weathered mid-grey. At 0.47 the bowl read near white (snow) against the lap's tarmac and forest.
+		vec3 conc = vec3(0.3, 0.295, 0.28) * slab * mix(1.0, 0.55, max(joint_along, joint_across));
 		conc = mix(conc, conc * 0.8, smoothstep(0.55, 0.8, blot));
 		col = mix(col, afterhours ? conc * 0.6 : conc, concrete);
 	}
