@@ -15,6 +15,9 @@
   --b: #0d8a6a;
   --c: #5b54a8;
   --d: #c2185b;
+  --e: #1c6fb8;
+  --f: #8a6d00;
+  --g: #c0392b;
   --sign: #0e4d43;
   --sign-ink: #f4faf7;
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -36,6 +39,9 @@
     --b: #3fd1a5;
     --c: #a59df0;
     --d: #ff6fa5;
+    --e: #5cb0ff;
+    --f: #e6c229;
+    --g: #ff7a70;
     --sign: #1b6f60;
     --sign-ink: #f4faf7;
     color-scheme: dark;
@@ -55,6 +61,9 @@
   --b: #3fd1a5;
   --c: #a59df0;
   --d: #ff6fa5;
+  --e: #5cb0ff;
+  --f: #e6c229;
+  --g: #ff7a70;
   --sign: #1b6f60;
   --sign-ink: #f4faf7;
   color-scheme: dark;
@@ -86,7 +95,7 @@ svg#map { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 700; t
 .steps li { background: var(--sign); color: var(--sign-ink); font: 600 13px var(--font-display); letter-spacing: .03em; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; }
 .label { font: 500 11px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 0 6px; }
 .note { font-size: 13px; color: var(--muted); margin: 0; }
-table { border-collapse: collapse; width: 100%; min-width: 560px; font-variant-numeric: tabular-nums; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-variant-numeric: tabular-nums; }
 th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--rule); font-size: 14px; }
 th:first-child, td:first-child { text-align: left; }
 th { font: 500 11px var(--font-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
@@ -131,23 +140,24 @@ text { font-family: var(--font-body); }
   <section class="panel">
     <div class="label" style="margin-top:0">Side by side</div>
     <div class="scroll"><table id="cmp"></table></div>
-    <p class="note" style="margin-top:10px">Corners count turns of 35° or more on the control polyline; the game rounds each one with a fillet of up to 55 m. "New road" is length more than 25 m from the current route, seen from above (Upper and Lower Wacker share a footprint, so a dropped upper deck can still be driven below).</p>
+    <p class="note" style="margin-top:10px">Corners count turns of 35° or more on the control polyline; the game rounds each one with a fillet of up to 55 m. ≈ 90° counts turns between 75° and 105°. Spa is about 7.0 km; the current Chicago route is 8.30 km.</p>
   </section>
 
   <section class="panel">
     <div class="label" style="margin-top:0">What to know before picking one</div>
     <ul class="caveats">
       <li><b>Real roads only.</b> Street geometry is the OpenStreetMap extract in <code>osm-roads.json</code> plus <code>osm-grid.json</code> (cross streets, fetched 2026-09-28). Nothing was invented, but the two game-only connectors (harbor, south) are unchanged.</li>
-      <li><b>Lake Shore Drive has no real side streets in the loop,</b> so only Draft C touches the lakefront side, via Columbus Dr and Monroe Dr. That skips the Jackson Dr / Lake Shore Dr corner and 280 m of the drive.</li>
+      <li><b>Lake Shore Drive has no real side streets in the loop,</b> so only Drafts C and E touch the lakefront side, via Columbus Dr and Monroe Dr. E keeps only the 300 m of Lake Shore Dr between Jackson Dr and Monroe Dr; F and G drop it.</li>
+      <li><b>Shorter drafts (E, F, G).</b> They drop the harbor connector and most of the south Wacker run. The Wacker turnaround is still a game-only link, redrawn as a hairpin, and the Lake Shore Dr to Monroe Dr exit is taken from the OSM road graph without a ramp survey. F and G leave out main roads (F: Jackson Dr and Lake Shore Dr; G: Lake Shore Dr).</li>
       <li><b>Corner size.</b> The weave uses 140 m blocks, so its 90° corners get full 55 m fillets with about 60 m of straight between them. Expect low-speed street-circuit corners rather than sweepers.</li>
-      <li><b>Not wired into the game yet.</b> The drafts are <code>route-a.json</code> to <code>route-d.json</code> in the same format as <code>route.json</code>. Landmark corners in <code>chicago.gd</code> are indexed by point number, so switching the game to a draft needs that list remapped, a new cache revision and re-recorded lap times.</li>
+      <li><b>Not wired into the game yet.</b> The drafts are <code>route-a.json</code> to <code>route-g.json</code> in the same format as <code>route.json</code>. Landmark corners in <code>chicago.gd</code> are indexed by point number, so switching the game to a draft needs that list remapped, a new cache revision and re-recorded lap times.</li>
     </ul>
   </section>
 </div>
 
 <script>
 const DATA = /*DATA*/null;
-const KEY = { base: null, a: '--a', b: '--b', c: '--c', d: '--d' };
+const KEY = { base: null, a: '--a', b: '--b', c: '--c', d: '--d', e: '--e', f: '--f', g: '--g' };
 const M = { x0: -1130, x1: 960, y0: -930, y1: 470 };   // metres shown: west edge .. east edge, south .. north
 const W = 1000, H = 700;
 const SX = W / (M.x1 - M.x0), SY = H / (M.y1 - M.y0), S = Math.min(SX, SY);
@@ -310,7 +320,8 @@ function detail() {
       <div class="stat"><dt>Lap length</dt><dd>${(r.length_m / 1000).toFixed(2)} km${dl(r.length_m, b.length_m, ' m')}</dd></div>
       <div class="stat"><dt>Corners ≥ 35°</dt><dd>${r.corners_35}${dl(r.corners_35, b.corners_35, '')}</dd></div>
       <div class="stat"><dt>Corners ≥ 75°</dt><dd>${r.corners_75}${dl(r.corners_75, b.corners_75, '')}</dd></div>
-      <div class="stat"><dt>New road</dt><dd>${r.new_m ? (r.new_m / 1000).toFixed(2) + ' km' : '—'}</dd></div>
+      <div class="stat"><dt>Longest straight</dt><dd>${r.longest_straight_m}<small>m</small></dd></div>
+      <div class="stat"><dt>Right-angle corners</dt><dd>${r.right_angles}<small>of ${r.corners_35}</small></dd></div>
     </dl>
     <div class="label">Route in order${current === 'base' ? '' : ' (changed parts)'}</div>
     <ol class="steps">${r.steps.map(s => `<li>${s}</li>`).join('')}</ol>
@@ -319,8 +330,8 @@ function detail() {
 }
 
 function compare() {
-  const rows = ROUTES.map(r => `<tr class="${r.id === current ? 'sel' : ''}"><td>${r.id === 'base' ? 'Current route' : 'Draft ' + r.id.toUpperCase() + ' · ' + r.title}</td><td>${(r.length_m / 1000).toFixed(2)} km</td><td>${r.corners_35}</td><td>${r.corners_75}</td><td>${r.new_m ? (r.new_m / 1000).toFixed(2) + ' km' : '—'}</td></tr>`).join('');
-  $('cmp').innerHTML = `<thead><tr><th>Route</th><th>Length</th><th>Corners ≥ 35°</th><th>≥ 75°</th><th>New road</th></tr></thead><tbody>${rows}</tbody>`;
+  const rows = ROUTES.map(r => `<tr class="${r.id === current ? 'sel' : ''}"><td>${r.id === 'base' ? 'Current route' : 'Draft ' + r.id.toUpperCase() + ' · ' + r.title}</td><td>${(r.length_m / 1000).toFixed(2)} km</td><td>${r.corners_35}</td><td>${r.corners_75}</td><td>${r.right_angles}</td><td>${r.longest_straight_m} m</td></tr>`).join('');
+  $('cmp').innerHTML = `<thead><tr><th>Route</th><th>Length</th><th>Corners ≥ 35°</th><th>≥ 75°</th><th>≈ 90°</th><th>Longest straight</th></tr></thead><tbody>${rows}</tbody>`;
 }
 
 function render() { tabs(); detail(); compare(); draw(); }

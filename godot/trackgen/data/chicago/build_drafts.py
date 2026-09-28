@@ -244,6 +244,21 @@ DRAFTS = [
          michigan=["monroe"], west="monroe_franklin", east=False,
          steps=["Michigan Ave ↓", "Madison St ←", "Wabash Ave ↓", "Monroe St →", "Michigan Ave ↓ (to Jackson Dr)",
                 "Upper S Wacker Dr ↑ (to Monroe)", "Monroe St →", "Franklin St ↑", "Upper Wacker Dr →"]),
+    dict(id="e", title="Compact", tag="Shorter lap: Lake Shore Dr exits at Monroe Dr, Columbus Dr drops to Lower Wacker, and the game-only Wacker turnaround becomes a hairpin at Monroe St",
+         kind="compact", start="jackson", turn_y=-100,
+         steps=["Michigan Ave ↓", "Jackson Dr →", "Lake Shore Dr ↑ (short)", "Monroe Dr ←", "Columbus Dr ↑ (drops to Lower Wacker)",
+                "Lower Wacker Dr ←", "S Lower Wacker ↓ (to Washington)", "Hairpin turnaround (game only)", "Upper S Wacker Dr ↑",
+                "Upper Wacker Dr →", "Michigan Ave ↓"]),
+    dict(id="f", title="Sprint", tag="Shortest: Michigan Ave to Monroe Dr, Columbus Dr to Lower Wacker, short Wacker hairpin. Drops Jackson Dr and Lake Shore Dr",
+         kind="compact", start="monroe", turn_y=-100,
+         steps=["Michigan Ave ↓ (to Monroe)", "Monroe Dr →", "Columbus Dr ↑ (drops to Lower Wacker)", "Lower Wacker Dr ←",
+                "S Lower Wacker ↓ (to Washington)", "Hairpin turnaround (game only)", "Upper S Wacker Dr ↑", "Upper Wacker Dr →",
+                "Michigan Ave ↓"]),
+    dict(id="g", title="Sprint Plus", tag="Sprint that keeps Michigan Ave to Jackson Dr, then Columbus Dr north to Lower Wacker. Drops Lake Shore Dr",
+         kind="compact", start="jackson_columbus", turn_y=-100,
+         steps=["Michigan Ave ↓ (to Jackson)", "Jackson Dr → (to Columbus)", "Columbus Dr ↑ (drops to Lower Wacker)", "Lower Wacker Dr ←",
+                "S Lower Wacker ↓ (to Washington)", "Hairpin turnaround (game only)", "Upper S Wacker Dr ↑", "Upper Wacker Dr →",
+                "Michigan Ave ↓"]),
 ]
 
 
@@ -285,7 +300,17 @@ def stats(points):
     angles = [turn_angle(pts[i - 1], pts[i], pts[(i + 1) % n]) for i in range(n)]
     blocks = [math.dist(pts[i], pts[(i + 1) % n]) for i in range(n)]
     base = [xy(p[0], p[1]) for p in BASE["points"]]
+    longest = 0.0
+    run = 0.0
+    start = next((i for i in range(n) if angles[i] >= 12), 0)
+    for k in range(n):
+        i = (start + k) % n
+        run += blocks[i]
+        if angles[(i + 1) % n] >= 12:
+            longest, run = max(longest, run), 0.0
     return dict(
+        longest_straight_m=round(longest),
+        right_angles=sum(1 for a in angles if 75 <= a <= 105),
         new_m=round(_off(_sample(pts), base)),
         dropped_m=round(_off(_sample(base), pts)),
         length_m=round(length),
@@ -295,7 +320,65 @@ def stats(points):
     )
 
 
+def tidy(chain, gap=45.0):
+    """Drop interior points that sit within `gap` metres of the previous kept point (carriageway jogs)."""
+    out = [chain[0]]
+    for n in chain[1:-1]:
+        if math.dist(P[n], P[out[-1]]) >= gap and math.dist(P[n], P[chain[-1]]) >= gap:
+            out.append(n)
+    return out + [chain[-1]]
+
+
+def ll(x, y):
+    return LAT0 + y / 110574.0, LON0 + x / 82860.0
+
+
+def build_compact(d):
+    """Shorter lap: real roads Michigan -> (Jackson Dr, Lake Shore Dr) -> Monroe Dr -> Columbus Dr -> Lower Wacker,
+    then the authored lower Wacker run, a game-only hairpin turnaround, and the authored upper deck home."""
+    base = BASE["points"]
+    if d["start"] == "jackson":
+        a = junction("Michigan Avenue", "Jackson Drive", (10, -719))
+        allow = "Jackson Drive|DuSable|Lake Shore|Monroe Drive"
+    elif d["start"] == "jackson_columbus":
+        a = junction("Michigan Avenue", "Jackson Drive", (10, -719))
+        allow = "Jackson Drive|Columbus"
+    else:
+        a = junction("Michigan Avenue", "Monroe Drive", (0, -440))
+        allow = "Monroe Drive"
+    mc = junction("Columbus", "Monroe Drive", (300, -430))
+    end = min(
+        (n for n, l in ADJ.items() if any(matches(w, "East Lower Wacker Drive") for _, _, w, _ in l)),
+        key=lambda n: math.dist(P[n], (168, 378)),
+    )
+    r1, r2 = route(a, mc, allow), route(mc, end, "Columbus|East Lower Wacker Drive")
+    if r1 is None or r2 is None:
+        raise RuntimeError("no legal compact route")
+    used = [w for w in r1[1] + r2[1]]
+    c1, c2 = tidy(simplify(r1[0])), tidy(simplify(r2[0]))
+    pts = [list(base[0])]
+    for n in c1:
+        pts.append(row(n, 8))
+    # Columbus Dr descends from the 8 m street level to the 0 m lower deck along its own length.
+    total = sum(math.dist(P[x], P[y]) for x, y in zip(r2[0], r2[0][1:]))
+    run = 0.0
+    prev = c2[0]
+    for n in c2[1:-1]:
+        run += math.dist(P[prev], P[n])
+        prev = n
+        pts.append(row(n, round(8 * max(0.0, 1 - run / total), 1)))
+    pts += [list(p) for p in base[13:22]]
+    y = d["turn_y"]
+    for x_, y_, h in ((-1036, y, 0), (-880, y + 80, 4), (-1036, y + 160, 8)):
+        lat, lon = ll(x_, y_)
+        pts.append([round(lat, 6), round(lon, 6), h, "Wacker turnaround (game only)"])
+    pts += [list(p) for p in base[28:]]
+    return pts, sorted(set(used))
+
+
 def build(d):
+    if d.get("kind") == "compact":
+        return build_compact(d)
     pts = [list(p) for p in BASE["points"]]
     ways = []
     # Work from the end of the loop backwards so baseline indices stay valid.

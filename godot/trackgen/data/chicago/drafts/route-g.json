@@ -3,7 +3,7 @@
   41.8848,
   -87.6244
  ],
- "description": "DRAFT B - Franklin Return: Upper Wacker return cuts over Monroe and up Franklin. Detours follow real OSM streets (one-way directions respected); the harbor and south connectors are the same game-only links as route.json. Heights are authored.",
+ "description": "DRAFT G - Sprint Plus: Sprint that keeps Michigan Ave to Jackson Dr, then Columbus Dr north to Lower Wacker. Drops Lake Shore Dr. Detours follow real OSM streets (one-way directions respected); the harbor and south connectors are the same game-only links as route.json. Heights are authored.",
  "landmarks": {
   "Bean": [
    41.88266,
@@ -62,39 +62,44 @@
   ]
  },
  "draft": {
-  "id": "b",
-  "title": "Franklin Return",
+  "id": "g",
+  "title": "Sprint Plus",
   "streets": [
-   "North Franklin Street",
-   "South Franklin Street",
-   "West Monroe Street"
+   "East Jackson Drive",
+   "East Lower Wacker Drive",
+   "North Columbus Drive",
+   "South Columbus Drive"
   ],
   "osm_way_ids": [
-   145846239,
-   373849342,
-   452188414,
-   452188415,
-   452188416,
-   611574834,
-   991212730,
-   991212732,
-   1042134771,
-   1049318465,
-   1049318466,
-   1049318467,
-   1178254524,
-   1185609017,
-   1185609018,
-   1191329605,
-   1370879490
+   23888140,
+   23889144,
+   23889162,
+   25026653,
+   33116710,
+   80575527,
+   171819296,
+   230771008,
+   235739316,
+   235739318,
+   319352688,
+   435657099,
+   435657103,
+   435657108,
+   901137883,
+   914518496,
+   937102727,
+   1177948379,
+   1285033489,
+   1285033490,
+   1285033491
   ],
   "longest_straight_m": 1101,
-  "right_angles": 11,
-  "new_m": 740,
-  "dropped_m": 0,
-  "length_m": 8385,
-  "corners_35": 16,
-  "corners_75": 11,
+  "right_angles": 4,
+  "new_m": 1240,
+  "dropped_m": 3620,
+  "length_m": 5644,
+  "corners_35": 12,
+  "corners_75": 6,
   "shortest_block_m": 34
  },
  "points": [
@@ -105,76 +110,34 @@
    "Michigan Avenue"
   ],
   [
-   41.882,
-   -87.6244,
+   41.878293,
+   -87.624208,
    8,
-   "Millennium Park"
+   "Jackson Dr & Michigan Ave"
   ],
   [
-   41.8783,
-   -87.6244,
+   41.878341,
+   -87.62071,
    8,
-   "Jackson turn"
+   "Jackson Dr & Columbus Dr"
   ],
   [
-   41.8784,
-   -87.6173,
+   41.880877,
+   -87.620794,
    8,
-   "Lakefront turn"
+   "Columbus Dr & Monroe Dr"
   ],
   [
-   41.8809,
-   -87.6173,
-   8,
-   "Lake Shore Drive"
+   41.88297,
+   -87.620543,
+   6.0,
+   "Columbus Dr"
   ],
   [
-   41.8823,
-   -87.6168,
-   8,
-   "Lake Shore Drive"
-  ],
-  [
-   41.8834,
-   -87.6155,
-   9,
-   "Lake Shore Drive"
-  ],
-  [
-   41.8841,
-   -87.6141,
-   11,
-   "Lake Shore Drive"
-  ],
-  [
-   41.8862,
-   -87.6139,
-   13,
-   "Navy Pier view"
-  ],
-  [
-   41.8876,
-   -87.6139,
-   13,
-   "Harbor connector"
-  ],
-  [
-   41.8877,
-   -87.6155,
-   5,
-   "Harbor connector ramp"
-  ],
-  [
-   41.88765,
-   -87.6175,
-   0,
-   "Lower Wacker portal"
-  ],
-  [
-   41.88791,
-   -87.62075,
-   0,
-   "Lower Wacker"
+   41.887947,
+   -87.620662,
+   1.3,
+   "Lower Wacker Dr & Columbus Dr"
   ],
   [
    41.8882,
@@ -231,52 +194,40 @@
    "Lower Wacker south"
   ],
   [
-   41.8819,
-   -87.6369,
+   41.883896,
+   -87.636903,
    0,
-   "Lower Wacker south"
+   "Wacker turnaround (game only)"
   ],
   [
-   41.877,
-   -87.6369,
-   0,
-   "South connector"
-  ],
-  [
-   41.877,
-   -87.6345,
-   0,
-   "South connector"
-  ],
-  [
-   41.878,
-   -87.6345,
+   41.884619,
+   -87.63502,
    4,
-   "South connector ramp"
+   "Wacker turnaround (game only)"
   ],
   [
-   41.878,
+   41.885343,
+   -87.636903,
+   8,
+   "Wacker turnaround (game only)"
+  ],
+  [
+   41.88575,
    -87.6369,
    8,
-   "Upper Wacker portal"
+   "Upper Wacker north"
   ],
   [
-   41.880628,
-   -87.636998,
+   41.8864,
+   -87.6361,
    8,
-   "Wacker Dr & Monroe St"
+   "Upper Wacker bend"
   ],
   [
-   41.88065,
-   -87.635307,
+   41.8869,
+   -87.6348,
    8,
-   "Franklin St & Monroe St"
-  ],
-  [
-   41.886769,
-   -87.635439,
-   8,
-   "Franklin St & Upper Wacker Dr"
+   "Upper Wacker riverfront"
   ],
   [
    41.8869,
