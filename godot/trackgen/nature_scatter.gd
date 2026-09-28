@@ -4,18 +4,21 @@ extends RefCounted
 ## the terrain. One MultiMesh per kind and 500 m chunk with a per-kind visibility range. Presentation only.
 
 const PropMesh = preload("res://scripts/track/prop_mesh.gd")
-const DIR = "res://assets/nature/rocks-foliage/"
+const DIR = "res://assets/nature/"
 const CHUNK = 500.0
 ## [mesh, per 100 m, lateral min, lateral max (m from the centre line), scale min, scale max, visible to]
+## Grass: "Simple grass chunks" by 3dhdscan (CC BY 4.0), reduced to a 2.5k-triangle patch and a single tuft.
 const KINDS = {
-	"grass_clump": ["grass_clump", 26.0, 7.5, 22.0, 0.8, 1.6, 140.0],
-	"grass_bush": ["grass_bush", 10.0, 8.0, 26.0, 0.8, 1.5, 180.0],
-	"stone_a": ["stone_a", 5.0, 7.5, 30.0, 0.5, 1.4, 220.0],
-	"stone_b": ["stone_b", 5.0, 7.5, 30.0, 0.5, 1.4, 220.0],
-	"boulder_a": ["boulder_a", 0.7, 12.0, 45.0, 0.25, 0.7, 700.0],
-	"boulder_b": ["boulder_b", 0.7, 12.0, 45.0, 0.25, 0.7, 700.0],
-	"boulder_c": ["boulder_c", 0.5, 12.0, 45.0, 0.25, 0.7, 700.0],
-	"boulder_d": ["boulder_d", 0.5, 12.0, 45.0, 0.25, 0.7, 700.0],
+	"grass_patch": ["grass/grass_patch", 55.0, 7.0, 26.0, 0.8, 1.4, 170.0],
+	"grass_tuft": ["grass/grass_tuft", 90.0, 6.5, 16.0, 0.6, 1.2, 90.0],
+	"grass_clump": ["rocks-foliage/grass_clump", 40.0, 7.5, 24.0, 0.8, 1.6, 150.0],
+	"grass_bush": ["rocks-foliage/grass_bush", 18.0, 8.0, 30.0, 0.8, 1.5, 190.0],
+	"stone_a": ["rocks-foliage/stone_a", 10.0, 7.5, 34.0, 0.5, 1.4, 240.0],
+	"stone_b": ["rocks-foliage/stone_b", 10.0, 7.5, 34.0, 0.5, 1.4, 240.0],
+	"boulder_a": ["rocks-foliage/boulder_a", 1.4, 12.0, 50.0, 0.25, 0.75, 700.0],
+	"boulder_b": ["rocks-foliage/boulder_b", 1.4, 12.0, 50.0, 0.25, 0.75, 700.0],
+	"boulder_c": ["rocks-foliage/boulder_c", 1.0, 12.0, 50.0, 0.25, 0.75, 700.0],
+	"boulder_d": ["rocks-foliage/boulder_d", 1.0, 12.0, 50.0, 0.25, 0.75, 700.0],
 }
 const CLEAR_M = 7.0
 const CELL = 20.0

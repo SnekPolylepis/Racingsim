@@ -145,3 +145,8 @@ textures reduced.
 - "Chicago Bean" by John Helman, Sketchfab (`assets/chicago/landmarks/bean.glb`).
 - "Street Asset Pack" by vmatthew, Sketchfab (`assets/chicago/street-pack/`).
 - "Rocks and Foliage (House In The Woods Project)" by Helindu, https://sketchfab.com/3d-models/rocks-and-foliage-house-in-the-woods-project-cbf066bb7a3d4ef1b02ef088413f45aa (`assets/nature/rocks-foliage/`).
+- "City Props Collection volume 1" by TampaJoey, Sketchfab Standard licence, used for the owner's personal build (`assets/chicago/city-props/`).
+- "Simple grass chunks" by 3dhdscan, CC BY 4.0 (`assets/nature/grass/`).
+- "PSX Barrels Pack" by Shazly, CC BY 4.0 (`assets/chicago/barrels/`).
+- "Chicago-Style Econolite 8x5 Signals" by Signalrenders, CC BY 4.0 (`assets/chicago/landmarks/signal_corner.glb`).
+- "Low Poly Night City Building Skyline" by 99.Miles, CC BY 4.0 (`assets/chicago/landmarks/night_skyline.glb`).

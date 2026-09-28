@@ -1,0 +1,19 @@
+{"texture_max": 512, "props": {
+ "atm": {"match": ["ATM_"], "max_tris": 1500},
+ "bench": {"match": ["Bench_"], "max_tris": 1500},
+ "bus_stop": {"match": ["BusStop_"], "max_tris": 3500},
+ "park_bench": {"match": ["ParkBenchShort_"], "max_tris": 1800},
+ "dumpster": {"match": ["Dumpster_", "LidLeft_", "LidRight_"], "max_tris": 2500},
+ "fire_hydrant": {"match": ["FireHydrant_"], "max_tris": 1500},
+ "parking_meter": {"match": ["ParkingMeter_"], "max_tris": 1000},
+ "post_box": {"match": ["PostBox_"], "max_tris": 1500},
+ "trash_can": {"match": ["TrashCanLarge_"], "max_tris": 1200},
+ "trash_can_cap": {"match": ["TrashCanCap_"], "max_tris": 1400},
+ "trash_commercial": {"match": ["TrashCommercial_"], "max_tris": 1200},
+ "utility_box": {"match": ["Utility_"], "max_tris": 1500},
+ "pallets": {"match": ["pallet1_", "pallet2_"], "max_tris": 700},
+ "tarp_crates": {"match": ["Tarp_", "TarpCrate"], "max_tris": 2200},
+ "manhole": {"match": ["Manhole_"], "max_tris": 200},
+ "storm_drain": {"match": ["StormDrain_"], "max_tris": 1200},
+ "post_barrier": {"match": ["PostBarrier_"], "max_tris": 1100}
+}}

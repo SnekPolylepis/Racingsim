@@ -449,6 +449,15 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 			mat.set_meta("chicago_night", true)
 			tower.surface_set_material(i, mat)
 	mesh_node(asset, parent, "WillisTower", tower, willis)
+	# ASSET-02: 99.Miles' low-poly night skyline blocks (CC BY 4.0) as a far backdrop beyond the OSM city
+	# (west, south-west and north; the lake is east).
+	var skyline = PropMesh.mesh("res://assets/chicago/landmarks/night_skyline.glb")
+	for spot in [
+		[-2400.0, -1500.0, 0.3], [-2500.0, 900.0, 1.9], [-1000.0, -2500.0, 3.4], [300.0, -2600.0, 4.6]
+	]:
+		var block = mesh_node(asset, parent, "Skyline", skyline, Vector3(spot[0], 7.9, spot[1]))
+		block.rotation.y = spot[2]
+		block.scale = Vector3.ONE * 1.6
 	# The Bean: John Helman's CC BY 4.0 Cloud Gate model (20 x 13 x 10 m) in the chrome material.
 	var bean = world(data().landmarks["Bean"])
 	box(asset, parent, "CloudGatePlaza", bean + Vector3(0, -.1, 0), Vector3(70, .3, 60), stone)

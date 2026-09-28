@@ -1,0 +1,4 @@
+{"texture_max": 512, "props": {
+ "grass_patch": {"match": ["rostlinka_7c_scater"], "max_tris": 2500},
+ "grass_tuft": {"match": ["rostlinka_07c_"], "scale": 1.4, "max_tris": 60}
+}}

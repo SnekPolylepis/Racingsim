@@ -1,0 +1,6 @@
+{"texture_max": 256, "props": {
+ "barrel_blue": {"match": ["Blue"], "scale": 0.24, "max_tris": 200},
+ "barrel_rusty": {"match": ["Rusty"], "scale": 0.24, "max_tris": 200},
+ "barrel_yellow": {"match": ["Yellow"], "scale": 0.24, "max_tris": 200},
+ "barrel_oil": {"match": ["Oil"], "scale": 0.24, "max_tris": 200}
+}}

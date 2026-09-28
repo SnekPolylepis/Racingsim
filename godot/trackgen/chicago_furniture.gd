@@ -5,6 +5,7 @@ extends RefCounted
 ## 500 m chunk with a visibility range, so the whole set is a handful of draw calls near the car and none
 ## far from it. Presentation only: no collision, nothing on the drivable surface but paint above it.
 
+const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 const DATA = "res://trackgen/data/chicago/city.json"
 const CROSS_CLASSES = ["secondary", "tertiary", "residential", "living_street"]
 const STREET_Y = 8.0
@@ -134,6 +135,23 @@ static func build(
 		node.visibility_range_end = VISIBLE_M
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		attach.call(asset, parent, node, "StreetFurniture_%d_%d" % [key.x, key.y])
+	# ASSET-02: Signalrenders' Chicago-style Econolite signal poles (CC BY 4.0) on the opposite corner of
+	# every crossing, one MultiMesh for the whole circuit.
+	var signals = MultiMesh.new()
+	signals.transform_format = MultiMesh.TRANSFORM_3D
+	signals.mesh = PropMesh.mesh("res://assets/chicago/landmarks/signal_corner.glb")
+	signals.instance_count = crossings.size()
+	for n in crossings.size():
+		var at = stations[crossings[n]]
+		var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
+		var basis = Basis.looking_at(-flat, Vector3.UP).scaled(Vector3.ONE * 0.65)
+		signals.set_instance_transform(
+			n, Transform3D(basis, at.pos - flat * 9.0 - flat.cross(Vector3.UP) * 11.5)
+		)
+	var signal_node = MultiMeshInstance3D.new()
+	signal_node.multimesh = signals
+	signal_node.visibility_range_end = VISIBLE_M
+	attach.call(asset, parent, signal_node, "SignalPoles")
 	return crossings.size()
 
 

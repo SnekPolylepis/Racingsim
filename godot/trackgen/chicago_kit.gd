@@ -27,6 +27,26 @@ const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 ## Street Asset Pack by vmatthew (CC BY 4.0), split by tools/blender/extract_props.py (ASSET-02).
 const STREET_PACK = "res://assets/chicago/street-pack/"
+## City Props Collection vol. 1 by TampaJoey (Sketchfab licence, personal use) and PSX Barrels by Shazly (CC BY 4.0).
+const CITY_PROPS = "res://assets/chicago/city-props/"
+const BARRELS = "res://assets/chicago/barrels/"
+const CITY_KINDS = [
+	"atm",
+	"bench",
+	"bus_stop",
+	"park_bench",
+	"dumpster",
+	"fire_hydrant",
+	"parking_meter",
+	"post_box",
+	"trash_can",
+	"trash_can_cap",
+	"trash_commercial",
+	"utility_box",
+	"pallets",
+	"tarp_crates",
+	"post_barrier"
+]
 
 static var _meshes = {}
 
@@ -277,25 +297,54 @@ const PROP_CULL_M = 260.0
 const PROP_KINDS = [
 	"planter",
 	"bollard",
-	"hydrant",
+	"fire_hydrant",
+	"fire_hydrant",
 	"paper",
 	"bench",
+	"park_bench",
 	"bin",
 	"trash_bag",
 	"cardboard",
 	"crowd_fence",
-	"crowd_fence"
+	"crowd_fence",
+	"parking_meter",
+	"parking_meter",
+	"parking_meter",
+	"post_box",
+	"atm",
+	"trash_can",
+	"trash_can_cap",
+	"trash_commercial",
+	"utility_box",
+	"bus_stop",
+	"dumpster",
+	"post_barrier"
 ]
-const LOWER_KINDS = ["drum", "drum", "cone", "jersey", "plastic_barrier", "trash_bag2", "cardboard", "bin"]
+const LOWER_KINDS = [
+	"drum",
+	"drum",
+	"cone",
+	"jersey",
+	"plastic_barrier",
+	"trash_bag2",
+	"cardboard",
+	"bin",
+	"pallets",
+	"tarp_crates",
+	"dumpster",
+	"barrel_blue",
+	"barrel_rusty",
+	"barrel_yellow",
+	"barrel_oil",
+	"utility_box"
+]
 
 
 static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 	var meshes = {
 		"planter": _mesh("Prop_Planter_Single"),
 		"bollard": _mesh("Prop_Bollard"),
-		"hydrant": PropMesh.mesh(STREET_PACK + "hydrant.glb"),
 		"paper": _paper_mesh(),
-		"bench": _bench_mesh(),
 		"bin": PropMesh.mesh(STREET_PACK + "bin.glb"),
 		"trash_bag": PropMesh.mesh(STREET_PACK + "trash_bag.glb"),
 		"trash_bag2": PropMesh.mesh(STREET_PACK + "trash_bag2.glb"),
@@ -306,7 +355,11 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		"plastic_barrier": PropMesh.mesh(STREET_PACK + "plastic_barrier.glb"),
 		"crowd_fence": PropMesh.mesh(STREET_PACK + "crowd_fence.glb"),
 	}
-	var scales = {"planter": 1.0, "bollard": 1.5, "paper": 1.0, "bench": 1.5}
+	for kind in CITY_KINDS:
+		meshes[kind] = PropMesh.mesh(CITY_PROPS + kind + ".glb")
+	for kind in ["barrel_blue", "barrel_rusty", "barrel_yellow", "barrel_oil"]:
+		meshes[kind] = PropMesh.mesh(BARRELS + kind + ".glb")
+	var scales = {"planter": 1.0, "bollard": 1.5, "paper": 1.0}
 	var crossings = []
 	for i in ChicagoFurniture.find_crossings(stations):
 		crossings.append(stations[i].s)
@@ -317,7 +370,7 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 	var i = 0
 	while i < stations.size():
 		var at = stations[i]
-		var step = int(rng.randf_range(7.0, 18.0) / 1.5)
+		var step = int(rng.randf_range(5.0, 12.0) / 1.5)
 		i += maxi(1, step)
 		# Street level gets sidewalk furniture; Lower Wacker (y about 0) gets road-works clutter.
 		var lower = at.pos.y < 3.0
@@ -338,7 +391,10 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var kind = kinds[rng.randi() % kinds.size()]
 		# Faces the road: local +Z toward the street; imported props get a little yaw jitter.
 		var basis = Basis.looking_at(right * side, Vector3.UP)
-		if kind in ["crowd_fence", "jersey", "plastic_barrier"]:
+		if (
+			kind
+			in ["crowd_fence", "jersey", "plastic_barrier", "bus_stop", "bench", "park_bench", "post_barrier"]
+		):
 			# Barriers run along the kerb.
 			basis = Basis.looking_at(flat, Vector3.UP)
 		elif not scales.has(kind):
@@ -352,6 +408,23 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		groups[id].list.append(
 			Transform3D(basis, Vector3(pos.x, (at.pos.y if lower else STREET_Y) + 0.04, pos.z))
 		)
+		count += 1
+	# Manholes and storm drains: flat castings in the lanes and at the kerb (no collision, 1.5 cm proud).
+	meshes["manhole"] = PropMesh.mesh(CITY_PROPS + "manhole.glb")
+	meshes["storm_drain"] = PropMesh.mesh(CITY_PROPS + "storm_drain.glb")
+	for j in range(0, stations.size(), 60):
+		var at = stations[(j + rng.randi() % 20) % stations.size()]
+		var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
+		var right = flat.cross(Vector3.UP)
+		var kind = "manhole" if rng.randf() < 0.6 else "storm_drain"
+		var lat = rng.randf_range(-4.5, 4.5) if kind == "manhole" else (7.4 if rng.randf() < 0.5 else -7.4)
+		var pos = at.pos + right * lat + Vector3(0, 0.015, 0)
+		var id = "%s|%d|%d" % [kind, floori(pos.x / PROP_CHUNK), floori(pos.z / PROP_CHUNK)]
+		if not groups.has(id):
+			groups[id] = {
+				"kind": kind, "x": floori(pos.x / PROP_CHUNK), "z": floori(pos.z / PROP_CHUNK), "list": []
+			}
+		groups[id].list.append(Transform3D(Basis.looking_at(flat, Vector3.UP), pos))
 		count += 1
 	for id in groups:
 		var group = groups[id]
@@ -416,15 +489,3 @@ static func _paper_mesh() -> Mesh:
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, door.surface_get_arrays(0))
 	mesh.surface_set_material(1, door.surface_get_material(0))
 	return mesh
-
-
-static func _bench_mesh() -> Mesh:
-	return _compose(
-		[
-			[_box(Vector3(1.7, 0.08, 0.5)), Transform3D(Basis.IDENTITY, Vector3(0, 0.45, 0))],
-			[_box(Vector3(1.7, 0.45, 0.07)), Transform3D(Basis.IDENTITY, Vector3(0, 0.75, -0.24))],
-			[_box(Vector3(0.1, 0.45, 0.45)), Transform3D(Basis.IDENTITY, Vector3(-0.75, 0.22, 0))],
-			[_box(Vector3(0.1, 0.45, 0.45)), Transform3D(Basis.IDENTITY, Vector3(0.75, 0.22, 0))]
-		],
-		Color(0.2, 0.32, 0.22)
-	)
