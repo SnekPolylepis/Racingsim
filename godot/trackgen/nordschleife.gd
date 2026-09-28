@@ -7,6 +7,7 @@ const RoadSection = preload("res://scripts/track/road_section.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
+const NatureScatter = preload("res://trackgen/nature_scatter.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const TerrainPatch = preload("res://scripts/track/terrain.gd")
 const CatchFence = preload("res://scripts/track/catch_fence.gd")
@@ -19,7 +20,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife/nordschleife.scn"
-const CACHE_REVISION = 8
+const CACHE_REVISION = 9
 ## Caracciola-Karussell apex station (source metres): the concrete bowl on the inside of the right-hander.
 const KARUSSELL_S = 12115.0
 ## The bowl's reach either side of the apex (source metres); no kerbs anywhere in it.
@@ -904,6 +905,10 @@ static func build_asset() -> Node3D:
 	# Eifel forest
 	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 56.0, 1.5, 18.0, 713)
 	add_forest(asset, terrain, "EifelDeep", 0.0, -1.0, 34.0, 18.0, 120.0, 714)
+	# ASSET-02: grass clumps, bushes, stones and mossy boulders on the verges and in the forest edge.
+	NatureScatter.add(
+		asset, road, func(p): return terrain_height(terrain, p) if not terrain.is_empty() else p.y, 921
+	)
 	add_scenery_kit(asset, road, positions, measured)
 	add_lighting(asset, road, positions, measured)
 	return asset

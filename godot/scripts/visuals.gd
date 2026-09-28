@@ -611,6 +611,8 @@ func finish_car(root, body, p, ghost, brake_material, nose = 0.9):
 		light.spot_angle = 18
 		light.spot_angle_attenuation = 2.0
 		light.shadow_enabled = false
+		# ASSET-02: a softer highlight now that the damp road reflects real lights.
+		light.light_specular = 0.25
 		light.visible = night
 		body.add_child(light)
 		headlights.append(weakref(light))

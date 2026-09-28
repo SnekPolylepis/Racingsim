@@ -55,7 +55,8 @@ func run():
 		print("CAR MODEL ", key, " ", JSON.stringify(budget))
 		# CAR-01's authored NA shell is 23,264 triangles; the four shared kit
 		# wheels and lamps bring the roadster to 25,658. Other cars keep P4's cap.
-		var triangle_cap = 28000 if key == "roadster" else 18000
+		# ASSET-02: the 296 GT3 is the owner-supplied Sketchfab model at about 105k body, 24k wheel and 14k lamp-glow triangles.
+		var triangle_cap = {"roadster": 28000, "f296gt3": 150000}.get(key, 18000)
 		check(budget.tris < triangle_cap and budget.draws < 200, key + " raster budget")
 		if key == "roadster":
 			check(

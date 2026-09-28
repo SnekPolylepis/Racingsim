@@ -1,0 +1,10 @@
+{"texture_max": 512, "props": {
+ "boulder_a": {"match": ["Cube.001_"], "max_tris": 1500},
+ "boulder_b": {"match": ["Cube.003_"], "max_tris": 1500},
+ "boulder_c": {"match": ["Cube.015_"], "max_tris": 1500},
+ "boulder_d": {"match": ["Cube.022_"], "max_tris": 1500},
+ "stone_a": {"match": ["Icosphere_"], "scale": 0.5, "max_tris": 800},
+ "stone_b": {"match": ["Icosphere.005_"], "scale": 0.5, "max_tris": 800},
+ "grass_bush": {"match": ["grass bush_Material.023_0.001"], "scale": 0.6, "max_tris": 2500},
+ "grass_clump": {"match": ["grass_Material.024"], "scale": 0.5, "max_tris": 2000}
+}}

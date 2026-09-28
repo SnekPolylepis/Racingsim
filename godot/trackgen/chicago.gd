@@ -13,6 +13,7 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
+const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 const CatchFence = preload("res://scripts/track/catch_fence.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const NO_SHADOW = [
@@ -48,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 110
+const CACHE_REVISION = 111
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -435,61 +436,35 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	silver.roughness = .22
 	var stone = material(Color("c9bca1"))
 	var willis = world(data().landmarks["Willis Tower"])
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# Recognizable nine-tube stepped silhouette with twin antennae, original geometry.
-	for x in 3:
-		for z in 3:
-			var h = 442.0 if x == 1 and z == 1 else (350.0 if x == 1 or z == 1 else 220.0)
-			var p = willis + Vector3((x - 1) * 22, h * .5, (z - 1) * 22)
-			facade_box(st, p, Vector3(22, h, 22), Color("252c31"))
-			for floor_i in range(1, int(h / 4.0)):
-				facade_box(
-					st,
-					Vector3(p.x, willis.y + floor_i * 4.0, p.z),
-					Vector3(22.12, .7, 22.12),
-					Color("697778")
-				)
-	st.generate_normals()
-	var mesh = st.commit()
-	var facade = NightGlow.facade_material().duplicate()
-	facade.set_shader_parameter("window_scale", 3.8)
-	facade.set_shader_parameter("lit_chance", .22)
-	facade.set_shader_parameter("glow_energy", .45)
-	mesh.surface_set_material(0, facade)
-	mesh_node(asset, parent, "WillisTower", mesh, Vector3.ZERO)
-	for side in [-1, 1]:
-		box(
-			asset,
-			parent,
-			"WillisAntenna%d" % side,
-			willis + Vector3(side * 9, 475, 0),
-			Vector3(2, 66, 2),
-			silver
-		)
-	# The Bean: a deliberately stylized reflective arch, open underneath; no scanned sculpture asset.
+	# ASSET-02: BoldlyBuilding's CC BY 4.0 Willis Tower (527 m with antennas), its own window textures by day
+	# and the same textures glowing warm after hours (chicago_night.gd toggles the emission).
+	var tower = PropMesh.mesh("res://assets/chicago/landmarks/willis_tower.glb").duplicate()
+	for i in tower.get_surface_count():
+		var mat = tower.surface_get_material(i)
+		if mat is StandardMaterial3D:
+			mat = mat.duplicate()
+			mat.emission = Color("ffd9a0")
+			mat.emission_texture = mat.albedo_texture
+			mat.emission_energy_multiplier = 0.9
+			mat.set_meta("chicago_night", true)
+			tower.surface_set_material(i, mat)
+	mesh_node(asset, parent, "WillisTower", tower, willis)
+	# ASSET-02: 99.Miles' low-poly night skyline blocks (CC BY 4.0) as a far backdrop beyond the OSM city
+	# (west, south-west and north; the lake is east).
+	var skyline = PropMesh.mesh("res://assets/chicago/landmarks/night_skyline.glb")
+	for spot in [
+		[-2400.0, -1500.0, 0.3], [-2500.0, 900.0, 1.9], [-1000.0, -2500.0, 3.4], [300.0, -2600.0, 4.6]
+	]:
+		var block = mesh_node(asset, parent, "Skyline", skyline, Vector3(spot[0], 7.9, spot[1]))
+		block.rotation.y = spot[2]
+		block.scale = Vector3.ONE * 1.6
+	# The Bean: John Helman's CC BY 4.0 Cloud Gate model (20 x 13 x 10 m) in the chrome material.
 	var bean = world(data().landmarks["Bean"])
 	box(asset, parent, "CloudGatePlaza", bean + Vector3(0, -.1, 0), Vector3(70, .3, 60), stone)
-	var sphere = SphereMesh.new()
-	sphere.radius = 5.0
-	sphere.height = 10.0
-	sphere.radial_segments = 40
-	sphere.rings = 24
-	var arrays = sphere.get_mesh_arrays()
-	var vertices = arrays[Mesh.ARRAY_VERTEX]
-	for i in vertices.size():
-		var v = vertices[i]
-		var underside = 5.5 * pow(maxf(0.0, -v.y / 5.0), 4.0)
-		vertices[i] = Vector3(v.x * 3.0, v.y + underside, v.z * 1.8)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	var bean_mesh = ArrayMesh.new()
-	bean_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	var bean_tool = SurfaceTool.new()
-	bean_tool.create_from(bean_mesh, 0)
-	bean_tool.generate_normals()
-	bean_mesh = bean_tool.commit()
-	bean_mesh.surface_set_material(0, silver)
-	mesh_node(asset, parent, "BeanArch", bean_mesh, bean + Vector3(0, 2.5, 0))
+	var bean_mesh = PropMesh.mesh("res://assets/chicago/landmarks/bean.glb").duplicate()
+	for i in bean_mesh.get_surface_count():
+		bean_mesh.surface_set_material(i, silver)
+	mesh_node(asset, parent, "BeanArch", bean_mesh, bean + Vector3(0, 0.05, 0))
 	# Navy Pier: long low pier, pavilion sheds and the Centennial Wheel silhouette.
 	var pier = world(data().landmarks["Navy Pier"])
 	box(asset, parent, "NavyPier", pier + Vector3(190, -.5, 0), Vector3(800, 2, 80), stone)
@@ -921,7 +896,6 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 			Vector3(2.5, 1.5, 2.5),
 			night_material(Color("ed6050"), 2.0)
 		)
-	box(asset, parent, "WillisCrown", willis + Vector3(0, 441, 0), Vector3(22.3, 1.5, 22.3), cool)
 	var bean = world(data().landmarks["Bean"])
 	for side in [-1, 1]:
 		var light = SpotLight3D.new()

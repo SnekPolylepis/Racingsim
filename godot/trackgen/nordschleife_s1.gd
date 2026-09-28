@@ -8,6 +8,7 @@ const KerbMap = preload("res://trackgen/kerb_map.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const WallPath = preload("res://scripts/track/wall_path.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
+const NatureScatter = preload("res://trackgen/nature_scatter.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const TerrainPatch = preload("res://scripts/track/terrain.gd")
 const CatchFence = preload("res://scripts/track/catch_fence.gd")
@@ -20,7 +21,7 @@ const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife_s1/nordschleife_s1.scn"
-const CACHE_REVISION = 8
+const CACHE_REVISION = 9
 
 
 static func read_json(path: String) -> Dictionary:
@@ -894,6 +895,10 @@ static func build_asset() -> Node3D:
 	# The Eifel forest stands right behind the armco: a dense near wall, then a deep band.
 	add_forest(asset, terrain, "EifelNear", 0.0, -1.0, 56.0, 1.5, 18.0, 713)
 	add_forest(asset, terrain, "EifelDeep", 0.0, -1.0, 34.0, 18.0, 120.0, 714)
+	# ASSET-02: grass clumps, bushes, stones and mossy boulders on the verges and in the forest edge.
+	NatureScatter.add(
+		asset, road, func(p): return terrain_height(terrain, p) if not terrain.is_empty() else p.y, 922
+	)
 	# Look-10: ferns, brambles, long grass and saplings from just behind the armco (0.3 m beyond the
 	# verge, matching the armco's own offset) through the near forest band, so the ground between and
 	# under the trees isn't bare mown lawn (real-nordschleife-adenauer-forst.jpg, -flugplatz.jpg).

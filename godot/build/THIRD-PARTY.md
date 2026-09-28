@@ -108,3 +108,18 @@ CC0 needs no attribution; the credits are given anyway. The landmark shapes (Bea
 Wrigley Building, Tribune Tower, bridges) remain original procedural geometry; no photograph or scanned
 landmark is used.
 
+## ASSET-02 models (Sketchfab, downloaded by the owner 2026-09-26; reduced with tools/blender/)
+
+All CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified: re-oriented, scaled, split, decimated,
+textures reduced.
+
+- "2025 Ferrari 296 GT3 Verstappen Racing" by Dave Bored SketchFab, https://sketchfab.com/3d-models/2025-ferrari-296-gt3-verstappen-racing-b2dcbf78f04a4e108321f7cdfc2a5c44 (`assets/cars/f296gt3/`).
+- "Willis Tower - Sears Tower" by BoldlyBuilding, https://sketchfab.com/3d-models/willis-tower-sears-tower-b63f9782e5664e3d97334198627be76a (`assets/chicago/landmarks/willis_tower.glb`).
+- "Chicago Bean" by John Helman, Sketchfab (`assets/chicago/landmarks/bean.glb`).
+- "Street Asset Pack" by vmatthew, Sketchfab (`assets/chicago/street-pack/`).
+- "Rocks and Foliage (House In The Woods Project)" by Helindu, https://sketchfab.com/3d-models/rocks-and-foliage-house-in-the-woods-project-cbf066bb7a3d4ef1b02ef088413f45aa (`assets/nature/rocks-foliage/`).
+- "City Props Collection volume 1" by TampaJoey, Sketchfab Standard licence, used for the owner's personal build (`assets/chicago/city-props/`).
+- "Simple grass chunks" by 3dhdscan, CC BY 4.0 (`assets/nature/grass/`).
+- "PSX Barrels Pack" by Shazly, CC BY 4.0 (`assets/chicago/barrels/`).
+- "Chicago-Style Econolite 8x5 Signals" by Signalrenders, CC BY 4.0 (`assets/chicago/landmarks/signal_corner.glb`).
+- "Low Poly Night City Building Skyline" by 99.Miles, CC BY 4.0 (`assets/chicago/landmarks/night_skyline.glb`).
