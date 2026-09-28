@@ -320,27 +320,10 @@ const PROP_KINDS = [
 	"dumpster",
 	"post_barrier"
 ]
-const LOWER_KINDS = [
-	"drum",
-	"drum",
-	"cone",
-	"jersey",
-	"plastic_barrier",
-	"trash_bag2",
-	"cardboard",
-	"bin",
-	"pallets",
-	"tarp_crates",
-	"dumpster",
-	"barrel_blue",
-	"barrel_rusty",
-	"barrel_yellow",
-	"barrel_oil",
-	"utility_box"
-]
 
 
-static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
+## `paved` (Callable(Vector3) -> bool) keeps props off lawns, water and the lower-level cut.
+static func sidewalk_props(asset: Node3D, parent: Node, stations: Array, paved: Callable) -> int:
 	var meshes = {
 		"planter": _mesh("Prop_Planter_Single"),
 		"bollard": _mesh("Prop_Bollard"),
@@ -372,9 +355,9 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var at = stations[i]
 		var step = int(rng.randf_range(5.0, 12.0) / 1.5)
 		i += maxi(1, step)
-		# Street level gets sidewalk furniture; Lower Wacker (y about 0) gets road-works clutter.
-		var lower = at.pos.y < 3.0
-		if not lower and (at.pos.y < 7.0 or at.pos.y > 9.0):
+		# Street level only: below it the retaining wall is the barrier and the old road-works clutter at 11 m
+		# stood hidden behind it.
+		if at.pos.y < 7.0 or at.pos.y > 9.0:
 			continue
 		var near_cross = false
 		for c in crossings:
@@ -387,7 +370,9 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var right = flat.cross(Vector3.UP)
 		var side = -1.0 if rng.randf() < 0.5 else 1.0
 		var pos = at.pos + right * side * (PROP_LAT_M + rng.randf() * 0.5)
-		var kinds = LOWER_KINDS if lower else PROP_KINDS
+		if not paved.call(pos):
+			continue
+		var kinds = PROP_KINDS
 		var kind = kinds[rng.randi() % kinds.size()]
 		# Faces the road: local +Z toward the street; imported props get a little yaw jitter.
 		var basis = Basis.looking_at(right * side, Vector3.UP)
@@ -405,20 +390,26 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var id = "%s|%d|%d" % [kind, cx, cz]
 		if not groups.has(id):
 			groups[id] = {"kind": kind, "x": cx, "z": cz, "list": []}
-		groups[id].list.append(
-			Transform3D(basis, Vector3(pos.x, (at.pos.y if lower else STREET_Y) + 0.04, pos.z))
-		)
+		groups[id].list.append(Transform3D(basis, Vector3(pos.x, STREET_Y + 0.04, pos.z)))
 		count += 1
 	# Manholes and storm drains: flat castings in the lanes and at the kerb (no collision, 1.5 cm proud).
 	meshes["manhole"] = PropMesh.mesh(CITY_PROPS + "manhole.glb")
 	meshes["storm_drain"] = PropMesh.mesh(CITY_PROPS + "storm_drain.glb")
+	# Manholes in the lanes about every 90 m; curb inlets in the gutter pan against the curb every 20-50 m on a
+	# random side (chicago.gd add_road_details draws the pan from 7.45 to 8 m).
+	var castings = []
 	for j in range(0, stations.size(), 60):
-		var at = stations[(j + rng.randi() % 20) % stations.size()]
+		castings.append(["manhole", (j + rng.randi() % 20) % stations.size(), rng.randf_range(-4.5, 4.5)])
+	var k = 0
+	while k < stations.size():
+		castings.append(["storm_drain", k, 7.68 if rng.randf() < 0.5 else -7.68])
+		k += rng.randi_range(14, 34)
+	for casting in castings:
+		var at = stations[casting[1]]
 		var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
 		var right = flat.cross(Vector3.UP)
-		var kind = "manhole" if rng.randf() < 0.6 else "storm_drain"
-		var lat = rng.randf_range(-4.5, 4.5) if kind == "manhole" else (7.4 if rng.randf() < 0.5 else -7.4)
-		var pos = at.pos + right * lat + Vector3(0, 0.015, 0)
+		var kind = casting[0]
+		var pos = at.pos + right * casting[2] + Vector3(0, 0.015, 0)
 		var id = "%s|%d|%d" % [kind, floori(pos.x / PROP_CHUNK), floori(pos.z / PROP_CHUNK)]
 		if not groups.has(id):
 			groups[id] = {

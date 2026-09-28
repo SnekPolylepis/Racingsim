@@ -340,6 +340,8 @@ static func add_forest(
 	trees.scale_max = 2.0
 	trees.atlas_kind = atlas_kind
 	trees.species_indices = species_indices
+	# Crowns may reach 2.5 m over the verge, no further: low branches no longer hang into the lanes.
+	trees.max_overhang = TREE_OVERHANG_M if atlas_kind == RoadScatter.AtlasKind.TREES else -1.0
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
@@ -466,6 +468,8 @@ static func add_forest_floor(
 const CLEAR_M = 24.0
 ## No tree closer than this to any road centreline: the widest half-road plus shoulder, verge and armco.
 const TREE_CLEAR_M = 9.5
+## How far a tree card's crown may reach over the verge edge (RoadScatter.max_overhang).
+const TREE_OVERHANG_M = 2.5
 ## Undergrowth clears only the tarmac, shoulder and verge, not the tree band beyond it.
 const UNDERGROWTH_CLEAR_M = 4.0
 
