@@ -1,5 +1,11 @@
 # Native changelog
 
+## 2026-09-28 — Rebuild Preview 9
+
+- Chase camera smooths its offset from the car instead of its world position (no more trailing at speed).
+- Chicago: Lower Wacker retaining-wall barriers and wall texture, raised red and white kerbs with gutter pans and storm drains, concrete sidewalks, animated river and lake water, Riverwalk terrace, placement fixes for poles, signs, parked cars and props (TRACK-POLISH).
+- Nordschleife (S1 and full): nature props offset from the verge edge, tree overhang limited to 2.5 m.
+
 ## 2026-09-28 — Rebuild Preview 8
 
 - Ferrari 296 GT3 Sketchfab model replaces the procedural body (ASSET-02).
