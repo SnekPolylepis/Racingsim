@@ -1,4 +1,4 @@
-RACING SIM - REBUILD PREVIEW 7 (2026-09-27)
+RACING SIM - REBUILD PREVIEW 8 (2026-09-28)
 
 A preliminary build of the rebuilt game: a full 3-D car on hand-built 3-D circuits. It is a
 preview for testing, not a finished release. No installation, browser or Godot editor needed.
@@ -38,6 +38,14 @@ DRIVING
   E/Shift and Q/Ctrl shift up/down, R reset to the grid.
   V change camera (chase, high chase, bonnet, two overhead), Y telemetry, B debug.
   Esc pauses. Controllers work too (left stick, triggers, bumpers); rebind in Settings > Controls.
+
+NEW IN PREVIEW 8
+  - Ferrari 296 GT3: a detailed model in the Verstappen Racing livery, with its real wheels.
+  - Chicago: the real Willis Tower and Bean, Chicago-style signal poles, hydrants, parking meters,
+    bus stops, dumpsters, road-works clutter on Lower Wacker, manholes and a night skyline backdrop.
+  - Nordschleife: grass, bushes, stones and mossy boulders along the verges.
+  - Nights: street lamps are real lights now; they reflect softly off the damp road instead of
+    painted streaks, and the moon no longer glares on the tarmac.
 
 NEW IN PREVIEW 7
   - Chicago: a full city circuit with a real street grid, buildings with day and night windows,
@@ -110,7 +118,8 @@ MACOS
 CREDITS AND LICENCES
   Godot Engine (MIT, GODOT-LICENSE.txt and GODOT-THIRD-PARTY-NOTICES.txt). Rajdhani font (OFL,
   RAJDHANI-OFL.txt). Poly Haven and ambientCG CC0 textures, Poly Haven tree models, Kenney car
-  and particle kits and the Quaternius Downtown City MegaKit, all CC0 (CC0-1.0.txt).
+  and particle kits and the Quaternius Downtown City MegaKit, all CC0 (CC0-1.0.txt). Sketchfab models
+  (Ferrari, Willis Tower, Bean, street and city props, rocks, grass): see THIRD-PARTY.md.
   "Mazda Miata MX-5 NA" by Lexyc16 (CC BY 4.0). Engine recordings: see THIRD-PARTY.md.
   Spa: (c) OpenStreetMap contributors, ODbL 1.0 (ODbL-1.0.txt); elevation and orthophotos
   (c) Service public de Wallonie (SPW), CC BY 4.0 (CC-BY-4.0.txt). Nordschleife:

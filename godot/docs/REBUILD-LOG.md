@@ -2806,3 +2806,6 @@ Blender 5.2.1 (portable, checksum-verified, in the owner's Tools folder) now dri
 - Skipped: BMW M4 (CC BY-NC-SA), City Props (unclear licence), four truncated zips, the 145 MB grass scan.
 Credits in both THIRD-PARTY files. Gates `-All -Features` 40/40.
 - **ASSET-02 follow-up (owner):** night road no longer paints lamp streaks; the lamp pool is 12 omni lights and a damp road (roughness 0.34-0.55) reflects them through the lighting engine; the moon's night specular is 0.08 (it mirrored as a white fan) and the headlight's 0.25. City Props (personal use), PSX barrels, Chicago-style signal poles at every crossing, far night-skyline blocks, manholes and storm drains, denser sidewalk props. Nordschleife nature about twice as dense plus a reduced grass scan (2.5k-triangle patch and a tuft). Gates 40/40.
+
+## 2026-09-28  RELEASE Rebuild Preview 8  (Claude Opus 5.5)
+v0.1.0-preview.8 from main after ASSET-02 (#79): Sketchfab Ferrari, Chicago landmarks and props, Nordschleife nature, real-light nights. Verification below in the release notes.
