@@ -1,5 +1,12 @@
 # Native changelog
 
+## 2026-09-28 — Rebuild Preview 8
+
+- Ferrari 296 GT3 Sketchfab model replaces the procedural body (ASSET-02).
+- Chicago: Willis Tower and Bean models, signal poles, city and street props, manholes, skyline backdrop.
+- Nordschleife verge nature: grass, bushes, stones, boulders.
+- Nights: lamp streaks removed; 12 real omni lamps reflect off a damp road; no moon glare.
+
 ## 2026-09-27 — Rebuild Preview 7
 
 - Chicago — River & Lake: a city circuit on real OpenStreetMap streets and buildings, with Michigan Avenue, Lake Shore Drive and two-level Wacker Drive, day and night facades, shopfronts, signals, crosswalks, the L, bridges, lake and parks (CHI-01, CHI-02, CHI-03, CHI-LOOK-01/02, CHI-SC).

@@ -63,9 +63,18 @@ Checked 2026-09-22; no data from these sources has been downloaded, committed or
 
 Exact requests, SHA-256 hashes, source limitations, the heightmap header and source measurements are recorded in [the Spa data README](trackgen/data/spa/README.md) and `trackgen/data/spa/sources.json`. Unmodified ODbL and CC BY licence texts are vendored under `trackgen/data/spa/licenses/`. The drive scene shows the abbreviated OSM/SPW attribution supplied by the generated TrackAsset; this ledger supplies the full titles, source links and modification details.
 
-## Mazda MX-5 / Miata NA car exterior
+## Nordschleife Section 1 authored TrackAsset v0 (P6-02a; downloaded 2026-09-23)
 
-"Mazda Miata MX-5 NA" by Lexyc16: https://sketchfab.com/3d-models/mazda-miata-mx-5-na-d51fcd44b74f4daf8012c41e0400c041. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/. The model was reoriented, resized, stripped of the source wheels/display plane/unneeded interior mesh, repainted from the game preset and combined with game wheel and lamp assemblies. Full source attribution and the author's original `license.txt` are in `assets/cars/mx5na/` and `THIRD-PARTY.md` in the source distribution. No author endorsement is implied.
+- **Centreline:** © OpenStreetMap contributors, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). The Section 1 raceway ways from T13 to Aremberg exit (~4.16 km) were extracted from the Nordschleife loop, projected to local metres (ETRS89 / UTM 32N origin at T13 Start Line: 50.33771 N, 6.95108 E), and closed with an engineered return road loop. The derived centreline database and builder script are in `trackgen/data/nordschleife/`; [OSM attribution](https://www.openstreetmap.org/copyright).
+- **Elevation:** Landesamt für Vermessung und Geobasisinformation Rheinland-Pfalz (LVermGeo RLP) - **Digitales Geländemodell 1 m (DGM1)**, 2025 survey, [source catalogue](https://geoshop.rlp.de/opendata-dgm1.html), [dl-de/by-2-0](licenses/dl-de-by-2.0.txt). Licence rechecked on download day. 20 tiles of 1 m LiDAR DGM1 (UTM Zone 32, E 351..354, N 5577..5581) were acquired. Road elevations were sampled directly from the 1 m LiDAR DEM with median and Gaussian smoothing. Crossfall bankings (+6.9° at Aremberg to -5.6° at Hatzenbogen) and tarmac widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections. Surrounding terrain is exported as a 20 m grid in `dem.raw` referenced to the start line elevation (619.38 m). Raw GeoTIFF downloads are kept outside git.
+- **Attribution:** `© GeoBasis-DE / LVermGeoRP 2026, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`.
+- Hashes and file metadata are recorded in `trackgen/data/nordschleife/sources.json`. Unmodified ODbL and dl-de/by-2-0 license texts are vendored under `trackgen/data/nordschleife/licenses/`.
+
+## CAR-01 Mazda MX-5 / Miata NA exterior (2026-09-24)
+
+**Mazda Miata MX-5 NA** by **Lexyc16**, [Sketchfab source](https://sketchfab.com/3d-models/mazda-miata-mx-5-na-d51fcd44b74f4daf8012c41e0400c041), is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The author-supplied attribution and license details are preserved in `assets/cars/mx5na/license.txt`. Source glTF ZIP SHA-256: `69438fb7e708c1c0c42b9ab89e1d82125a19196caf86dbfe008215c4a99b3c5f`.
+
+Modifications: fitted and reoriented the body to the roadster preset and 3970 × 1675 × 1230 mm NA dimensions; removed the source display plane, wheels, and an unneeded interior mesh; rebuilt normals; replaced the paint material with preset-driven colour; added night lamp glow meshes and game wheel assemblies. The source and fitted glTF are in `assets/cars/mx5na/`; `prepare.py` records the fit. The author does not endorse this game.
 
 ## Tree cards and horizon (Look-6; downloaded 2026-09-24)
 
@@ -87,7 +96,25 @@ Buildings, Bean interpretation, Willis Tower silhouette and Navy Pier geometry a
 low-poly art; no third-party landmark model or photograph is used. See that folder's README for
 the exact query, limitations and attribution.
 
-### Chicago city, models and textures (2026-09-25 to 2026-09-27)
+### Chicago streetscape materials (2026-09-25)
+
+Four 1K PBR sets from Poly Haven, all CC0 1.0 ([legal text](assets/licenses/CC0-1.0.txt)):
+
+- [Brick Wall 003](https://polyhaven.com/a/brick_wall_003), photography by Dimitrios Savva and
+  processing by Rob Tuytel: Loop masonry streetfronts.
+- [Red Brick 03](https://polyhaven.com/a/red_brick_03), Rob Tuytel: older brick buildings near
+  the river.
+- [Concrete Floor Damaged 01](https://polyhaven.com/a/concrete_floor_damaged_01): sidewalk stone.
+- [Large Square Pattern 01](https://polyhaven.com/a/large_square_pattern_01): riverwalk and
+  lakefront pavers.
+
+Original 1K diffuse, OpenGL normal and roughness maps are retained in
+`assets/textures/chicago/`; source map suffixes and material uses are listed in
+`assets/textures/README.md`. The animated water surface is an original procedural shader and
+does not use an external texture. Original procedural landmark models include the Wrigley Building,
+Tribune Tower, Board of Trade, Michigan Avenue, State Street and LaSalle Street bridges.
+
+### Chicago city, models and textures added after CHI-01 (2026-09-25 to 2026-09-27)
 
 - **Streets, buildings, water and parks** of downtown Chicago (`trackgen/data/chicago/city.json`, from
   `osm-roads.json` and the OSM extract described in that folder's README): © OpenStreetMap contributors,
