@@ -66,6 +66,48 @@
   "title": "Express",
   "streets": [],
   "osm_way_ids": [],
+  "near": [
+   [
+    "Vietnam Veterans Memorial",
+    13
+   ],
+   [
+    "Route 66 start sign",
+    19
+   ],
+   [
+    "Art Institute lions",
+    21
+   ],
+   [
+    "Pritzker Military Museum",
+    22
+   ],
+   [
+    "Chicago Architecture Center",
+    24
+   ],
+   [
+    "Michigan Ave Bridge (bridgehouse)",
+    28
+   ],
+   [
+    "Chicago Cultural Center",
+    48
+   ],
+   [
+    "35 E Wacker (Jewelers Building)",
+    53
+   ],
+   [
+    "Crown Fountain",
+    54
+   ],
+   [
+    "Cloud Gate (the Bean)",
+    88
+   ]
+  ],
   "longest_straight_m": 1101,
   "right_angles": 3,
   "new_m": 500,

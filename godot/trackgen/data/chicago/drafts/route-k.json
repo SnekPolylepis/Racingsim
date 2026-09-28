@@ -3,7 +3,7 @@
   41.8848,
   -87.6244
  ],
- "description": "DRAFT D - Light Touch: One Michigan jog (Madison-Wabash-Monroe) plus the Franklin return. Detours follow real OSM streets (one-way directions respected); the harbor and south connectors are the same game-only links as route.json. Heights are authored.",
+ "description": "DRAFT K - Grand Tour II Long: Grand Tour II with a bigger Michigan weave: Adams St west to LaSalle, LaSalle south to the Board of Trade, Jackson Blvd back east. About 1 km longer. Detours follow real OSM streets (one-way directions respected); the harbor and south connectors are the same game-only links as route.json. Heights are authored.",
  "landmarks": {
   "Bean": [
    41.88266,
@@ -62,60 +62,109 @@
   ]
  },
  "draft": {
-  "id": "d",
-  "title": "Light Touch",
+  "id": "k",
+  "title": "Grand Tour II Long",
   "streets": [
+   "East Adams Street",
+   "East Jackson Boulevard",
    "East Madison Street",
+   "East Monroe Drive",
    "East Monroe Street",
    "North Franklin Street",
+   "North State Street",
+   "South Columbus Drive",
    "South Franklin Street",
+   "South LaSalle Street",
+   "South Michigan Avenue",
    "South Wabash Avenue",
-   "West Monroe Street"
+   "West Adams Street",
+   "West Jackson Boulevard",
+   "West Monroe Street",
+   "West Washington Street"
   ],
   "osm_way_ids": [
+   4476714,
    4477285,
    23700520,
-   145846239,
+   48785113,
+   48785305,
+   48785311,
+   59678429,
+   255563525,
+   294582657,
+   314944796,
+   315089480,
+   319345471,
+   319345473,
    373849342,
    385889736,
-   452188414,
-   452188415,
-   452188416,
+   433783095,
+   433785009,
+   434705483,
+   435657098,
+   435657108,
+   435724060,
+   435724061,
+   435724079,
+   435724081,
+   435724084,
+   435724087,
+   435724108,
+   488107952,
+   519223974,
    611574834,
+   615643981,
+   615644380,
+   615645277,
+   620366462,
+   620366463,
+   620366464,
+   620786790,
+   624405242,
    769538379,
-   991212730,
-   991212732,
+   914518496,
+   934416474,
+   937102727,
+   973275641,
+   981135345,
+   981135346,
+   983233556,
    1033816803,
-   1042134771,
    1049318465,
    1049318466,
    1049318467,
    1051441726,
+   1051441727,
+   1171998657,
+   1171998659,
+   1171998660,
    1178254524,
-   1185609017,
    1185609018,
    1191329605,
-   1370879490
+   1281994716,
+   1282602029,
+   1376975502,
+   1376975503
   ],
   "near": [
    [
-    "Vietnam Veterans Memorial",
-    13
+    "Route 66 start sign",
+    7
    ],
    [
-    "Route 66 start sign",
-    16
+    "Vietnam Veterans Memorial",
+    10
    ],
    [
     "Pritzker Military Museum",
     16
    ],
    [
-    "Chicago Architecture Center",
-    24
+    "Mir\u00f3's Chicago",
+    19
    ],
    [
-    "Art Institute lions",
+    "Chicago Architecture Center",
     24
    ],
    [
@@ -123,8 +172,24 @@
     28
    ],
    [
+    "Art Institute lions",
+    31
+   ],
+   [
+    "Stock Exchange Arch",
+    32
+   ],
+   [
+    "Picasso (Daley Plaza)",
+    42
+   ],
+   [
     "Chicago Cultural Center",
     45
+   ],
+   [
+    "Chicago Theatre",
+    52
    ],
    [
     "35 E Wacker (Jewelers Building)",
@@ -133,6 +198,10 @@
    [
     "Willis Tower",
     56
+   ],
+   [
+    "Board of Trade Building",
+    72
    ],
    [
     "Crown Fountain",
@@ -144,12 +213,12 @@
    ]
   ],
   "longest_straight_m": 968,
-  "right_angles": 15,
-  "new_m": 1120,
-  "dropped_m": 100,
-  "length_m": 8664,
-  "corners_35": 20,
-  "corners_75": 15,
+  "right_angles": 20,
+  "new_m": 3580,
+  "dropped_m": 660,
+  "length_m": 9981,
+  "corners_35": 26,
+  "corners_75": 20,
   "shortest_block_m": 34
  },
  "points": [
@@ -184,22 +253,46 @@
    "Michigan Ave & Monroe St"
   ],
   [
-   41.8783,
-   -87.6244,
+   41.879556,
+   -87.624444,
    8,
-   "Jackson turn"
+   "Michigan Ave & Adams St"
   ],
   [
-   41.8784,
-   -87.6173,
+   41.879406,
+   -87.632294,
    8,
-   "Lakefront turn"
+   "LaSalle St & Adams St"
   ],
   [
-   41.8809,
-   -87.6173,
+   41.878144,
+   -87.632262,
    8,
-   "Lake Shore Drive"
+   "Jackson Blvd & LaSalle St"
+  ],
+  [
+   41.878294,
+   -87.624413,
+   8,
+   "Michigan Ave & Jackson Blvd"
+  ],
+  [
+   41.878341,
+   -87.62071,
+   8,
+   "Jackson Dr & Columbus Dr"
+  ],
+  [
+   41.880877,
+   -87.620794,
+   8,
+   "Columbus Dr & Monroe Dr"
+  ],
+  [
+   41.880924,
+   -87.617244,
+   8,
+   "DuSable Lake Shore Dr & Monroe Dr"
   ],
   [
    41.8823,
@@ -346,16 +439,28 @@
    "Franklin St & Monroe St"
   ],
   [
-   41.886769,
-   -87.635439,
+   41.883239,
+   -87.635376,
    8,
-   "Franklin St & Upper Wacker Dr"
+   "Franklin St & Washington St"
   ],
   [
-   41.8869,
-   -87.6273,
+   41.883248,
+   -87.627866,
    8,
-   "Upper Wacker riverfront"
+   "State St & Washington St"
+  ],
+  [
+   41.885755,
+   -87.627936,
+   8,
+   "Lake St & State St"
+  ],
+  [
+   41.886817,
+   -87.627892,
+   8,
+   "Upper Wacker Dr & State St"
   ],
   [
    41.88715,

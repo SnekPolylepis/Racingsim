@@ -92,6 +92,44 @@
    1285033491,
    1434424823
   ],
+  "near": [
+   [
+    "Vietnam Veterans Memorial",
+    13
+   ],
+   [
+    "Stock Exchange Arch",
+    22
+   ],
+   [
+    "Chicago Architecture Center",
+    24
+   ],
+   [
+    "Michigan Ave Bridge (bridgehouse)",
+    28
+   ],
+   [
+    "Pritzker Military Museum",
+    29
+   ],
+   [
+    "Chicago Cultural Center",
+    47
+   ],
+   [
+    "35 E Wacker (Jewelers Building)",
+    53
+   ],
+   [
+    "Crown Fountain",
+    58
+   ],
+   [
+    "Cloud Gate (the Bean)",
+    91
+   ]
+  ],
   "longest_straight_m": 820,
   "right_angles": 4,
   "new_m": 1260,

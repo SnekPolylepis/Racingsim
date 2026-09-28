@@ -83,7 +83,7 @@ reduced window density and emission, while the shared shader's default preserves
 
 ## Detour drafts (not wired into the game)
 
-`build_drafts.py` writes `drafts/route-a.json` .. `route-h.json` (same schema as `route.json`) and
+`build_drafts.py` writes `drafts/route-a.json` .. `route-k.json` (same schema as `route.json`) and
 `drafts/index.html`, a self-contained map that compares them with the current circuit
 (`python3 build_drafts.py`, standard library only). Every detour is a chain of real OSM ways found by
 routing over a directed road graph, so each turn is a real intersection and each street is driven in its
@@ -100,6 +100,9 @@ legal one-way direction. The harbor and south connectors stay the game-only link
 | F Sprint | Michigan Ave to Monroe Dr, Columbus Dr to Lower Wacker, short hairpin. Drops Jackson Dr and Lake Shore Dr | 5.10 km | 12 |
 | G Sprint Plus | F but Michigan to Jackson Dr, then Columbus Dr north. Drops Lake Shore Dr | 5.64 km | 12 |
 | H Express | Route unchanged except the game-only links: diagonal harbor link, Wacker hairpin below the Willis Tower viewpoint. Keeps every main road | 7.37 km | 13 |
+| I Grand Tour II | C with State St instead of Dearborn St (adds the Chicago Theatre) | 8.96 km | 26 |
+| J Grand Tour II Diagonal | I plus the diagonal harbor link from H | 8.85 km | 26 |
+| K Grand Tour II Long | I with Adams / LaSalle / Jackson Blvd loop past the Board of Trade | 9.98 km | 26 |
 
 `osm-grid.json` is the cross-street extract these drafts need (Overpass, 2026-09-28, bbox
 41.8735,-87.6420,41.8930,-87.6030; Adams, Madison, Washington, Randolph, Lake, Columbus, Wabash, State,
@@ -108,3 +111,8 @@ ODbL 1.0, (c) OpenStreetMap contributors. It is reference data only and is not r
 exported. To play a draft, point `DATA` in `trackgen/chicago.gd` at it, remap the `CORNERS` point indices,
 bump `CACHE_REVISION` and re-record the Chicago lap baselines (`tests/v2/laps.gd -- --track=chicago --record`).
 Drafts have not been driven or run through `tests/v2/chicago.gd`.
+
+`pois.json` holds 21 headline places (OSM names and positions, fetched 2026-09-28, ODbL) used by the map to
+count how many places each draft passes within 100 m. Wrigley Building, Tribune Tower, Marina City and Trump
+Tower are on the north bank and Buckingham Fountain is south of Jackson Dr, so no draft reaches them; a bridge
+loop for the north bank would need river/bridge support in `chicago.gd`.

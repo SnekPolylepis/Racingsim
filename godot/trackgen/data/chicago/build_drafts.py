@@ -166,7 +166,7 @@ def splice(base_points, first, last, legs, height=8):
     for leg in legs:
         chain, ways = leg.build()
         used += ways
-        keep = simplify(chain)
+        keep = tidy(simplify(chain))
         for i, n in enumerate(keep):
             if new and new[-1][:2] == row(n, height)[:2]:
                 continue
@@ -186,6 +186,15 @@ def michigan_weave(zigs):
             Leg("Wabash", ("Wabash", "Madison Street", -145, -300), ("Wabash", "Monroe Street", -145, -450)),
             Leg("Monroe Street", ("Wabash", "Monroe Street", -145, -450), ("Michigan Avenue", "Monroe Street", 0, -440)),
         ]
+    if "board" in zigs:
+        # Long version: west on Adams to LaSalle, south to Jackson Blvd (Board of Trade at the end of the canyon), east back.
+        legs += [
+            Leg("^(North |South )?Michigan Avenue", ("^(North |South )?Michigan Avenue", "Monroe Street", 0, -440), ("^(North |South )?Michigan Avenue", "Adams Street", 0, -585)),
+            Leg("Adams Street", ("^(North |South )?Michigan Avenue", "Adams Street", 0, -585), ("^(North |South )?LaSalle Street", "Adams Street", -640, -585)),
+            Leg("^(North |South )?LaSalle Street", ("^(North |South )?LaSalle Street", "Adams Street", -640, -585), ("^(North |South )?LaSalle Street", "Jackson Boulevard", -640, -735)),
+            Leg("Jackson Boulevard", ("^(North |South )?LaSalle Street", "Jackson Boulevard", -640, -735), ("^(North |South )?Michigan Avenue", "Jackson Boulevard", 0, -720)),
+        ]
+        return legs
     if "jackson" in zigs:
         if "monroe" in zigs:
             legs.append(Leg("Michigan Avenue", ("Michigan Avenue", "Monroe Street", 0, -440), ("Michigan Avenue", "Adams Street", 0, -585)))
@@ -208,13 +217,15 @@ def west_monroe_franklin():
     ]
 
 
-def west_ladder():
-    """Monroe/Franklin then across Washington to Dearborn and north to the riverfront."""
+def west_ladder(state=False):
+    """Monroe/Franklin then across Washington to Dearborn (or State St) and north to the riverfront."""
+    cross = "State Street" if state else "Dearborn"
+    cx = -283 if state else -415
     return [
         Leg("Monroe Street", ("^(North |South )?Wacker Drive", "^(East |West )?Monroe Street", -1040, -460), ("Franklin", "Monroe Street", -905, -459)),
         Leg("Franklin", ("Franklin", "Monroe Street", -905, -459), ("Franklin", "Washington Street", -905, -180)),
-        Leg("Washington Street", ("Franklin", "Washington Street", -905, -180), ("Dearborn", "Washington Street", -415, -180)),
-        Leg("Dearborn", ("Dearborn", "Washington Street", -415, -180), ("Dearborn", "Upper Wacker", -415, 225)),
+        Leg("Washington Street", ("Franklin", "Washington Street", -905, -180), (cross, "Washington Street", cx, -180)),
+        Leg("State Street|Dearborn", (cross, "Washington Street", cx, -180), (cross, "Upper Wacker", cx, 225)),
     ]
 
 
@@ -240,6 +251,25 @@ DRAFTS = [
                 "Wabash Ave ↓", "Jackson Blvd →", "Jackson Dr → (to Columbus)", "Columbus Dr ↑", "Monroe Dr →",
                 "Lake Shore Dr ↑", "Upper S Wacker Dr ↑ (to Monroe)", "Monroe St →", "Franklin St ↑", "Washington St →",
                 "Dearborn St ↑", "Upper Wacker Dr →"]),
+    dict(id="i", title="Grand Tour II", tag="Route C with State St instead of Dearborn St: same real-road ladder, now past the Chicago Theatre, 35 E Wacker and the Vietnam Veterans Memorial",
+         michigan=["monroe", "jackson"], west="ladder_state", east=True,
+         steps=["Michigan Ave ↓", "Madison St ←", "Wabash Ave ↓", "Monroe St →", "Michigan Ave ↓", "Adams St ←",
+                "Wabash Ave ↓", "Jackson Blvd →", "Jackson Dr → (to Columbus)", "Columbus Dr ↑", "Monroe Dr →",
+                "Lake Shore Dr ↑", "Upper S Wacker Dr ↑ (to Monroe)", "Monroe St →", "Franklin St ↑", "Washington St →",
+                "State St ↑", "Upper Wacker Dr →"]),
+    dict(id="j", title="Grand Tour II Diagonal", tag="Grand Tour II plus the diagonal harbor link from the Express draft (game-only link, one 66 degree sweeper instead of two 90s)",
+         michigan=["monroe", "jackson"], west="ladder_state", east=True, harbor_diag=True,
+         steps=["Michigan Ave ↓", "Madison St ←", "Wabash Ave ↓", "Monroe St →", "Michigan Ave ↓", "Adams St ←",
+                "Wabash Ave ↓", "Jackson Blvd →", "Jackson Dr → (to Columbus)", "Columbus Dr ↑", "Monroe Dr →",
+                "Lake Shore Dr ↑", "Diagonal harbor link (game only)", "Lower Wacker Dr ←", "S Lower Wacker ↓",
+                "South connector (game only)", "Upper S Wacker Dr ↑ (to Monroe)", "Monroe St →", "Franklin St ↑",
+                "Washington St →", "State St ↑", "Upper Wacker Dr →"]),
+    dict(id="k", title="Grand Tour II Long", tag="Grand Tour II with a bigger Michigan weave: Adams St west to LaSalle, LaSalle south to the Board of Trade, Jackson Blvd back east. About 1 km longer",
+         michigan=["monroe", "jackson", "board"], west="ladder_state", east=True,
+         steps=["Michigan Ave ↓", "Madison St ←", "Wabash Ave ↓", "Monroe St →", "Michigan Ave ↓", "Adams St ← (to LaSalle)",
+                "LaSalle St ↓ (Board of Trade)", "Jackson Blvd →", "Jackson Dr → (to Columbus)", "Columbus Dr ↑", "Monroe Dr →",
+                "Lake Shore Dr ↑", "Upper S Wacker Dr ↑ (to Monroe)", "Monroe St →", "Franklin St ↑", "Washington St →",
+                "State St ↑", "Upper Wacker Dr →"]),
     dict(id="d", title="Light Touch", tag="One Michigan jog (Madison-Wabash-Monroe) plus the Franklin return",
          michigan=["monroe"], west="monroe_franklin", east=False,
          steps=["Michigan Ave ↓", "Madison St ←", "Wabash Ave ↓", "Monroe St →", "Michigan Ave ↓ (to Jackson Dr)",
@@ -265,6 +295,27 @@ DRAFTS = [
                 "Lower Wacker Dr ←", "S Lower Wacker ↓ (past Willis Tower view)", "Hairpin turnaround (game only)",
                 "Upper S Wacker Dr ↑", "Upper Wacker Dr →", "Michigan Ave ↓"]),
 ]
+
+
+with open(os.path.join(HERE, "pois.json")) as _f:
+    POIS = json.load(_f)["pois"]
+
+
+def near_pois(points, reach=100.0):
+    """Headline places within `reach` metres of the route's control polyline: [(name, metres)] nearest first."""
+    pts = [xy(p[0], p[1]) for p in points]
+    out = []
+    for nm_, v in POIS.items():
+        s = xy(v[0], v[1])
+        best = 1e18
+        for i in range(len(pts)):
+            (x1, y1), (x2, y2) = pts[i], pts[(i + 1) % len(pts)]
+            dx, dy = x2 - x1, y2 - y1
+            t = 0 if dx == dy == 0 else max(0, min(1, ((s[0] - x1) * dx + (s[1] - y1) * dy) / (dx * dx + dy * dy)))
+            best = min(best, math.hypot(s[0] - x1 - t * dx, s[1] - y1 - t * dy))
+        if best <= reach:
+            out.append([nm_, round(best)])
+    return sorted(out, key=lambda r: r[1])
 
 
 def turn_angle(a, b, c):
@@ -314,6 +365,7 @@ def stats(points):
         if angles[(i + 1) % n] >= 12:
             longest, run = max(longest, run), 0.0
     return dict(
+        near=near_pois(points),
         longest_straight_m=round(longest),
         right_angles=sum(1 for a in angles if 75 <= a <= 105),
         new_m=round(_off(_sample(pts), base)),
@@ -407,13 +459,15 @@ def build(d):
     ways = []
     # Work from the end of the loop backwards so baseline indices stay valid.
     if d["west"]:
-        legs = west_monroe_franklin() if d["west"] == "monroe_franklin" else west_ladder()
+        legs = west_monroe_franklin() if d["west"] == "monroe_franklin" else west_ladder(d["west"] == "ladder_state")
         # baseline 27..30 (Upper Wacker north, bend, first riverfront point) are replaced; 26 portal stays.
         first = 27
-        if d["west"] == "ladder":
+        if d["west"] in ("ladder", "ladder_state"):
             legs = [west_monroe_franklin()[0]] + legs
-        pts, w = splice(pts, first, 30, legs)
+        pts, w = splice(pts, first, 31 if d["west"] == "ladder_state" else 30, legs)
         ways += w
+    if d.get("harbor_diag"):
+        pts[9:11] = []  # harbor connector corner and ramp: Navy Pier view runs diagonally into the Lower Wacker portal
     if d["east"]:
         # baseline 3 (Lakefront turn) and 4 (LSD at Monroe Dr) are replaced by the real Monroe Dr junction.
         pts, w = splice(pts, 3, 4, east_columbus())
@@ -433,8 +487,9 @@ def main():
         baseline=dict(points=BASE["points"], **stats(BASE["points"])),
         drafts=[],
         osm_roads=[],
+        pois={k: [v[0], v[1]] for k, v in POIS.items()},
     )
-    for d in DRAFTS:
+    for d in sorted(DRAFTS, key=lambda x: x["id"]):
         pts, used = build(d)
         st = stats(pts)
         real = sorted({name(w) for w in used})

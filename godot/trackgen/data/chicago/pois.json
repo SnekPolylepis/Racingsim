@@ -1,0 +1,110 @@
+{
+ "source": "OpenStreetMap via Overpass, fetched 2026-09-28; ODbL 1.0, (c) OpenStreetMap contributors",
+ "pois": {
+  "Willis Tower": [
+   41.878505,
+   -87.635887,
+   "node/2311635030"
+  ],
+  "Michigan Ave Bridge (bridgehouse)": [
+   41.888495,
+   -87.624686,
+   "node/3572913469"
+  ],
+  "Route 66 start sign": [
+   41.879615,
+   -87.62463,
+   "node/5401536922"
+  ],
+  "Chicago Architecture Center": [
+   41.888013,
+   -87.623623,
+   "node/6423952898"
+  ],
+  "Pritzker Military Museum": [
+   41.88062,
+   -87.624663,
+   "node/10958109386"
+  ],
+  "Picasso (Daley Plaza)": [
+   41.883623,
+   -87.629979,
+   "way/124865476"
+  ],
+  "Cloud Gate (the Bean)": [
+   41.882686,
+   -87.623341,
+   "way/137060274"
+  ],
+  "Miró's Chicago": [
+   41.883069,
+   -87.630377,
+   "way/145625872"
+  ],
+  "Art Institute lions": [
+   41.879395,
+   -87.624144,
+   "way/210671752"
+  ],
+  "Stock Exchange Arch": [
+   41.880674,
+   -87.621176,
+   "way/283892909"
+  ],
+  "Buckingham Fountain": [
+   41.875802,
+   -87.618972,
+   "way/561821879"
+  ],
+  "Vietnam Veterans Memorial": [
+   41.887066,
+   -87.627155,
+   "node/3572924493"
+  ],
+  "35 E Wacker (Jewelers Building)": [
+   41.886528,
+   -87.626792,
+   "way/124865488"
+  ],
+  "Chicago Theatre": [
+   41.885415,
+   -87.627304,
+   "way/124873919"
+  ],
+  "Crown Fountain": [
+   41.881716,
+   -87.623753,
+   "way/126945440"
+  ],
+  "Board of Trade Building": [
+   41.877506,
+   -87.631783,
+   "way/28951633"
+  ],
+  "Trump Tower": [
+   41.888873,
+   -87.626457,
+   "way/64594680"
+  ],
+  "Tribune Tower": [
+   41.890552,
+   -87.623328,
+   "way/150407241"
+  ],
+  "Marina City": [
+   41.887958,
+   -87.629141,
+   "way/1177923716"
+  ],
+  "Chicago Cultural Center": [
+   41.88388,
+   -87.624985,
+   "relation/15899437"
+  ],
+  "Wrigley Building": [
+   41.889661,
+   -87.624796,
+   "relation/17460539"
+  ]
+ }
+}

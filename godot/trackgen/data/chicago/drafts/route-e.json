@@ -103,6 +103,52 @@
    1285033490,
    1285033491
   ],
+  "near": [
+   [
+    "Art Institute lions",
+    8
+   ],
+   [
+    "Vietnam Veterans Memorial",
+    13
+   ],
+   [
+    "Chicago Architecture Center",
+    24
+   ],
+   [
+    "Michigan Ave Bridge (bridgehouse)",
+    28
+   ],
+   [
+    "Route 66 start sign",
+    32
+   ],
+   [
+    "Pritzker Military Museum",
+    32
+   ],
+   [
+    "Stock Exchange Arch",
+    39
+   ],
+   [
+    "Crown Fountain",
+    46
+   ],
+   [
+    "Chicago Cultural Center",
+    51
+   ],
+   [
+    "35 E Wacker (Jewelers Building)",
+    53
+   ],
+   [
+    "Cloud Gate (the Bean)",
+    83
+   ]
+  ],
   "longest_straight_m": 1101,
   "right_angles": 6,
   "new_m": 1240,

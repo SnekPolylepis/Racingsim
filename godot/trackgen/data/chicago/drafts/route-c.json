@@ -120,6 +120,64 @@
    1185609018,
    1191329605
   ],
+  "near": [
+   [
+    "Route 66 start sign",
+    7
+   ],
+   [
+    "Vietnam Veterans Memorial",
+    13
+   ],
+   [
+    "Pritzker Military Museum",
+    16
+   ],
+   [
+    "Mir\u00f3's Chicago",
+    18
+   ],
+   [
+    "Chicago Architecture Center",
+    24
+   ],
+   [
+    "Michigan Ave Bridge (bridgehouse)",
+    28
+   ],
+   [
+    "Art Institute lions",
+    31
+   ],
+   [
+    "Stock Exchange Arch",
+    32
+   ],
+   [
+    "Picasso (Daley Plaza)",
+    43
+   ],
+   [
+    "Chicago Cultural Center",
+    45
+   ],
+   [
+    "35 E Wacker (Jewelers Building)",
+    53
+   ],
+   [
+    "Willis Tower",
+    56
+   ],
+   [
+    "Crown Fountain",
+    77
+   ],
+   [
+    "Cloud Gate (the Bean)",
+    95
+   ]
+  ],
   "longest_straight_m": 968,
   "right_angles": 21,
   "new_m": 2460,
