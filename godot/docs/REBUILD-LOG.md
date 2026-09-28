@@ -2830,3 +2830,4 @@ Owner request: fix misplaced assets and props, make three passes each on Chicago
   - Nature-scatter offsets are measured from the verge's outer edge, not the centre line, so props no longer straddle the armco.
   - `RoadScatter.max_overhang` (2.5 m) keeps tree crowns from hanging over the lanes. Shots 003, 004, 007, 027 and 033 changed most.
 - **Also:** `clip_scan` allowlists the barrier fences. The Kenney colormaps moved to `Textures/` (their GLBs reference them there; import errors before).
+Checks: `--check-only` clean; gdformat clean; `ci_gates.py` 39/39; windowed `--features` 77 checks, 0 failures. The Chicago pass-3 and NS pass-2 visual reviews have no failures.
