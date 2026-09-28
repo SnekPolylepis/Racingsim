@@ -1,4 +1,4 @@
-RACING SIM - REBUILD PREVIEW 8 (2026-09-28)
+RACING SIM - REBUILD PREVIEW 9 (2026-09-28)
 
 A preliminary build of the rebuilt game: a full 3-D car on hand-built 3-D circuits. It is a
 preview for testing, not a finished release. No installation, browser or Godot editor needed.
@@ -38,6 +38,14 @@ DRIVING
   E/Shift and Q/Ctrl shift up/down, R reset to the grid.
   V change camera (chase, high chase, bonnet, two overhead), Y telemetry, B debug.
   Esc pauses. Controllers work too (left stick, triggers, bumpers); rebind in Settings > Controls.
+
+NEW IN PREVIEW 9
+  - Chase camera: it no longer trails far behind at speed; it sits 6-7 m back at any speed.
+  - Chicago: Lower Wacker's retaining walls are now the barriers, with pilasters, dock doors and
+    stains; raised red and white kerbs with storm drains; concrete sidewalks; animated river and
+    lake water; a lowered Riverwalk so the river shows from Upper Wacker; signal poles, signs,
+    parked cars and props moved out of the lanes and off the lawns.
+  - Nordschleife: verge trees, grass and rocks no longer straddle the barriers or hang over the lanes.
 
 NEW IN PREVIEW 8
   - Ferrari 296 GT3: a detailed model in the Verstappen Racing livery, with its real wheels.

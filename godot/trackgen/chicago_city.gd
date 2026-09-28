@@ -27,6 +27,13 @@ const LAKE_Y = 6.5
 const LOW_FLOOR_Y = -0.08
 ## Open ground this close to the lake is lakefront lawn (the Lakefront Trail strip OSM leaves unmapped).
 const LAKEFRONT_M = 150.0
+## The Riverwalk: open ground within RIVERWALK_M of the river and near Upper Wacker drops to this level, just above
+## the water, so the drive overlooks the river instead of a street-level ledge with river walls to road height
+## (the water was hidden from Upper Wacker until more than ~140 m out). Cells under the road stay at street level.
+const TERRACE_Y = -1.3
+const RIVERWALK_M = 36.0
+const TERRACE_ROUTE_MIN = 24.0
+const TERRACE_ROUTE_MAX = 70.0
 const CHUNK = 600.0
 ## The route's half width plus verge: streets and buildings keep this far (plus their own margin) from it.
 const ROUTE_CLEAR = 9.5
@@ -87,12 +94,20 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	# Buildings.
 	var near_route = []
 	var kept_buildings = []
+	# 20 m ground cells any kept building covers: never lowered to the Riverwalk (the building would float).
+	var built_cells = {}
 	var i = 0
 	for b in doc.buildings:
 		var ring = _ring(b.f)
 		i += 1
 		if ring.size() < 3 or _touches_route(route, ring, 6.0) or _near_any(skip_at, _centroid(ring)):
 			continue
+		var box = Rect2(ring[0], Vector2.ZERO)
+		for q in ring:
+			box = box.expand(q)
+		for cx in range(floori(box.position.x / 20.0), floori(box.end.x / 20.0) + 1):
+			for cz in range(floori(box.position.y / 20.0), floori(box.end.y / 20.0) + 1):
+				built_cells[Vector2i(cx, cz)] = true
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
 		var facade = _st(target, _centroid(ring), "facade")
@@ -119,15 +134,16 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			water_polys.append(ring)
 			var wy = _water_level(ring)
 			_flat(_st(flat_chunks, _centroid(ring), "water"), ring, wy)
-			_walls(_st(flat_chunks, _centroid(ring), "wall"), ring, wy - 0.4, STREET_Y - 0.04)
 			stats.water += 1
 	# A park the circuit crosses (Grant Park) can't be one raised polygon over the road; its ground tiles
 	# below turn to lawn instead, so it no longer falls back to bare concrete.
 	var crossed_parks = []
+	var park_rings = []
 	for poly in doc.parks:
 		var ring = _ring(poly)
 		if ring.size() < 3:
 			continue
+		park_rings.append(ring)
 		if _touches_route(route, ring, 2.0):
 			crossed_parks.append(ring)
 		else:
@@ -141,9 +157,12 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			lo = lo.min(Vector2(p[0], p[1]))
 			hi = hi.max(Vector2(p[0], p[1]))
 	var tile = 20.0
-	var shore = _lakefront_cells(water_polys, tile, LAKEFRONT_M)
+	var shore = _shore_cells(water_polys, tile, LAKEFRONT_M, LAKE_Y)
+	var riverside = _shore_cells(water_polys, tile, RIVERWALK_M, WATER_Y)
+	var terrace_cells = {}
 	var water_cells = {}
 	var low_cells = {}
+	var lawn_cells = {}
 	var x = floorf(lo.x / tile) * tile
 	while x < hi.x:
 		var z = floorf(lo.y / tile) * tile
@@ -154,8 +173,13 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 				water_cells[cell] = true
 			elif _near_low_route(route, c, 26.0):
 				low_cells[cell] = true
+			elif riverside.has(cell) and not built_cells.has(cell) and _riverwalk_route_ok(route, c):
+				terrace_cells[cell] = true
+				_quad_flat(_st(flat_chunks, c, "ground"), Vector2(x, z), tile, TERRACE_Y)
 			else:
 				var lawn = shore.has(cell) or _in_water(crossed_parks, c)
+				if lawn:
+					lawn_cells[cell] = true
 				var kind = "park" if lawn else "ground"
 				_quad_flat(_st(flat_chunks, c, kind), Vector2(x, z), tile, STREET_Y - 0.04)
 				stats.ground_tiles += 1
@@ -182,6 +206,38 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			var b = at + side[2]
 			# A two-point ring gives both faces (a->b, then b->a).
 			_walls(_st(chunks, mid, "wall"), PackedVector2Array([a, b]), LOW_FLOOR_Y, STREET_Y - 0.04)
+	# The Riverwalk's retaining walls, up to whatever it meets (street, or the lower-level cut's floor).
+	for cell in terrace_cells:
+		var at = Vector2(cell.x * tile, cell.y * tile)
+		var mid = at + Vector2(tile, tile) * 0.5
+		for side in [
+			[Vector2i(1, 0), Vector2(tile, 0), Vector2(tile, tile)],
+			[Vector2i(-1, 0), Vector2(0, tile), Vector2(0, 0)],
+			[Vector2i(0, 1), Vector2(tile, tile), Vector2(0, tile)],
+			[Vector2i(0, -1), Vector2(0, 0), Vector2(tile, 0)]
+		]:
+			var next = cell + side[0]
+			if terrace_cells.has(next) or water_cells.has(next):
+				continue
+			var top = LOW_FLOOR_Y if low_cells.has(next) else STREET_Y - 0.04
+			_walls(_st(chunks, mid, "wall"), PackedVector2Array([at + side[1], at + side[2]]), TERRACE_Y, top)
+	# River and lake walls up to the street, or only to the Riverwalk where the ground beside them was lowered.
+	var wall_top = func(p: Vector2) -> float:
+		var cell = Vector2i(floori(p.x / tile), floori(p.y / tile))
+		for dx in [-1, 0, 1]:
+			for dz in [-1, 0, 1]:
+				if terrace_cells.has(cell + Vector2i(dx, dz)):
+					return TERRACE_Y + 0.02
+		return STREET_Y - 0.04
+	for ring in water_polys:
+		_walls(
+			_st(flat_chunks, _centroid(ring), "wall"),
+			ring,
+			_water_level(ring) - 0.4,
+			STREET_Y - 0.04,
+			wall_top
+		)
+	stats.riverwalk_cells = terrace_cells.size()
 	# Commit every chunk's surfaces.
 	for group in [
 		[chunks, 0.0, "Chunk"], [low_chunks, LOW_RANGE_M, "Low"], [flat_chunks, FLAT_RANGE_M, "Flat"]
@@ -204,6 +260,16 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			)
 			holder.add_child(node)
 			node.owner = asset
+	# Not scene metadata (chicago.gd strips them): which 20 m street tiles are lawn, water or the lower cut, for
+	# props that belong on pavement.
+	stats.ground = {
+		"tile": tile,
+		"lawn": lawn_cells,
+		"water": water_cells,
+		"low": low_cells,
+		"terrace": terrace_cells,
+		"parks": park_rings
+	}
 	return stats
 
 
@@ -396,16 +462,34 @@ static func _touches_route(route: Dictionary, ring: PackedVector2Array, margin: 
 	return Geometry2D.is_point_in_polygon(c, ring) and _route_dist(route, c, 60.0) < 30.0
 
 
+## A Riverwalk cell must be near the upper route (Upper Wacker) but not under it.
+static func _riverwalk_route_ok(route: Dictionary, p: Vector2) -> bool:
+	var best = INF
+	var cx = floori(p.x / 25.0)
+	var cz = floori(p.y / 25.0)
+	var r = ceili(TERRACE_ROUTE_MAX / 25.0)
+	for dx in range(-r, r + 1):
+		for dz in range(-r, r + 1):
+			for q in route.get(Vector2i(cx + dx, cz + dz), []):
+				var d = p.distance_to(Vector2(q.x, q.z))
+				# Nothing may be lowered anywhere near the road at any level.
+				if d < TERRACE_ROUTE_MIN:
+					return false
+				if q.y > STREET_Y - 1.0:
+					best = minf(best, d)
+	return best < TERRACE_ROUTE_MAX
+
+
 static func _near_low_route(route: Dictionary, p: Vector2, reach: float) -> bool:
 	return _route_dist(route, p, reach, true) < reach
 
 
-## Tile cells within `reach` of a lake-level shoreline, marked by walking each lake ring edge.
-static func _lakefront_cells(polys: Array, tile: float, reach: float) -> Dictionary:
+## Tile cells within `reach` of a shoreline at `level` (lake or river), marked by walking each ring edge.
+static func _shore_cells(polys: Array, tile: float, reach: float, level: float) -> Dictionary:
 	var cells = {}
 	var r = ceili(reach / tile)
 	for ring in polys:
-		if _water_level(ring) != LAKE_Y:
+		if _water_level(ring) != level:
 			continue
 		for i in ring.size():
 			var a: Vector2 = ring[i]
@@ -489,7 +573,10 @@ static func _quad_flat(st: SurfaceTool, at: Vector2, size: float, y: float) -> v
 		st.add_vertex(Vector3(p[idx].x, y, p[idx].y))
 
 
-static func _walls(st: SurfaceTool, ring: PackedVector2Array, y0: float, y1: float) -> void:
+## `top_at` (Callable(Vector2) -> float), when given, sets the top per piece of at most 10 m along each edge.
+static func _walls(
+	st: SurfaceTool, ring: PackedVector2Array, y0: float, y1: float, top_at: Callable = Callable()
+) -> void:
 	for i in ring.size():
 		var a = ring[i]
 		var b = ring[(i + 1) % ring.size()]
@@ -497,10 +584,17 @@ static func _walls(st: SurfaceTool, ring: PackedVector2Array, y0: float, y1: flo
 		if (absf(a.x - b.x) < 0.5 or absf(a.y - b.y) < 0.5) and a.distance_to(b) > 300.0:
 			continue
 		var n = Vector3(b.y - a.y, 0.0, a.x - b.x).normalized()
-		var v = [Vector3(a.x, y0, a.y), Vector3(b.x, y0, b.y), Vector3(b.x, y1, b.y), Vector3(a.x, y1, a.y)]
-		for idx in [0, 1, 2, 0, 2, 3]:
-			st.set_normal(n)
-			st.add_vertex(v[idx])
+		var pieces = maxi(1, ceili(a.distance_to(b) / 10.0)) if top_at.is_valid() else 1
+		for k in pieces:
+			var p = a.lerp(b, float(k) / pieces)
+			var q = a.lerp(b, float(k + 1) / pieces)
+			var top = top_at.call((p + q) * 0.5) if top_at.is_valid() else y1
+			var v = [
+				Vector3(p.x, y0, p.y), Vector3(q.x, y0, q.y), Vector3(q.x, top, q.y), Vector3(p.x, top, p.y)
+			]
+			for idx in [0, 1, 2, 0, 2, 3]:
+				st.set_normal(n)
+				st.add_vertex(v[idx])
 
 
 ## One street: kept segment by segment where it is clear of the circuit. Returns whether any part was kept.

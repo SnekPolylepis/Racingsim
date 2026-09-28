@@ -37,6 +37,9 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 ## or bramble/shrub rows), for a band that reads as one kind of plant instead of the full mix. Empty uses
 ## every species, weighted as usual.
 @export var species_indices: PackedInt32Array = []
+## Cards only: when >= 0, a card stands back far enough that its crown reaches at most this far over the verge
+## edge (a broad tree card at the armco threw its low photographed branches across the lanes at car height).
+@export var max_overhang = -1.0
 @export_tool_button("Bake scatter", "Callable") var bake_button = bake
 
 var last_bake = {}
@@ -71,7 +74,6 @@ func layout() -> Dictionary:
 		for i in count:
 			var s = start + rng.randf() * span
 			var beyond = rng.randf_range(offset_min, offset_max)
-			var e = RoadBuilder.beyond_edge(c, keys, road.closed, spline, s, side_sign, beyond)
 			var yaw = rng.randf() * TAU
 			var basis: Basis
 			if mesh == null:
@@ -81,11 +83,14 @@ func layout() -> Dictionary:
 				var height = pick.height * height_scale
 				var width = height * (1.0 + SINK) * card[2] / card[3] * rng.randf_range(1.0, 1.4)
 				basis = Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3(width, height, width))
+				if max_overhang >= 0.0:
+					beyond = maxf(beyond, width * .5 - max_overhang)
 				out.cards.append(Color(card[0], card[1], card[2], card[3]))
 				out.tint.append(pick.tint)
 			else:
 				var size = rng.randf_range(scale_min, scale_max)
 				basis = Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3.ONE * size)
+			var e = RoadBuilder.beyond_edge(c, keys, road.closed, spline, s, side_sign, beyond)
 			out.xforms.append(Transform3D(basis, road.transform * e.point))
 			out.beyond.append(beyond)
 			out.s.append(fposmod(s, length))

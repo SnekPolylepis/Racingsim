@@ -25,6 +25,7 @@ var surface
 var walls
 var car
 var presets: Dictionary = {}
+var chase_offset = Vector3.ZERO
 var preset_idx = 2
 var controls = Controls.new()
 var visuals = Visuals.new()
@@ -376,8 +377,10 @@ func _update_chase(dt: float, snap = false) -> void:
 	var forward: Vector3 = model.root.basis.x
 	var pos: Vector3 = model.root.position
 	var target = pos + forward * 6.5 + Vector3.UP * .8
-	var desired = pos - forward * (6.8 + minf(car.speed * .035, 2.2)) + Vector3.UP * 2.7
-	camera.position = desired if snap else camera.position.lerp(desired, 1.0 - exp(-dt * 8.0))
+	var offset = -forward * (5.9 + minf(car.speed * .02, 1.2)) + Vector3.UP * 2.7
+	# Smooth the offset from the car, not a world point (which trails by speed/rate at speed).
+	chase_offset = offset if snap else chase_offset.lerp(offset, 1.0 - exp(-dt * 8.0))
+	camera.position = pos + chase_offset
 	camera.position.y = maxf(camera.position.y, camera_floor)
 	camera.look_at(target, Vector3.UP)
 
