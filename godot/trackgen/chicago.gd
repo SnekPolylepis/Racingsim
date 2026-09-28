@@ -28,7 +28,7 @@ const NO_SHADOW = [
 	"CloudGatePlaza",
 	"ChicagoBridgeDecks"
 ]
-const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
+const PARKED = ["taxi", "taxi", "sedan", "sedan", "hatch", "suv", "police", "sports", "sports2"]
 const DATA = "res://trackgen/data/chicago/route.json"
 ## Named corners for the visual review: [route.json point index, name]. Stations are found on the road.
 const CORNERS = [
@@ -49,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 113
+const CACHE_REVISION = 115
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -924,6 +924,13 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 ## NFSU street neon (owner 2026-09-28): storefront bars and blade signs on the building line either side of
 ## the route, one batched mesh per colour, plus a coloured light every few signs so the wet road picks them
 ## up. Night only (chicago_night meta).
+const SIGN_FONT = preload("res://assets/fonts/Rajdhani-Bold.ttf")
+const SIGN_WORDS = [
+	"DINER", "MOTEL", "LIQUOR", "PAWN", "PIZZA", "OPEN 24H", "CLUB", "TATTOO", "HOTEL", "BAR",
+	"ARCADE", "NOODLES", "GARAGE", "RECORDS", "CAFE", "JAZZ", "PARKING", "TOWING", "CASH", "BLUES"
+]
+
+
 static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var colors = [
 		Color("ff2a8a"), Color("21e0ff"), Color("5dff6a"), Color("ff3b2f"), Color("7a5cff"), Color("ffb020")
@@ -948,9 +955,25 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 			var base = at.pos + basis.x * side * lateral
 			# ponytail: signs are placed on a fixed offset, not snapped to real facades; some float in plazas.
 			if rng.randf() < 0.5:
-				# Storefront bar: long, low, facing the road.
+				# Storefront sign: neon text facing the road, with an underline tube.
 				var y = 3.2 + rng.randf() * 2.5
-				facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.12, .35, 5.0 + rng.randf() * 6.0), Color.WHITE, basis)
+				var sign = Label3D.new()
+				sign.text = SIGN_WORDS[rng.randi() % SIGN_WORDS.size()]
+				sign.font = SIGN_FONT
+				sign.font_size = 96
+				sign.pixel_size = 0.012
+				sign.outline_size = 18
+				sign.shaded = false
+				sign.double_sided = false
+				sign.modulate = colors[k] * 3.5
+				sign.outline_modulate = Color(colors[k].r, colors[k].g, colors[k].b, 0.35)
+				sign.position = base + Vector3(0, y + .5, 0)
+				sign.basis = Basis.looking_at(basis.x * side, Vector3.UP)
+				sign.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				sign.visible = false
+				sign.set_meta("chicago_night", true)
+				attach(asset, parent, sign, "NeonSign%d_%d" % [i, side])
+				facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.1, .08, 4.0), Color.WHITE, basis)
 			else:
 				# Blade sign: vertical, sticking out toward the street.
 				var h = 4.0 + rng.randf() * 5.0
@@ -1080,7 +1103,7 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 	# in the worst view before), still culled beyond 320 m.
 	var pieces = []
 	for m in PARKED:
-		var root = load("res://assets/chicago/cars/%s.glb" % m).instantiate()
+		var root = load("res://assets/chicago/cars-q/%s.glb" % m).instantiate()
 		var model = []
 		for mi in root.find_children("*", "MeshInstance3D", true, false):
 			var local = Transform3D.IDENTITY
@@ -1111,8 +1134,8 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 				fwd = -fwd
 			if not keep_clear(p, 40.0) and fwd.length_squared() > 1e-4:
 				var model = rng.randi() % pieces.size()
-				# Kenney cars are 2.75 m long along +Z; 1.65 makes a 4.5 m car.
-				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.65)
+				# Quaternius cars are real-scale (3.3-4.2 m) along +Z.
+				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.08)
 				var key = Vector3i(model, floori(p.x / 400.0), floori(p.z / 400.0))
 				if not groups.has(key):
 					groups[key] = []

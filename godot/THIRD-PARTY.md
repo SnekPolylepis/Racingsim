@@ -150,3 +150,5 @@ textures reduced.
 - "PSX Barrels Pack" by Shazly, CC BY 4.0 (`assets/chicago/barrels/`).
 - "Chicago-Style Econolite 8x5 Signals" by Signalrenders, CC BY 4.0 (`assets/chicago/landmarks/signal_corner.glb`).
 - "Low Poly Night City Building Skyline" by 99.Miles, CC BY 4.0 (`assets/chicago/landmarks/night_skyline.glb`).
+
+| Quaternius Cars Bundle (parked cars, Chicago) | Quaternius via poly.pizza | CC0 1.0 | godot/assets/chicago/cars-q/ |

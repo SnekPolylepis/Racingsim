@@ -40,12 +40,13 @@ const DEFAULT_SETTINGS = {
 	"debug": false,
 	"telemetry": false,
 	"quality": 1,
-	"render_resolution": 0,
+	"render_resolution": 2,
 	"upscale": 1,
 	"colour_dither": true,
 	"speed_blur": 1,
 	"time_of_day": 0,
-	"native_msaa": false,
+	"look_rev": 0,
+	"native_msaa": true,
 	"output_mode": 0,
 	"crt_filter": false,
 	"framebuffer_colour": 0,
@@ -138,6 +139,7 @@ var skid_times = []
 var prev_pose = {}
 var v2_smoke = false
 var v2_flow_test = false
+var cam_dir = Vector3.ZERO
 var v2_export_check = false
 var v2_visual_smoke = false
 var v2_surface
@@ -394,6 +396,11 @@ func setup_v2():
 		for key in ["keys", "pad"]:
 			if saved.get(key) is Dictionary:
 				settings[key] = saved[key]
+	# Owner 2026-09-28: the SD raster read as blurry; move saved settings to native + MSAA once.
+	if int(settings.look_rev) < 1:
+		settings.look_rev = 1
+		settings.render_resolution = 2
+		settings.native_msaa = true
 	if v2_smoke or v2_present or v2_flow_test or v2_export_check:
 		settings.folder = "user://native-tests/v2"
 	elif settings.folder == "user://":
@@ -531,8 +538,11 @@ func load_v2_track(id: String) -> bool:
 		track.free()
 	track = next
 	add_child(track)
-	apply_track_night()
 	v2_track_id = id
+	# Chicago is an NFS night city by default; the player can still switch in Settings.
+	if id == "chicago":
+		settings.time_of_day = 1
+	apply_track_night()
 	if environment != null:
 		apply_time_of_day()
 	v2_surface = track.surface()
@@ -1003,11 +1013,40 @@ func update_camera(dt, snap = false):
 		camera.position = pos + Vector3.UP * 120
 		camera.look_at(pos, Vector3(0, 0, -1) if settings.camera == 3 else forward)
 		return
+	if settings.camera == 0:
+		chase_camera(dt, snap, pos, forward)
+		return
 	camera.position = desired if snap else camera.position.lerp(desired, 1 - exp(-dt * 7))
 	var ground = camera_ground
 	camera.position.y = maxf(camera.position.y, ground + (.6 if settings.camera == 2 else 1.6))
 	camera.look_at(target, model.root.basis.y if settings.camera == 2 else Vector3.UP)
 	camera.fov = lerpf(camera.fov, 64 + minf(car.speed * .12, 8), minf(dt * 2, 1))
+
+
+## Chase cam (owner 2026-09-28). The camera orbits on a smoothed yaw direction instead of lerping its
+## position, so it never jitters with the chassis.
+## Simcade = NFS: swings toward the direction of travel (shows drifts), lazy yaw, pulls back and widens FOV
+## with speed. Sim = Assetto Corsa: tight to the car's heading, almost rigid, constant FOV, no speed tricks.
+func chase_camera(dt: float, snap: bool, pos: Vector3, forward: Vector3) -> void:
+	var nfs = car.simcade_enabled
+	var flat_fwd = Vector3(forward.x, 0, forward.z).normalized()
+	var aim = flat_fwd
+	var vel = Vector3(car.vel.x, 0, car.vel.z)
+	if nfs and vel.length() > 4.0 and vel.normalized().dot(flat_fwd) > 0:
+		aim = flat_fwd.lerp(vel.normalized(), 0.6).normalized()
+	if snap or cam_dir == Vector3.ZERO:
+		cam_dir = aim
+	else:
+		var rate = 3.2 if nfs else 9.0
+		cam_dir = cam_dir.slerp(aim, 1 - exp(-dt * rate)).normalized()
+	var kmh = car.speed * 3.6
+	var dist = (5.6 + (clampf(kmh / 250.0, 0, 1) * 1.6 if nfs else 0.0)) * zoom_user
+	var height = (1.75 if nfs else 1.55) * zoom_user * lerpf(1.4, 0.85, settings.tilt)
+	camera.position = pos - cam_dir * dist + Vector3.UP * height
+	camera.position.y = maxf(camera.position.y, camera_ground + 0.8)
+	camera.look_at(pos + cam_dir * (4.0 if nfs else 6.0) + Vector3.UP * (0.9 if nfs else 0.75), Vector3.UP)
+	var fov = 62 + clampf(kmh / 250.0, 0, 1) * 16 if nfs else 58.0
+	camera.fov = fov if snap else lerpf(camera.fov, fov, minf(dt * 3, 1))
 
 
 func _input(event):
@@ -1184,7 +1223,7 @@ func apply_time_of_day():
 		environment.tonemap_mode = (
 			Environment.TONE_MAPPER_FILMIC if nfs_night else Environment.TONE_MAPPER_LINEAR
 		)
-		environment.tonemap_exposure = 0.95 if nfs_night else 1.0
+		environment.tonemap_exposure = 0.82 if nfs_night else 1.0
 		set_rain(nfs_night)
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
