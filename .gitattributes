@@ -14,3 +14,4 @@
 *.scn binary
 *.exe binary
 *.zip binary
+godot/assets/tracks/monza/monza.glb filter=lfs diff=lfs merge=lfs -text

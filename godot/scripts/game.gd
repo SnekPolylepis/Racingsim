@@ -1,4 +1,4 @@
-extends Node3D
+﻿extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
 ## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
@@ -361,8 +361,19 @@ func set_quality(value):
 	environment.ssao_enabled = quality == 2
 	environment.ssao_radius = 1.4
 	environment.ssao_intensity = 1.6
-	environment.ssr_enabled = false
-	environment.glow_enabled = false
+	# Owner 2026-09-28: NFS-era wet-city look. SSR mirrors neon in the wet road, HDR glow blooms lamps/signs.
+	environment.ssr_enabled = true
+	environment.ssr_max_steps = 96
+	environment.ssr_fade_in = 0.1
+	environment.ssr_fade_out = 1.5
+	environment.ssr_depth_tolerance = 0.4
+	environment.glow_enabled = true
+	environment.glow_intensity = 0.6
+	environment.glow_bloom = 0.08
+	environment.glow_hdr_threshold = 1.3
+	environment.glow_blend_mode = Environment.GLOW_BLEND_MODE_ADDITIVE
+	for i in 7:
+		environment.set_glow_level(i, 1.0 if i in [1, 2, 3, 4, 5] else 0.0)
 	environment.sdfgi_enabled = false
 
 
@@ -799,7 +810,7 @@ func physics_v2(dt):
 		sound.impact(impact)
 	if race.update_asset(car, track, dt):
 		save_record()
-		message("New best lap · " + RaceModel.time_text(race.best))
+		message("New best lap Â· " + RaceModel.time_text(race.best))
 	if race.sectors_dirty:
 		save_sectors()
 	elapsed += dt
@@ -1163,10 +1174,58 @@ func apply_time_of_day():
 			environment.fog_depth_begin = 180 if night else 350
 			environment.fog_depth_end = 1900 if night else 2800
 			camera.far = 3200
+		# NFSU night haze: lamps and neon scatter in a thin volumetric fog; filmic keeps the highlights.
+		var nfs_night = night and v2_track_id == "chicago"
+		environment.volumetric_fog_enabled = nfs_night
+		environment.volumetric_fog_density = 0.004
+		environment.volumetric_fog_albedo = Color("b8a894")
+		environment.volumetric_fog_length = 120.0
+		environment.volumetric_fog_ambient_inject = 0.0
+		environment.tonemap_mode = (
+			Environment.TONE_MAPPER_FILMIC if nfs_night else Environment.TONE_MAPPER_LINEAR
+		)
+		environment.tonemap_exposure = 0.95 if nfs_night else 1.0
+		set_rain(nfs_night)
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
 			warm_ghost.call_deferred()
 	apply_track_night()
+
+
+## NFSU2 drizzle: camera-parented streak particles, built on first use.
+func set_rain(on: bool) -> void:
+	var rain = camera.get_node_or_null("Rain") as GPUParticles3D
+	if rain == null:
+		if not on:
+			return
+		rain = GPUParticles3D.new()
+		rain.name = "Rain"
+		rain.amount = 6000
+		rain.lifetime = 0.9
+		rain.local_coords = false
+		rain.visibility_aabb = AABB(Vector3(-40, -30, -60), Vector3(80, 60, 80))
+		var pm = ParticleProcessMaterial.new()
+		pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+		pm.emission_box_extents = Vector3(30, 2, 30)
+		pm.direction = Vector3(0.05, -1, 0)
+		pm.spread = 3.0
+		pm.initial_velocity_min = 22.0
+		pm.initial_velocity_max = 28.0
+		pm.gravity = Vector3(0, -9.8, 0)
+		rain.process_material = pm
+		var quad = QuadMesh.new()
+		quad.size = Vector2(0.015, 0.7)
+		var mat = StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y
+		mat.albedo_color = Color(0.75, 0.8, 0.9, 0.22)
+		quad.material = mat
+		rain.draw_pass_1 = quad
+		rain.position = Vector3(0, 12, -18)
+		camera.add_child(rain)
+	rain.emitting = on
+	rain.visible = on
 
 
 ## Look-2: the loaded TrackAsset's sodium lamps and the road_v2 amber streaks follow Afterhours.

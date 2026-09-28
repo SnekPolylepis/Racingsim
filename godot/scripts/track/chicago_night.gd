@@ -1,4 +1,4 @@
-extends RefCounted
+﻿extends RefCounted
 ## Toggle original Chicago accent fixtures, including materials embedded in packed track caches.
 
 
@@ -7,7 +7,7 @@ static func set_night(root: Node, on: bool) -> void:
 	if scenery == null:
 		return
 	for node in scenery.find_children("*", "", true, false):
-		if node is Light3D and node.has_meta("chicago_night"):
+		if (node is Light3D or node is MeshInstance3D) and node.has_meta("chicago_night"):
 			node.visible = on
 		var mesh: Mesh = null
 		if node is MeshInstance3D:

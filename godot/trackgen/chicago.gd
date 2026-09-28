@@ -1,4 +1,4 @@
-extends SceneTree
+﻿extends SceneTree
 ## CHI-01. Authored race route on Chicago's geographic scaffold, with explicit game-only connectors.
 ## Source/provenance: trackgen/data/chicago/README.md. Heights and corner easing are authored.
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
@@ -49,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 111
+const CACHE_REVISION = 113
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -168,7 +168,7 @@ static func build_asset() -> Node3D:
 	var asset = TrackAsset.new()
 	asset.name = "Chicago"
 	asset.id = "chicago"
-	asset.display_name = "Chicago — River & Lake"
+	asset.display_name = "Chicago â€” River & Lake"
 	asset.version = 2
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
@@ -876,6 +876,7 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 	var mesh = fixtures.commit()
 	mesh.surface_set_material(0, sodium)
 	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
+	add_neon(asset, parent, road)
 	var pier = world(data().landmarks["Navy Pier"])
 	for i in 6:
 		box(
@@ -918,6 +919,66 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 				Vector3(.5, 1.6, .5),
 				warm
 			)
+
+
+## NFSU street neon (owner 2026-09-28): storefront bars and blade signs on the building line either side of
+## the route, one batched mesh per colour, plus a coloured light every few signs so the wet road picks them
+## up. Night only (chicago_night meta).
+static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
+	var colors = [
+		Color("ff2a8a"), Color("21e0ff"), Color("5dff6a"), Color("ff3b2f"), Color("7a5cff"), Color("ffb020")
+	]
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 1979
+	var tools = []
+	for c in colors:
+		var st = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		tools.append(st)
+	var stations = road.last_bake.stations
+	var lights = 0
+	for i in range(0, stations.size(), 14):
+		var at = stations[i]
+		var basis = Basis.looking_at(at.tangent, Vector3.UP)
+		for side in [-1, 1]:
+			if rng.randf() < 0.35:
+				continue
+			var k = rng.randi() % colors.size()
+			var lateral = HALF_WIDTH + 6.5 + rng.randf() * 2.0
+			var base = at.pos + basis.x * side * lateral
+			# ponytail: signs are placed on a fixed offset, not snapped to real facades; some float in plazas.
+			if rng.randf() < 0.5:
+				# Storefront bar: long, low, facing the road.
+				var y = 3.2 + rng.randf() * 2.5
+				facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.12, .35, 5.0 + rng.randf() * 6.0), Color.WHITE, basis)
+			else:
+				# Blade sign: vertical, sticking out toward the street.
+				var h = 4.0 + rng.randf() * 5.0
+				facade_box(
+					tools[k], base - basis.x * side * 1.0 + Vector3(0, 5.0 + h * .5, 0),
+					Vector3(1.6, h, .25), Color.WHITE, basis
+				)
+			if lights < 90 and rng.randf() < 0.45:
+				lights += 1
+				var light = OmniLight3D.new()
+				light.position = base - basis.x * side * 3.0 + Vector3(0, 4.5, 0)
+				light.light_color = colors[k]
+				light.light_energy = 3.0
+				light.omni_range = 16.0
+				light.omni_attenuation = 1.4
+				light.shadow_enabled = false
+				light.visible = false
+				light.set_meta("chicago_night", true)
+				attach(asset, parent, light, "NeonSpill%d" % lights)
+	for k in colors.size():
+		tools[k].generate_normals()
+		var mesh = tools[k].commit()
+		if mesh.get_surface_count() == 0:
+			continue
+		mesh.surface_set_material(0, night_material(colors[k], 5.0))
+		var node = mesh_node(asset, parent, "Neon%d" % k, mesh, Vector3.ZERO)
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.set_meta("chicago_night", true)
 
 
 ## Road sampling helpers shared by the street dressing: [curve, sorted section keys, elevation spline].
