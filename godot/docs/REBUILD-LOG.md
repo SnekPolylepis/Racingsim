@@ -2831,3 +2831,11 @@ Owner request: fix misplaced assets and props, make three passes each on Chicago
   - `RoadScatter.max_overhang` (2.5 m) keeps tree crowns from hanging over the lanes. Shots 003, 004, 007, 027 and 033 changed most.
 - **Also:** `clip_scan` allowlists the barrier fences. The Kenney colormaps moved to `Textures/` (their GLBs reference them there; import errors before).
 Checks: `--check-only` clean; gdformat clean; `ci_gates.py` 39/39; windowed `--features` 77 checks, 0 failures. The Chicago pass-3 and NS pass-2 visual reviews have no failures.
+
+## 2026-09-28  RELEASE Rebuild Preview 9  (Claude Sonnet 5)
+v0.1.0-preview.9 is main at 0128dda (Preview 8) plus the TRACK-POLISH branch (PR #81, merged here without merging that PR on GitHub, so this PR shows its commits until #81 lands): chase camera fix, Lower Wacker retaining-wall barriers, Chicago kerbs and sidewalks, animated water and Riverwalk terrace, placement fixes, Nordschleife verge-nature offsets.
+- **Documents:** `build/PLAY.txt` (Preview 9 section) and `docs/CHANGELOG.md`. THIRD-PARTY needs no change: TRACK-POLISH adds no third-party asset (the Kenney colormaps only moved inside their kit folders).
+- **Checks:** `--check-only` clean; gdformat clean; `run_gates.ps1 -All -Features` 40/40. Windows export: `--v2-export-check` V2 EXPORT PASS; the exported exe's windowed `-- --features` gives FEATURE RESULTS 77 checks, 0 failures, exit 0, empty stderr. CI's `gates` job on PR #81 failed only on `Could not preload resource` errors (CI's import cache, not code); its export-check and features jobs passed.
+- **Artifacts (local, `godot/build/`, gitignored):** `RacingSim-Preview9-Windows.zip` (225 MB; exe 335 MB) and `RacingSim-Preview9-macOS.zip` (250 MB).
+- **macOS caveat:** same as Preview 7: exported on Windows with the `macos.zip` template and Godot's ad-hoc signer, execute bit set in the zip; not launched or `codesign --verify`-checked on a Mac.
+- **Not done:** the GitHub pre-release itself (needs the owner's go-ahead), and frame rate on any machine but the RTX 4080.
