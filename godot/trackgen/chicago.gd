@@ -15,6 +15,7 @@ const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
 const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 const CatchFence = preload("res://scripts/track/catch_fence.gd")
+const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 ## Kenney Car Kit (CC0) parked-car models, copied from the CHI-assets-prep staging (assets/chicago/cars).
 const NO_SHADOW = [
 	"CityBase",
@@ -49,6 +50,12 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
+## Road below this height is in the Lower Wacker cut: retaining walls instead of street barriers.
+const CUT_BELOW_Y = 6.5
+## add_lower_deck() covers lower stations at y 0 south of z 720; its slabs' underside is 6.15 m up.
+const DECK_COVER_Y = .4
+const DECK_END_Z = 720.0
+const DECK_UNDERSIDE_Y = 6.15
 const CACHE_REVISION = 111
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
@@ -179,26 +186,44 @@ static func build_asset() -> Node3D:
 	road.grid_first_m = 35.0
 	road.grid_spacing_m = 12.0
 	road.grid_offset_m = 2.5
-	road.sections.append(
-		RoadSection.make(
-			0.0,
-			{
-				"width_left": HALF_WIDTH,
-				"width_right": HALF_WIDTH,
-				"crown": 0.0,
-				"kerb_left": RoadSection.Kerb.RAMP,
-				"kerb_right": RoadSection.Kerb.RAMP,
-				"kerb_width": .4,
-				"kerb_height": .025,
-				"verge_left": 1.0,
-				"verge_right": 1.0,
-				"verge_slope_deg": 0.0,
-				"verge_surface": 4
-			}
+	(
+		road
+		. sections
+		. append(
+			(
+				RoadSection
+				. make(
+					0.0,
+					{
+						"width_left": HALF_WIDTH,
+						"width_right": HALF_WIDTH,
+						"crown": 0.0,
+						# A city curb, not a racing kerb: a steep 8 cm face (painted red and white) up to the
+						# sidewalk strip the barriers stand on. The gutter pan and inlets are in add_road_details().
+						"kerb_left": RoadSection.Kerb.RAMP,
+						"kerb_right": RoadSection.Kerb.RAMP,
+						"kerb_width": .15,
+						"kerb_height": .08,
+						"verge_left": 1.0,
+						"verge_right": 1.0,
+						"verge_slope_deg": 0.0,
+						"verge_surface": 4
+					}
+				)
+			)
 		)
 	)
 	attach(asset, asset, road, "Main")
 	road.bake()
+	# The strip behind the curb is a concrete sidewalk, not the runoff asphalt its surface id draws (it read as
+	# a sandy verge; the city's pavement_05 reads tan in sun too). Grip and surface ids are unchanged.
+	var sidewalk = ChicagoCity._triplanar(
+		ChicagoCity.TEX + "Concrete034/Concrete034_color.jpg", 2.5, Color(0.72, 0.72, 0.7)
+	)
+	var road_mesh: ArrayMesh = asset.get_node("Road/Main").mesh
+	for i in road_mesh.get_surface_count():
+		if road_mesh.surface_get_material(i) == Ps2Materials.surface(4):
+			road_mesh.surface_set_material(i, sidewalk)
 	var corners = {}
 	for corner in CORNERS:
 		corners[corner[1]] = road.curve.get_closest_offset(world(data().points[corner[0]]))
@@ -208,36 +233,57 @@ static func build_asset() -> Node3D:
 	var bot = Path3D.new()
 	bot.curve = road.working_curve()
 	attach(asset, asset, bot, "BotLine")
+	# Street stretches get a low concrete barrier with debris fencing; below street level (Lower Wacker and its
+	# ramps) the retaining wall itself is the barrier (add_cut_walls).
+	var cut = lower_level_zones(road, CUT_BELOW_Y)
+	var length = road.last_bake.length
+	var street = []
+	for i in cut.size():
+		street.append([cut[i].to_m, cut[(i + 1) % cut.size()].from_m])
+	var barriers = []
 	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
-		var wall = WallPath.new()
-		wall.follow_road = NodePath("../Main")
-		wall.side = side
-		wall.kind = 2
-		wall.height = .65
-		wall.offset = .4
-		wall.step_m = 3.0
-		attach(asset, asset, wall, "LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier")
-		wall.bake()
+		var prefix = "LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier"
+		for kind in ["", "Cut"]:
+			var ranges = street if kind == "" else cut.map(func(z): return [z.from_m, z.to_m])
+			for i in ranges.size():
+				var wall = WallPath.new()
+				wall.follow_road = NodePath("../Main")
+				wall.side = side
+				wall.kind = 2
+				wall.height = .65 if kind == "" else 1.2
+				wall.thickness = -1.0 if kind == "" else .6
+				wall.offset = .4
+				wall.step_m = 3.0
+				wall.from_m = ranges[i][0]
+				wall.to_m = ranges[i][1] if ranges[i][1] < length - .01 else -1.0
+				attach(asset, asset, wall, "%s%s%d" % [prefix, kind, i])
+				wall.bake()
+				barriers.append(wall)
 	var scenery = Node3D.new()
 	attach(asset, asset, scenery, "Scenery")
-	# CHI-SC-1: debris fencing on top of both barriers, the look of a street circuit (Long Beach, Macau, NFSU's
-	# closed-street courses); without it the route read as a grey blockout. Visual only (the barrier keeps
+	# CHI-SC-1: debris fencing on top of the street barriers, the look of a street circuit (Long Beach, Macau,
+	# NFSU's closed-street courses); without it the route read as a grey blockout. Visual only (the barrier keeps
 	# collision). Baked after Scenery exists: CatchFence parents its mesh under Scenery and would otherwise
 	# create its own, renaming the city's node (and losing Scenery/CentennialWheel etc.).
-	for barrier in ["LeftBarrier", "RightBarrier"]:
+	for wall in barriers:
+		if "Cut" in str(wall.name):
+			continue
 		var fence = CatchFence.new()
-		fence.follow_wall = NodePath("../" + barrier)
-		fence.side = WallPath.Side.LEFT if barrier == "LeftBarrier" else WallPath.Side.RIGHT
+		fence.follow_wall = NodePath("../" + str(wall.name))
+		fence.side = wall.side
 		fence.offset = 0.0
 		fence.post_spacing = 4.0
 		fence.fence_height = 3.2
 		fence.solid = false
-		attach(asset, asset, fence, barrier + "Fence")
+		attach(asset, asset, fence, str(wall.name) + "Fence")
 		fence.bake()
+	add_cut_walls(asset, scenery, road, barriers.filter(func(w): return "Cut" in str(w.name)))
 	add_water_and_parks(asset, scenery)
 	# CHI-02: the real downtown from OpenStreetMap (buildings, every street, water, parks) replaces the
 	# procedural skyline. add_city() stays for reference but is no longer called.
 	var city = ChicagoCity.build(asset, scenery, road, data().landmarks, world)
+	var ground = city.ground
+	city.erase("ground")
 	asset.set_meta("city", city)
 	add_landmarks(asset, scenery)
 	add_river_bridges(asset, scenery)
@@ -246,7 +292,7 @@ static func build_asset() -> Node3D:
 	add_night_details(asset, scenery, road)
 	# CHI-LOOK-01: signals, crosswalks and stop lines at the cross streets.
 	ChicagoFurniture.build(asset, scenery, road.last_bake.stations, facade_box, night_material, attach)
-	ChicagoKit.sidewalk_props(asset, scenery, road.last_bake.stations)
+	ChicagoKit.sidewalk_props(asset, scenery, road.last_bake.stations, func(p): return on_pavement(ground, p))
 	# Ground-like scenery casts no useful shadow; it only costs shadow-pass draws (CHI-LOOK-02).
 	for node in scenery.get_children():
 		for prefix in NO_SHADOW:
@@ -254,8 +300,9 @@ static func build_asset() -> Node3D:
 				node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_park_trees(asset)
 	add_lakefront_trees(asset)
+	add_riverwalk_trees(asset, ground)
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
-	add_parked_cars(asset, scenery, road)
+	add_parked_cars(asset, scenery, road, ground)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
 	var lamps = TrackLights.place(road, 42.0, lower_level_zones(road), 1.2)
 	# Lower Wacker's fixtures hang below the deck; no 10 m poles through the upper roadway.
@@ -267,6 +314,20 @@ static func build_asset() -> Node3D:
 	var gantry = Gantry.new()
 	gantry.follow_road = NodePath("../Main")
 	gantry.clearance_height = 6.0
+	# The start line is just out of the Michigan turn; at s 0 the inside tower stood in the turn's approach lane.
+	# Use the first station from the line where both towers clear every part of the road.
+	var f = road_frame(road)
+	while gantry.station < 200.0:
+		var clear = true
+		for side in [-1, 1]:
+			var e = RoadBuilder.beyond_edge(
+				f[0], f[1], road.closed, f[2], gantry.station, side, gantry.extra_width
+			)
+			var q = f[0].get_closest_point(e.point)
+			clear = clear and Vector2(e.point.x - q.x, e.point.z - q.z).length() > HALF_WIDTH + 2.5
+		if clear:
+			break
+		gantry.station += 5.0
 	attach(asset, asset, gantry, "StartGantry")
 	gantry.bake()
 	var landmarks = Node3D.new()
@@ -324,19 +385,7 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	box(asset, parent, "MillenniumPark", world([41.8821, -87.6226, 7.6]), Vector3(210, .6, 380), lawn)
 	box(asset, parent, "GrantPark", world([41.8800, -87.6210, 7.3]), Vector3(440, .5, 260), lawn)
 	box(asset, parent, "Lakefront", world([41.8800, -87.6166, 6.8]), Vector3(65, .5, 470), pier_walk)
-	# The Riverwalk runs along the water below both road levels (CHI-SC-4): at street height (8.2) these slabs
-	# crossed Upper Wacker 0.4 m above the road.
-	box(
-		asset, parent, "RiverwalkPromenade", world([41.8871, -87.6261, -1.5]), Vector3(22, .3, 170), pier_walk
-	)
-	box(
-		asset,
-		parent,
-		"RiverwalkPromenadeWest",
-		world([41.8870, -87.6309, -1.5]),
-		Vector3(16, .3, 135),
-		pier_walk
-	)
+	# The Riverwalk is ChicagoCity's terrace (TERRACE_Y) along the river below Upper Wacker.
 
 
 static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
@@ -664,7 +713,8 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	# Lower Wacker. They stay above the 6.05 m luminaires' clearance line.
 	var beam_tool = SurfaceTool.new()
 	beam_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for i in range(0, st.size(), 8):
+	# Every 6 stations (9 m) so the 13 m slabs overlap on bends; every 8 left wedge gaps the sun shone through.
+	for i in range(0, st.size(), 6):
 		var at = st[i]
 		# Only the lower Wacker road, not the exposed game-only connector at the south end.
 		if at.pos.y > .1 or at.pos.z > 720:
@@ -699,9 +749,60 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	mesh_node(asset, parent, "WackerBeams", beam_mesh, Vector3.ZERO)
 
 
+## Below street level the retaining wall is the barrier (owner direction): each Cut barrier keeps its collision
+## (1.2 m, WallPath) but its mesh is replaced by a poured-concrete wall on the same inner face, up to the deck's
+## underside where Lower Wacker is covered and to street level in the open cut. Vertex colour carries the
+## height fraction (r), wall height / 10 (g) and deck cover (b = 0) for chicago_wall.gdshader's parapet, spray
+## and exhaust-soot bands.
+static func add_cut_walls(asset: Node3D, parent: Node, road: RoadPath, walls: Array) -> void:
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_smooth_group(-1)
+	for wall in walls:
+		wall.get_parent().get_node("Walls/" + str(wall.name) + "/Mesh").visible = false
+		var line: PackedVector3Array = wall.last_bake.line
+		var out: PackedVector3Array = wall.last_bake.outward
+		var ring = []
+		for i in line.size():
+			var covered = line[i].y < DECK_COVER_Y and line[i].z < DECK_END_Z
+			var top = DECK_UNDERSIDE_Y if covered else ChicagoCity.STREET_Y - .05
+			var o = out[i] * wall.last_bake.thickness
+			var soot = 0.0 if covered else 1.0
+			var g = (top - line[i].y) / 10.0
+			ring.append(
+				[
+					[line[i], Color(0, g, 1)],
+					[Vector3(line[i].x, top, line[i].z), Color(1, g, soot)],
+					[Vector3(line[i].x, top, line[i].z) + o, Color(1, g, soot)],
+					[Vector3(line[i].x, minf(line[i].y, 0.0) - .2, line[i].z) + o, Color(0, g, 1)]
+				]
+			)
+		for i in ring.size() - 1:
+			for k in 3:
+				var q = [ring[i][k], ring[i + 1][k], ring[i + 1][k + 1], ring[i][k + 1]]
+				for order in [[0, 2, 1, 0, 3, 2], [0, 1, 2, 0, 2, 3]]:
+					for j in order:
+						st.set_color(q[j][1])
+						st.add_vertex(q[j][0])
+	st.generate_normals()
+	var mesh = st.commit()
+	var mat = ShaderMaterial.new()
+	mat.shader = preload("res://shaders/chicago_wall.gdshader")
+	mat.set_shader_parameter("concrete_tex", load(ChicagoCity.TEX + "Concrete034/Concrete034_color.jpg"))
+	mat.set_shader_parameter("street_y", ChicagoCity.STREET_Y)
+	mat.set_shader_parameter("panel_m", 4.8)
+	mat.set_shader_parameter("pilaster_m", 12.0)
+	# Older, browner and grimier than the river walls (docs/art/reference/chicago/lower-wacker-drive.jpg).
+	mat.set_shader_parameter("tint", Color(0.56, 0.52, 0.46))
+	mat.set_shader_parameter("tile_m", 2.2)
+	mesh.surface_set_material(0, mat)
+	mesh_node(asset, parent, "CutWalls", mesh, Vector3.ZERO)
+
+
 static func add_road_details(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var paint = material(Color("d3ceb3"))
 	var green = material(Color("16493d"))
+	var steel = material(Color("4a4d50"))
 	var st = road.last_bake.stations
 	# Low-cost batched dashed lane dividers, broken at junctions. Surfaces remain authoritative.
 	var tool = SurfaceTool.new()
@@ -719,6 +820,30 @@ static func add_road_details(asset: Node3D, parent: Node, road: RoadPath) -> voi
 	tool.generate_normals()
 	var mesh = tool.commit()
 	mesh.surface_set_material(0, paint)
+	# Concrete gutter pan along each curb, 0.55 m, alternate 3 m pours a shade apart (Chicago curb and gutter).
+	var gutter = SurfaceTool.new()
+	gutter.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in range(0, st.size() - 2, 2):
+		var a = st[i]
+		var b = st[i + 2]
+		var ra = a.tangent.cross(Vector3.UP).normalized()
+		var rb = b.tangent.cross(Vector3.UP).normalized()
+		var shade = .92 if int(a.s / 3.0) % 2 == 0 else 1.0
+		gutter.set_color(Color(shade, shade, shade))
+		for side in [-1, 1]:
+			var ai = a.pos + ra * side * (HALF_WIDTH - .55) + Vector3(0, .01, 0)
+			var ao = a.pos + ra * side * (HALF_WIDTH - .01) + Vector3(0, .01, 0)
+			var bi = b.pos + rb * side * (HALF_WIDTH - .55) + Vector3(0, .01, 0)
+			var bo = b.pos + rb * side * (HALF_WIDTH - .01) + Vector3(0, .01, 0)
+			var quad = [ai, bi, bo, ao] if side > 0 else [ao, bo, bi, ai]
+			for j in [0, 1, 2, 0, 2, 3]:
+				gutter.add_vertex(quad[j])
+	gutter.generate_normals()
+	gutter.commit(mesh)
+	var pan = material(Color("9a9a93"))
+	pan.vertex_color_use_as_albedo = true
+	pan.roughness = .92
+	mesh.surface_set_material(1, pan)
 	mesh_node(asset, parent, "LaneMarkings", mesh, Vector3.ZERO)
 	# Driver-readable district signs face approaching traffic, outside the racing corridor.
 	var labels = [[0, "MICHIGAN AVE"], [4, "LAKE SHORE DR"], [11, "LOWER WACKER"], [24, "UPPER WACKER"]]
@@ -728,9 +853,21 @@ static func add_road_details(asset: Node3D, parent: Node, road: RoadPath) -> voi
 		var a = road.working_curve().sample_baked(s)
 		var b = road.working_curve().sample_baked(s + 2)
 		var basis = Basis.looking_at((b - a).normalized(), Vector3.UP)
-		var sign_pos = a + basis.x * 11 + Vector3(0, 4, 0)
+		# The panel faces traffic, 8 m across, on a post on the barrier line (it floated, post-less, over the
+		# lower cut) and above the catch fence.
+		var sign_pos = a + basis.x * 11 + Vector3(0, 5, 0)
 		var panel = box(asset, parent, "SignPanel%d" % row[0], sign_pos, Vector3(8, 1.6, .15), green)
 		panel.basis = basis
+		var foot = a + basis.x * 10.0
+		var post = box(
+			asset,
+			parent,
+			"SignPost%d" % row[0],
+			foot + Vector3(0, 2.6, 0) - basis.z * .15,
+			Vector3(.22, 5.2, .22),
+			steel
+		)
+		post.basis = basis
 		var label = Label3D.new()
 		label.text = row[1]
 		label.font_size = 48
@@ -789,10 +926,38 @@ static func add_park_trees(asset: Node3D) -> void:
 		trees.bake()
 
 
+## Trees along the Riverwalk terrace below Upper Wacker, the river's green edge in the view from the drive. A
+## scatter band beside the whole route, kept only where it lands on terrace cells and lowered to TERRACE_Y.
+static func add_riverwalk_trees(asset: Node3D, ground: Dictionary) -> void:
+	var trees = RoadScatter.new()
+	trees.follow_road = NodePath("../Main")
+	trees.sides = RoadScatter.Sides.BOTH
+	trees.offset_min = 16.0
+	trees.offset_max = 46.0
+	trees.per_100m = 22.0
+	trees.random_seed = 606
+	trees.height_scale = 0.75
+	trees.species_indices = PackedInt32Array([2, 3, 4])
+	attach(asset, asset, trees, "RiverwalkTrees")
+	trees.bake()
+	var mm: MultiMesh = asset.get_node("Scenery/RiverwalkTrees").multimesh
+	var kept = 0
+	for i in mm.instance_count:
+		var xf: Transform3D = trees.last_bake.xforms[i]
+		var cell = Vector2i(floori(xf.origin.x / ground.tile), floori(xf.origin.z / ground.tile))
+		if ground.terrace.has(cell):
+			xf.origin.y = ChicagoCity.TERRACE_Y
+			kept += 1
+		else:
+			xf = Transform3D(Basis.from_scale(Vector3.ZERO), xf.origin)
+		mm.set_instance_transform(i, xf)
+	asset.set_meta("riverwalk_trees", kept)
+
+
 ## LOOK-18: Lower Wacker is lit by close-set fixtures on both sides. At the route's 42 m alternating spacing
 ## (and LOOK-NIGHT-01's softer streaks) the lower level was nearly black at night. Lamp zones for every stretch
 ## below 3 m: 16 m spacing, both sides.
-static func lower_level_zones(road: RoadPath) -> Array:
+static func lower_level_zones(road: RoadPath, below: float = 3.0) -> Array:
 	var f = road_frame(road)
 	var c = f[0]
 	var length = c.get_baked_length()
@@ -800,7 +965,7 @@ static func lower_level_zones(road: RoadPath) -> Array:
 	var start = -1.0
 	var s = 0.0
 	while s < length:
-		var low = RoadBuilder.station_at(c, road.closed, length, f[2], s).pos.y < 3.0
+		var low = RoadBuilder.station_at(c, road.closed, length, f[2], s).pos.y < below
 		if low and start < 0.0:
 			start = s
 		elif not low and start >= 0.0:
@@ -822,7 +987,8 @@ static func add_lakefront_trees(asset: Node3D) -> void:
 	var bands = [
 		[at["Jackson Turn"] + 30.0, at["Lakefront Turn"] - 20.0, RoadScatter.Sides.BOTH, 14.0, 90.0, 16.0],
 		[at["Lakefront Turn"] + 30.0, at["Navy Pier View"] - 40.0, RoadScatter.Sides.LEFT, 45.0, 130.0, 18.0],
-		[at["Lakefront Turn"] + 30.0, at["Navy Pier View"] - 40.0, RoadScatter.Sides.RIGHT, 12.0, 42.0, 10.0],
+		# Lake side: a few trees well off the road so the lake reads from the drive (10/100 m at 12-42 m hid it).
+		[at["Lakefront Turn"] + 30.0, at["Navy Pier View"] - 40.0, RoadScatter.Sides.RIGHT, 24.0, 42.0, 3.5],
 	]
 	for i in bands.size():
 		var b = bands[i]
@@ -1011,7 +1177,17 @@ static func add_street_walls(asset: Node3D, parent: Node, road: RoadPath) -> voi
 
 
 ## Parked Kenney cars along the kerbside behind the barriers, on straight stretches only.
-static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void:
+## True on paved street-level ground: not lawn, park, water or the lower-level cut (ChicagoCity's tile sets).
+static func on_pavement(ground: Dictionary, p: Vector3) -> bool:
+	var at = Vector2(p.x, p.z)
+	var cell = Vector2i(floori(at.x / ground.tile), floori(at.y / ground.tile))
+	for kind in ["lawn", "water", "low"]:
+		if ground[kind].has(cell):
+			return false
+	return absf(p.y - ChicagoCity.STREET_Y) < .6 and not ChicagoCity._in_water(ground.parks, at)
+
+
+static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath, ground: Dictionary) -> void:
 	var f = road_frame(road)
 	var c = f[0]
 	var length = c.get_baked_length()
@@ -1048,7 +1224,10 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 			fwd.y = 0.0
 			if rng.randf() < 0.5:
 				fwd = -fwd
-			if not keep_clear(p, 40.0) and fwd.length_squared() > 1e-4:
+			# Only on pavement, front and back of the car (they sat on park lawns and in the lower cut).
+			var along = fwd.normalized() * 2.4
+			var paved = on_pavement(ground, p + along) and on_pavement(ground, p - along)
+			if paved and not keep_clear(p, 40.0) and fwd.length_squared() > 1e-4:
 				var model = rng.randi() % pieces.size()
 				# Kenney cars are 2.75 m long along +Z; 1.65 makes a 4.5 m car.
 				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.65)

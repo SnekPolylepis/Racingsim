@@ -48,7 +48,7 @@ func run():
 			continue
 		var path = str(asset.get_path_to(mi))
 		var top = path.split("/")[0]
-		if top in ALLOWED:
+		if top in ALLOWED or (top.contains("Barrier") and top.ends_with("Fence")):
 			continue
 		var xf = mi.global_transform
 		for si in mi.mesh.get_surface_count():

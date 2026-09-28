@@ -1,13 +1,16 @@
 shader_type spatial;
 render_mode diffuse_burley, specular_schlick_ggx;
 
-// Cheap procedural equivalent of two scrolling tangent-space normal maps. The east lake face
-// gets shorter, faster chop; the river stays long and slow. Standard PBR specular keeps the water
-// responsive to the scene's sky, reflection probes and city lights without another render pass.
-uniform vec4 deep_color : source_color = vec4(0.018, 0.105, 0.12, 1.0);
-uniform vec4 lake_color : source_color = vec4(0.03, 0.17, 0.26, 1.0);
-uniform float flow_speed = 0.022;
-uniform float ripple_scale = 0.075;
+// Chicago River and Lake Michigan. Animated procedural normals: four crossing wave trains plus two octaves of
+// drifting value-noise chop, calm and flowing on the river, livelier on the open lake (east of x 1450-2350).
+// Low roughness lets the sun and the city's lights glint and streak; the body colour stays readable at
+// grazing angles because the reflection is a sky tint blended by our own Fresnel, not a mirror of the horizon
+// haze (a near-mirror read as a beige plain from Lake Shore Drive).
+uniform vec4 river_color : source_color = vec4(0.05, 0.2, 0.15, 1.0);
+uniform vec4 lake_color : source_color = vec4(0.03, 0.17, 0.3, 1.0);
+uniform vec4 sky_tint : source_color = vec4(0.5, 0.63, 0.74, 1.0);
+uniform float river_flow = 0.45;
+uniform float wave_strength = 1.0;
 
 varying vec3 world_position;
 
@@ -31,16 +34,22 @@ float value_noise(vec2 p) {
 }
 
 
-float water_height(vec2 p, float time, float lake) {
-	// River flow follows the city's east-west channel; broad undulation remains calm.
-	vec2 river_a = p * vec2(0.018, 0.075) + vec2(time * flow_speed, time * flow_speed * 0.12);
-	vec2 river_b = p * vec2(-0.052, 0.031) + vec2(-time * flow_speed * 0.38, time * flow_speed * 0.28);
-	float river = value_noise(river_a) * 0.72 + value_noise(river_b) * 0.28;
-	// Open lake has tighter, faster intersecting chop, faded in geographically east of downtown.
-	vec2 lake_a = p * vec2(0.12, 0.19) + vec2(time * 0.19, -time * 0.11);
-	vec2 lake_b = p * vec2(-0.21, 0.14) + vec2(-time * 0.13, -time * 0.17);
-	float lake_noise = value_noise(lake_a) * 0.58 + value_noise(lake_b) * 0.42;
-	return mix(river, lake_noise, lake) * mix(0.16, 0.52, lake);
+float wave(vec2 p, vec2 dir, float length_m, float speed, float t) {
+	float k = 6.2831853 / length_m;
+	return sin(dot(normalize(dir), p) * k - t * speed * k);
+}
+
+
+float water_height(vec2 p, float t, float lake) {
+	// River: long, slow swells carried downstream (the main branch runs along x), cut by boat wakes' cross-chop.
+	vec2 drift = vec2(t * river_flow, t * river_flow * 0.15);
+	float river = wave(p, vec2(1.0, 0.18), 7.0, 0.9, t) * 0.35 + wave(p, vec2(0.3, 1.0), 3.1, 0.7, t) * 0.2;
+	river += (value_noise((p - drift) * 0.55) - 0.5) * 0.5 + (value_noise((p - drift) * 1.7 + 11.0) - 0.5) * 0.22;
+	// Lake: wind-driven chop from the north-east, shorter and faster.
+	float lake_h = wave(p, vec2(-0.6, 1.0), 9.0, 2.6, t) * 0.45 + wave(p, vec2(-1.0, 0.35), 4.3, 1.9, t) * 0.3;
+	lake_h += wave(p, vec2(0.2, 1.0), 2.2, 1.4, t) * 0.18;
+	lake_h += (value_noise(p * 0.8 + vec2(-t * 0.9, t * 0.6)) - 0.5) * 0.45;
+	return mix(river * 0.55, lake_h, lake) * wave_strength;
 }
 
 
@@ -53,23 +62,27 @@ void fragment() {
 	vec2 p = world_position.xz;
 	float lake = smoothstep(1450.0, 2350.0, p.x);
 	float t = TIME;
+	float e = 0.12;
 	float h = water_height(p, t, lake);
-	float hx = water_height(p + vec2(0.55, 0.0), t, lake) - h;
-	float hz = water_height(p + vec2(0.0, 0.55), t, lake) - h;
-	vec3 tangent_normal = normalize(vec3(-hx * ripple_scale * 2.0, 1.0, -hz * ripple_scale * 2.0));
-	NORMAL_MAP = tangent_normal * 0.5 + 0.5;
-	NORMAL_MAP_DEPTH = mix(0.32, 0.78, lake);
+	float hx = water_height(p + vec2(e, 0.0), t, lake) - h;
+	float hz = water_height(p + vec2(0.0, e), t, lake) - h;
+	// Slopes fade with distance so far water settles into a smooth sheet instead of aliasing into noise.
+	float dist = length(VERTEX);
+	float settle = 1.0 - smoothstep(120.0, 900.0, dist) * 0.8;
+	// Water is horizontal, so perturb the world up vector and hand Godot a view-space normal directly (the city's
+	// water meshes carry no tangents for a normal map).
+	vec3 up = normalize(vec3(-hx / e * 0.09 * settle, 1.0, -hz / e * 0.09 * settle));
+	NORMAL = normalize((VIEW_MATRIX * vec4(up, 0.0)).xyz);
 
-	ALBEDO = mix(deep_color.rgb, lake_color.rgb, lake);
-	// At Lake Shore Drive's grazing angle a near-mirror (roughness 0.1, specular 0.95) showed only the
-	// warm horizon haze, so the lake read as a beige plain. Rougher, lower specular keeps a sky sheen
-	// and the city lights' streaks at night while the blue-green body colour survives.
-	ROUGHNESS = mix(0.3, 0.24, lake);
+	vec3 body = mix(river_color.rgb, lake_color.rgb, lake);
+	// Crest highlights: the tops of the swells catch a little more light than the troughs.
+	body *= 0.85 + 0.35 * clamp(h * 0.8 + 0.5, 0.0, 1.0);
+	float fresnel = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), 4.0);
+	ALBEDO = mix(body, sky_tint.rgb * 0.5, fresnel * 0.3);
+	ROUGHNESS = mix(0.14, 0.08, lake);
 	METALLIC = 0.0;
-	SPECULAR = 0.35;
-	// Reflections come from the environment's sky radiance and the city's lights through the low
-	// roughness above. (A screen-colour read here rendered the lake as a flat beige sheet: the water
-	// sampled its own unlit copy.) Fresnel only darkens the body colour looking straight down.
-	float fresnel = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), 5.0);
-	ALBEDO *= mix(1.0, 0.6, 1.0 - fresnel);
+	// 0.5 washed grazing views out to pale cyan (the sky); glints still show through the low roughness.
+	SPECULAR = 0.3;
+	// Light scattered up out of the water column keeps the green/blue in the shade of the buildings and decks.
+	EMISSION = body * 0.06;
 }

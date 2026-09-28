@@ -117,7 +117,7 @@ static func build(
 				tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 				tools.append(tool)
 			chunks[key] = tools
-		_crossing(chunks[key], at, i, box)
+		_crossing(chunks[key], stations, i, box)
 		if crossings.find(i) % L_EVERY == L_PHASE:
 			_elevated(chunks[key], at, dirs[i], box)
 	for key in chunks:
@@ -142,12 +142,15 @@ static func build(
 	signals.mesh = PropMesh.mesh("res://assets/chicago/landmarks/signal_corner.glb")
 	signals.instance_count = crossings.size()
 	for n in crossings.size():
-		var at = stations[crossings[n]]
-		var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
+		# The station 9 m back, not the crossing's tangent extended: on a bend that put the pole in the road.
+		var back = _along(stations, crossings[n], -9.0)
+		var flat = Vector3(back.tangent.x, 0.0, back.tangent.z).normalized()
 		var basis = Basis.looking_at(-flat, Vector3.UP).scaled(Vector3.ONE * 0.65)
-		signals.set_instance_transform(
-			n, Transform3D(basis, at.pos - flat * 9.0 - flat.cross(Vector3.UP) * 11.5)
-		)
+		var pole = back.pos - flat.cross(Vector3.UP) * 11.5
+		# Parked out of sight when a tight turn leaves no corner clear of the route.
+		if not _clear_of_route(stations, pole):
+			basis = Basis.from_scale(Vector3.ZERO)
+		signals.set_instance_transform(n, Transform3D(basis, pole))
 	var signal_node = MultiMeshInstance3D.new()
 	signal_node.multimesh = signals
 	signal_node.visibility_range_end = VISIBLE_M
@@ -162,7 +165,22 @@ static func _plain(c: Color) -> StandardMaterial3D:
 	return m
 
 
-static func _crossing(tools: Array, at: Dictionary, index: int, box: Callable) -> void:
+## True when `p` stands outside the barrier line (9.6 m) of every part of the route at its level.
+static func _clear_of_route(stations: Array, p: Vector3) -> bool:
+	for st in stations:
+		if absf(st.pos.y - p.y) < 3.0 and Vector2(st.pos.x - p.x, st.pos.z - p.z).length() < 9.6:
+			return false
+	return true
+
+
+## The station about `metres` along the route from station `i` (stations are evenly spaced).
+static func _along(stations: Array, i: int, metres: float) -> Dictionary:
+	var step = stations[1].s - stations[0].s
+	return stations[posmod(i + roundi(metres / step), stations.size())]
+
+
+static func _crossing(tools: Array, stations: Array, index: int, box: Callable) -> void:
+	var at = stations[index]
 	var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
 	var basis = Basis.looking_at(flat, Vector3.UP)
 	var right = basis.x
@@ -184,8 +202,14 @@ static func _crossing(tools: Array, at: Dictionary, index: int, box: Callable) -
 		Color.WHITE,
 		basis
 	)
-	# Mast arm on the far right corner, reaching over the lanes.
-	var foot = base + flat * 9.0 + right * POLE_OFFSET
+	# Mast arm on the far right corner, reaching over the lanes, set from the road 9 m on (a bend within those
+	# 9 m put a tangent-extended foot in the lane).
+	var ahead = _along(stations, index, 9.0)
+	basis = Basis.looking_at(Vector3(ahead.tangent.x, 0.0, ahead.tangent.z).normalized(), Vector3.UP)
+	right = basis.x
+	var foot = ahead.pos + right * POLE_OFFSET
+	if not _clear_of_route(stations, foot):
+		return
 	box.call(
 		tools[1], foot + Vector3(0, ARM_HEIGHT * 0.5, 0), Vector3(0.32, ARM_HEIGHT, 0.32), Color.WHITE, basis
 	)

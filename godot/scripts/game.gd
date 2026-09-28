@@ -116,6 +116,7 @@ var elapsed = 0.0
 ## for the camera's ground clamp in _process.
 var camera_ground = -INF
 var zoom_user = 1.0
+var cam_offset = Vector3.ZERO
 var quality = 2
 var quality_clock = 0.0
 var quality_frames = 0
@@ -975,8 +976,8 @@ func update_camera(dt, snap = false):
 	var target = pos + forward * 7 + Vector3.UP * .75
 	var desired = (
 		pos
-		- forward * (7.2 + minf(car.speed * .035, 2)) * zoom_user
-		+ Vector3.UP * lerpf(7.0, 2.4, settings.tilt) * zoom_user
+		- forward * (5.9 + minf(car.speed * .02, 1.2)) * zoom_user
+		+ Vector3.UP * lerpf(6.0, 2.2, settings.tilt) * zoom_user
 	)
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	if settings.camera == 1:
@@ -992,7 +993,11 @@ func update_camera(dt, snap = false):
 		camera.position = pos + Vector3.UP * 120
 		camera.look_at(pos, Vector3(0, 0, -1) if settings.camera == 3 else forward)
 		return
-	camera.position = desired if snap else camera.position.lerp(desired, 1 - exp(-dt * 7))
+	# Smooth the offset from the car, not the world position: lerping a world point trails a moving car by
+	# speed/rate (about 10 m at 250 km/h), which is what pulled the chase camera so far back.
+	var offset = desired - pos
+	cam_offset = offset if snap or settings.camera == 2 else cam_offset.lerp(offset, 1 - exp(-dt * 7))
+	camera.position = pos + cam_offset
 	var ground = camera_ground
 	camera.position.y = maxf(camera.position.y, ground + (.6 if settings.camera == 2 else 1.6))
 	camera.look_at(target, model.root.basis.y if settings.camera == 2 else Vector3.UP)

@@ -379,6 +379,8 @@ static func add_forest(
 	trees.offset_max = offset_max
 	trees.scale_min = 1.0
 	trees.scale_max = 2.0
+	# Crowns may reach 2.5 m over the verge, no further: low branches no longer hang into the lanes.
+	trees.max_overhang = 2.5
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()

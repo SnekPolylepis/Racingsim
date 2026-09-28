@@ -62,6 +62,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
 | K-01 | Kerb reference data for Spa-Francorchamps and Nordschleife section 1 | Gemini | | done (coarse draft, PR #38) | rb/K-01-kerbs |
 | K-01b | Retrace kerbs at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb with type; Spa and Nordschleife S1. K-01 data is too coarse to place kerbs from | GPT Luna or Sonnet | K-01 | review: Claude | rb/K-01b-kerbs |
+| TRACK-POLISH | Owner-requested: three placement fix passes each on Chicago and the Nordschleife; Lower Wacker retaining walls as the barriers, textured like the real place; Chicago city curbs (red/white) with gutter and inlets; river visible from Upper Wacker and animated river/lake water; chase camera no longer pulls far back | Claude | | review: owner | rb/track-polish; read "DONE TRACK-POLISH" |
 
 
 ## Decisions and later

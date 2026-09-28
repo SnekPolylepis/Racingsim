@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3qovtd2nrpkp"
-path="res://.godot/imported/colormap.png-e90e82e0f602cd718d22d1ed0893603b.ctex"
+uid="uid://bcjpwfvmime4t"
+path="res://.godot/imported/colormap.png-e1a42ce164a703d73342634946f8b1df.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cc0-source/chicago/models/kenney-city-kit-commercial/colormap.png"
-dest_files=["res://.godot/imported/colormap.png-e90e82e0f602cd718d22d1ed0893603b.ctex"]
+source_file="res://assets/cc0-source/chicago/models/kenney-car-kit/Textures/colormap.png"
+dest_files=["res://.godot/imported/colormap.png-e1a42ce164a703d73342634946f8b1df.ctex"]
 
 [params]
 
