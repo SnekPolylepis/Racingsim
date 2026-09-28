@@ -29,8 +29,8 @@ const REACH = 29.0
 ## Lamps are grouped into chunks this long (metres of road) so each MultiMesh can be culled.
 const CHUNK = 400.0
 ## Pooled real lights: count, and how far each reaches.
-const POOL = 4
-const POOL_RANGE = 32.0
+const POOL = 12
+const POOL_RANGE = 34.0
 
 
 ## Lamp placements along `road` every `spacing` metres, alternating sides. `zones` override spacing and
@@ -450,18 +450,17 @@ static func set_night(asset: Node, night: bool) -> void:
 
 ## The real-light pool: a few downward sodium spots, no shadows, parented to `parent`.
 static func make_pool(parent: Node, count = POOL) -> Array:
+	# ASSET-02: omni lights at the lamp heads, so each lamp spills onto the road and the damp tarmac shows its
+	# reflection through the lighting engine (the painted road streaks are gone).
 	var pool = []
 	for i in count:
-		var light = SpotLight3D.new()
+		var light = OmniLight3D.new()
 		light.name = "SodiumPool%d" % i
-		light.rotation.x = -PI / 2
 		light.light_color = SODIUM
 		light.light_energy = 0.0
-		light.light_specular = .2
-		light.spot_range = POOL_RANGE
-		light.spot_angle = 64.0
-		light.spot_attenuation = .8
-		light.spot_angle_attenuation = 1.4
+		light.light_specular = 1.0
+		light.omni_range = POOL_RANGE
+		light.omni_attenuation = 1.3
 		light.shadow_enabled = false
 		light.visible = false
 		parent.add_child(light)
@@ -473,7 +472,7 @@ static func make_pool(parent: Node, count = POOL) -> Array:
 ## next-nearest lamp left out of the pool, so reassigning a light never pops.
 ## LOOK-NIGHT-01: energy 3.2 with specular .6 turned the tarmac round the camera into a cream fan on
 ## lamp-lined straights; pools should read as amber patches under each lamp.
-static func update_pool(pool: Array, asset: Node, eye: Vector3, night: bool, energy = 1.7) -> void:
+static func update_pool(pool: Array, asset: Node, eye: Vector3, night: bool, energy = 3.2) -> void:
 	var lights = asset.get_node_or_null("Lights") if asset != null else null
 	var heads: PackedVector3Array = (
 		lights.get_meta("lamp_heads", PackedVector3Array()) if lights != null else PackedVector3Array()

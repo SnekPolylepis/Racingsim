@@ -1155,6 +1155,8 @@ func apply_time_of_day():
 		# tree cards and stayed oversaturated after the sky/ambient passes. a1b4df keeps the hue at 0.28.
 		sun.light_color = Color("a1b4df") if night else Color("ffd79a")
 		sun.light_energy = .32 if night else 1.5
+		# ASSET-02: the moon must not mirror off the damp road; the lamps provide the night reflections.
+		sun.light_specular = .08 if night else 1.0
 		camera.far = 650 if night else 1250
 		if v2_track_id == "chicago":
 			# Preserve the lake horizon and Navy Pier/Willis sightlines in this flat city.

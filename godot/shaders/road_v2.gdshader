@@ -122,58 +122,17 @@ void fragment() {
 	col = mix(col, vec3(afterhours ? 0.42 : 0.78), paint);
 	NORMAL_MAP = mix(nrm, vec3(0.5, 0.5, 1.0), paint * 0.7);
 	NORMAL_MAP_DEPTH = 0.8;
-	// Amber sodium lamps from the lamp texture: a pool under each lamp plus a glossy streak on its side.
-	vec3 neon = vec3(0.95, 0.63, 0.28);
-	float glow = 0.0;
+	// ASSET-02 (owner): no painted lamp streaks or camera streak any more. The lamps' real SpotLight3D pool
+	// (track_lights.gd) lights the road and the damp night surface reflects them through the lighting engine.
 	vec3 reflected = vec3(0.0);
-	if (afterhours && lamp_map) {
-		int width = textureSize(lamp_data, 0).x;
-		int ix = clamp(int(floor(UV.y / lamp_cell)), 0, width - 1);
-		for (int row = 0; row < 3; row++) {
-			vec4 t = texelFetch(lamp_data, ivec2(ix, row), 0);
-			for (int k = 0; k < 2; k++) {
-				float s = k == 0 ? t.x : t.z;
-				float code = k == 0 ? t.y : t.w;
-				float d = abs(UV.y - s);
-				if (road_length > 0.0) {
-					d = min(d, road_length - d);
-				}
-				float side = sign(code);
-				float fall = pow(max(0.0, 1.0 - d / lamp_reach), 1.5) * abs(code);
-				float lateral = exp(-pow(abs((lat - side * 0.65) * 1.7), 2.0));
-				float pool = fall * fall * exp(-pow(abs(lat - side * 0.8) * 0.9, 2.0));
-				float reflection = exp(-abs((lat - side * .35) * 5.5));
-				glow += (fall * lateral + pool * .25) * .6;
-				// LOOK-NIGHT-01: streak 1.2 -> .45; at full strength the painted streaks of a lamp-lined
-				// straight merged into one cream band from the camera to the horizon.
-				reflected += neon * (fall * lateral * (.03 + reflection * .45) + pool * .08);
-			}
-		}
-	}
-	// Wet camera-proximity streak (Look-9, ART-DIRECTION "Nights"): a cheap PS2-style stand-in for the
-	// car's own headlights reflecting on wet tarmac (nfsu-night-wet-street-reflections.jpg) — no per-frame
-	// uniform needed, since CAMERA_POSITION_WORLD already tracks wherever the chase/bonnet camera (and so
-	// the car) is. Narrow across the road (reuses `lat`) and fades over about 26 m, so it reads as a
-	// streak running down the lane toward the camera rather than a puddle centred on it.
-	if (afterhours) {
-		float cam_dist = length(world_pos - CAMERA_POSITION_WORLD);
-		float near_cam = pow(max(0.0, 1.0 - cam_dist / 26.0), 2.2);
-		float head_lat = exp(-pow(lat * 2.0, 2.0));
-		float head_glow = near_cam * head_lat;
-		// LOOK-NIGHT-01: faint, so it no longer paints a white patch round the car.
-		glow += head_glow * 0.1;
-		reflected += vec3(1.0, 0.96, 0.88) * head_glow * 0.12;
-	}
-	// LOOK-NIGHT-01: lower caps, so a lamp-lined straight (Spa) is a row of pools, not one amber sheet.
-	glow = min(glow, 0.6);
-	reflected = min(reflected, vec3(0.55));
 	EMISSION = (OUTPUT_IS_SRGB ? to_srgb(reflected) : reflected) + col * 0.045;
-	ALBEDO = col + neon * glow * 0.18;
+	ALBEDO = col;
 	// Matte by day (no glare toward the sun); a wet-looking sheen at night for the NFSU lamp streaks.
 	// LOOK-NIGHT-01: a damp sheen, not a mirror: at roughness 0.3 / metallic 0.18 the headlights and sky
 	// washed the whole road cream. The amber streaks are emission and keep their gloss.
-	METALLIC = afterhours ? 0.04 : 0.0;
-	SPECULAR = afterhours ? 0.3 : 0.5;
-	ROUGHNESS = afterhours ? mix(0.55, 0.75, wear) : mix(0.72, 0.95, wear) - seam * 0.1 + paint * 0.05;
+	METALLIC = 0.0;
+	SPECULAR = 0.5;
+	// Damp at night: low enough roughness that each lamp leaves a soft elongated highlight, not a mirror.
+	ROUGHNESS = afterhours ? mix(0.34, 0.55, wear) : mix(0.72, 0.95, wear) - seam * 0.1 + paint * 0.05;
 	ROUGHNESS = mix(ROUGHNESS, 0.9, concrete);
 }
