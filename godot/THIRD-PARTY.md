@@ -112,5 +112,26 @@ Original 1K diffuse, OpenGL normal and roughness maps are retained in
 `assets/textures/chicago/`; source map suffixes and material uses are listed in
 `assets/textures/README.md`. The animated water surface is an original procedural shader and
 does not use an external texture. Original procedural landmark models include the Wrigley Building,
-Tribune Tower, Board of Trade, Michigan Avenue, State Street and LaSalle Street bridges. No external
-3D model or photographic facade was added.
+Tribune Tower, Board of Trade, Michigan Avenue, State Street and LaSalle Street bridges.
+
+### Chicago city, models and textures added after CHI-01 (2026-09-25 to 2026-09-27)
+
+- **Streets, buildings, water and parks** of downtown Chicago (`trackgen/data/chicago/city.json`, from
+  `osm-roads.json` and the OSM extract described in that folder's README): © OpenStreetMap contributors,
+  ODbL 1.0. Footprints, heights and kinds are derived from OSM; the meshes are generated.
+- **Parked cars** (`assets/chicago/cars/`): Kenney Car Kit, CC0 1.0, https://kenney.nl/assets/car-kit .
+- **Particle sprites** (`assets/particles/particle_atlas.png`): eight sprites from the Kenney Particle
+  Pack, CC0 1.0, https://kenney.nl/assets/particle-pack .
+- **Shopfronts, cornices, doors, AC units, bollards and planters** (`assets/chicago/downtown-kit/`):
+  pieces of the free Downtown City MegaKit by Quaternius, CC0 1.0, https://quaternius.com , baked to
+  compact meshes with the kit's licence text kept beside them.
+- **Facade texture array** (`assets/chicago/facade-array/`) and the facade sets in `assets/textures/chicago/`:
+  ambientCG Facade001, Facade009, Travertine009, GlazedTerracotta001, Bricks097, Concrete034 and
+  Granite002A, 1K, CC0 1.0, https://ambientcg.com .
+- **Street and sidewalk surfaces** (`assets/chicago/surfaces/`): Poly Haven worn_asphalt and pavement_05,
+  1K, CC0 1.0.
+
+CC0 needs no attribution; the credits are given anyway. The landmark shapes (Bean, Willis Tower, Navy Pier,
+Wrigley Building, Tribune Tower, bridges) remain original procedural geometry; no photograph or scanned
+landmark is used.
+

@@ -1,5 +1,14 @@
 # Native changelog
 
+## 2026-09-27 — Rebuild Preview 7
+
+- Chicago — River & Lake: a city circuit on real OpenStreetMap streets and buildings, with Michigan Avenue, Lake Shore Drive and two-level Wacker Drive, day and night facades, shopfronts, signals, crosswalks, the L, bridges, lake and parks (CHI-01, CHI-02, CHI-03, CHI-LOOK-01/02, CHI-SC).
+- The full Nürburgring Nordschleife, 20.8 km, with a banked concrete Karussell (P6-02b, NS-karussell, LOOK-16). Full-lap kerbs are a stopgap (LOOK-21).
+- Nights: road glare and headlights toned down (LOOK-NIGHT-01), busier and varied night windows (LOOK-17), lamps on the lower Wacker level (LOOK-18).
+- Spa and Nordschleife haze and grass colour (LOOK-13, LOOK-14); Kenney particle sprites (ASSET-01).
+- Chicago draw calls down about a quarter (single facade material, culling); scenery no longer clips into the track (`chicago_clip` gate).
+- Known limits: full-lap kerbs and scenery are less finished than Spa's; Chicago is an authored route with two fictional connectors.
+
 ## 2026-09-25 — Rebuild Preview 6
 
 - Mixed forests with undergrowth, deciduous species, verge grass and hedges (Look-10).

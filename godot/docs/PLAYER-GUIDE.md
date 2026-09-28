@@ -84,10 +84,10 @@ Built circuits are cached in the tracks3d folder beside it. Deleting that cache 
 If a circuit takes a long time to load the first time, that is the one-off build; later loads use the cache. If the game ever starts with odd settings, deleting the v2 settings.json restores the defaults. Physical controllers work through Godot's standard gamepad mapping; wheels and force feedback are not supported.
 
 This is a preview:
-- Only the Proving Ground and Spa are available; the Nordschleife is in progress.
-- The old game's settings, garage and pause menus are being moved to the new front end.
-- Car models are placeholders and scenery is sparse.
-- There is no night lighting on the new circuits yet.
+- Circuits: the Proving Ground, Spa, Nordschleife (first section and the full 20.8 km lap) and Chicago.
+- The full Nordschleife's kerbs and scenery are less finished than Spa's.
+- Chicago is an authored racing route on real street geometry, with two invented ramp connectors.
+- Choose Afterhours in Settings for the night lighting.
 
 ## Chicago — River & Lake
 
