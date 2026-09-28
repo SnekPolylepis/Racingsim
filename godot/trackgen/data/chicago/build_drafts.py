@@ -259,6 +259,11 @@ DRAFTS = [
          steps=["Michigan Ave ↓ (to Jackson)", "Jackson Dr → (to Columbus)", "Columbus Dr ↑ (drops to Lower Wacker)", "Lower Wacker Dr ←",
                 "S Lower Wacker ↓ (to Washington)", "Hairpin turnaround (game only)", "Upper S Wacker Dr ↑", "Upper Wacker Dr →",
                 "Michigan Ave ↓"]),
+    dict(id="h", title="Express", tag="Every main road and landmark viewpoint kept. Only the two game-only links are tightened: a diagonal harbor link and a Wacker hairpin below the Willis Tower viewpoint",
+         kind="express", turn_y=-560,
+         steps=["Michigan Ave ↓", "Jackson Dr →", "Lake Shore Dr ↑ (to Navy Pier view)", "Diagonal harbor link (game only)",
+                "Lower Wacker Dr ←", "S Lower Wacker ↓ (past Willis Tower view)", "Hairpin turnaround (game only)",
+                "Upper S Wacker Dr ↑", "Upper Wacker Dr →", "Michigan Ave ↓"]),
 ]
 
 
@@ -376,7 +381,26 @@ def build_compact(d):
     return pts, sorted(set(used))
 
 
+def build_express(d):
+    """Every main road and landmark viewpoint of route.json kept; only the two game-only links are tightened:
+    the harbor connector becomes one diagonal from the Navy Pier view point to the Lower Wacker portal, and the south
+    connector becomes a hairpin just below the Willis Tower viewpoint instead of a loop out to Van Buren."""
+    pts = [list(p) for p in BASE["points"]]
+    y = d["turn_y"]
+    hairpin = []
+    for x_, y_, h in ((-1036, y, 0), (-880, y + 80, 4), (-1036, y + 160, 8)):
+        lat, lon = ll(x_, y_)
+        hairpin.append([round(lat, 6), round(lon, 6), h, "Wacker turnaround (game only)"])
+    # Baseline 23..26 (south connector: down to Van Buren, east, ramp, back west) -> hairpin. Do the later edit first.
+    pts[23:27] = hairpin
+    # Baseline 9..10 (harbor connector corner and ramp) dropped: Navy Pier view (8) runs diagonally into the portal (11).
+    pts[9:11] = []
+    return pts, []
+
+
 def build(d):
+    if d.get("kind") == "express":
+        return build_express(d)
     if d.get("kind") == "compact":
         return build_compact(d)
     pts = [list(p) for p in BASE["points"]]

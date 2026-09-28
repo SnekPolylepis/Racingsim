@@ -83,7 +83,7 @@ reduced window density and emission, while the shared shader's default preserves
 
 ## Detour drafts (not wired into the game)
 
-`build_drafts.py` writes `drafts/route-a.json` .. `route-g.json` (same schema as `route.json`) and
+`build_drafts.py` writes `drafts/route-a.json` .. `route-h.json` (same schema as `route.json`) and
 `drafts/index.html`, a self-contained map that compares them with the current circuit
 (`python3 build_drafts.py`, standard library only). Every detour is a chain of real OSM ways found by
 routing over a directed road graph, so each turn is a real intersection and each street is driven in its
@@ -99,6 +99,7 @@ legal one-way direction. The harbor and south connectors stay the game-only link
 | E Compact | Lake Shore Dr exits at Monroe Dr, Columbus Dr drops to Lower Wacker, game-only Wacker turnaround shortened to a hairpin | 6.21 km | 14 |
 | F Sprint | Michigan Ave to Monroe Dr, Columbus Dr to Lower Wacker, short hairpin. Drops Jackson Dr and Lake Shore Dr | 5.10 km | 12 |
 | G Sprint Plus | F but Michigan to Jackson Dr, then Columbus Dr north. Drops Lake Shore Dr | 5.64 km | 12 |
+| H Express | Route unchanged except the game-only links: diagonal harbor link, Wacker hairpin below the Willis Tower viewpoint. Keeps every main road | 7.37 km | 13 |
 
 `osm-grid.json` is the cross-street extract these drafts need (Overpass, 2026-09-28, bbox
 41.8735,-87.6420,41.8930,-87.6030; Adams, Madison, Washington, Randolph, Lake, Columbus, Wabash, State,

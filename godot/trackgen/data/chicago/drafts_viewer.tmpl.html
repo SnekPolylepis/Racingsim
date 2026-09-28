@@ -18,6 +18,7 @@
   --e: #1c6fb8;
   --f: #8a6d00;
   --g: #c0392b;
+  --h: #00838f;
   --sign: #0e4d43;
   --sign-ink: #f4faf7;
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -42,6 +43,7 @@
     --e: #5cb0ff;
     --f: #e6c229;
     --g: #ff7a70;
+    --h: #4dd0e1;
     --sign: #1b6f60;
     --sign-ink: #f4faf7;
     color-scheme: dark;
@@ -64,6 +66,7 @@
   --e: #5cb0ff;
   --f: #e6c229;
   --g: #ff7a70;
+  --h: #4dd0e1;
   --sign: #1b6f60;
   --sign-ink: #f4faf7;
   color-scheme: dark;
@@ -148,16 +151,17 @@ text { font-family: var(--font-body); }
     <ul class="caveats">
       <li><b>Real roads only.</b> Street geometry is the OpenStreetMap extract in <code>osm-roads.json</code> plus <code>osm-grid.json</code> (cross streets, fetched 2026-09-28). Nothing was invented, but the two game-only connectors (harbor, south) are unchanged.</li>
       <li><b>Lake Shore Drive has no real side streets in the loop,</b> so only Drafts C and E touch the lakefront side, via Columbus Dr and Monroe Dr. E keeps only the 300 m of Lake Shore Dr between Jackson Dr and Monroe Dr; F and G drop it.</li>
+      <li><b>Express (H) is the shortest lap that keeps every main road.</b> Every real road and viewpoint in the current route is still driven. Only the two game-only links change: the harbor connector becomes one diagonal from the Navy Pier view point, and the Wacker turnaround becomes a hairpin just below the Willis Tower viewpoint. Below about 7.3 km something has to be dropped, which is what E, F and G do.</li>
       <li><b>Shorter drafts (E, F, G).</b> They drop the harbor connector and most of the south Wacker run. The Wacker turnaround is still a game-only link, redrawn as a hairpin, and the Lake Shore Dr to Monroe Dr exit is taken from the OSM road graph without a ramp survey. F and G leave out main roads (F: Jackson Dr and Lake Shore Dr; G: Lake Shore Dr).</li>
       <li><b>Corner size.</b> The weave uses 140 m blocks, so its 90° corners get full 55 m fillets with about 60 m of straight between them. Expect low-speed street-circuit corners rather than sweepers.</li>
-      <li><b>Not wired into the game yet.</b> The drafts are <code>route-a.json</code> to <code>route-g.json</code> in the same format as <code>route.json</code>. Landmark corners in <code>chicago.gd</code> are indexed by point number, so switching the game to a draft needs that list remapped, a new cache revision and re-recorded lap times.</li>
+      <li><b>Not wired into the game yet.</b> The drafts are <code>route-a.json</code> to <code>route-h.json</code> in the same format as <code>route.json</code>. Landmark corners in <code>chicago.gd</code> are indexed by point number, so switching the game to a draft needs that list remapped, a new cache revision and re-recorded lap times.</li>
     </ul>
   </section>
 </div>
 
 <script>
 const DATA = /*DATA*/null;
-const KEY = { base: null, a: '--a', b: '--b', c: '--c', d: '--d', e: '--e', f: '--f', g: '--g' };
+const KEY = { base: null, a: '--a', b: '--b', c: '--c', d: '--d', e: '--e', f: '--f', g: '--g', h: '--h' };
 const M = { x0: -1130, x1: 960, y0: -930, y1: 470 };   // metres shown: west edge .. east edge, south .. north
 const W = 1000, H = 700;
 const SX = W / (M.x1 - M.x0), SY = H / (M.y1 - M.y0), S = Math.min(SX, SY);

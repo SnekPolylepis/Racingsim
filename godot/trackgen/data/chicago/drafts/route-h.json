@@ -1,0 +1,290 @@
+{
+ "origin": [
+  41.8848,
+  -87.6244
+ ],
+ "description": "DRAFT H - Express: Every main road and landmark viewpoint kept. Only the two game-only links are tightened: a diagonal harbor link and a Wacker hairpin below the Willis Tower viewpoint. Detours follow real OSM streets (one-way directions respected); the harbor and south connectors are the same game-only links as route.json. Heights are authored.",
+ "landmarks": {
+  "Bean": [
+   41.88266,
+   -87.6233,
+   8
+  ],
+  "Willis Tower": [
+   41.87888,
+   -87.63592,
+   8
+  ],
+  "Navy Pier": [
+   41.8917,
+   -87.6059,
+   2
+  ],
+  "Chicago River": [
+   41.8877,
+   -87.631,
+   -3
+  ],
+  "Lake Michigan": [
+   41.883,
+   -87.609,
+   -3
+  ],
+  "Wrigley Building": [
+   41.8882,
+   -87.6246,
+   8
+  ],
+  "Tribune Tower": [
+   41.8905,
+   -87.623,
+   8
+  ],
+  "Chicago Board of Trade": [
+   41.8787,
+   -87.6325,
+   8
+  ],
+  "Michigan Avenue Bridge": [
+   41.88865,
+   -87.6245,
+   8
+  ],
+  "State Street Bridge": [
+   41.8888,
+   -87.627,
+   8
+  ],
+  "LaSalle Street Bridge": [
+   41.8888,
+   -87.629,
+   8
+  ]
+ },
+ "draft": {
+  "id": "h",
+  "title": "Express",
+  "streets": [],
+  "osm_way_ids": [],
+  "longest_straight_m": 1101,
+  "right_angles": 3,
+  "new_m": 500,
+  "dropped_m": 1240,
+  "length_m": 7373,
+  "corners_35": 13,
+  "corners_75": 5,
+  "shortest_block_m": 34
+ },
+ "points": [
+  [
+   41.8848,
+   -87.6244,
+   8,
+   "Michigan Avenue"
+  ],
+  [
+   41.882,
+   -87.6244,
+   8,
+   "Millennium Park"
+  ],
+  [
+   41.8783,
+   -87.6244,
+   8,
+   "Jackson turn"
+  ],
+  [
+   41.8784,
+   -87.6173,
+   8,
+   "Lakefront turn"
+  ],
+  [
+   41.8809,
+   -87.6173,
+   8,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8823,
+   -87.6168,
+   8,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8834,
+   -87.6155,
+   9,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8841,
+   -87.6141,
+   11,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8862,
+   -87.6139,
+   13,
+   "Navy Pier view"
+  ],
+  [
+   41.88765,
+   -87.6175,
+   0,
+   "Lower Wacker portal"
+  ],
+  [
+   41.88791,
+   -87.62075,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.8882,
+   -87.6224,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.88825,
+   -87.6245,
+   0,
+   "Lower Michigan crossing"
+  ],
+  [
+   41.88802,
+   -87.6257,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.88742,
+   -87.62621,
+   0,
+   "Lower Wacker river bend west"
+  ],
+  [
+   41.88709,
+   -87.6266,
+   0,
+   "Lower Wacker river bend"
+  ],
+  [
+   41.8869,
+   -87.6273,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.8869,
+   -87.6348,
+   0,
+   "Lower Wacker west"
+  ],
+  [
+   41.8864,
+   -87.6361,
+   0,
+   "Lower Wacker bend"
+  ],
+  [
+   41.88575,
+   -87.6369,
+   0,
+   "Lower Wacker south"
+  ],
+  [
+   41.8819,
+   -87.6369,
+   0,
+   "Lower Wacker south"
+  ],
+  [
+   41.879736,
+   -87.636903,
+   0,
+   "Wacker turnaround (game only)"
+  ],
+  [
+   41.880459,
+   -87.63502,
+   4,
+   "Wacker turnaround (game only)"
+  ],
+  [
+   41.881183,
+   -87.636903,
+   8,
+   "Wacker turnaround (game only)"
+  ],
+  [
+   41.8819,
+   -87.6369,
+   8,
+   "Willis Tower view"
+  ],
+  [
+   41.88575,
+   -87.6369,
+   8,
+   "Upper Wacker north"
+  ],
+  [
+   41.8864,
+   -87.6361,
+   8,
+   "Upper Wacker bend"
+  ],
+  [
+   41.8869,
+   -87.6348,
+   8,
+   "Upper Wacker riverfront"
+  ],
+  [
+   41.8869,
+   -87.6273,
+   8,
+   "Upper Wacker riverfront"
+  ],
+  [
+   41.88715,
+   -87.62633,
+   8,
+   "Upper Wacker river bend west"
+  ],
+  [
+   41.88768,
+   -87.62586,
+   8,
+   "Upper Wacker river bend"
+  ],
+  [
+   41.88817,
+   -87.62536,
+   8,
+   "Upper Wacker river bend east"
+  ],
+  [
+   41.88823,
+   -87.62496,
+   8,
+   "Upper Wacker Michigan approach"
+  ],
+  [
+   41.88825,
+   -87.6245,
+   8,
+   "Michigan turn"
+  ],
+  [
+   41.8873,
+   -87.6244,
+   8,
+   "Michigan Avenue"
+  ]
+ ]
+}
