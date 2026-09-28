@@ -1,0 +1,13 @@
+{"texture_max": 512, "props": {
+ "drum": {"match": ["Barrel_"], "scale": 0.53, "max_tris": 1400},
+ "cone": {"match": ["Cone_"], "scale": 0.46, "max_tris": 900},
+ "hydrant": {"match": ["Hydrant_"], "scale": 0.36, "max_tris": 2200},
+ "jersey": {"match": ["concrete_barrier_"], "scale": 0.47, "max_tris": 1200},
+ "plastic_barrier": {"match": ["red_barrier_"], "scale": 0.47, "max_tris": 1200},
+ "crowd_fence": {"match": ["metal_barrier1_"], "scale": 0.47, "max_tris": 1700},
+ "trash_bag": {"match": ["trashbag_"], "scale": 0.4, "max_tris": 900},
+ "trash_bag2": {"match": ["trashbag2_"], "scale": 0.4, "max_tris": 900},
+ "cardboard": {"match": ["Cardboard_Box_", "Cube.001_Cardboard2"], "scale": 0.55, "max_tris": 400},
+ "stop_sign": {"match": ["stop_"], "scale": 0.44, "max_tris": 600},
+ "bin": {"match": ["Bin_"], "scale": 0.53, "max_tris": 1800}
+}}

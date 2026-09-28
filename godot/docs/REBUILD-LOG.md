@@ -2797,3 +2797,11 @@ v0.1.0-preview.7 is assembled from main at b9b5d7c (CHI-SC-1) plus this release-
 - **Artifacts (local, in `godot/build/`, gitignored):** `RacingSim-Preview7-Windows.zip` (169 MB; exe 267 MB, up from 172 MB mainly for the Chicago city, the full Nordschleife data and textures) and `RacingSim-Preview7-macOS.zip` (195 MB).
 - **macOS caveat:** built on Windows with the same `macos.zip` template and Godot's built-in ad-hoc signer (the export keeps the app binary's execute bit and writes `_CodeSignature`); `packaging/build-macos.sh` needs a Mac and was not run, and the app was not launched or `codesign --verify`-checked. Treat it as untested until it runs on a Mac.
 - **Not measured:** frame rate on any machine but the RTX 4080; first-load bake times for the full Nordschleife and Chicago.
+
+## 2026-09-28  DONE ASSET-02 owner Sketchfab assets via Blender  (Claude Opus 5.5)
+Blender 5.2.1 (portable, checksum-verified, in the owner's Tools folder) now drives asset prep: `tools/blender/build_car.py` fits a race-car glTF to a preset (orientation, wheelbase scale, axle height, wheels split out, parts joined per material, interior decimated, textures 1024 px) and `tools/blender/extract_props.py` splits a pack into grounded single-prop GLBs from a JSON spec (`tools/blender/specs/`).
+- **Ferrari 296 GT3:** the Verstappen Racing model replaces the procedural body (`scripts/cars/f296gt3.gd`): 105k body triangles, its own wheels mirrored per side, lamp lenses with night-glow twins. `car_models` cap for this car raised to 150k by owner decision (real assets over PS2 limits). Shot: `docs/rebuild/screenshots/asset-02-f296gt3.png`.
+- **Chicago:** Willis Tower model (night emission from its window texture) and the Bean model in chrome replace the procedural ones; the Street Asset Pack supplies hydrants, bins, trash bags, boxes and crowd fences on the sidewalks and drums, cones, jersey and plastic barriers on Lower Wacker.
+- **Nordschleife (full and S1):** `trackgen/nature_scatter.gd` puts grass clumps, bushes, stones and mossy boulders from "Rocks and Foliage" on the verges (MultiMesh per 500 m chunk, 140-700 m ranges).
+- Skipped: BMW M4 (CC BY-NC-SA), City Props (unclear licence), four truncated zips, the 145 MB grass scan.
+Credits in both THIRD-PARTY files. Gates `-All -Features` 40/40.

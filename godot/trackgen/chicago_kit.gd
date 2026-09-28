@@ -24,6 +24,9 @@ const SHOP_SETS = [
 const CORNICES = ["Cornice_Brick_Center", "Cornice_Metal_Center", "Cornice_Trim_Center"]
 
 const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
+const PropMesh = preload("res://scripts/track/prop_mesh.gd")
+## Street Asset Pack by vmatthew (CC BY 4.0), split by tools/blender/extract_props.py (ASSET-02).
+const STREET_PACK = "res://assets/chicago/street-pack/"
 
 static var _meshes = {}
 
@@ -271,19 +274,39 @@ static func _box_mesh() -> Mesh:
 const PROP_LAT_M = 11.0
 const PROP_CHUNK = 500.0
 const PROP_CULL_M = 260.0
-const PROP_KINDS = ["planter", "bollard", "hydrant", "paper", "bench", "bin"]
+const PROP_KINDS = [
+	"planter",
+	"bollard",
+	"hydrant",
+	"paper",
+	"bench",
+	"bin",
+	"trash_bag",
+	"cardboard",
+	"crowd_fence",
+	"crowd_fence"
+]
+const LOWER_KINDS = ["drum", "drum", "cone", "jersey", "plastic_barrier", "trash_bag2", "cardboard", "bin"]
 
 
 static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 	var meshes = {
 		"planter": _mesh("Prop_Planter_Single"),
 		"bollard": _mesh("Prop_Bollard"),
-		"hydrant": _hydrant_mesh(),
+		"hydrant": PropMesh.mesh(STREET_PACK + "hydrant.glb"),
 		"paper": _paper_mesh(),
 		"bench": _bench_mesh(),
-		"bin": _bin_mesh(),
+		"bin": PropMesh.mesh(STREET_PACK + "bin.glb"),
+		"trash_bag": PropMesh.mesh(STREET_PACK + "trash_bag.glb"),
+		"trash_bag2": PropMesh.mesh(STREET_PACK + "trash_bag2.glb"),
+		"cardboard": PropMesh.mesh(STREET_PACK + "cardboard.glb"),
+		"drum": PropMesh.mesh(STREET_PACK + "drum.glb"),
+		"cone": PropMesh.mesh(STREET_PACK + "cone.glb"),
+		"jersey": PropMesh.mesh(STREET_PACK + "jersey.glb"),
+		"plastic_barrier": PropMesh.mesh(STREET_PACK + "plastic_barrier.glb"),
+		"crowd_fence": PropMesh.mesh(STREET_PACK + "crowd_fence.glb"),
 	}
-	var scales = {"planter": 1.0, "bollard": 1.5, "hydrant": 1.6, "paper": 1.0, "bench": 1.5, "bin": 1.5}
+	var scales = {"planter": 1.0, "bollard": 1.5, "paper": 1.0, "bench": 1.5}
 	var crossings = []
 	for i in ChicagoFurniture.find_crossings(stations):
 		crossings.append(stations[i].s)
@@ -296,7 +319,9 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var at = stations[i]
 		var step = int(rng.randf_range(7.0, 18.0) / 1.5)
 		i += maxi(1, step)
-		if at.pos.y < 7.0 or at.pos.y > 9.0:
+		# Street level gets sidewalk furniture; Lower Wacker (y about 0) gets road-works clutter.
+		var lower = at.pos.y < 3.0
+		if not lower and (at.pos.y < 7.0 or at.pos.y > 9.0):
 			continue
 		var near_cross = false
 		for c in crossings:
@@ -309,15 +334,24 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var right = flat.cross(Vector3.UP)
 		var side = -1.0 if rng.randf() < 0.5 else 1.0
 		var pos = at.pos + right * side * (PROP_LAT_M + rng.randf() * 0.5)
-		var kind = PROP_KINDS[rng.randi() % PROP_KINDS.size()]
-		# Faces the road: local +Z toward the street.
-		var basis = Basis.looking_at(right * side, Vector3.UP).scaled(Vector3.ONE * scales[kind])
+		var kinds = LOWER_KINDS if lower else PROP_KINDS
+		var kind = kinds[rng.randi() % kinds.size()]
+		# Faces the road: local +Z toward the street; imported props get a little yaw jitter.
+		var basis = Basis.looking_at(right * side, Vector3.UP)
+		if kind in ["crowd_fence", "jersey", "plastic_barrier"]:
+			# Barriers run along the kerb.
+			basis = Basis.looking_at(flat, Vector3.UP)
+		elif not scales.has(kind):
+			basis = basis.rotated(Vector3.UP, rng.randf_range(-0.5, 0.5))
+		basis = basis.scaled(Vector3.ONE * scales.get(kind, 1.0))
 		var cx = floori(pos.x / PROP_CHUNK)
 		var cz = floori(pos.z / PROP_CHUNK)
 		var id = "%s|%d|%d" % [kind, cx, cz]
 		if not groups.has(id):
 			groups[id] = {"kind": kind, "x": cx, "z": cz, "list": []}
-		groups[id].list.append(Transform3D(basis, Vector3(pos.x, STREET_Y + 0.04, pos.z)))
+		groups[id].list.append(
+			Transform3D(basis, Vector3(pos.x, (at.pos.y if lower else STREET_Y) + 0.04, pos.z))
+		)
 		count += 1
 	for id in groups:
 		var group = groups[id]
@@ -365,19 +399,6 @@ static func _cyl(r_top: float, r_bottom: float, h: float) -> CylinderMesh:
 	return c
 
 
-static func _hydrant_mesh() -> Mesh:
-	return _compose(
-		[
-			[_cyl(0.16, 0.19, 0.7), Transform3D(Basis.IDENTITY, Vector3(0, 0.35, 0))],
-			[_cyl(0.0, 0.17, 0.16), Transform3D(Basis.IDENTITY, Vector3(0, 0.78, 0))],
-			[_box(Vector3(0.5, 0.12, 0.12)), Transform3D(Basis.IDENTITY, Vector3(0, 0.5, 0))]
-		],
-		Color(0.72, 0.1, 0.08)
-	)
-
-
-## CHI-SC-3: a street news box at real size (it was a plain 0.8 x 1.6 m blue block): a pedestal, the body with a
-## sloped hood, and a pale coin-door window on the street-facing front (+Z faces the kerb).
 static func _paper_mesh() -> Mesh:
 	var body = _compose(
 		[
@@ -406,10 +427,4 @@ static func _bench_mesh() -> Mesh:
 			[_box(Vector3(0.1, 0.45, 0.45)), Transform3D(Basis.IDENTITY, Vector3(0.75, 0.22, 0))]
 		],
 		Color(0.2, 0.32, 0.22)
-	)
-
-
-static func _bin_mesh() -> Mesh:
-	return _compose(
-		[[_cyl(0.3, 0.26, 0.95), Transform3D(Basis.IDENTITY, Vector3(0, 0.48, 0))]], Color(0.1, 0.16, 0.12)
 	)
