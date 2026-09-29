@@ -6,6 +6,7 @@
     "game": ["scripts/", "scenes/", "data/", "assets/", "project.godot"]
   },
   "suites": [
+    {"name": "monaco", "script": "tests/v2/monaco.gd", "groups": ["track", "vehicle"], "deps": ["trackgen/monaco.gd", "trackgen/data/monaco/"]},
     {"name": "optimization", "script": "tests/v2/optimization.gd", "deps": ["scripts/track/track_asset.gd", "scripts/track/track_lights.gd", "scripts/track/night_glow.gd", "scripts/instruments.gd"]},
     {"name": "chassis_spike", "script": "tests/v2/chassis_spike.gd", "groups": ["vehicle"], "perf": true, "perf_args": ["--part", "cost"]},
     {"name": "surfaces", "script": "tests/v2/surfaces.gd", "groups": ["vehicle"]},

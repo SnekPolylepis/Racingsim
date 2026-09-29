@@ -9,9 +9,11 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
 2. `dem_sample.py <Copernicus_DSM_COG_10_N43_00_E007_00_DEM.tif>` decodes the Copernicus GLO-30 tile
    around Monaco into `dem.json` (the tile itself is not kept).
 3. `build_profile.py` reads road height as the DSM's low envelope (the DSM includes buildings), bridges
-   the tunnel between its portals, smooths over 120 m and limits grade to 12 % -> `profile.json`.
-   Harbour 2-6 m, Sainte-Devote 5.5 m, peak ~50 m before Casino Square, Mirabeau 40 m, Portier 14 m.
-4. `build_city.py` writes `city.json`: the 3 m road with heights (no global smoothing, so the Nouvelle
+   the tunnel between its portals, smooths over 120 m and limits grade to 12 %. It then resamples the
+   complete closed lap at about 3 m, including the formerly missing closing segment, and applies a
+   periodic Gaussian (sigma 60 m) to remove abrupt grade changes -> `profile.json`.
+   The authored approximation ranges from about 2 to 47 m; it is not a surveyed elevation model.
+4. `build_city.py` writes `city.json`: the 3 m road with four-decimal heights (no global plan-view smoothing, so the Nouvelle
    Chicane and Swimming Pool jinks keep the OSM raceway shape; only node kinks under 6.5 m radius are relaxed,
    below which the inside barrier folds over the road), an 8 m ground grid (level with the road
    out to 12 m), 3,900 OSM buildings (heights from OSM tags, else measured from the DSM), trees, parks, piers.
@@ -25,8 +27,10 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
 
 ## Known limits
 
-- The DSM is 30 m: the total climb reads ~49 m against the ~42 m usually quoted; corner heights are
-  within a few metres. No LiDAR is openly available for Monaco.
+- The DSM is 30 m and includes rooftops. The smoothed profile has about 45 m of elevation range;
+  local heights and slopes are authored approximations, not surveyed ground truth.
+- Track version 2 opens both Swimming Pool chicanes, with 4 m paved escape bands. Barrier fences,
+  advertising panels and solid grandstand fronts are omitted along that stretch.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
 - Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
 

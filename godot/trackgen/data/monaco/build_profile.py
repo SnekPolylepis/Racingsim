@@ -3,12 +3,12 @@
 
 The DSM is a surface model, so buildings, trees and the Fairmont over the tunnel read high. The road is
 the low ground between them: take the minimum DSM within 12 m of each point, bridge the tunnel linearly
-between its portals (OSM tunnel=yes on Boulevard Louis II), then smooth over 80 m.
+between its portals, limits grade, then smooths on a uniform periodic grid (Gaussian sigma 60 m).
 """
-import json, math
+import json, math, bisect
 
-D = json.load(open("dem.json"))
-P = json.load(open("centreline.json"))["points"]
+D = json.load(open("dem.json", encoding="utf-8"))
+P = json.load(open("centreline.json", encoding="utf-8"))["points"]
 K = math.cos(math.radians(43.735))
 M_LAT = 111320.0
 
@@ -38,10 +38,9 @@ for p in P:
     prev = p
 length = s + M_LAT * math.hypot(P[0][0] - P[-1][0], (P[0][1] - P[-1][1]) * K)
 
-# Tunnel: every lap way tagged tunnel=yes (Boulevard Louis II under the Fairmont, the Portier underpass).
-ways = {e["id"]: e for e in json.load(open("osm-roads.json"))["elements"] if e["type"] == "way"}
-LAP = [int(w) for w in open("build_route.py").read().split("LAP = [")[1].split("]")[0].replace("#", ",#").split(",") if w.strip().isdigit()]
-tun = [(q["lat"], q["lon"]) for w in LAP if ways[w]["tags"].get("tunnel") == "yes" and w != 1470365907 for q in ways[w]["geometry"]]
+# Match build_city.py: the main tunnel only, not the separate Portier underpass.
+ways = {e["id"]: e for e in json.load(open("osm-roads.json", encoding="utf-8"))["elements"] if e["type"] == "way"}
+tun = [(q["lat"], q["lon"]) for w in (4230891, 1230247123) for q in ways[w]["geometry"]]
 
 
 def nearest_s(pt):
@@ -79,11 +78,32 @@ for _ in range(3):
             j = i - 1 if rng.step == 1 else i + 1
             ds = abs(out[i][0] - out[j][0])
             out[i][1] = round(min(max(out[i][1], out[j][1] - G * ds), out[j][1] + G * ds), 2)
-json.dump({"source": "Copernicus GLO-30 DSM, road low envelope (floor 2 m), tunnel bridged, 120 m smooth, grade <= 12 %",
-           "length": round(length, 1), "tunnel": [raw[i0][0], raw[i1][0]], "profile": out}, open("profile.json", "w"))
+# Resample before smoothing: OSM vertices have uneven spacing, and the closing segment had no
+# samples. Explicit periodic interpolation prevents a flat tail followed by a launch ramp at s=0.
+stations = [p[0] for p in out] + [length]
+heights = [p[1] for p in out] + [out[0][1]]
+n = math.ceil(length / 3.0)
+step = length / n
+uniform = []
+for i in range(n):
+    s = i * step
+    j = min(bisect.bisect_right(stations, s) - 1, len(stations) - 2)
+    t = (s - stations[j]) / (stations[j + 1] - stations[j])
+    uniform.append(heights[j] + (heights[j + 1] - heights[j]) * t)
+# Smooth the grade limiter's sharp transitions as well as the DEM. This models the broad street
+# profile, not rooftop edges; preserve planar chicanes. A denser surveyed profile can replace it.
+sigma = 60.0
+reach = math.ceil(4 * sigma / step)
+weights = [math.exp(-0.5 * (k * step / sigma) ** 2) for k in range(-reach, reach + 1)]
+weight_sum = sum(weights)
+out = [[round(i * step, 4), round(sum(uniform[(i + k) % n] * w for k, w in zip(range(-reach, reach + 1), weights)) / weight_sum, 4)] for i in range(n)]
+out.append([round(length, 4), out[0][1]])
+json.dump({"source": "Copernicus GLO-30 DSM, low envelope, tunnel bridged, grade limited then periodic Gaussian sigma 60 m; authored approximation",
+           "length": round(length, 1), "tunnel": [raw[i0][0], raw[i1][0]], "profile": out}, open("profile.json", "w", encoding="utf-8"))
 hs = [h for _, h in out]
 grades = [abs(out[i + 1][1] - out[i][1]) / max(out[i + 1][0] - out[i][0], 1) for i in range(len(out) - 1)]
 print("length", round(length), "min", min(hs), "max", max(hs), "range", round(max(hs) - min(hs), 1), "max grade %.1f%%" % (100 * max(grades)))
 for n, lat, lon in [("Start", 43.7340, 7.4214), ("Ste Devote", 43.7369, 7.4217), ("Casino", 43.7394, 7.4274), ("Mirabeau", 43.7411, 7.4288), ("Portier", 43.7410, 7.4303), ("Chicane", 43.7371, 7.4250), ("Tabac", 43.7369, 7.4230), ("Rascasse", 43.7325, 7.4227)]:
-    i = nearest_s((lat, lon))
+    s = raw[nearest_s((lat, lon))][0]
+    i = min(range(len(out)), key=lambda k: abs(out[k][0] - s))
     print(f"{n:11s} s={out[i][0]:6.0f} h={out[i][1]:5.1f}")

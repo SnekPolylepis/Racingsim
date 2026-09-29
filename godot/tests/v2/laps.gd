@@ -41,7 +41,9 @@ func check(ok, what):
 
 
 func _initialize():
-	presets = GatesEnv.only_car(JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json")))
+	presets = GatesEnv.only_car(
+		JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
+	)
 	var selected = ""
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--track="):
@@ -94,7 +96,14 @@ func _physics_process(_delta):
 					timing = "baseline %.2f s (%+.2f%%)" % [base, (r.lap / base - 1) * 100]
 					timing_ok = absf(r.lap / base - 1) < .02
 				check(
-					r.ok and r.lap > 0 and r.off == 0 and r.walls == 0 and r.props == 0 and timing_ok,
+					(
+						r.ok
+						and r.lap > 0
+						and r.off == 0
+						and r.walls == 0
+						and r.props == 0
+						and timing_ok
+					),
 					(
 						"%s: lap %.2f s, %d off-track wheel-ticks, %d wall-contact ticks, %d prop-contact ticks (%d props), max %.1f m off the line, top %.0f km/h; %s"
 						% [
@@ -113,13 +122,17 @@ func _physics_process(_delta):
 	if record:
 		var out = baseline.duplicate()
 		for name in results:
-			if results[name].lap > 0:
+			var r = results[name]
+			if r.ok and r.lap > 0 and r.off == 0 and r.walls == 0 and r.props == 0:
 				out[name] = snappedf(results[name].lap, .001)
 		var f = FileAccess.open(BASELINE, FileAccess.WRITE)
 		f.store_string(JSON.stringify(out, "  ", true) + "\n")
 		f.close()
 		print("RECORDED %s" % BASELINE)
-	print("LAPS RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
+	print(
+		"LAPS RESULTS ",
+		JSON.stringify({"checks": checks, "failures": failures, "results": results})
+	)
 	quit(0 if failures.is_empty() else 1)
 	return true
 

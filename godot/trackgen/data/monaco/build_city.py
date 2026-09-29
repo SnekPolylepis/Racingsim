@@ -14,7 +14,7 @@ import json, math
 ORIGIN = (43.735, 7.4225)
 K = math.cos(math.radians(ORIGIN[0]))
 M = 111320.0
-D = json.load(open("dem.json"))
+D = json.load(open("dem.json", encoding="utf-8"))
 
 
 def xz(lat, lon):
@@ -42,8 +42,8 @@ def low(x, z, r=15.0):
 
 
 # --- road: resample the OSM centreline to 3 m, profile y.
-pts = [xz(*p) for p in json.load(open("centreline.json"))["points"]]
-prof = json.load(open("profile.json"))["profile"]
+pts = [xz(*p) for p in json.load(open("centreline.json", encoding="utf-8"))["points"]]
+prof = json.load(open("profile.json", encoding="utf-8"))["profile"]
 loop = pts + [pts[0]]
 cum = [0.0]
 for a, b in zip(loop, loop[1:]):
@@ -93,15 +93,15 @@ res = out
 ps, ph = [p[0] for p in prof], [p[1] for p in prof]
 
 
-PL = json.load(open("profile.json"))["length"]
+PL = json.load(open("profile.json", encoding="utf-8"))["length"]
 road = []
 for k, (x, z) in enumerate(res):
     s = k * L / n * PL / L
     y = next((ph[i - 1] + (ph[i] - ph[i - 1]) * (s - ps[i - 1]) / max(ps[i] - ps[i - 1], 1e-9) for i in range(1, len(ps)) if ps[i] >= s), ph[-1])
-    road.append([round(x, 2), round(y, 2), round(z, 2)])
+    road.append([round(x, 2), round(y, 4), round(z, 2)])
 
 # Tunnel: road points nearest the lap's OSM tunnel=yes ways (Boulevard Louis II under the Fairmont).
-osm = {e["id"]: e for e in json.load(open("osm-roads.json"))["elements"] if e["type"] == "way"}
+osm = {e["id"]: e for e in json.load(open("osm-roads.json", encoding="utf-8"))["elements"] if e["type"] == "way"}
 # The two long Boulevard Louis II tunnel ways only: the Portier underpass way (1470365900) is also tunnel=yes
 # and put the tunnel roof over the Portier corner.
 tun_nodes = [xz(q["lat"], q["lon"]) for w in (4230891, 1230247123) for q in osm[w]["geometry"]]
@@ -178,7 +178,7 @@ def num(v):
 LANDMARKS = {161769674: ("casino", 36.0), 8280869: ("hotel_de_paris", 26.0)}
 buildings = []
 dropped = 0
-for e in json.load(open("osm-buildings.json"))["elements"]:
+for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
     rings = []
     if e["type"] == "way":
         rings = [e["geometry"]]
@@ -221,7 +221,7 @@ for e in json.load(open("osm-buildings.json"))["elements"]:
             kind, h = LANDMARKS[e["id"]]
         buildings.append([[round(px, 2) for p in ring for px in p], round(base, 2), round(h, 1), kind])
 
-nature = json.load(open("osm-nature.json"))["elements"]
+nature = json.load(open("osm-nature.json", encoding="utf-8"))["elements"]
 trees = []
 for e in nature:
     if e["type"] == "node":
@@ -242,7 +242,7 @@ for e in nature:
 
 # Pools (osm-pool.json): the Stade Nautique Rainier III basin beside the Swimming Pool section, and others.
 pools = []
-for e in json.load(open("osm-pool.json"))["elements"]:
+for e in json.load(open("osm-pool.json", encoding="utf-8"))["elements"]:
     ring = [xz(q["lat"], q["lon"]) for q in e["geometry"]]
     pools.append([[round(v, 2) for p in ring for v in p], round(min(ground_at(*p) for p in ring), 2)])
 
@@ -255,5 +255,5 @@ json.dump({
     "tunnel": tunnel,
     "ground": {"x0": x0, "z0": z0, "cell": G, "nx": nx, "nz": nz, "h": ground, "paved": paved},
     "buildings": buildings, "trees": trees, "parks": parks, "piers": piers, "pools": pools,
-}, open("city.json", "w"), separators=(",", ":"))
+}, open("city.json", "w", encoding="utf-8"), separators=(",", ":"))
 print("tunnel idx", tunnel, "road pts", len(road), "lap m", round(L), "ground", nx, "x", nz, "buildings", len(buildings), "dropped near road", dropped, "trees", len(trees), "parks", len(parks), "piers", len(piers))
