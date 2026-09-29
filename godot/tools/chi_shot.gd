@@ -49,6 +49,7 @@ func run():
 		"pritzker": [Vector3(210, 20, 360), Vector3(210, 20, 150)],
 		"harbor": [Vector3(760, 30, 250), Vector3(1100, 5, 60)],
 		"sym": [Vector3(40, 12, 680), Vector3(-50, 18, 668)],
+		"wrigley": [Vector3(-10, 12, -380), Vector3(-30, 60, -620)],
 		"mich-aerial": [Vector3(250, 220, 300), Vector3(-80, 60, -100)],
 	}
 	for night in [0, 1]:

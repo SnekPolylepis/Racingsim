@@ -74,6 +74,28 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 					var ext = hi - lo
 					label.position += Vector3(cr.shift[0] * ext.x, 0, cr.shift[1] * ext.y)
 				node = label
+			"flood":
+				# Night floodlighting: four uplights around the footprint aimed at the facade.
+				node = Node3D.new()
+				var lo = ring[0]
+				var hi = ring[0]
+				for p in ring:
+					lo = lo.min(p)
+					hi = hi.max(p)
+				var height = top - 8.0
+				for off in [Vector2(0, -1), Vector2(0, 1), Vector2(-1, 0), Vector2(1, 0)]:
+					var edge = c + Vector2(off.x * (hi.x - lo.x) * .5, off.y * (hi.y - lo.y) * .5)
+					var light = SpotLight3D.new()
+					light.position = Vector3(edge.x + off.x * 12.0, 9.0, edge.y + off.y * 12.0)
+					light.light_color = Color("fff1d8")
+					light.light_energy = 12.0
+					light.spot_range = height + 30.0
+					light.spot_angle = 28.0
+					light.shadow_enabled = false
+					light.visible = false
+					light.set_meta("chicago_night", true)
+					node.add_child(light)
+					light.look_at_from_position(light.position, Vector3(edge.x, top * 0.6, edge.y), Vector3.UP)
 			"photo":
 				node = photo_facade(ring, top, float(cr.h), cr.ph)
 		if node == null:

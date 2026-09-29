@@ -242,6 +242,25 @@
       "name": "Jay Pritzker Pavilion (stage)",
       "src": "en.wikipedia.org/wiki/Jay_Pritzker_Pavilion: brushed stainless steel ribbon headdress; shape from USGS LiDAR",
       "pk": 1
+    },
+    "r17460539": {
+      "name": "Wrigley Building",
+      "src": "en.wikipedia.org/wiki/Wrigley_Building: glazed terra-cotta, bright white, south tower 130 m, brightly floodlit at night",
+      "k": "terracotta",
+      "c": "#f4f3ee",
+      "crown": {
+        "type": "flood"
+      }
+    },
+    "w150407241": {
+      "name": "Tribune Tower",
+      "src": "en.wikipedia.org/wiki/Tribune_Tower: 141 m, neo-Gothic limestone, light tan, floodlit at night",
+      "h": 141.0,
+      "k": "stone",
+      "c": "#d8ccb0",
+      "crown": {
+        "type": "flood"
+      }
     }
   }
 }
