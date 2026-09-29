@@ -152,7 +152,7 @@ textures reduced.
 - "Low Poly Night City Building Skyline" by 99.Miles, CC BY 4.0 (`assets/chicago/landmarks/night_skyline.glb`).
 
 | Quaternius Cars Bundle (parked cars, Chicago) | Quaternius via poly.pizza | CC0 1.0 | godot/assets/chicago/cars-q/ |
-| rooftop_night HDRI (Chicago night sky) | Poly Haven | CC0 1.0 | godot/assets/chicago/sky/ |
+| kloofendal_48d_partly_cloudy_puresky and kloppenheim_07_puresky HDRIs (Chicago sky) | Poly Haven | CC0 1.0 | godot/assets/chicago/sky/ |
 | City of Chicago Building Footprints (storey counts) | data.cityofchicago.org syp8-uezg | City of Chicago Data Portal terms | godot/assets/cc0-source/chicago/roadmap/city-footprints.json |
 | USGS 3DEP LiDAR IL 4County Cook 2017 (building roof shapes, Chicago) | USGS via usgs-lidar-public (Entwine) | Public domain (US Government) | baked into godot/trackgen/data/chicago/city.json; fetch_lidar.py |
 | Chicago Athletic Association facade photo | Beyond My Ken, Wikimedia Commons | CC BY-SA 4.0 (texture is a derivative, same licence) | godot/assets/chicago/facade-photos/caa_east.jpg |

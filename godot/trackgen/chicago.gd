@@ -49,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 123
+const CACHE_REVISION = 126
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -224,7 +224,10 @@ static func build_asset() -> Node3D:
 	# closed-street courses); without it the route read as a grey blockout. Visual only (the barrier keeps
 	# collision). Baked after Scenery exists: CatchFence parents its mesh under Scenery and would otherwise
 	# create its own, renaming the city's node (and losing Scenery/CentennialWheel etc.).
-	for barrier in ["LeftBarrier", "RightBarrier"]:
+	# Along Upper Wacker's riverfront the river is on the left: no debris fence there, so the river shows.
+	var river = river_span(road)
+	for piece in [["LeftBarrier", 0.0, river.x], ["LeftBarrier", river.y, -1.0], ["RightBarrier", 0.0, -1.0]]:
+		var barrier = piece[0]
 		var fence = CatchFence.new()
 		fence.follow_wall = NodePath("../" + barrier)
 		fence.side = WallPath.Side.LEFT if barrier == "LeftBarrier" else WallPath.Side.RIGHT
@@ -232,7 +235,9 @@ static func build_asset() -> Node3D:
 		fence.post_spacing = 4.0
 		fence.fence_height = 3.2
 		fence.solid = false
-		attach(asset, asset, fence, barrier + "Fence")
+		fence.from_m = piece[1]
+		fence.to_m = piece[2]
+		attach(asset, asset, fence, barrier + "Fence" + ("B" if piece[1] > 0.0 else ""))
 		fence.bake()
 	add_water_and_parks(asset, scenery)
 	# CHI-02: the real downtown from OpenStreetMap (buildings, every street, water, parks) replaces the
@@ -252,8 +257,7 @@ static func build_asset() -> Node3D:
 		for prefix in NO_SHADOW:
 			if node is GeometryInstance3D and str(node.name).begins_with(prefix):
 				node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_park_trees(asset)
-	add_lakefront_trees(asset)
+	# Trees are the real mapped ones (ChicagoCity._trees); the old random park/lakefront bands are gone.
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
 	add_parked_cars(asset, scenery, road)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
@@ -1102,6 +1106,15 @@ static func road_frame(road: RoadPath) -> Array:
 
 
 ## Open ground add_city() keeps clear (lakefront, parks, river corridor), and landmark sightlines.
+## Route offsets [from, to] of the Upper Wacker riverfront (route rows "Upper Wacker riverfront" to the
+## Michigan approach), where the river lies on the left of the lap.
+static func river_span(road: RoadPath) -> Vector2:
+	var rows = data().points
+	var a = road.curve.get_closest_offset(world(rows[30]))
+	var b = road.curve.get_closest_offset(world(rows[35]))
+	return Vector2(minf(a, b), maxf(a, b))
+
+
 static func keep_clear(p: Vector3, margin: float) -> bool:
 	if p.x > 20 and p.z > -210:
 		return true
@@ -1210,6 +1223,9 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 		var b = RoadBuilder.station_at(c, road.closed, length, f[2], s + 15.0).tangent
 		if a.dot(b) > 0.995 and rng.randf() < 0.75:
 			var side = -1 if rng.randf() < 0.5 else 1
+			var river = river_span(road)
+			if side == -1 and s > river.x and s < river.y:
+				side = 1
 			var e = RoadBuilder.beyond_edge(c, f[1], road.closed, f[2], s, side, 3.4)
 			var p = road.transform * e.point
 			var fwd = b

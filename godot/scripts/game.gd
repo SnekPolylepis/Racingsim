@@ -1181,10 +1181,14 @@ func apply_time_of_day():
 		var sky = Sky.new()
 		var paint = PanoramaSkyMaterial.new()
 		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(night, horizon)
-		# Chicago nights use a real city-lit HDRI sky (Poly Haven rooftop_night, CC0).
-		if night and v2_track_id == "chicago":
-			paint.panorama = load("res://assets/chicago/sky/rooftop_night_2k.hdr")
-			paint.energy_multiplier = 0.35
+		# Chicago: sky-only HDRIs (Poly Haven, CC0) so the lake horizon stays open: no painted hills by day and
+		# no foreign skyline at night. Night is an overcast sky lit from below by city light.
+		if v2_track_id == "chicago":
+			paint.panorama = load(
+				"res://assets/chicago/sky/%s.hdr"
+				% ("kloppenheim_07_puresky" if night else "kloofendal_48d_partly_cloudy_puresky")
+			)
+			paint.energy_multiplier = 0.6 if night else 0.9
 		sky.sky_material = paint
 		environment.sky = sky
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient

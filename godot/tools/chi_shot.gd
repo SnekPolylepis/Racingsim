@@ -36,6 +36,16 @@ func run():
 		"caa": [Vector3(40, 14, 330), Vector3(-49, 30, 346)],
 		"uc": [Vector3(40, 14, 410), Vector3(-46, 30, 423)],
 		"rx": [Vector3(60, 20, 690), Vector3(-35, 45, 701)],
+		"river": [Vector3(-470, 11, -225), Vector3(-150, 4, -262)],
+		"river-air": [Vector3(-300, 90, -120), Vector3(-450, 0, -300)],
+		"park-air": [Vector3(60, 70, 120), Vector3(170, 0, 280)],
+		"lake-lsd": [Vector3(737, 14, 156), Vector3(1600, 6, 100)],
+		"lake-lsd2": [Vector3(760, 14, -20), Vector3(1500, 6, -300)],
+		"l-lake": [Vector3(-1050, 10, -150), Vector3(-900, 12, -140)],
+		"lake-top": [Vector3(700, 450, 400), Vector3(1000, 0, 150)],
+		"river-top": [Vector3(-560, 40, -270), Vector3(-380, 0, -330)],
+		"l-wabash": [Vector3(-141, 10, 60), Vector3(-141, 15, -80)],
+		"lake-oblique": [Vector3(700, 45, 170), Vector3(1100, 0, 120)],
 		"mich-aerial": [Vector3(250, 220, 300), Vector3(-80, 60, -100)],
 	}
 	for night in [0, 1]:

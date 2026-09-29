@@ -395,6 +395,8 @@ def main():
             b["cr"] = m["crown"]
         if "photo" in m:
             b["ph"] = m["photo"]
+        if m.get("glass"):
+            b["gl"] = 1
         for lo, hi, kind, colour in m.get("bands", []):
             extra.append({"f": b["f"], "h": min(hi, b["h"]), "m": lo, "k": kind, "c": colour, "band": 1})
     # Landmarks drawn by their OSM parts: facade on every part, crown and top band on the tallest,
@@ -488,8 +490,48 @@ def main():
                 if len(cut) >= 3 and area(cut) > 150:
                     (water if is_water else parks).append(simplify(cut, 0.8))
 
+    # Real mapped trees (OSM natural=tree) with the LiDAR canopy height where the survey covers them, footpaths
+    # inside parks, and park structures (pavilions, fountains) flagged so they don't get office facades.
+    trees = []
+    paths = []
+    tp = load("downtown-trees-paths.json")
+    for e in tp:
+        t = e.get("tags", {})
+        if e["type"] == "node" and t.get("natural") == "tree":
+            x, z = xz(e["lat"], e["lon"])
+            h = 0.0
+            for dsm, gx0, gz0 in grids:
+                i, j = int(x - gx0), int(z - gz0)
+                if 1 <= i < dsm.shape[1] - 1 and 1 <= j < dsm.shape[0] - 1:
+                    with np.errstate(all="ignore"):
+                        v = np.nanmax(dsm[j - 1:j + 2, i - 1:i + 2])
+                    if not np.isnan(v) and 3.0 < v < 35.0:
+                        h = round(float(v), 1)
+            trees.append([x, z, h])
+        elif e["type"] == "way" and "geometry" in e:
+            pts = [xz(g["lat"], g["lon"]) for g in e["geometry"]]
+            mid = pts[len(pts) // 2]
+            if any(inside(mid, pk) for pk in parks):
+                paths.append({"p": simplify(pts, 0.3, closed=False), "w": 4.0 if t.get("highway") == "pedestrian" else 2.6})
+    for b in buildings:
+        c = (sum(p[0] for p in b["f"]) / len(b["f"]), sum(p[1] for p in b["f"]) / len(b["f"]))
+        if b["h"] < 25.0 and any(inside(c, pk) for pk in parks):
+            b["pk"] = 1
+    print("trees %d (%d with LiDAR height), park paths %d, park structures %d" % (len(trees), sum(1 for t in trees if t[2]), len(paths), sum(1 for b in buildings if b.get("pk"))))
+
+    # The real elevated 'L' (OSM railway=subway on bridges): one polyline per track.
+    elevated = []
+    for e in load("downtown-rail.json"):
+        t = e.get("tags", {})
+        if t.get("railway") == "subway" and t.get("bridge") in ("yes", "viaduct", "movable") and "geometry" in e:
+            elevated.append({"p": [xz(g["lat"], g["lon"]) for g in e["geometry"]], "n": t.get("name", "")})
+    print("elevated L tracks: %d" % len(elevated))
+
     out = {
         "schema": 1,
+        "elevated": elevated,
+        "trees": trees,
+        "paths": paths,
         "source": "OpenStreetMap contributors (ODbL 1.0), Overpass extracts fetched 2026-09-25; see assets/cc0-source/chicago/roadmap/README.md",
         "frame": "trackgen/chicago.gd world(): x = (lon + 87.6244) * 82860, z = (41.8848 - lat) * 111320",
         "buildings": buildings,

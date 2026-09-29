@@ -14,12 +14,15 @@ extends RefCounted
 ## Geometry is batched per 600 m chunk and material, so the whole city is a few hundred draw calls at most.
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
 const ChicagoCrowns = preload("res://trackgen/chicago_crowns.gd")
+const ChicagoL = preload("res://trackgen/chicago_l.gd")
+const RoadScatter = preload("res://scripts/track/road_scatter.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const FACADE_SHADER = preload("res://shaders/chicago_facade.gdshader")
 const DATA = "res://trackgen/data/chicago/city.json"
 const TEX = "res://assets/textures/chicago/"
 const STREET_Y = 8.0
-const WATER_Y = -2.8
+## Chicago River surface: USGS LiDAR puts it ~5.9 m below Upper Wacker (street here at STREET_Y).
+const WATER_Y = 2.1
 ## Lake Michigan and its harbours sit just below the lakefront (the Chicago Harbor Lock separates them from
 ## the river). At the river's WATER_Y, 10.8 m under the street, the lake was hidden in a pit and Lake
 ## Shore Drive looked out over a bare concrete plain.
@@ -102,7 +105,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
-		var facade = _st(target, _centroid(ring), "facade")
+		var facade = _st(target, _centroid(ring), "glassblock" if b.has("gl") else ("pavilion" if b.has("pk") else "facade"))
 		# Real OSM data: building:part base height ("m") and facade colour ("c") where tagged.
 		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
 		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
@@ -193,7 +196,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		]
 		for side in sides:
 			var next = cell + side[0]
-			if low_cells.has(next) or water_cells.has(next):
+			if low_cells.has(next):
 				continue
 			var a = at + side[1]
 			var b = at + side[2]
@@ -221,7 +224,23 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			)
 			holder.add_child(node)
 			node.owner = asset
+	# Footpaths through the parks (OSM), just above the lawn.
+	for pth in doc.get("paths", []):
+		var pts = _ring(pth.p)
+		for k in pts.size() - 1:
+			var a = pts[k]
+			var bb = pts[k + 1]
+			if a.distance_to(bb) < 0.05:
+				continue
+			var side = (bb - a).orthogonal().normalized() * float(pth.w) * .5
+			var st = _st(flat_chunks, a, "path")
+			for v in [a - side, a + side, bb + side, a - side, bb + side, bb - side]:
+				st.set_normal(Vector3.UP)
+				st.set_uv(v)
+				st.add_vertex(Vector3(v.x, STREET_Y - 0.015, v.y))
+	_trees(asset, holder, doc.get("trees", []), route)
 	ChicagoCrowns.build(asset, holder, crowns)
+	stats["l_trains"] = ChicagoL.build(asset, holder, doc.get("elevated", []))
 	stats["crowns"] = crowns.size()
 	return stats
 
@@ -257,6 +276,18 @@ static func material(name: String) -> Material:
 		mat = sm
 	elif name == "roof":
 		mat = _plain(Color(0.24, 0.25, 0.26), 0.9)
+	elif name == "pavilion":
+		# Park structures (pavilions, kiosks, fountain housings): pale stone, no office window grid.
+		mat = _triplanar(TEX + "Concrete034/Concrete034_color.jpg", 3.0, Color(0.86, 0.85, 0.82))
+	elif name == "glassblock":
+		# Crown Fountain: glass brick lit from within; the LED faces glow at night (chicago_night).
+		var gb = _plain(Color(0.78, 0.86, 0.88), 0.25)
+		gb.emission = Color(0.66, 0.8, 0.95)
+		gb.emission_energy_multiplier = 1.6
+		gb.set_meta("chicago_night", true)
+		mat = gb
+	elif name == "path":
+		mat = _triplanar(TEX + "Granite002A/Granite002A_color.jpg", 2.0, Color(0.9, 0.88, 0.84))
 	elif name == "road":
 		var road = StandardMaterial3D.new()
 		road.albedo_texture = load("res://assets/chicago/surfaces/worn_asphalt/worn_asphalt_diff_1k.jpg")
@@ -567,6 +598,46 @@ static func _lidar_wall(st: SurfaceTool, a: Vector3, b: Vector3, n: Vector3, lo:
 		st.set_normal(n)
 		st.set_uv(v[idx][1])
 		st.add_vertex(v[idx][0])
+
+
+## Real mapped trees (OSM natural=tree) within 350 m of the route, kept off the carriageway. Height from the
+## LiDAR canopy where measured, else the broadleaf card's own range. Same photographic cards as RoadScatter.
+static func _trees(asset: Node3D, holder: Node3D, trees: Array, route: Dictionary) -> void:
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 60602
+	var xforms = []
+	var cards = []
+	var tints = []
+	var atlas = RoadScatter.cards_for(RoadScatter.AtlasKind.TREES)
+	for t in trees:
+		var p = Vector2(t[0], t[1])
+		var d = _route_dist(route, p, 350.0)
+		if d > 350.0 or d < 12.0:
+			continue
+		var pick = RoadScatter.pick_card(rng, RoadScatter.AtlasKind.TREES, PackedInt32Array([2, 3, 4]))
+		var card = atlas[pick.card]
+		var h = float(t[2]) if float(t[2]) > 0.0 else pick.height * 0.65
+		var w = h * 1.15 * card[2] / card[3]
+		var basis = Basis(Vector3.UP, rng.randf() * TAU) * Basis.from_scale(Vector3(w, h, w))
+		xforms.append(Transform3D(basis, Vector3(p.x, STREET_Y - 0.04, p.y)))
+		cards.append(Color(card[0], card[1], card[2], card[3]))
+		tints.append(pick.tint)
+	var mm = MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = true
+	mm.use_custom_data = true
+	mm.mesh = RoadScatter.card_mesh()
+	mm.instance_count = xforms.size()
+	for i in xforms.size():
+		mm.set_instance_transform(i, xforms[i])
+		mm.set_instance_custom_data(i, cards[i])
+		mm.set_instance_color(i, tints[i])
+	var node = MultiMeshInstance3D.new()
+	node.name = "RealTrees"
+	node.multimesh = mm
+	node.material_override = RoadScatter.tree_material(RoadScatter.AtlasKind.TREES)
+	holder.add_child(node)
+	node.owner = asset
 
 
 static func _flat(st: SurfaceTool, ring: PackedVector2Array, y: float) -> void:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpq1wdi63m23j"
-path="res://.godot/imported/rooftop_night_2k.hdr-a6dd23b2679162f90ad18a2eb967f951.ctex"
+uid="uid://cvq4m78u6mkoj"
+path="res://.godot/imported/kloppenheim_07_puresky.hdr-c59ffbb080843ee6a17f0cb645f16caf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/chicago/sky/rooftop_night_2k.hdr"
-dest_files=["res://.godot/imported/rooftop_night_2k.hdr-a6dd23b2679162f90ad18a2eb967f951.ctex"]
+source_file="res://assets/chicago/sky/kloppenheim_07_puresky.hdr"
+dest_files=["res://.godot/imported/kloppenheim_07_puresky.hdr-c59ffbb080843ee6a17f0cb645f16caf.ctex"]
 
 [params]
 

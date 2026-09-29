@@ -119,7 +119,7 @@ static func build(
 			chunks[key] = tools
 		_crossing(chunks[key], at, i, box)
 		if crossings.find(i) % L_EVERY == L_PHASE:
-			_elevated(chunks[key], at, dirs[i], box)
+			pass  # The real L is built from OSM by chicago_l.gd.
 	for key in chunks:
 		var mesh = ArrayMesh.new()
 		for n in SURFACES.size():

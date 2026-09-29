@@ -207,6 +207,18 @@
       "src": "Chicago landmark designation report: light buff glazed terra cotta, Classical Revival",
       "k": "terracotta",
       "c": "#e2d3b0"
+    },
+    "w126945440": {
+      "name": "Crown Fountain tower",
+      "src": "en.wikipedia.org/wiki/Crown_Fountain: two 50 ft glass-brick towers with LED screens",
+      "h": 15.24,
+      "glass": 1
+    },
+    "w126945441": {
+      "name": "Crown Fountain tower",
+      "src": "en.wikipedia.org/wiki/Crown_Fountain: two 50 ft glass-brick towers with LED screens",
+      "h": 15.24,
+      "glass": 1
     }
   }
 }
