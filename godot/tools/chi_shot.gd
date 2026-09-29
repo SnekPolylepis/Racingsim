@@ -17,6 +17,7 @@ func run():
 	await process_frame
 	app.load_v2_track("chicago")
 	app.start_v2_drive()
+	print("NEON SIGNS ", app.track.get_meta("neon_signs", -1))
 	app.car.input.throttle = 1.0
 	for night in [1, 0]:
 		app.settings.time_of_day = night

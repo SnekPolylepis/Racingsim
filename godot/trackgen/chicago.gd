@@ -49,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 116
+const CACHE_REVISION = 117
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -925,18 +925,24 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 ## the route, one batched mesh per colour, plus a coloured light every few signs so the wet road picks them
 ## up. Night only (chicago_night meta).
 const SIGN_FONT = preload("res://assets/fonts/Rajdhani-Bold.ttf")
-const SIGN_WORDS = [
-	"DINER", "MOTEL", "LIQUOR", "PAWN", "PIZZA", "OPEN 24H", "CLUB", "TATTOO", "HOTEL", "BAR",
-	"ARCADE", "NOODLES", "GARAGE", "RECORDS", "CAFE", "JAZZ", "PARKING", "TOWING", "CASH", "BLUES"
-]
+## Real businesses from OpenStreetMap (build: see signs.json "source"), in the world() frame.
+const SIGNS = "res://trackgen/data/chicago/signs.json"
+## Category -> colour index: bars/clubs magenta, food red/amber, cafes green, hotels violet, shops cyan.
+const SIGN_COLOR = {
+	"bar": 0, "pub": 0, "nightclub": 0, "casino": 0, "shop": 1, "pharmacy": 1, "bank": 1,
+	"cafe": 2, "ice_cream": 2, "restaurant": 3, "fast_food": 5, "hotel": 4, "cinema": 4, "theatre": 4, "museum": 4
+}
+
+
+## Stable 0..1 per position, so a rebuild keeps each sign's height.
+static func randf_seeded(p: Vector3) -> float:
+	return fposmod(sin(p.x * 12.9898 + p.z * 78.233) * 43758.5453, 1.0)
 
 
 static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var colors = [
 		Color("ff2a8a"), Color("21e0ff"), Color("5dff6a"), Color("ff3b2f"), Color("7a5cff"), Color("ffb020")
 	]
-	var rng = RandomNumberGenerator.new()
-	rng.seed = 1979
 	var tools = []
 	for c in colors:
 		var st = SurfaceTool.new()
@@ -945,60 +951,79 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var stations = road.last_bake.stations
 	var lights = 0
 	var edges = facade_edges()
-	for i in range(0, stations.size(), 14):
-		var at = stations[i]
-		var basis = Basis.looking_at(at.tangent, Vector3.UP)
-		for side in [-1, 1]:
-			if rng.randf() < 0.35:
-				continue
-			var k = rng.randi() % colors.size()
-			# Street level only (Lower Wacker is a tunnel), and only where a real OSM facade faces the route.
-			if at.pos.y < 3.0:
-				continue
-			var out = Vector3(basis.x.x, 0, basis.x.z).normalized() * side
-			var hit = facade_hit(edges, Vector2(at.pos.x, at.pos.z), Vector2(out.x, out.z), HALF_WIDTH + 2.0, 45.0)
-			if hit == null:
-				continue
-			var base = Vector3(hit.x, ChicagoCity.STREET_Y, hit.y) - out * 0.25
-			if rng.randf() < 0.5:
-				# Storefront sign: neon text facing the road, with an underline tube.
-				var y = 3.2 + rng.randf() * 2.5
-				var sign = Label3D.new()
-				sign.text = SIGN_WORDS[rng.randi() % SIGN_WORDS.size()]
-				sign.font = SIGN_FONT
-				sign.font_size = 96
-				sign.pixel_size = 0.012
-				sign.outline_size = 18
-				sign.shaded = false
-				sign.double_sided = false
-				sign.modulate = colors[k] * 3.5
-				sign.outline_modulate = Color(colors[k].r, colors[k].g, colors[k].b, 0.35)
-				sign.position = base + Vector3(0, y + .5, 0)
-				sign.basis = Basis.looking_at(out, Vector3.UP)
-				sign.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				sign.visible = false
-				sign.set_meta("chicago_night", true)
-				attach(asset, parent, sign, "NeonSign%d_%d" % [i, side])
-				facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.1, .08, 4.0), Color.WHITE, basis)
-			else:
-				# Blade sign: vertical, sticking out toward the street.
-				var h = 4.0 + rng.randf() * 5.0
-				facade_box(
-					tools[k], base - basis.x * side * 1.0 + Vector3(0, 5.0 + h * .5, 0),
-					Vector3(1.6, h, .25), Color.WHITE, basis
-				)
-			if lights < 90 and rng.randf() < 0.45:
-				lights += 1
-				var light = OmniLight3D.new()
-				light.position = base - basis.x * side * 3.0 + Vector3(0, 4.5, 0)
-				light.light_color = colors[k]
-				light.light_energy = 3.0
-				light.omni_range = 16.0
-				light.omni_attenuation = 1.4
-				light.shadow_enabled = false
-				light.visible = false
-				light.set_meta("chicago_night", true)
-				attach(asset, parent, light, "NeonSpill%d" % lights)
+	# Route stations in 25 m cells (street level only; Lower Wacker is a tunnel).
+	var route = {}
+	for at in stations:
+		if at.pos.y > 3.0:
+			route.get_or_add(Vector2i(floori(at.pos.x / 25.0), floori(at.pos.z / 25.0)), []).append(at)
+	var placed = []
+	var signs = JSON.parse_string(FileAccess.get_file_as_string(SIGNS)).signs
+	for poi in signs:
+		var p = Vector2(poi.x, poi.z)
+		# Nearest street-level station within 60 m of the business.
+		var at = null
+		var best = 60.0
+		for dx in [-2, -1, 0, 1, 2]:
+			for dz in [-2, -1, 0, 1, 2]:
+				for st in route.get(Vector2i(floori(p.x / 25.0) + dx, floori(p.y / 25.0) + dz), []):
+					var d = p.distance_to(Vector2(st.pos.x, st.pos.z))
+					if d < best:
+						best = d
+						at = st
+		if at == null:
+			continue
+		# The business's side of the street, then the real facade on that side facing the route.
+		var right = Vector3(at.tangent.z, 0, -at.tangent.x).normalized() * -1.0
+		var rel = Vector3(p.x - at.pos.x, 0, p.y - at.pos.z)
+		var out = right if rel.dot(right) > 0 else -right
+		var hit = facade_hit(edges, Vector2(at.pos.x, at.pos.z), Vector2(out.x, out.z), HALF_WIDTH + 2.0, 60.0)
+		if hit == null:
+			continue
+		# Slide along the facade toward the business's real position (clamped), so neighbours spread out.
+		var along = Vector3(at.tangent.x, 0, at.tangent.z).normalized()
+		var base = Vector3(hit.x, ChicagoCity.STREET_Y, hit.y) + along * clampf(rel.dot(along), -12.0, 12.0) - out * 0.25
+		var crowded = false
+		for q in placed:
+			if q.distance_to(base) < 9.0:
+				crowded = true
+				break
+		if crowded:
+			continue
+		placed.append(base)
+		var k = SIGN_COLOR.get(str(poi.c), 5)
+		var big = str(poi.c) in ["hotel", "cinema", "theatre", "casino", "museum"]
+		var y = (9.0 + randf_seeded(base) * 6.0) if big else (3.4 + randf_seeded(base) * 1.8)
+		var sign = Label3D.new()
+		sign.text = str(poi.n).to_upper()
+		sign.font = SIGN_FONT
+		sign.font_size = 96
+		sign.pixel_size = 0.018 if big else 0.011
+		sign.outline_size = 18
+		sign.shaded = false
+		sign.double_sided = false
+		sign.modulate = colors[k] * 3.5
+		sign.outline_modulate = Color(colors[k].r, colors[k].g, colors[k].b, 0.35)
+		sign.position = base + Vector3(0, y + .5, 0)
+		sign.basis = Basis.looking_at(out, Vector3.UP)
+		sign.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		sign.visible = false
+		sign.set_meta("chicago_night", true)
+		attach(asset, parent, sign, "Sign%d" % placed.size())
+		var basis = Basis.looking_at(along, Vector3.UP)
+		facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.1, .08, 3.0 + sign.text.length() * .35), Color.WHITE, basis)
+		if lights < 120 and placed.size() % 2 == 0:
+			lights += 1
+			var light = OmniLight3D.new()
+			light.position = base - out * 3.0 + Vector3(0, 4.5, 0)
+			light.light_color = colors[k]
+			light.light_energy = 3.0
+			light.omni_range = 16.0
+			light.omni_attenuation = 1.4
+			light.shadow_enabled = false
+			light.visible = false
+			light.set_meta("chicago_night", true)
+			attach(asset, parent, light, "NeonSpill%d" % lights)
+	asset.set_meta("neon_signs", placed.size())
 	for k in colors.size():
 		tools[k].generate_normals()
 		var mesh = tools[k].commit()
