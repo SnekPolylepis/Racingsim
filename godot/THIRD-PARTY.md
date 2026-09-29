@@ -153,3 +153,4 @@ textures reduced.
 
 | Quaternius Cars Bundle (parked cars, Chicago) | Quaternius via poly.pizza | CC0 1.0 | godot/assets/chicago/cars-q/ |
 | rooftop_night HDRI (Chicago night sky) | Poly Haven | CC0 1.0 | godot/assets/chicago/sky/ |
+| City of Chicago Building Footprints (storey counts) | data.cityofchicago.org syp8-uezg | City of Chicago Data Portal terms | godot/assets/cc0-source/chicago/roadmap/city-footprints.json |

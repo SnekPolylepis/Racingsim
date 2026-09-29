@@ -96,7 +96,10 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
 		var facade = _st(target, _centroid(ring), "facade")
-		_building(facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), 0.0, kind_layer(kind))
+		# Real OSM data: building:part base height ("m") and facade colour ("c") where tagged.
+		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
+		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
+		_building(facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint)
 		stats.buildings += 1
 		kept_buildings.append([ring, float(b.h), i])
 		var centre = _centroid(ring)
@@ -442,12 +445,17 @@ static func _building(
 	h: float,
 	seed: float,
 	bottom: float = 0.0,
-	layer: float = 0.0
+	layer: float = 0.0,
+	tint: Color = Color(0, 0, 0, 0)
 ) -> void:
 	var top = STREET_Y + h
 	var c = _centroid(ring)
 	var u = 0.0
-	walls.set_color(Color(seed, layer / 8.0, 0))
+	# Alpha carries the real facade colour as a 6x6x6 palette index + 1 (0 = untagged); see chicago_facade.
+	var code = 0.0
+	if tint.a > 0.0:
+		code = (roundi(tint.r * 5) * 36 + roundi(tint.g * 5) * 6 + roundi(tint.b * 5) + 1) / 255.0
+	walls.set_color(Color(seed, layer / 8.0, 0, code))
 	for i in ring.size():
 		var a = ring[i]
 		var b = ring[(i + 1) % ring.size()]

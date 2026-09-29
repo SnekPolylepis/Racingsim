@@ -49,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 117
+const CACHE_REVISION = 119
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -972,16 +972,17 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 						at = st
 		if at == null:
 			continue
-		# The business's side of the street, then the real facade on that side facing the route.
-		var right = Vector3(at.tangent.z, 0, -at.tangent.x).normalized() * -1.0
-		var rel = Vector3(p.x - at.pos.x, 0, p.y - at.pos.z)
-		var out = right if rel.dot(right) > 0 else -right
-		var hit = facade_hit(edges, Vector2(at.pos.x, at.pos.z), Vector2(out.x, out.z), HALF_WIDTH + 2.0, 60.0)
-		if hit == null:
+		# The wall nearest the business's real OSM position (no sliding along the street). The sign faces the
+		# route; a wall more than 45 m from it is not visible from the road, so the business gets no sign.
+		var wall = nearest_wall(edges, p)
+		if wall.is_empty():
 			continue
-		# Slide along the facade toward the business's real position (clamped), so neighbours spread out.
-		var along = Vector3(at.tangent.x, 0, at.tangent.z).normalized()
-		var base = Vector3(hit.x, ChicagoCity.STREET_Y, hit.y) + along * clampf(rel.dot(along), -12.0, 12.0) - out * 0.25
+		var hit: Vector2 = wall[0]
+		if hit.distance_to(p) > 15.0 or hit.distance_to(Vector2(at.pos.x, at.pos.z)) > 45.0:
+			continue
+		var out = Vector3(at.pos.x - hit.x, 0, at.pos.z - hit.y).normalized()
+		var along = Vector3(wall[1].x, 0, wall[1].y)
+		var base = Vector3(hit.x, ChicagoCity.STREET_Y, hit.y) + out * 0.25
 		var crowded = false
 		for q in placed:
 			if q.distance_to(base) < 9.0:
@@ -1004,7 +1005,7 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		sign.modulate = colors[k] * 3.5
 		sign.outline_modulate = Color(colors[k].r, colors[k].g, colors[k].b, 0.35)
 		sign.position = base + Vector3(0, y + .5, 0)
-		sign.basis = Basis.looking_at(out, Vector3.UP)
+		sign.basis = Basis.looking_at(-out, Vector3.UP)
 		sign.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		sign.visible = false
 		sign.set_meta("chicago_night", true)
@@ -1014,7 +1015,7 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		if lights < 120 and placed.size() % 2 == 0:
 			lights += 1
 			var light = OmniLight3D.new()
-			light.position = base - out * 3.0 + Vector3(0, 4.5, 0)
+			light.position = base + out * 3.0 + Vector3(0, 4.5, 0)
 			light.light_color = colors[k]
 			light.light_energy = 3.0
 			light.omni_range = 16.0
@@ -1047,6 +1048,20 @@ static func facade_edges() -> Dictionary:
 			var k = Vector2i(floori((a.x + c.x) * .5 / 25.0), floori((a.y + c.y) * .5 / 25.0))
 			cells.get_or_add(k, []).append([a, c])
 	return cells
+
+
+## Closest point on any OSM building edge to p (within the 3x3 cells): [point, edge direction], or [].
+static func nearest_wall(cells: Dictionary, p: Vector2) -> Array:
+	var best = INF
+	var out = []
+	for dx in [-1, 0, 1]:
+		for dz in [-1, 0, 1]:
+			for e in cells.get(Vector2i(floori(p.x / 25.0) + dx, floori(p.y / 25.0) + dz), []):
+				var q = Geometry2D.get_closest_point_to_segment(p, e[0], e[1])
+				if q.distance_to(p) < best:
+					best = q.distance_to(p)
+					out = [q, (e[1] - e[0]).normalized()]
+	return out
 
 
 ## Nearest facade crossing of the ray o + d*t, t in (near, far); null if none.

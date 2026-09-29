@@ -67,8 +67,8 @@ LANDMARK_HEIGHTS = {
 }
 
 
-def height_of(tags, footprint_area, key):
-    for name, h in LANDMARK_HEIGHTS.items():
+def height_of(tags, footprint_area, key, landmarks=True):
+    for name, h in (LANDMARK_HEIGHTS.items() if landmarks else []):
         if name.lower() in tags.get("name", "").lower():
             return h
     h = tags.get("height")
@@ -79,32 +79,56 @@ def height_of(tags, footprint_area, key):
     levels = number(tags.get("building:levels", ""))
     if levels:
         return levels * 3.9 + 2.0
-    # No tags: a stable pseudo-random height by footprint size (the Loop is tall, small lots are low).
-    r = int(hashlib.md5(str(key).encode()).hexdigest()[:8], 16) / 0xFFFFFFFF
-    if footprint_area < 180:
-        return 7.0 + r * 6.0
-    if footprint_area < 900:
-        return 12.0 + r * 22.0
-    return 20.0 + r * 60.0
+    # No OSM height: resolved in main() from the City of Chicago footprints' storey counts.
+    return None
+
+
+## OSM colour names seen downtown -> hex. Anything else must already be #rrggbb.
+COLOUR_NAMES = {
+    "white": "#e8e6e0", "black": "#2a2a2c", "grey": "#8a8c8e", "gray": "#8a8c8e", "silver": "#b4b8bc",
+    "brown": "#6e4b35", "red": "#8c3a2e", "beige": "#d8c8a8", "tan": "#c4a878", "blue": "#4a6a8c",
+    "darkgrey": "#4a4c4e", "lightgrey": "#c0c2c4", "cream": "#e8dcc0", "yellow": "#d8c060", "green": "#4a6a50",
+    "gold": "#b89850", "bronze": "#6a5438", "darkgray": "#4a4c4e", "lightgray": "#c0c2c4",
+}
+
+
+def colour_of(tags):
+    c = str(tags.get("building:colour", tags.get("colour", ""))).strip().lower().replace(" ", "")
+    c = COLOUR_NAMES.get(c, c)
+    return c if re.fullmatch(r"#[0-9a-f]{6}", c) else ""
 
 
 def kind_of(tags, h, key):
-    material = tags.get("building:material", "")
+    material = tags.get("building:material", tags.get("facade:material", "")) + tags.get("building:facade:material", "")
     use = tags.get("building", "")
     r = int(hashlib.md5(("k" + str(key)).encode()).hexdigest()[:6], 16) % 100
-    if "glass" in material or h > 110:
+    if "glass" in material:
         return "glass" if r < 70 else "glass2"
     if use in ("parking", "garage", "garages"):
         return "concrete"
     if "brick" in material:
         return "brick"
+    if "concrete" in material or "plaster" in material:
+        return "concrete"
+    if "metal" in material or "steel" in material or "aluminium" in material:
+        return "glass2"
     if use in ("church", "cathedral", "civic", "public", "government") or "stone" in material:
         return "stone"
-    if h > 55:
-        return ["glass", "glass2", "stone", "terracotta"][r % 4]
-    if h > 25:
-        return ["stone", "terracotta", "brick", "glass2"][r % 4]
-    return ["brick", "brick", "stone", "concrete"][r % 4]
+    # Untagged: one neutral facade, not a guess.
+    return "stone"
+
+
+def inside(p, poly):
+    x, z = p
+    hit = False
+    j = len(poly) - 1
+    for i in range(len(poly)):
+        xi, zi = poly[i]
+        xj, zj = poly[j]
+        if (zi > z) != (zj > z) and x < (xj - xi) * (z - zi) / (zj - zi) + xi:
+            hit = not hit
+        j = i
+    return hit
 
 
 def simplify(pts, tol, closed=True):
@@ -166,6 +190,21 @@ def cross(a, b, v, axis):
     return [round(p[0], 1), round(p[1], 1)]
 
 
+def city_storeys():
+    """City of Chicago Building Footprints (data.cityofchicago.org syp8-uezg): [(ring in our frame, storeys)]."""
+    out = []
+    with open(os.path.join(RAW, "city-footprints.json"), encoding="utf-8") as f:
+        rows = json.load(f)
+    for r in rows:
+        n = number(r.get("stories") or "0") or number(r.get("no_stories") or "0") or 0
+        g = r.get("the_geom") or {}
+        if n <= 0 or g.get("type") != "MultiPolygon":
+            continue
+        for poly in g["coordinates"]:
+            out.append(([xz(lat, lon) for lon, lat in poly[0]], n))
+    return out
+
+
 def load(name):
     with open(os.path.join(RAW, name), encoding="utf-8") as f:
         return json.load(f)["elements"]
@@ -222,7 +261,61 @@ def main():
             if a < 20:
                 continue
             h = height_of(tags, a, e["id"])
-            buildings.append({"f": simplify(pts, 0.25), "h": round(h, 1), "k": kind_of(tags, h, e["id"])})
+            b = {"f": simplify(pts, 0.25), "h": round(h, 1) if h is not None else None, "k": kind_of(tags, h or 0, e["id"])}
+            if colour_of(tags):
+                b["c"] = colour_of(tags)
+            buildings.append(b)
+
+    # Heights OSM lacks: the city's storey count for the footprint containing the building's centre.
+    storeys = city_storeys()
+    cells = {}
+    for i, (r, n) in enumerate(storeys):
+        cx = sum(p[0] for p in r) / len(r)
+        cz = sum(p[1] for p in r) / len(r)
+        cells.setdefault((int(cx // 50), int(cz // 50)), []).append(i)
+    unresolved = []
+    for b in buildings:
+        if b["h"] is not None:
+            continue
+        cx = sum(p[0] for p in b["f"]) / len(b["f"])
+        cz = sum(p[1] for p in b["f"]) / len(b["f"])
+        for dx in (-1, 0, 1):
+            for dz in (-1, 0, 1):
+                for i in cells.get((int(cx // 50) + dx, int(cz // 50) + dz), []):
+                    if b["h"] is None and inside((cx, cz), storeys[i][0]):
+                        b["h"] = round(storeys[i][1] * 3.9 + 2.0, 1)
+        if b["h"] is None:
+            unresolved.append(b)
+    # No height anywhere: 2 storeys, flagged "u" so it can be found and fixed; never a made-up tower.
+    for b in unresolved:
+        b["h"] = 9.8
+        b["u"] = 1
+    print("heights: %d from city storeys data, %d unknown (2-storey placeholder)" % (sum(1 for b in buildings if "u" not in b) , len(unresolved)))
+
+    # Real 3-D shapes: OSM building:part elements (setbacks, podiums, crowns). Where parts exist the parent
+    # outline is not drawn (the OSM 3-D convention); parts stack from min_height / building:min_level.
+    parts = []
+    for e in load("downtown-building-parts.json"):
+        tags = e.get("tags", {})
+        for pts in outer_rings(e):
+            if len(pts) < 3 or area(pts) < 4:
+                continue
+            h = height_of(tags, area(pts), e["id"], landmarks=False)
+            if h is None:
+                continue
+            mh = number(tags.get("min_height", "")) or ((number(tags.get("building:min_level", "")) or 0) * 3.9)
+            if h <= mh + 0.5:
+                continue
+            b = {"f": simplify(pts, 0.25), "h": round(h, 1), "k": kind_of(tags, h, e["id"])}
+            if mh:
+                b["m"] = round(mh, 1)
+            if colour_of(tags):
+                b["c"] = colour_of(tags)
+            parts.append(b)
+    centres = [(sum(p[0] for p in b["f"]) / len(b["f"]), sum(p[1] for p in b["f"]) / len(b["f"])) for b in parts]
+    kept = [b for b in buildings if not any(inside(c, b["f"]) for c in centres)]
+    print("parts %d replace %d parent outlines" % (len(parts), len(buildings) - len(kept)))
+    buildings = kept + parts
 
     roads = []
     for e in load("downtown-roads.json"):
