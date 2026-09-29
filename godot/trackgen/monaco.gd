@@ -20,12 +20,7 @@ const CatchFence = preload("res://scripts/track/catch_fence.gd")
 const Grandstand = preload("res://scripts/track/grandstand.gd")
 ## Corners with escape roads / run-off that carry red and white impact blocks (Commons "Portier" photo).
 const BLOCK_CORNERS = [
-	"Sainte-Devote",
-	"Mirabeau Haute",
-	"Grand Hotel Hairpin",
-	"Portier",
-	"Nouvelle Chicane",
-	"La Rascasse"
+	"Sainte-Devote", "Mirabeau Haute", "Grand Hotel Hairpin", "Portier", "Nouvelle Chicane", "La Rascasse"
 ]
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
@@ -79,9 +74,7 @@ static func data() -> Dictionary:
 
 
 static func world_of(lat: float, lon: float) -> Vector3:
-	return Vector3(
-		(lon - ORIGIN.y) * 111320.0 * cos(deg_to_rad(ORIGIN.x)), 0.0, (ORIGIN.x - lat) * 111320.0
-	)
+	return Vector3((lon - ORIGIN.y) * 111320.0 * cos(deg_to_rad(ORIGIN.x)), 0.0, (ORIGIN.x - lat) * 111320.0)
 
 
 ## Closed Catmull-Rom through the 3 m road points (y is the authored DSM approximation).
@@ -111,7 +104,7 @@ static func build_asset() -> Node3D:
 	asset.name = "Monaco"
 	asset.id = "monaco"
 	asset.display_name = "Circuit de Monaco"
-	asset.version = 2
+	asset.version = 3
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
 	road.curve = route_curve(d.road)
@@ -124,7 +117,11 @@ static func build_asset() -> Node3D:
 	var corners = {}
 	for c in CORNERS:
 		corners[c[0]] = road.curve.get_closest_offset(world_of(c[1], c[2]) + Vector3(0, 5, 0))
-	var pool_gap = Vector2(corners["Piscine"] - 180.0, corners["Piscine"] + 230.0)
+	# OSM raceway entry/exit, not an arbitrary radius round the Piscine label.
+	var pool_gap = Vector2(
+		road.curve.get_closest_offset(world_of(43.7355741, 7.421779) + Vector3.UP * 2.0) - 12.0,
+		road.curve.get_closest_offset(world_of(43.7338035, 7.4222185) + Vector3.UP * 2.0) + 12.0
+	)
 	road.sections.append(RoadSection.make(0.0, _section(START_HALF_WIDTH, false)))
 	for c in CORNERS:
 		var section = _section(c[3], c[4])
@@ -198,9 +195,7 @@ static func build_asset() -> Node3D:
 	_sea(asset, scenery, d.ground)
 	var casino = _buildings(asset, scenery, d.buildings)
 	if not casino.is_empty():
-		_casino_towers(
-			asset, scenery, casino, road.working_curve().sample_baked(corners["Casino Square"])
-		)
+		_casino_towers(asset, scenery, casino, road.working_curve().sample_baked(corners["Casino Square"]))
 	_flats(asset, scenery, d.piers, 1.4, "sidewalk", "Piers")
 	_pools(asset, scenery, d.get("pools", []))
 	for st in STANDS:
@@ -214,6 +209,9 @@ static func build_asset() -> Node3D:
 		gs.has_roof = false
 		gs.offset = 3.0
 		gs.solid_front = st[0] not in ["HarbourStand", "PoolStand"]
+		gs.open_structure = not gs.solid_front
+		if gs.open_structure:
+			gs.offset = 10.0
 		attach(asset, asset, gs, st[0])
 		gs.bake()
 	_yachts(asset, scenery, d.piers)
@@ -232,8 +230,7 @@ static func build_asset() -> Node3D:
 	attach(asset, asset, gantry, "StartGantry")
 	gantry.bake()
 	asset.set_meta(
-		"route_description",
-		"Sainte-Devote / Casino / Mirabeau / tunnel / chicane / Piscine / Rascasse"
+		"route_description", "Sainte-Devote / Casino / Mirabeau / tunnel / chicane / Piscine / Rascasse"
 	)
 	print("MONACO length %.0f m, tunnel %.0f-%.0f m" % [length, tunnel.x, tunnel.y])
 	return asset
@@ -282,11 +279,7 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 			var q = []
 			for o in [[0, 0], [1, 0], [1, 1], [0, 1]]:
 				q.append(
-					Vector3(
-						g.x0 + (ix + o[0]) * cell,
-						h[iz + o[1]][ix + o[0]],
-						g.z0 + (iz + o[1]) * cell
-					)
+					Vector3(g.x0 + (ix + o[0]) * cell, h[iz + o[1]][ix + o[0]], g.z0 + (iz + o[1]) * cell)
 				)
 			if maxf(maxf(q[0].y, q[1].y), maxf(q[2].y, q[3].y)) < SEA_Y:
 				continue
@@ -302,6 +295,13 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 							(q[0] + q[1] + q[2] + q[3]) * 0.25
 							+ Vector3(rng.randf_range(-3, 3), 0, rng.randf_range(-3, 3))
 						)
+						var tx = (p.x - q[0].x) / cell
+						var tz = (p.z - q[0].z) / cell
+						p.y = (
+							q[0].y + (q[1].y - q[0].y) * tx + (q[2].y - q[1].y) * tz
+							if tx >= tz
+							else q[0].y + (q[2].y - q[3].y) * tx + (q[3].y - q[0].y) * tz
+						)
 						trees.append([p.x, p.y, p.z])
 				for k in tri:
 					# Walls take UVs across the slope so the masonry courses run level.
@@ -313,9 +313,7 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 						)
 					)
 					st.add_vertex(q[k])
-	for pair in [
-		[flat, "ground", "Ground"], [steep, "wall", "RetainingWalls"], [garden, "park", "Gardens"]
-	]:
+	for pair in [[flat, "ground", "Ground"], [steep, "wall", "RetainingWalls"], [garden, "park", "Gardens"]]:
 		pair[0].generate_normals()
 		var node = MeshInstance3D.new()
 		node.mesh = pair[0].commit()
@@ -370,15 +368,7 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 			# Casino Square's Belle Epoque stone (Garnier's Casino, the Hotel de Paris).
 			tint = Color(0.96, 0.9, 0.76)
 			layer = ChicagoCity.kind_layer("stone")
-		_extrude(
-			chunks[key],
-			ring,
-			float(b[1]) - 0.5,
-			float(b[1]) + float(b[2]),
-			rng.randf(),
-			layer,
-			tint
-		)
+		_extrude(chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), rng.randf(), layer, tint)
 	for key in chunks:
 		var st: SurfaceTool = chunks[key]
 		st.generate_normals()
@@ -392,9 +382,7 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 
 ## The Casino de Monte-Carlo's square-side towers (Garnier, 1878): a square tower at each end of the facade
 ## that faces Casino Square, rising above the roof under a verdigris copper pyramid.
-static func _casino_towers(
-	asset: Node3D, parent: Node, casino: Dictionary, square: Vector3
-) -> void:
+static func _casino_towers(asset: Node3D, parent: Node, casino: Dictionary, square: Vector3) -> void:
 	var ring: PackedVector2Array = casino.ring
 	var top: float = casino.top
 	var c = Vector2.ZERO
@@ -528,23 +516,17 @@ static func _ad_panels(asset: Node3D, parent: Node, road, tunnel: Vector2) -> vo
 	var at = 3.0
 	var pool_gap: Vector2 = asset.get_meta("pool_gap")
 	while at < length:
-		if (
-			(at < tunnel.x - 5.0 or at > tunnel.y + 5.0)
-			and (at < pool_gap.x - 3.0 or at > pool_gap.y + 3.0)
-		):
+		if (at < tunnel.x - 5.0 or at > tunnel.y + 5.0) and (at < pool_gap.x - 3.0 or at > pool_gap.y + 3.0):
 			var f = _level_frame(c, at)
 			# Follow the road's pitch so panels on the Beau Rivage climb run with the barrier, not in steps.
 			var along = (
-				(c.sample_baked(minf(at + 3.0, length)) - c.sample_baked(maxf(at - 3.0, 0.0)))
-				. normalized()
+				(c.sample_baked(minf(at + 3.0, length)) - c.sample_baked(maxf(at - 3.0, 0.0))).normalized()
 			)
 			var up = f[1].cross(along).normalized()
 			for side in [-1.0, 1.0]:
 				var p = f[0] + f[1] * side * (_half_at(road, at) + 1.08) + up * 0.55
 				xforms.append(
-					Transform3D(
-						Basis(along, up, f[1]) * Basis.from_scale(Vector3(5.9, 0.9, 0.04)), p
-					)
+					Transform3D(Basis(along, up, f[1]) * Basis.from_scale(Vector3(5.9, 0.9, 0.04)), p)
 				)
 				colors.append(AD_COLORS[rng.randi() % AD_COLORS.size()])
 				customs.append(Color((rng.randi() % 4 + 0.5) / 4.0, rng.randf(), 0, 0))
@@ -585,17 +567,9 @@ static func _impact_blocks(asset: Node3D, parent: Node, road, corners: Dictionar
 		var k = 0
 		while at < apex + 25.0:
 			var f = _level_frame(c, fposmod(at, length))
-			var p = (
-				f[0]
-				+ f[1] * outside * (_half_at(road, fposmod(at, length)) + 0.85)
-				+ Vector3(0, 0.45, 0)
-			)
+			var p = f[0] + f[1] * outside * (_half_at(road, fposmod(at, length)) + 0.85) + Vector3(0, 0.45, 0)
 			var xf = Transform3D(
-				(
-					Basis(f[1].cross(Vector3.UP), Vector3.UP, f[1])
-					* Basis.from_scale(Vector3(1.4, 0.9, 0.7))
-				),
-				p
+				Basis(f[1].cross(Vector3.UP), Vector3.UP, f[1]) * Basis.from_scale(Vector3(1.4, 0.9, 0.7)), p
 			)
 			(red if k % 2 == 0 else white).append(xf)
 			at += 1.5
@@ -641,11 +615,7 @@ static func _yachts(asset: Node3D, parent: Node, piers: Array) -> void:
 			var out = Vector2(-along.y, along.x)
 			var t = 4.0
 			while t < a.distance_to(b) - 4.0:
-				var length = (
-					rng.randf_range(12.0, 40.0)
-					if rng.randf() < 0.3
-					else rng.randf_range(12.0, 22.0)
-				)
+				var length = rng.randf_range(12.0, 40.0) if rng.randf() < 0.3 else rng.randf_range(12.0, 22.0)
 				var beam = length * 0.26
 				for side in [-1.0, 1.0]:
 					if rng.randf() < 0.15:
@@ -731,9 +701,7 @@ static func _pools(asset: Node3D, parent: Node, pools: Array) -> void:
 	attach(asset, parent, node, "Pools")
 
 
-static func _flats(
-	asset: Node3D, parent: Node, rings: Array, y: float, mat: String, title: String
-) -> void:
+static func _flats(asset: Node3D, parent: Node, rings: Array, y: float, mat: String, title: String) -> void:
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for flat in rings:
@@ -766,9 +734,7 @@ static func _trees(asset: Node3D, parent: Node, trees: Array) -> void:
 	mm.instance_count = trees.size()
 	for i in trees.size():
 		var t = trees[i]
-		var pick = RoadScatter.pick_card(
-			rng, RoadScatter.AtlasKind.TREES, PackedInt32Array([2, 3, 4])
-		)
+		var pick = RoadScatter.pick_card(rng, RoadScatter.AtlasKind.TREES, PackedInt32Array([2, 3, 4]))
 		var card = atlas[pick.card]
 		var h = pick.height * 0.55
 		var w = h * 1.15 * card[2] / card[3]
@@ -871,9 +837,7 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 			attach(asset, parent, light, "TunnelLight%d" % n)
 		s = e
 		n += 1
-	for pair in [
-		[walls, ChicagoCity.material("wall"), "Tunnel"], [tiles, _tile_material(), "TunnelTiles"]
-	]:
+	for pair in [[walls, ChicagoCity.material("wall"), "Tunnel"], [tiles, _tile_material(), "TunnelTiles"]]:
 		pair[0].generate_normals()
 		var node = MeshInstance3D.new()
 		node.mesh = pair[0].commit()
@@ -884,9 +848,7 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 	lamp_mat.emission_enabled = true
 	lamp_mat.emission = Color(1.0, 0.95, 0.85)
 	lamp_mat.emission_energy_multiplier = 4.0
-	for batch in [
-		[pillars, ChicagoCity.material("wall"), "TunnelPillars"], [lamps, lamp_mat, "TunnelLamps"]
-	]:
+	for batch in [[pillars, ChicagoCity.material("wall"), "TunnelPillars"], [lamps, lamp_mat, "TunnelLamps"]]:
 		var mesh = BoxMesh.new()
 		mesh.material = batch[1]
 		var mm = MultiMesh.new()
@@ -904,8 +866,7 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 static func _level_frame(c: Curve3D, s: float) -> Array:
 	var p = c.sample_baked(s, true)
 	var t = (
-		c.sample_baked(minf(s + 0.5, c.get_baked_length()), true)
-		- c.sample_baked(maxf(s - 0.5, 0.0), true)
+		c.sample_baked(minf(s + 0.5, c.get_baked_length()), true) - c.sample_baked(maxf(s - 0.5, 0.0), true)
 	)
 	return [p, Vector3(t.x, 0, t.z).normalized().cross(Vector3.UP)]
 

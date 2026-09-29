@@ -56,7 +56,8 @@ void fragment() {
 	float h = water_height(p, t, lake);
 	float hx = water_height(p + vec2(0.55, 0.0), t, lake) - h;
 	float hz = water_height(p + vec2(0.0, 0.55), t, lake) - h;
-	vec3 tangent_normal = normalize(vec3(-hx * ripple_scale * 2.0, 1.0, -hz * ripple_scale * 2.0));
+	// Normal-map blue (+Z) points out of the surface; +Y is the bitangent, not world up.
+	vec3 tangent_normal = normalize(vec3(-hx * ripple_scale * 2.0, -hz * ripple_scale * 2.0, 1.0));
 	NORMAL_MAP = tangent_normal * 0.5 + 0.5;
 	NORMAL_MAP_DEPTH = mix(0.32, 0.78, lake);
 

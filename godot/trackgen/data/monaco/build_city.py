@@ -130,6 +130,28 @@ def near_road(x, z, reach):
 
 
 # --- ground grid
+nature = json.load(open("osm-nature.json", encoding="utf-8"))["elements"]
+# OSM coastline is directed with land on its left. Local +Z south reverses that sign.
+# The DSM includes quay buildings/boats and previously filled the harbour with raised ground.
+coast = []
+for e in nature:
+    if e.get("tags", {}).get("natural") == "coastline":
+        line = [xz(q["lat"], q["lon"]) for q in e.get("geometry", [])]
+        coast.extend(zip(line, line[1:]))
+
+
+def shore(x, z):
+    # ponytail: offline grid x coastline scan; use spatial buckets if larger maps make rebuilds too slow.
+    best, land = float("inf"), True
+    for (ax, az), (bx, bz) in coast:
+        dx, dz = bx - ax, bz - az
+        t = min(max(((x - ax) * dx + (z - az) * dz) / max(dx * dx + dz * dz, 1e-9), 0), 1)
+        d = (x - ax - t * dx) ** 2 + (z - az - t * dz) ** 2
+        if d < best:
+            best, land = d, dx * (z - az) - dz * (x - ax) < 0
+    return math.sqrt(best), land
+
+
 xs = [p[0] for p in road]
 zs = [p[2] for p in road]
 x0, x1 = min(xs) - 400, max(xs) + 400
@@ -151,6 +173,16 @@ for iz in range(nz):
             # the DEM by 35 m. The tunnel is enclosed by its own walls and ceiling (monaco.gd).
             t = max(0.0, (nr[0] - 12.0) / 23.0)
             h = (nr[1] - 0.15) * (1 - t) + h * t if t < 1.0 else h
+        distance, land = shore(x, z)
+        if not land and not (nr and nr[0] < 12.0):
+            h = -2.0
+            prow[-1] = 0
+        elif -90 < x < 70 and -85 < z < 165:
+            # Authored flat Swimming Pool quay: the DSM reads the stands/buildings as cliffs.
+            pool_road = near_road(x, z, 100.0)
+            if pool_road:
+                h = pool_road[1] - 0.15
+                prow[-1] = 1
         row.append(round(h, 2))
     ground.append(row)
     paved.append(prow)
@@ -221,7 +253,6 @@ for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
             kind, h = LANDMARKS[e["id"]]
         buildings.append([[round(px, 2) for p in ring for px in p], round(base, 2), round(h, 1), kind])
 
-nature = json.load(open("osm-nature.json", encoding="utf-8"))["elements"]
 trees = []
 for e in nature:
     if e["type"] == "node":

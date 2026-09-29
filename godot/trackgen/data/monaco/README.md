@@ -17,6 +17,8 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
    Chicane and Swimming Pool jinks keep the OSM raceway shape; only node kinks under 6.5 m radius are relaxed,
    below which the inside barrier folds over the road), an 8 m ground grid (level with the road
    out to 12 m), 3,900 OSM buildings (heights from OSM tags, else measured from the DSM), trees, parks, piers.
+   The directed OSM coastline masks sea ground below the water; the Swimming Pool quay has an authored
+   flat-ground correction so the DSM's stands/rooftops do not become terrain cliffs.
 
 ## References (not distributed)
 
@@ -29,8 +31,9 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
 
 - The DSM is 30 m and includes rooftops. The smoothed profile has about 45 m of elevation range;
   local heights and slopes are authored approximations, not surveyed ground truth.
-- Track version 2 opens both Swimming Pool chicanes, with 4 m paved escape bands. Barrier fences,
-  advertising panels and solid grandstand fronts are omitted along that stretch.
+- Track version 3 uses the mapped raceway entry/exit to open both Swimming Pool chicanes, with 4 m
+  paved escape bands. The Tabac approach retains its barriers. Pool stands use open supports and
+  alpha-cut spectator silhouettes instead of solid back/end/riser walls and opaque noise cards.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
 - Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
 

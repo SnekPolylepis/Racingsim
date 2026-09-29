@@ -42,9 +42,7 @@ func _physics_process(_dt):
 		var p = curve.sample_baked(float(i), true)
 		var a = curve.sample_baked(fposmod(i - 3.0, length), true)
 		var b = curve.sample_baked(fposmod(i + 3.0, length), true)
-		max_grade = maxf(
-			max_grade, absf(b.y - a.y) / maxf(Vector2(b.x - a.x, b.z - a.z).length(), 0.1)
-		)
+		max_grade = maxf(max_grade, absf(b.y - a.y) / maxf(Vector2(b.x - a.x, b.z - a.z).length(), 0.1))
 		max_curvature = maxf(max_curvature, absf(b.y - 2 * p.y + a.y) / 9.0)
 		var kv = (b.y - 2 * p.y + a.y) / 9.0
 		var ta = Vector2(p.x - a.x, p.z - a.z).normalized()
@@ -56,17 +54,15 @@ func _physics_process(_dt):
 	results.max_vertical_curvature = max_curvature
 	results.crest_station = crest
 	check(max_grade < 0.125, "road grade stays below 12.5 percent")
-	check(
-		max_curvature < 0.002, "vertical profile has no short launch ramps, including the lap seam"
-	)
-	check(asset.version == 2, "changed track geometry has separate record identity")
-	var gap: Vector2 = asset.get_meta("pool_gap")
+	check(max_curvature < 0.002, "vertical profile has no short launch ramps, including the lap seam")
+	check(asset.version == 3, "changed track geometry has separate record identity")
 	var surf = asset.surface()
 	var space = asset.get_world_3d().direct_space_state
 	var open = true
 	var paved = true
-	for i in 12:
-		var s = lerpf(gap.x + 30, gap.y - 30, i / 11.0)
+	for at in [Vector2(43.73536, 7.42191), Vector2(43.73399, 7.42236)]:
+		var anchor = Monaco.world_of(at.x, at.y) + Vector3.UP * 2.0
+		var s = curve.get_closest_offset(anchor)
 		var st = asset.station(s)
 		var right = st.tangent.cross(Vector3.UP).normalized()
 		for side in [-1.0, 1.0]:
@@ -74,12 +70,37 @@ func _physics_process(_dt):
 				st.pos + Vector3.UP * 0.5, st.pos + Vector3.UP * 0.5 + right * side * 12.0, 2
 			)
 			open = open and space.intersect_ray(ray).is_empty()
-			var hit = surf.contact(
-				st.pos + right * side * 8.0 + Vector3.UP * 2, Vector3.DOWN, 4.0, -1
-			)
+			var hit = surf.contact(st.pos + right * side * 8.0 + Vector3.UP * 2, Vector3.DOWN, 4.0, -1)
 			paved = paved and not hit.is_empty() and hit.get("surface", -1) == 4
 	check(open, "both Swimming Pool chicanes have no roadside wall collision")
 	check(paved, "open chicane edges have collidable paved escape space")
+	var approach = asset.station(
+		curve.get_closest_offset(Monaco.world_of(43.7361, 7.42181) + Vector3.UP * 3.0)
+	)
+	var approach_right = approach.tangent.cross(Vector3.UP).normalized()
+	var retained = true
+	for side in [-1.0, 1.0]:
+		var ray = PhysicsRayQueryParameters3D.create(
+			approach.pos + Vector3.UP * 0.5, approach.pos + Vector3.UP * 0.5 + approach_right * side * 12.0, 2
+		)
+		retained = retained and not space.intersect_ray(ray).is_empty()
+	check(retained, "barriers remain on the Tabac approach outside the Swimming Pool chicanes")
+	for name in ["HarbourStand", "PoolStand"]:
+		var stand = asset.get_node(name)
+		var mesh = asset.get_node("Scenery/" + name).mesh
+		var arrays = mesh.surface_get_arrays(0)
+		var vertices = arrays[Mesh.ARRAY_VERTEX]
+		var solid_panel = false
+		for i in range(0, vertices.size(), 3):
+			var cross = (vertices[i + 1] - vertices[i]).cross(vertices[i + 2] - vertices[i])
+			if cross.length() > 2.0 and absf(cross.normalized().y) < 0.1:
+				solid_panel = true
+		check(stand.open_structure and not solid_panel, name + " has no large solid back/end panels")
+	var d = Monaco.data()
+	var harbour = Monaco.world_of(43.735, 7.4245)
+	var ix = roundi((harbour.x - d.ground.x0) / d.ground.cell)
+	var iz = roundi((harbour.z - d.ground.z0) / d.ground.cell)
+	check(d.ground.h[iz][ix] < Monaco.SEA_Y, "mapped harbour water is not filled by DEM ground")
 	var cars = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
 	for key in ["roadster", "f296gt3", "rb19"]:
 		for at in [0.0, crest]:
@@ -92,9 +113,7 @@ func _physics_process(_dt):
 			var up = right.cross(forward).normalized()
 			TrackDrive.place_on_grid(car, Transform3D(Basis(right, up, -forward), st.pos))
 			for k in 240:
-				car.input = {
-					"throttle": 0.0, "brake": 1.0, "steer": 0.0, "clutch": 1.0, "handbrake": 0.0
-				}
+				car.input = {"throttle": 0.0, "brake": 1.0, "steer": 0.0, "clutch": 1.0, "handbrake": 0.0}
 				car.step(1.0 / 240, surf, false)
 			var speed = 60.0 if at == 0.0 else 45.0
 			car.launch(speed)
@@ -109,18 +128,8 @@ func _physics_process(_dt):
 			results[key + "_" + label + "_airborne_s"] = longest / 240.0
 			check(
 				longest <= 12 and car.pos.is_finite(),
-				(
-					key
-					+ " crosses "
-					+ label
-					+ " at "
-					+ str(roundi(speed * 3.6))
-					+ " km/h without a launch"
-				)
+				key + " crosses " + label + " at " + str(roundi(speed * 3.6)) + " km/h without a launch"
 			)
-	print(
-		"MONACO RESULTS ",
-		JSON.stringify({"checks": checks, "failures": failures, "results": results})
-	)
+	print("MONACO RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
 	quit(0 if failures.is_empty() else 1)
 	return true
