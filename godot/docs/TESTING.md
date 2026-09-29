@@ -56,6 +56,7 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 
 | Suite | What it checks | Notes |
 |---|---|---|
+| `optimization.gd` | Projection against native segment geometry, bounded chronological telemetry, lamp selection and fade against a full distance sort, shared facade night toggles | Synthetic CPU microbenchmarks print timings; no FPS or hardware guarantee |
 | `chassis_spike.gd` | Rest on flat, crest takeoff, bowl lateral demand, free-flight angular momentum, 1 m drop landing, determinism (60 s SHA-256 full-state hash), per-tick cost | Timing gates only with `-Perf` |
 | `surfaces.gd` | Analytic TestSurface shapes (flat, ramp, bowl, crest, ditch, step, block): normals vs gradient, ray hits vs brute-force march, defining quantities, coasting on a grade vs g sin θ | 34 checks |
 | `suspension.gd` | Cross-weight / warp vs rigid-body statics, roof drop, side drop, ditch weave max tilt and body penetration, close two-deck regression | 12 checks |

@@ -36,7 +36,7 @@ All paths below are relative to `godot/`.
 | `scripts/controls.gd` | Bindings, held inputs, ramps, controller polling | Input behavior/remapping |
 | `scripts/instruments.gd` | HUD, minimap, debug, 600-sample graph; `on_asset()` switches the minimap, ghost dot and checkpoint count to TrackAssets | Instrument presentation |
 | `scripts/visuals.gd` | Procedural meshes/materials/scenery and model poses | 3D appearance without changing physics |
-| `scripts/ferrari_296.gd` | Dedicated 296 GT3 body, aero, glazing, livery and racing wheels | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
+| `scripts/cars/f296gt3.gd`, `scripts/ferrari_296.gd` | Imported 296 GT3 body and wheels; retained procedural wheel detail helper | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
 | `scripts/audio.gd` | Recorded engine RPM/load bank, synthesized effects | Engine/tire/road/shift/impact sound; offline assets in `assets/audio/` |
 | `scripts/storage.gd` | JSON validation, safe names, reads/writes | File handling without gameplay state |
 | `data/cars.json` | Three presets, setup defaults and presentation keys (`body`, colours, `num`) | Add/change car constants or looks |
@@ -47,7 +47,7 @@ All paths below are relative to `godot/`.
 | `scripts/record_writer.gd` | Serial background atomic record/sector saves | Flush before read/import/delete/shutdown; immutable completed samples |
 | `scripts/retro_assets.gd`, `scripts/retro_flare.gd` | Generated small art textures, painted sky, occluded flare | Procedural presentation |
 | `data/simcade.json` | Shared Simcade and ASM constants; optional per-car `simcade` overrides | Handling tuning; dynamics targets required |
-| `scripts/night_style.gd` | After-dark floodlights, depth-tested halos/streaks and pit accents for the deleted legacy track | Not on the game path; `scripts/track/track_lights.gd` is its TrackAsset port |
+| `scripts/track/track_lights.gd` | TrackAsset lamps, halos and pooled real lights | Nearest-lamp selection preserves the extra lamp used for fade cutoff |
 | `shaders/*.gdshader`, `assets/textures/` | Road, ground and painted-concrete shaders; CC0 texture sets | Surface look |
 | `.github/workflows/gates.yml`, `tools/ci_gates.py` | CI on every push: gdformat check, parse check and the headless suites from `tools/gates.json` on Linux; exact baselines | Test automation |
 | `tools/run_gates.ps1`, `tools/gates.json` | Local parallel gate runner: affected suites by default, `-All`, `-Perf`, `-Features` | Register every new suite in `gates.json` |
@@ -100,7 +100,7 @@ All paths below are relative to `godot/`.
 
 **New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; add its control in `v2_panels.gd` and apply it in the relevant consumer. A Display/output setting also goes in `game.gd::PRESENTATION_SETTINGS` and is read in `retro_renderer.gd::apply_settings()`. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
 
-**New graphics:** road, verge, terrain and trackside materials come from the TrackAsset builders (`scripts/track/`, `ps2_materials.gd`); cars from `visuals.gd` and `ferrari_296.gd`. Follow [ART-DIRECTION.md](ART-DIRECTION.md).
+**New graphics:** road, verge, terrain and trackside materials come from the TrackAsset builders (`scripts/track/`, `ps2_materials.gd`); cars from `visuals.gd` and `scripts/cars/`. Follow [ART-DIRECTION.md](ART-DIRECTION.md). `CarKit.finish()` creates wheel pivots directly; pass `kit_wheels = false` when supplying imported wheels to avoid building discarded geometry.
 
 **New TrackAsset (v2):** write a generator in `trackgen/<id>.gd` with a static `build_asset()` returning a validated TrackAsset (§5.3: Surfaces on layer 1, Walls on layer 2, TimingLine, Grid, BotLine with smooth handles, optional Props/Scenery/Lights). Keep the RoadPath bank change under 0.20°/m (it warns above that) and leave the terrain's under-road drop tapered. Commit source data under `trackgen/data/<id>/` with its licence and rebuild scripts, and cache raw downloads outside git. Add the id to `tests/v2/laps.gd` TRACKS, record its baseline (`-- --record`) and add a probe like Spa's: racing line on tarmac, no trenches beside the road. Add it to the v2 front end's track list, the export presets' `include_filter` and `check_exported_v2_assets()`, and attribute its data in `THIRD-PARTY.md` and `build/THIRD-PARTY.md`.
 

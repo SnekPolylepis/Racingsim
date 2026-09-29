@@ -219,8 +219,8 @@ func build_plan(bot_line: Path3D, car, surface):
 	if use_line_targets and bot_line.has_meta("target_speeds_kmh"):
 		var at = bot_line.get_meta("timing_stations_m")
 		var sp = bot_line.get_meta("target_speeds_kmh")
+		var j = 0
 		for i in n:
-			var j = 0
 			while j < at.size() - 1 and at[j + 1] <= dist[i]:
 				j += 1
 			plan[i] = minf(plan[i], sp[j] / 3.6)

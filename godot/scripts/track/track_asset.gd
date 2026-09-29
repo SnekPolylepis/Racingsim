@@ -133,7 +133,9 @@ func project(p: Vector3, hint = -1):
 		from = hint - 40
 		count = 81
 	var best = INF
-	var out = {}
+	var best_i = 0
+	var best_t = 0.0
+	var best_foot = Vector3.ZERO
 	for k in count:
 		var i = posmod(from + k, n)
 		var a = line[i]
@@ -144,16 +146,20 @@ func project(p: Vector3, hint = -1):
 		var d = p.distance_squared_to(foot)
 		if d < best:
 			best = d
-			var tangent = seg.normalized()
-			var right = tangent.cross(Vector3.UP).normalized()
-			out = {
-				"s": line_s[i] + (line_s[i + 1] - line_s[i]) * t,
-				"idx": i,
-				"lateral": (p - foot).dot(right),
-				"vertical": (p - foot).y,
-				"distance": sqrt(d)
-			}
-	return out
+			best_i = i
+			best_t = t
+			best_foot = foot
+	if best == INF:
+		return {}
+	var tangent = (line[(best_i + 1) % n] - line[best_i]).normalized()
+	var right = tangent.cross(Vector3.UP).normalized()
+	return {
+		"s": line_s[best_i] + (line_s[best_i + 1] - line_s[best_i]) * best_t,
+		"idx": best_i,
+		"lateral": (p - best_foot).dot(right),
+		"vertical": (p - best_foot).y,
+		"distance": sqrt(best)
+	}
 
 
 ## Lap-relative station (metres after the start line) of an absolute station.

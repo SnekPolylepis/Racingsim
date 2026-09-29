@@ -18,6 +18,7 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 
 | ID | Task | Who | Needs | Status | Branch / notes |
 |---|---|---|---|---|---|
+| OPT-01 | Owner-requested Ponytail audit and optimization: projection, nearest lamps, telemetry, facade toggles, bot planning, car-build waste, dead legacy art code, picker focus | Sol (owner-assigned) | | review: owner | `codex/optimize-ponytail`, from newest `rb/monaco-formula-cars` dd0a169; 46/46 gates, Windows export and Monaco presentation pass; branch retained for owner review; docs/rebuild/OPT-01.md |
 | M-TRAIN | Merge train into main: workflow-gates (P4-03 + workflow), F-P2-08 (P2-08), F-P3-02c (P3-02c), P3-03-terrain (F-P3-03), scenery-kit, P4-07-bot-laps, P6-01-spa, P4-01-game-port | owner (GitHub PR) | | done | merged on main; read "MERGE train" |
 | R-P4-03 | Review P4-03 car-vs-wall contact (WallQuery, WallContact) | Sol | M-TRAIN | done | corner-contact fix queued as F-P4-03-corners |
 | F-P4-03-corners | WallQuery.contacts() assigns the first hit body's kind and one face normal to all collide_shape pairs; split simultaneous contacts by collider/face and test a two-wall corner | Claude | R-P4-03 | review: Sol | rb/F-P4-03-corners; read "DONE F-P4-03-corners" |

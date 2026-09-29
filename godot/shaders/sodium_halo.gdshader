@@ -1,7 +1,6 @@
 shader_type spatial;
 // Look-2 sodium lamp halo for TrackAsset lamps (scripts/track/track_lights.gd): the camera-facing
-// Gaussian halo and horizontal streak of lamp_corona.gdshader (night_style.gd's legacy look), drawn
-// from a MultiMesh. It stays visible much further than the legacy corona so a line of lamps reads into
+// Gaussian halo and horizontal streak drawn from a MultiMesh. It stays visible into the distance so a line of lamps reads into
 // the night fog, and fades out close up so the quad never fills the screen.
 render_mode unshaded, blend_add, cull_disabled, depth_draw_never, fog_disabled, shadows_disabled;
 uniform vec4 lamp_colour : source_color = vec4(1., .72, .36, 1.);

@@ -34,8 +34,14 @@ const TRACK_INFO = {
 	"proving_ground": ["Test site", "2.6 km", "Flat handling loop with a chicane. Quick to learn."],
 	"spa": ["Belgium", "7.0 km", "Eau Rouge, Raidillon and the Kemmel straight through the Ardennes."],
 	"nordschleife": ["Germany", "20.8 km", "The Green Hell: 73 corners, crests and the banked Karussell."],
-	"chicago": ["USA", "8.1 km", "Night street circuit on Michigan Avenue, Lake Shore Drive and both Wacker decks."],
-	"monaco": ["Monaco", "3.3 km", "The Grand Prix streets: Casino Square, the Fairmont hairpin, the tunnel and the harbour."]
+	"chicago":
+	["USA", "8.1 km", "Night street circuit on Michigan Avenue, Lake Shore Drive and both Wacker decks."],
+	"monaco":
+	[
+		"Monaco",
+		"3.3 km",
+		"The Grand Prix streets: Casino Square, the Fairmont hairpin, the tunnel and the harbour."
+	]
 }
 ## The car or circuit the picker cursor is on; the detail panel shows it.
 var preview = ""
@@ -281,7 +287,10 @@ func show_v2_page(next: String) -> void:
 			for i in ids.size():
 				var id = ids[i]
 				var b = add_option(
-					V2_TRACKS[id] + ("   ✓" if id == selected_track else ""), func(): pick_track(id), i, Vector2(24, 92)
+					V2_TRACKS[id] + ("   ✓" if id == selected_track else ""),
+					func(): pick_track(id),
+					i,
+					Vector2(24, 92)
 				)
 				b.focus_entered.connect(func(): preview = id)
 			add_option("Back", back, ids.size(), Vector2(24, 100))
@@ -310,7 +319,13 @@ func open_v2_panel(kind: String) -> void:
 func _focus_on(index: int) -> void:
 	var b = buttons[maxi(index, 0)]
 	preview = ""
-	b.call_deferred("grab_focus")
+	_focus_choice.call_deferred(b)
+
+
+func _focus_choice(button: Button) -> void:
+	# A picker can be rebuilt before this deferred call; its old controls are already detached.
+	if is_instance_valid(button) and button.is_inside_tree() and buttons.has(button):
+		button.grab_focus()
 
 
 func pick_car(key: String) -> void:
@@ -406,7 +421,9 @@ func draw_v2() -> void:
 		draw_rect(Rect2(330, 92, 285, 150), Color(.03, .055, .09, .82))
 		text_at(Vector2(344, 120), V2_TRACKS.get(id, id), 20, Color.WHITE, true)
 		text_at(Vector2(344, 148), info[0] + "   " + info[1], 18)
-		draw_multiline_string(FONT, Vector2(344, 172), info[2], HORIZONTAL_ALIGNMENT_LEFT, 260, 15, -1, Color("c9d2d6"))
+		draw_multiline_string(
+			FONT, Vector2(344, 172), info[2], HORIZONTAL_ALIGNMENT_LEFT, 260, 15, -1, Color("c9d2d6")
+		)
 		if id == app.v2_track_id and app.track is Node3D:
 			text_at(Vector2(344, 218), "BEST  " + app.RaceModel.time_text(app.race.best), 16, Color("e2c477"))
 		text_at(Vector2(344, 268), "Car: " + app.car.p.name, 16, Color("c9d2d6"))
