@@ -240,7 +240,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 				st.add_vertex(Vector3(v.x, STREET_Y - 0.015, v.y))
 	_trees(asset, holder, doc.get("trees", []), route)
 	ChicagoCrowns.build(asset, holder, crowns)
-	stats["l_trains"] = ChicagoL.build(asset, holder, doc.get("elevated", []))
+	stats["l_trains"] = ChicagoL.build(asset, holder, doc.get("elevated", []), doc.get("l_lines", []))
 	stats["crowns"] = crowns.size()
 	return stats
 
@@ -281,10 +281,11 @@ static func material(name: String) -> Material:
 		mat = _triplanar(TEX + "Concrete034/Concrete034_color.jpg", 3.0, Color(0.86, 0.85, 0.82))
 	elif name == "glassblock":
 		# Crown Fountain: glass brick lit from within; the LED faces glow at night (chicago_night).
-		var gb = _plain(Color(0.78, 0.86, 0.88), 0.25)
-		gb.emission = Color(0.66, 0.8, 0.95)
-		gb.emission_energy_multiplier = 1.6
-		gb.set_meta("chicago_night", true)
+		# Owner: plain blue, no faces; glows day and night.
+		var gb = _plain(Color(0.25, 0.5, 0.95), 0.2)
+		gb.emission_enabled = true
+		gb.emission = Color(0.2, 0.45, 1.0)
+		gb.emission_energy_multiplier = 1.8
 		mat = gb
 	elif name == "path":
 		mat = _triplanar(TEX + "Granite002A/Granite002A_color.jpg", 2.0, Color(0.9, 0.88, 0.84))

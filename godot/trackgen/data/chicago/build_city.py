@@ -525,11 +525,40 @@ def main():
         t = e.get("tags", {})
         if t.get("railway") == "subway" and t.get("bridge") in ("yes", "viaduct", "movable") and "geometry" in e:
             elevated.append({"p": [xz(g["lat"], g["lon"]) for g in e["geometry"]], "n": t.get("name", "")})
-    print("elevated L tracks: %d" % len(elevated))
+    # Chain the OSM track pieces end to end (within 1.5 m) so trains can run along whole lines.
+    def chain(pieces):
+        left = [list(map(tuple, t["p"])) for t in pieces]
+        out = []
+        while left:
+            line = left.pop()
+            grown = True
+            while grown:
+                grown = False
+                for i, q in enumerate(left):
+                    for a, b, rev in ((line[-1], q[0], False), (line[-1], q[-1], True), (line[0], q[-1], None), (line[0], q[0], "front_rev")):
+                        if math.dist(a, b) < 1.5:
+                            q = left.pop(i)
+                            if rev is False:
+                                line = line + q[1:]
+                            elif rev is True:
+                                line = line + q[::-1][1:]
+                            elif rev is None:
+                                line = q[:-1] + line
+                            else:
+                                line = q[::-1][:-1] + line
+                            grown = True
+                            break
+                    if grown:
+                        break
+            out.append([list(p) for p in line])
+        return out
+    lines = [c for c in chain(elevated) if sum(math.dist(c[i], c[i + 1]) for i in range(len(c) - 1)) > 300]
+    print("elevated L tracks: %d, chained train lines: %d" % (len(elevated), len(lines)))
 
     out = {
         "schema": 1,
         "elevated": elevated,
+        "l_lines": lines,
         "trees": trees,
         "paths": paths,
         "source": "OpenStreetMap contributors (ODbL 1.0), Overpass extracts fetched 2026-09-25; see assets/cc0-source/chicago/roadmap/README.md",

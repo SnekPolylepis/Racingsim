@@ -16,7 +16,7 @@ const TRAIN_CARS = 8
 const TRAIN_EVERY = 5
 
 
-static func build(asset: Node3D, parent: Node, tracks: Array) -> int:
+static func build(asset: Node3D, parent: Node, tracks: Array, train_lines: Array = []) -> int:
 	var st = {}
 	for key in ["steel", "rail", "body", "glass", "door", "bonnet", "sign"]:
 		st[key] = SurfaceTool.new()
@@ -49,9 +49,6 @@ static func build(asset: Node3D, parent: Node, tracks: Array) -> int:
 				box(st.steel, Vector3(at.x, STREET_Y + (DECK_TOP - GIRDER_H) * .5, at.z), Vector3(0.5, DECK_TOP - GIRDER_H, 0.5), basis)
 				d += COLUMN_EVERY
 			run += seg
-		if t % TRAIN_EVERY == 0 and run > CAR_L * TRAIN_CARS + 10.0:
-			_train(st, line, (run - CAR_L * TRAIN_CARS) * .5)
-			trains += 1
 	var mats = {
 		"steel": _mat(Color("4a4f52"), 0.6, 0.55),
 		"rail": _mat(Color("6e6a66"), 0.9, 0.4),
@@ -66,8 +63,9 @@ static func build(asset: Node3D, parent: Node, tracks: Array) -> int:
 		mats[key].emission = Color("ffe2b0") if key == "glass" else Color("ff9a2a")
 		mats[key].emission_energy_multiplier = 1.2 if key == "glass" else 3.0
 		mats[key].set_meta("chicago_night", true)
+	trains = _moving_trains(asset, parent, train_lines, mats)
 	var mesh = ArrayMesh.new()
-	for key in st:
+	for key in ["steel", "rail"]:
 		st[key].generate_normals()
 		st[key].set_material(mats[key])
 		st[key].commit(mesh)
@@ -79,29 +77,64 @@ static func build(asset: Node3D, parent: Node, tracks: Array) -> int:
 	return trains
 
 
-## Eight cars along the polyline from arc length `start`, each aligned to its own chord.
-static func _train(st: Dictionary, line: PackedVector3Array, start: float) -> void:
-	for car in TRAIN_CARS:
-		var s0 = start + car * CAR_L + 0.3
-		var s1 = s0 + CAR_L - 0.6
-		var a = _at(line, s0)
-		var b = _at(line, s1)
-		var basis = Basis.looking_at(b - a, Vector3.UP)
-		var c = (a + b) * .5 + Vector3(0, 0.55 + (CAR_H - 0.55) * .5, 0)
-		var body_h = CAR_H - 0.55
-		box(st.body, c, Vector3(CAR_W, body_h, CAR_L - 1.6), basis)
-		# Fibreglass end bonnets with the window and sign on the leading/trailing ends of the pair.
-		for e in [-1, 1]:
-			box(st.bonnet, c + basis.z * e * (CAR_L * .5 - 0.5), Vector3(CAR_W - 0.05, body_h, 1.0), basis)
-			box(st.sign, c + basis.z * e * (CAR_L * .5 - 0.02) + Vector3(0, body_h * .38, 0), Vector3(1.4, 0.22, 0.05), basis)
-		for side in [-1, 1]:
-			# Window band and two door pairs per side.
-			box(st.glass, c + basis.x * side * (CAR_W * .5 + 0.01) + Vector3(0, 0.45, 0), Vector3(0.02, 0.9, CAR_L - 3.0), basis)
-			for dz in [-0.25, 0.25]:
-				box(st.door, c + basis.x * side * (CAR_W * .5 + 0.02) + basis.z * dz * CAR_L + Vector3(0, -0.2, 0), Vector3(0.02, 2.0, 1.4), basis)
-		# Bogies.
-		for e in [-1, 1]:
-			box(st.rail, c + basis.z * e * (CAR_L * .5 - 2.4) - Vector3(0, body_h * .5 + 0.25, 0), Vector3(2.2, 0.5, 2.4), basis)
+## Trains that move (scripts/track/l_trains.gd): one shared 5000-series car mesh, 8 instances per train,
+## two trains per chained line at opposite ends, ~11 m/s (about 25 mph).
+static func _moving_trains(asset: Node3D, parent: Node, train_lines: Array, mats: Dictionary) -> int:
+	if train_lines.is_empty():
+		return 0
+	var lines = []
+	var trains = []
+	for li in train_lines.size():
+		var line = PackedVector3Array()
+		for p in train_lines[li]:
+			line.append(Vector3(p[0], STREET_Y + DECK_TOP, p[1]))
+		lines.append(line)
+		var total = 0.0
+		for i in line.size() - 1:
+			total += line[i].distance_to(line[i + 1])
+		trains.append([li, 0.0, 11.0])
+		if total > 900.0:
+			trains.append([li, total * .5, 11.0])
+	var mm = MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = _car_mesh(mats)
+	mm.instance_count = trains.size() * TRAIN_CARS
+	var node = MultiMeshInstance3D.new()
+	node.name = "LTrains"
+	node.set_script(preload("res://scripts/track/l_trains.gd"))
+	node.multimesh = mm
+	node.lines = lines
+	node.trains = trains
+	node.custom_aabb = AABB(Vector3(-5000, -50, -5000), Vector3(10000, 200, 10000))
+	parent.add_child(node)
+	node.owner = asset
+	return trains.size()
+
+
+## One car in local space: origin on the rail line at mid-car, -Z forward (Basis.looking_at).
+static func _car_mesh(mats: Dictionary) -> ArrayMesh:
+	var st = {}
+	for key in ["body", "glass", "door", "bonnet", "sign", "rail"]:
+		st[key] = SurfaceTool.new()
+		st[key].begin(Mesh.PRIMITIVE_TRIANGLES)
+	var basis = Basis.IDENTITY
+	var body_h = CAR_H - 0.55
+	var c = Vector3(0, 0.55 + body_h * .5, 0)
+	box(st.body, c, Vector3(CAR_W, body_h, CAR_L - 1.6), basis)
+	for e in [-1, 1]:
+		box(st.bonnet, c + Vector3(0, 0, e * (CAR_L * .5 - 0.5)), Vector3(CAR_W - 0.05, body_h, 1.0), basis)
+		box(st.sign, c + Vector3(0, body_h * .38, e * (CAR_L * .5 - 0.02)), Vector3(1.4, 0.22, 0.05), basis)
+		box(st.rail, c + Vector3(0, -body_h * .5 - 0.25, e * (CAR_L * .5 - 2.4)), Vector3(2.2, 0.5, 2.4), basis)
+	for side in [-1, 1]:
+		box(st.glass, c + Vector3(side * (CAR_W * .5 + 0.01), 0.45, 0), Vector3(0.02, 0.9, CAR_L - 3.0), basis)
+		for dz in [-0.25, 0.25]:
+			box(st.door, c + Vector3(side * (CAR_W * .5 + 0.02), -0.2, dz * CAR_L), Vector3(0.02, 2.0, 1.4), basis)
+	var mesh = ArrayMesh.new()
+	for key in st:
+		st[key].generate_normals()
+		st[key].set_material(mats[key])
+		st[key].commit(mesh)
+	return mesh
 
 
 static func _at(line: PackedVector3Array, s: float) -> Vector3:
