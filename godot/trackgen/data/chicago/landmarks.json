@@ -100,6 +100,15 @@
       "crown": {
         "type": "twin_domes",
         "r": 6.0
+      },
+      "photo": {
+        "file": "ccc_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 1.0,
+        "credit": "w_lemay, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:Chicago_Cultural_Center_(Former_Chicago_Public_Library_Central_Building),_Michigan_Avenue,_Chicago,_IL_-_52891391046.jpg"
       }
     },
     "w127107034": {
@@ -185,7 +194,16 @@
       "name": "Orchestra Hall / Symphony Center (220 S Michigan)",
       "src": "cso.org: deep pink brick with white limestone quoins and lintels, Georgian",
       "k": "brick",
-      "c": "#a0524a"
+      "c": "#a0524a",
+      "photo": {
+        "file": "sym_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 1.0,
+        "credit": "Beyond My Ken, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Orchestra_Hall_Chicago.jpg"
+      }
     },
     "w144710192": {
       "name": "333 North Michigan",
@@ -219,6 +237,11 @@
       "src": "en.wikipedia.org/wiki/Crown_Fountain: two 50 ft glass-brick towers with LED screens",
       "h": 15.24,
       "glass": 1
+    },
+    "w126978545": {
+      "name": "Jay Pritzker Pavilion (stage)",
+      "src": "en.wikipedia.org/wiki/Jay_Pritzker_Pavilion: brushed stainless steel ribbon headdress; shape from USGS LiDAR",
+      "pk": 1
     }
   }
 }

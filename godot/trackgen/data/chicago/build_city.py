@@ -397,6 +397,8 @@ def main():
             b["ph"] = m["photo"]
         if m.get("glass"):
             b["gl"] = 1
+        if m.get("pk"):
+            b["pk"] = 1
         for lo, hi, kind, colour in m.get("bands", []):
             extra.append({"f": b["f"], "h": min(hi, b["h"]), "m": lo, "k": kind, "c": colour, "band": 1})
     # Landmarks drawn by their OSM parts: facade on every part, crown and top band on the tallest,
@@ -444,6 +446,8 @@ def main():
                     parent["cr"] = m["crown"]
                 if "photo" in m:
                     parent["ph"] = m["photo"]
+                if m.get("pk"):
+                    parent["pk"] = 1
                 buildings.append(parent)
         lidar = 0
         for b in buildings:
@@ -519,6 +523,30 @@ def main():
             b["pk"] = 1
     print("trees %d (%d with LiDAR height), park paths %d, park structures %d" % (len(trees), sum(1 for t in trees if t[2]), len(paths), sum(1 for b in buildings if b.get("pk"))))
 
+    # Sculptural steel measured by LiDAR (Pritzker Pavilion headdress and the Great Lawn trellis): the surface
+    # itself as a thin shell raster [x0, z0, w, h, 1 m, base64 u16 dm, shell thickness m].
+    shells = []
+    for x0s, z0s, x1s, z1s, lo, hi, thick in ((158, 118, 264, 182, 14.0, 60.0, 1.5), (170, 182, 252, 346, 12.0, 32.0, 0.35)):
+        for dsm, gx0, gz0 in grids:
+            if x0s < gx0 or z0s < gz0 or x1s > gx0 + dsm.shape[1] or z1s > gz0 + dsm.shape[0]:
+                continue
+            win = dsm[int(z0s - gz0):int(z1s - gz0), int(x0s - gx0):int(x1s - gx0)]
+            hgt = np.where((win > lo) & (win < hi), win, 0)
+            hgt = np.nan_to_num(np.round(hgt * 2) / 2)
+            dm = np.clip(np.round(hgt * 10), 0, 65535).astype("<u2")
+            shells.append([float(x0s), float(z0s), dm.shape[1], dm.shape[0], 1.0, base64.b64encode(dm.tobytes()).decode(), thick])
+    print("steel shells %d" % len(shells))
+
+    # Harbours: real OSM mooring points (a moored boat on each), piers and breakwaters.
+    moorings, piers = [], []
+    for e in load("harbor.json"):
+        t = e.get("tags", {})
+        if e["type"] == "node" and (t.get("mooring") or "mooring" in t.get("seamark:type", "")):
+            moorings.append(xz(e["lat"], e["lon"]))
+        elif e["type"] == "way" and t.get("man_made") in ("pier", "breakwater") and "geometry" in e:
+            piers.append({"p": [xz(g["lat"], g["lon"]) for g in e["geometry"]], "w": 6.0 if t["man_made"] == "breakwater" else 3.0})
+    print("moorings %d, piers/breakwaters %d" % (len(moorings), len(piers)))
+
     # The real elevated 'L' (OSM railway=subway on bridges): one polyline per track.
     elevated = []
     for e in load("downtown-rail.json"):
@@ -560,6 +588,9 @@ def main():
         "elevated": elevated,
         "l_lines": lines,
         "trees": trees,
+        "moorings": moorings,
+        "shells": shells,
+        "piers": piers,
         "paths": paths,
         "source": "OpenStreetMap contributors (ODbL 1.0), Overpass extracts fetched 2026-09-25; see assets/cc0-source/chicago/roadmap/README.md",
         "frame": "trackgen/chicago.gd world(): x = (lon + 87.6244) * 82860, z = (41.8848 - lat) * 111320",

@@ -46,6 +46,9 @@ func run():
 		"river-top": [Vector3(-560, 40, -270), Vector3(-380, 0, -330)],
 		"l-wabash": [Vector3(-141, 10, 60), Vector3(-141, 15, -80)],
 		"lake-oblique": [Vector3(700, 45, 170), Vector3(1100, 0, 120)],
+		"pritzker": [Vector3(210, 20, 360), Vector3(210, 20, 150)],
+		"harbor": [Vector3(760, 30, 250), Vector3(1100, 5, 60)],
+		"sym": [Vector3(40, 12, 680), Vector3(-50, 18, 668)],
 		"mich-aerial": [Vector3(250, 220, 300), Vector3(-80, 60, -100)],
 	}
 	for night in [0, 1]:
