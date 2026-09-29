@@ -106,9 +106,14 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		# Real OSM data: building:part base height ("m") and facade colour ("c") where tagged.
 		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
 		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
-		_building(facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint)
+		if b.has("L"):
+			_lidar_building(facade, b.L, fmod(i * 0.6180339, 1.0), kind_layer(kind), tint)
+		else:
+			_building(facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint)
 		if b.has("cr"):
 			crowns.append([ring, STREET_Y + float(b.h), b.cr])
+		if b.has("ph"):
+			crowns.append([ring, STREET_Y + float(b.h), {"type": "photo", "ph": b.ph, "h": float(b.h)}])
 		stats.buildings += 1
 		kept_buildings.append([ring, float(b.h), i])
 		var centre = _centroid(ring)
@@ -491,6 +496,77 @@ static func _building(
 	# Roofs share the facade surface; blue = 1 selects the flat roof colour in the shader.
 	roof.set_color(Color(0, 0, 1))
 	_flat(roof, ring, top)
+
+
+## A building from its measured USGS LiDAR roof: [x0, z0, w, h, cell, base64 u16 decimetres], row-major
+## over its footprint (0 = outside). Roof runs of equal height become one quad; walls step down to each
+## lower neighbour. UVs are world metres along the wall and height, so the window grid lines up.
+static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: float, tint: Color) -> void:
+	var x0 = float(grid[0])
+	var z0 = float(grid[1])
+	var w = int(grid[2])
+	var h = int(grid[3])
+	var c = float(grid[4])
+	var raw = Marshalls.base64_to_raw(str(grid[5]))
+	var hgt = PackedFloat32Array()
+	hgt.resize(w * h)
+	for k in w * h:
+		hgt[k] = raw.decode_u16(k * 2) * 0.1
+	var at = func(i: int, j: int) -> float: return hgt[j * w + i] if i >= 0 and j >= 0 and i < w and j < h else 0.0
+	var code = 0.0
+	if tint.a > 0.0:
+		code = (roundi(tint.r * 5) * 36 + roundi(tint.g * 5) * 6 + roundi(tint.b * 5) + 1) / 255.0
+	var wall_color = Color(seed, layer / 8.0, 0, code)
+	for j in h:
+		var i = 0
+		while i < w:
+			var y = at.call(i, j)
+			if y <= 0.0:
+				i += 1
+				continue
+			var run = i
+			while run + 1 < w and absf(at.call(run + 1, j) - y) < 0.05:
+				run += 1
+			var top = STREET_Y + y
+			var ax = x0 + i * c
+			var bx = x0 + (run + 1) * c
+			var az = z0 + j * c
+			var bz = az + c
+			st.set_color(Color(0, 0, 1))
+			for v in [Vector3(ax, top, az), Vector3(bx, top, az), Vector3(bx, top, bz), Vector3(ax, top, az), Vector3(bx, top, bz), Vector3(ax, top, bz)]:
+				st.set_normal(Vector3.UP)
+				st.set_uv(Vector2(v.x, v.z))
+				st.add_vertex(v)
+			st.set_color(wall_color)
+			for k in range(i, run + 1):
+				var cx = x0 + k * c
+				# North (-z) and south (+z) faces per cell; west/east only at the run ends.
+				_lidar_wall(st, Vector3(cx + c, 0, az), Vector3(cx, 0, az), Vector3(0, 0, -1), at.call(k, j - 1), y)
+				_lidar_wall(st, Vector3(cx, 0, bz), Vector3(cx + c, 0, bz), Vector3(0, 0, 1), at.call(k, j + 1), y)
+				if k == i or absf(at.call(k - 1, j) - y) >= 0.05:
+					_lidar_wall(st, Vector3(cx, 0, az), Vector3(cx, 0, bz), Vector3(-1, 0, 0), at.call(k - 1, j), at.call(k, j))
+				if k == run or absf(at.call(k + 1, j) - y) >= 0.05:
+					_lidar_wall(st, Vector3(cx + c, 0, bz), Vector3(cx + c, 0, az), Vector3(1, 0, 0), at.call(k + 1, j), at.call(k, j))
+			i = run + 1
+
+
+static func _lidar_wall(st: SurfaceTool, a: Vector3, b: Vector3, n: Vector3, lo: float, hi: float) -> void:
+	if hi <= lo + 0.05:
+		return
+	var along_a = a.x if absf(n.z) > 0.5 else a.z
+	var along_b = b.x if absf(n.z) > 0.5 else b.z
+	var y0 = STREET_Y + lo if lo > 0.0 else 0.0
+	var y1 = STREET_Y + hi
+	var v = [
+		[Vector3(a.x, y0, a.z), Vector2(along_a, y0 - STREET_Y)],
+		[Vector3(b.x, y0, b.z), Vector2(along_b, y0 - STREET_Y)],
+		[Vector3(b.x, y1, b.z), Vector2(along_b, hi)],
+		[Vector3(a.x, y1, a.z), Vector2(along_a, hi)],
+	]
+	for idx in [0, 1, 2, 0, 2, 3]:
+		st.set_normal(n)
+		st.set_uv(v[idx][1])
+		st.add_vertex(v[idx][0])
 
 
 static func _flat(st: SurfaceTool, ring: PackedVector2Array, y: float) -> void:

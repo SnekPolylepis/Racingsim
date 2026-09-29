@@ -61,7 +61,25 @@
       "crown": {
         "type": "sign",
         "text": "MOTOROLA",
-        "c": "#ffffff"
+        "c": "#ffffff",
+        "face": [
+          1,
+          0
+        ],
+        "shift": [
+          0,
+          0.25
+        ],
+        "src_face": "Commons photo (2010, 'Santa Fe' era): sign over the south half of the roof, facing east toward Michigan Avenue"
+      },
+      "photo": {
+        "file": "rx_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 0.65,
+        "credit": "Vincent Desjardins, CC BY 2.0, commons.wikimedia.org/wiki/File:Chicago_(ILL)_Historic_Michigan_Boulevard_District_%22_Santa_Fe_building_%22_1903_%26_%22_Metropolitan_Tower_%22_1924_(4825792307).jpg"
       }
     },
     "w147399567": {
@@ -127,13 +145,31 @@
     "w147476152": {
       "name": "Chicago Athletic Association (12 S Michigan)",
       "src": "Library of Congress HABS IL-935: Venetian Gothic, patterned brick and carved limestone",
-      "k": "brick"
+      "k": "brick",
+      "photo": {
+        "file": "caa_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 1.0,
+        "credit": "Beyond My Ken, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Chicago_Athletic_Association_Building_12_South_Michigan_Avenue.jpg"
+      }
     },
     "w126982632": {
       "name": "University Club of Chicago (76 E Monroe)",
       "src": "Wikipedia / chistockimages: collegiate Gothic, Bedford limestone",
       "k": "stone",
-      "c": "#c9c6ba"
+      "c": "#c9c6ba",
+      "photo": {
+        "file": "uc_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 0.82,
+        "credit": "Beyond My Ken, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:University_Club_of_Chicago_76_East_Monroe_Street.jpg"
+      }
     },
     "w145498713": {
       "name": "Monroe Building (104 S Michigan)",

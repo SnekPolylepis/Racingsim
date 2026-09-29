@@ -33,6 +33,9 @@ func run():
 	var views = {
 		"mich-north": [Vector3(0, 11, 250), Vector3(-5, 40, -380)],
 		"mich-south": [Vector3(0, 11, -120), Vector3(-5, 30, 700)],
+		"caa": [Vector3(40, 14, 330), Vector3(-49, 30, 346)],
+		"uc": [Vector3(40, 14, 410), Vector3(-46, 30, 423)],
+		"rx": [Vector3(60, 20, 690), Vector3(-35, 45, 701)],
 		"mich-aerial": [Vector3(250, 220, 300), Vector3(-80, 60, -100)],
 	}
 	for night in [0, 1]:

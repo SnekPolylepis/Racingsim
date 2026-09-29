@@ -56,3 +56,4 @@ godot/trackgen/data/nordschleife/kerb-crops/
 godot/trackgen/data/tools/__pycache__/
 
 godot/visual-review/
+godot/assets/cc0-source/chicago/lidar/*.npz

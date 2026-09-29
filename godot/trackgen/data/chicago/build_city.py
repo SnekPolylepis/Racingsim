@@ -17,6 +17,10 @@ import json
 import math
 import os
 import re
+import base64
+import glob
+
+import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(HERE, "..", "..", "..", "assets", "cc0-source", "chicago", "roadmap")
@@ -205,6 +209,60 @@ def city_storeys():
     return out
 
 
+LIDAR_CELL = 2
+# Crowns the LiDAR roof replaces (estimated shapes); signs, masts and lit beacons stay.
+LIDAR_REPLACES = {"spire", "pyramid", "slant", "cupola", "twin_domes", "gable"}
+
+
+def lidar_grids():
+    """USGS 3DEP surface grids from fetch_lidar.py: [(dsm - ground, x0, z0)]."""
+    out = []
+    for f in sorted(glob.glob(os.path.join(RAW, "..", "lidar", "lidar-*.npz"))):
+        d = np.load(f)
+        out.append((d["dsm"] - np.nanmedian(d["dtm"]), float(d["x0"]), float(d["z0"])))
+    return out
+
+
+def lidar_massing(ring, grids):
+    """The building's measured roof as a raster over its footprint: [x0, z0, w, h, cell, base64 u16 dm]."""
+    from PIL import Image, ImageDraw
+    xs = [p[0] for p in ring]
+    zs = [p[1] for p in ring]
+    for dsm, gx0, gz0 in grids:
+        if min(xs) < gx0 or min(zs) < gz0 or max(xs) >= gx0 + dsm.shape[1] - 2 or max(zs) >= gz0 + dsm.shape[0] - 2:
+            continue
+        c = int(LIDAR_CELL)
+        x0, z0 = np.floor(min(xs)), np.floor(min(zs))
+        w = int(np.ceil((max(xs) - x0) / c))
+        h = int(np.ceil((max(zs) - z0) / c))
+        if w < 1 or h < 1:
+            return None
+        win = dsm[int(z0 - gz0):int(z0 - gz0) + h * c, int(x0 - gx0):int(x0 - gx0) + w * c]
+        if win.shape != (h * c, w * c):
+            return None
+        with np.errstate(all="ignore"):
+            hgt = np.nanmedian(win.reshape(h, c, w, c).transpose(0, 2, 1, 3).reshape(h, w, c * c), axis=2)
+        img = Image.new("L", (w, h), 0)
+        ImageDraw.Draw(img).polygon([((p[0] - x0) / c - 0.5, (p[1] - z0) / c - 0.5) for p in ring], fill=1)
+        mask = np.array(img, bool)
+        if not mask.any():
+            return None
+        known = hgt[mask & ~np.isnan(hgt)]
+        if known.size == 0:
+            return None
+        hgt = np.where(np.isnan(hgt), np.median(known), hgt)
+        hgt = np.maximum(hgt, 0.5)
+        pad = np.pad(hgt * mask, 1)
+        neigh = np.max([pad[1 + dj:1 + dj + h, 1 + di:1 + di + w] for dj in (-1, 0, 1) for di in (-1, 0, 1) if dj or di], axis=0)
+        hgt = np.where(hgt > neigh + 15.0, neigh, hgt)
+        hgt = np.round(hgt * 2) / 2 * mask
+        if hgt.max() <= 0:
+            return None
+        dm = np.clip(np.round(hgt * 10), 0, 65535).astype("<u2")
+        return [float(x0), float(z0), w, h, float(c), base64.b64encode(dm.tobytes()).decode()], float(hgt.max())
+    return None
+
+
 def load(name):
     with open(os.path.join(RAW, name), encoding="utf-8") as f:
         return json.load(f)["elements"]
@@ -335,6 +393,8 @@ def main():
                 b[key] = m[key]
         if "crown" in m:
             b["cr"] = m["crown"]
+        if "photo" in m:
+            b["ph"] = m["photo"]
         for lo, hi, kind, colour in m.get("bands", []):
             extra.append({"f": b["f"], "h": min(hi, b["h"]), "m": lo, "k": kind, "c": colour, "band": 1})
     # Landmarks drawn by their OSM parts: facade on every part, crown and top band on the tallest,
@@ -363,6 +423,42 @@ def main():
                 span = hi - lo
                 extra.append({"f": top["f"], "h": top["h"], "m": top["h"] - span, "k": kind, "c": colour, "band": 1})
     buildings += extra
+
+    # Measured roofs (USGS LiDAR) for every building the grids cover. In LiDAR areas the OSM parts are
+    # not needed: the measured surface already holds each setback, so parents come back and parts go.
+    grids = lidar_grids()
+    if grids:
+        def covered(f):
+            return lidar_massing(f, grids) is not None
+        n0 = len(buildings)
+        buildings = [b for b in buildings if not (b in parts and covered(b["f"]))]
+        for parent in replaced:
+            if covered(parent["f"]):
+                m = marks.get(parent.pop("o", None) or "", {})
+                for key in ("k", "c"):
+                    if key in m:
+                        parent[key] = m[key]
+                if "crown" in m:
+                    parent["cr"] = m["crown"]
+                if "photo" in m:
+                    parent["ph"] = m["photo"]
+                buildings.append(parent)
+        lidar = 0
+        for b in buildings:
+            if b.get("band"):
+                continue
+            got = lidar_massing(b["f"], grids)
+            if got is None:
+                continue
+            b["L"], b["h"] = got[0], round(got[1], 1)
+            b.pop("u", None)
+            b.pop("m", None)
+            if b.get("cr", {}).get("type") in LIDAR_REPLACES and "beacon" not in b["cr"]:
+                b.pop("cr")
+            lidar += 1
+        # Facade bands follow the measured roof; drop those that sit on replaced parts.
+        buildings = [b for b in buildings if not (b.get("band") and covered(b["f"]) and b.get("m", 0) > 0)]
+        print("lidar massing: %d buildings (%d -> %d entries)" % (lidar, n0, len(buildings)))
     print("landmark overrides applied: %d/%d %s" % (len(used), len(marks), sorted(set(m["name"] for m in marks.values()) - used)))
 
     roads = []

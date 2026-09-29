@@ -60,7 +60,22 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 				label.shaded = false
 				label.modulate = Color(cr.c) * 2.5
 				label.position = Vector3(c.x, top + 4.0, c.y)
+				# Facing and position from the reference photo where given (face = outward x, z; shift = fraction
+				# of the footprint's extent).
+				if cr.has("face"):
+					label.double_sided = false
+					var f = Vector3(cr.face[0], 0, cr.face[1])
+					label.basis = Basis.looking_at(-f, Vector3.UP)
+					var lo = ring[0]
+					var hi = ring[0]
+					for p in ring:
+						lo = lo.min(p)
+						hi = hi.max(p)
+					var ext = hi - lo
+					label.position += Vector3(cr.shift[0] * ext.x, 0, cr.shift[1] * ext.y)
 				node = label
+			"photo":
+				node = photo_facade(ring, top, float(cr.h), cr.ph)
 		if node == null:
 			continue
 		node.name = "Crown%d" % i
@@ -69,6 +84,55 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 		node.owner = asset
 		for child in node.find_children("*", "", true, false):
 			child.owner = asset
+
+
+## A rectified reference photo on the footprint wall that best faces `face` (outward), covering the top
+## `frac` of the building's height, 0.2 m proud of the wall.
+static func photo_facade(ring: PackedVector2Array, top: float, h: float, ph: Dictionary) -> MeshInstance3D:
+	var want = Vector2(ph.face[0], ph.face[1]).normalized()
+	var c = centroid(ring)
+	var best = -INF
+	var wa = Vector2.ZERO
+	var wb = Vector2.ZERO
+	var wn = Vector2.ZERO
+	for i in ring.size():
+		var a = ring[i]
+		var b = ring[(i + 1) % ring.size()]
+		var n = Vector2(b.y - a.y, a.x - b.x).normalized()
+		if n.dot((a + b) * .5 - c) < 0:
+			n = -n
+		var score = n.dot(want) * a.distance_to(b)
+		if score > best:
+			best = score
+			wa = a
+			wb = b
+			wn = n
+	# Left-to-right as seen from outside.
+	if (wb - wa).cross(wn) > 0:
+		var t = wa
+		wa = wb
+		wb = t
+	var y0 = top - h * float(ph.get("frac", 1.0))
+	var off = Vector3(wn.x, 0, wn.y) * 0.2
+	var p = [
+		Vector3(wa.x, y0, wa.y) + off, Vector3(wb.x, y0, wb.y) + off,
+		Vector3(wb.x, top, wb.y) + off, Vector3(wa.x, top, wa.y) + off
+	]
+	var uv = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for idx in [0, 1, 2, 0, 2, 3]:
+		st.set_normal(Vector3(wn.x, 0, wn.y))
+		st.set_uv(uv[idx])
+		st.add_vertex(p[idx])
+	var mat = StandardMaterial3D.new()
+	mat.albedo_texture = load("res://assets/chicago/facade-photos/" + str(ph.file))
+	mat.roughness = 0.85
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var node = MeshInstance3D.new()
+	node.mesh = st.commit()
+	node.material_override = mat
+	return node
 
 
 static func centroid(ring: PackedVector2Array) -> Vector2:
