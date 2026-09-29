@@ -102,7 +102,7 @@ var applied_time = -1
 var applied_horizon = ""
 ## Which wooded-hill silhouette each circuit's sky carries (RetroAssets.HILLS).
 const HORIZON_STYLES = {
-	"chicago": "flat", "proving_ground": "generic", "spa": "ardennes", "nordschleife_s1": "eifel"
+	"chicago": "flat", "monza": "generic", "proving_ground": "generic", "spa": "ardennes", "nordschleife_s1": "eifel"
 }
 var ui
 var instruments
@@ -174,6 +174,8 @@ func _ready():
 		or "--features" in OS.get_cmdline_user_args()
 	)
 	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--v2-car="):
+			preset_key = arg.trim_prefix("--v2-car=")
 		if arg.begins_with("--v2-track="):
 			v2_track_id = arg.get_slice("=", 1)
 	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()

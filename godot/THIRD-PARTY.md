@@ -160,3 +160,7 @@ textures reduced.
 | Railway Exchange Building facade photo | Vincent Desjardins, Wikimedia Commons | CC BY 2.0 | godot/assets/chicago/facade-photos/rx_east.jpg |
 | Orchestra Hall (Symphony Center) facade photo | Beyond My Ken, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Orchestra_Hall_Chicago.jpg | texture is a derivative, same licence | godot/assets/chicago/facade-photos/sym_east.jpg |
 | Chicago Cultural Center facade photo | w_lemay, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:Chicago_Cultural_Center_(Former_Chicago_Public_Library_Central_Building),_Michigan_Avenue,_Chicago,_IL_-_52891391046.jpg | texture is a derivative, same licence | godot/assets/chicago/facade-photos/ccc_east.jpg |
+| Ferrari F2004 model | Tyler_Dave (Dave Love), Sketchfab 827e64acecba4f008759ae30a5bfeecc | CC BY 4.0 | godot/assets/cars/f2004/ |
+| Red Bull RB19 model ("RB19_Verstappen") | dondifur, Sketchfab fa39f15a0cbe4386a305596a021789e8 | CC BY 4.0 | godot/assets/cars/rb19/ |
+| Autodromo Nazionale Monza Circuit 2020 layout | Tyler_Dave (Dave Love), Sketchfab 25ed955115094de382935aa6d1a1e9c6 | CC BY 4.0 | godot/assets/tracks/monza/ |
+| Monza GP centreline | OpenStreetMap contributors | ODbL 1.0 | godot/trackgen/data/monza/ |

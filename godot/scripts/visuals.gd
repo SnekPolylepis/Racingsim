@@ -342,6 +342,8 @@ func make_car(p, ghost = false):
 			return preload("res://scripts/cars/gt.gd").new().build(self, p, ghost)
 		"gt3":
 			return preload("res://scripts/cars/f296gt3.gd").new().build(self, p, ghost)
+		"glb":
+			return preload("res://scripts/cars/glb_car.gd").new().build(self, p, ghost)
 	var root = Node3D.new()
 	var body = Node3D.new()
 	root.add_child(body)

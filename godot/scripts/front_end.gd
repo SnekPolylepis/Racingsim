@@ -27,7 +27,8 @@ const V2_TRACKS = {
 	"spa": "Spa-Francorchamps",
 	"nordschleife_s1": "Nordschleife (T13 - Aremberg)",
 	"nordschleife": "Nürburgring Nordschleife",
-	"chicago": "Chicago — River & Lake"
+	"chicago": "Chicago — River & Lake",
+	"monza": "Monza — Autodromo Nazionale"
 }
 
 
