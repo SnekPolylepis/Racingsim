@@ -1,4 +1,4 @@
-extends SceneTree
+﻿extends SceneTree
 ## CHI-01. Authored race route on Chicago's geographic scaffold, with explicit game-only connectors.
 ## Source/provenance: trackgen/data/chicago/README.md. Heights and corner easing are authored.
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
@@ -28,7 +28,7 @@ const NO_SHADOW = [
 	"CloudGatePlaza",
 	"ChicagoBridgeDecks"
 ]
-const PARKED = ["taxi", "sedan", "sedan-sports", "suv", "police", "delivery", "van"]
+const PARKED = ["taxi", "taxi", "sedan", "sedan", "hatch", "suv", "police", "sports", "sports2"]
 const DATA = "res://trackgen/data/chicago/route.json"
 ## Named corners for the visual review: [route.json point index, name]. Stations are found on the road.
 const CORNERS = [
@@ -49,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 111
+const CACHE_REVISION = 132
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -168,7 +168,7 @@ static func build_asset() -> Node3D:
 	var asset = TrackAsset.new()
 	asset.name = "Chicago"
 	asset.id = "chicago"
-	asset.display_name = "Chicago — River & Lake"
+	asset.display_name = "Chicago â€” River & Lake"
 	asset.version = 2
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
@@ -224,7 +224,10 @@ static func build_asset() -> Node3D:
 	# closed-street courses); without it the route read as a grey blockout. Visual only (the barrier keeps
 	# collision). Baked after Scenery exists: CatchFence parents its mesh under Scenery and would otherwise
 	# create its own, renaming the city's node (and losing Scenery/CentennialWheel etc.).
-	for barrier in ["LeftBarrier", "RightBarrier"]:
+	# Along Upper Wacker's riverfront the river is on the left: no debris fence there, so the river shows.
+	var river = river_span(road)
+	for piece in [["LeftBarrier", 0.0, river.x], ["LeftBarrier", river.y, -1.0], ["RightBarrier", 0.0, -1.0]]:
+		var barrier = piece[0]
 		var fence = CatchFence.new()
 		fence.follow_wall = NodePath("../" + barrier)
 		fence.side = WallPath.Side.LEFT if barrier == "LeftBarrier" else WallPath.Side.RIGHT
@@ -232,7 +235,9 @@ static func build_asset() -> Node3D:
 		fence.post_spacing = 4.0
 		fence.fence_height = 3.2
 		fence.solid = false
-		attach(asset, asset, fence, barrier + "Fence")
+		fence.from_m = piece[1]
+		fence.to_m = piece[2]
+		attach(asset, asset, fence, barrier + "Fence" + ("B" if piece[1] > 0.0 else ""))
 		fence.bake()
 	add_water_and_parks(asset, scenery)
 	# CHI-02: the real downtown from OpenStreetMap (buildings, every street, water, parks) replaces the
@@ -252,8 +257,7 @@ static func build_asset() -> Node3D:
 		for prefix in NO_SHADOW:
 			if node is GeometryInstance3D and str(node.name).begins_with(prefix):
 				node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_park_trees(asset)
-	add_lakefront_trees(asset)
+	# Trees are the real mapped ones (ChicagoCity._trees); the old random park/lakefront bands are gone.
 	# Prelim city dressing from the CHI-assets-prep CC0 staging: textured street walls and parked cars.
 	add_parked_cars(asset, scenery, road)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
@@ -876,6 +880,7 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 	var mesh = fixtures.commit()
 	mesh.surface_set_material(0, sodium)
 	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
+	add_neon(asset, parent, road)
 	var pier = world(data().landmarks["Navy Pier"])
 	for i in 6:
 		box(
@@ -920,6 +925,173 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 			)
 
 
+## NFSU street neon (owner 2026-09-28): storefront bars and blade signs on the building line either side of
+## the route, one batched mesh per colour, plus a coloured light every few signs so the wet road picks them
+## up. Night only (chicago_night meta).
+const SIGN_FONT = preload("res://assets/fonts/Rajdhani-Bold.ttf")
+## Real businesses from OpenStreetMap (build: see signs.json "source"), in the world() frame.
+const SIGNS = "res://trackgen/data/chicago/signs.json"
+## Category -> colour index: bars/clubs magenta, food red/amber, cafes green, hotels violet, shops cyan.
+const SIGN_COLOR = {
+	"bar": 0, "pub": 0, "nightclub": 0, "casino": 0, "shop": 1, "pharmacy": 1, "bank": 1,
+	"cafe": 2, "ice_cream": 2, "restaurant": 3, "fast_food": 5, "hotel": 4, "cinema": 4, "theatre": 4, "museum": 4
+}
+
+
+## Stable 0..1 per position, so a rebuild keeps each sign's height.
+static func randf_seeded(p: Vector3) -> float:
+	return fposmod(sin(p.x * 12.9898 + p.z * 78.233) * 43758.5453, 1.0)
+
+
+static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
+	var colors = [
+		Color("ff2a8a"), Color("21e0ff"), Color("5dff6a"), Color("ff3b2f"), Color("7a5cff"), Color("ffb020")
+	]
+	var tools = []
+	for c in colors:
+		var st = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		tools.append(st)
+	var stations = road.last_bake.stations
+	var lights = 0
+	var edges = facade_edges()
+	# Route stations in 25 m cells (street level only; Lower Wacker is a tunnel).
+	var route = {}
+	for at in stations:
+		if at.pos.y > 3.0:
+			route.get_or_add(Vector2i(floori(at.pos.x / 25.0), floori(at.pos.z / 25.0)), []).append(at)
+	var placed = []
+	var signs = JSON.parse_string(FileAccess.get_file_as_string(SIGNS)).signs
+	for poi in signs:
+		var p = Vector2(poi.x, poi.z)
+		# Nearest street-level station within 60 m of the business.
+		var at = null
+		var best = 60.0
+		for dx in [-2, -1, 0, 1, 2]:
+			for dz in [-2, -1, 0, 1, 2]:
+				for st in route.get(Vector2i(floori(p.x / 25.0) + dx, floori(p.y / 25.0) + dz), []):
+					var d = p.distance_to(Vector2(st.pos.x, st.pos.z))
+					if d < best:
+						best = d
+						at = st
+		if at == null:
+			continue
+		# The wall nearest the business's real OSM position (no sliding along the street). The sign faces the
+		# route; a wall more than 45 m from it is not visible from the road, so the business gets no sign.
+		var wall = nearest_wall(edges, p)
+		if wall.is_empty():
+			continue
+		var hit: Vector2 = wall[0]
+		if hit.distance_to(p) > 15.0 or hit.distance_to(Vector2(at.pos.x, at.pos.z)) > 45.0:
+			continue
+		var out = Vector3(at.pos.x - hit.x, 0, at.pos.z - hit.y).normalized()
+		var along = Vector3(wall[1].x, 0, wall[1].y)
+		var base = Vector3(hit.x, ChicagoCity.STREET_Y, hit.y) + out * 0.25
+		var crowded = false
+		for q in placed:
+			if q.distance_to(base) < 9.0:
+				crowded = true
+				break
+		if crowded:
+			continue
+		placed.append(base)
+		var k = SIGN_COLOR.get(str(poi.c), 5)
+		var big = str(poi.c) in ["hotel", "cinema", "theatre", "casino", "museum"]
+		var y = (9.0 + randf_seeded(base) * 6.0) if big else (3.4 + randf_seeded(base) * 1.8)
+		var sign = Label3D.new()
+		sign.text = str(poi.n).to_upper()
+		sign.font = SIGN_FONT
+		sign.font_size = 96
+		sign.pixel_size = 0.018 if big else 0.011
+		sign.outline_size = 18
+		sign.shaded = false
+		sign.double_sided = false
+		sign.modulate = colors[k] * 3.5
+		sign.outline_modulate = Color(colors[k].r, colors[k].g, colors[k].b, 0.35)
+		sign.position = base + Vector3(0, y + .5, 0)
+		sign.basis = Basis.looking_at(-out, Vector3.UP)
+		sign.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		sign.visible = false
+		sign.set_meta("chicago_night", true)
+		attach(asset, parent, sign, "Sign%d" % placed.size())
+		var basis = Basis.looking_at(along, Vector3.UP)
+		facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.1, .08, 3.0 + sign.text.length() * .35), Color.WHITE, basis)
+		if lights < 120 and placed.size() % 2 == 0:
+			lights += 1
+			var light = OmniLight3D.new()
+			light.position = base + out * 3.0 + Vector3(0, 4.5, 0)
+			light.light_color = colors[k]
+			light.light_energy = 3.0
+			light.omni_range = 16.0
+			light.omni_attenuation = 1.4
+			light.shadow_enabled = false
+			light.visible = false
+			light.set_meta("chicago_night", true)
+			attach(asset, parent, light, "NeonSpill%d" % lights)
+	asset.set_meta("neon_signs", placed.size())
+	for k in colors.size():
+		tools[k].generate_normals()
+		var mesh = tools[k].commit()
+		if mesh.get_surface_count() == 0:
+			continue
+		mesh.surface_set_material(0, night_material(colors[k], 5.0))
+		var node = mesh_node(asset, parent, "Neon%d" % k, mesh, Vector3.ZERO)
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.set_meta("chicago_night", true)
+
+
+## OSM building edges in 25 m cells (by edge midpoint), for snapping signs onto real facades.
+static func facade_edges() -> Dictionary:
+	var doc = JSON.parse_string(FileAccess.get_file_as_string(ChicagoCity.DATA))
+	var cells = {}
+	for b in doc.buildings:
+		var ring = ChicagoCity._ring(b.f)
+		for j in ring.size():
+			var a = ring[j]
+			var c = ring[(j + 1) % ring.size()]
+			var k = Vector2i(floori((a.x + c.x) * .5 / 25.0), floori((a.y + c.y) * .5 / 25.0))
+			cells.get_or_add(k, []).append([a, c])
+	return cells
+
+
+## Closest point on any OSM building edge to p (within the 3x3 cells): [point, edge direction], or [].
+static func nearest_wall(cells: Dictionary, p: Vector2) -> Array:
+	var best = INF
+	var out = []
+	for dx in [-1, 0, 1]:
+		for dz in [-1, 0, 1]:
+			for e in cells.get(Vector2i(floori(p.x / 25.0) + dx, floori(p.y / 25.0) + dz), []):
+				var q = Geometry2D.get_closest_point_to_segment(p, e[0], e[1])
+				if q.distance_to(p) < best:
+					best = q.distance_to(p)
+					out = [q, (e[1] - e[0]).normalized()]
+	return out
+
+
+## Nearest facade crossing of the ray o + d*t, t in (near, far); null if none.
+static func facade_hit(cells: Dictionary, o: Vector2, d: Vector2, near: float, far: float):
+	var end = o + d * far
+	var best = INF
+	var hit = null
+	var seen = {}
+	var t = 0.0
+	while t <= far:
+		var p = o + d * t
+		for dx in [-1, 0, 1]:
+			for dz in [-1, 0, 1]:
+				var k = Vector2i(floori(p.x / 25.0) + dx, floori(p.y / 25.0) + dz)
+				if seen.has(k) or not cells.has(k):
+					continue
+				seen[k] = true
+				for e in cells[k]:
+					var x = Geometry2D.segment_intersects_segment(o, end, e[0], e[1])
+					if x != null and o.distance_to(x) > near and o.distance_to(x) < best:
+						best = o.distance_to(x)
+						hit = x
+		t += 25.0
+	return hit
+
+
 ## Road sampling helpers shared by the street dressing: [curve, sorted section keys, elevation spline].
 static func road_frame(road: RoadPath) -> Array:
 	var c = road.working_curve()
@@ -934,6 +1106,15 @@ static func road_frame(road: RoadPath) -> Array:
 
 
 ## Open ground add_city() keeps clear (lakefront, parks, river corridor), and landmark sightlines.
+## Route offsets [from, to] of the Upper Wacker riverfront (route rows "Upper Wacker riverfront" to the
+## Michigan approach), where the river lies on the left of the lap.
+static func river_span(road: RoadPath) -> Vector2:
+	var rows = data().points
+	var a = road.curve.get_closest_offset(world(rows[30]))
+	var b = road.curve.get_closest_offset(world(rows[35]))
+	return Vector2(minf(a, b), maxf(a, b))
+
+
 static func keep_clear(p: Vector3, margin: float) -> bool:
 	if p.x > 20 and p.z > -210:
 		return true
@@ -1019,7 +1200,7 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 	# in the worst view before), still culled beyond 320 m.
 	var pieces = []
 	for m in PARKED:
-		var root = load("res://assets/chicago/cars/%s.glb" % m).instantiate()
+		var root = load("res://assets/chicago/cars-q/%s.glb" % m).instantiate()
 		var model = []
 		for mi in root.find_children("*", "MeshInstance3D", true, false):
 			var local = Transform3D.IDENTITY
@@ -1042,6 +1223,9 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 		var b = RoadBuilder.station_at(c, road.closed, length, f[2], s + 15.0).tangent
 		if a.dot(b) > 0.995 and rng.randf() < 0.75:
 			var side = -1 if rng.randf() < 0.5 else 1
+			var river = river_span(road)
+			if side == -1 and s > river.x and s < river.y:
+				side = 1
 			var e = RoadBuilder.beyond_edge(c, f[1], road.closed, f[2], s, side, 3.4)
 			var p = road.transform * e.point
 			var fwd = b
@@ -1050,8 +1234,8 @@ static func add_parked_cars(asset: Node3D, parent: Node, road: RoadPath) -> void
 				fwd = -fwd
 			if not keep_clear(p, 40.0) and fwd.length_squared() > 1e-4:
 				var model = rng.randi() % pieces.size()
-				# Kenney cars are 2.75 m long along +Z; 1.65 makes a 4.5 m car.
-				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.65)
+				# Quaternius cars are real-scale (3.3-4.2 m) along +Z.
+				var basis = Basis.looking_at(-fwd.normalized(), Vector3.UP).scaled(Vector3.ONE * 1.08)
 				var key = Vector3i(model, floori(p.x / 400.0), floori(p.z / 400.0))
 				if not groups.has(key):
 					groups[key] = []

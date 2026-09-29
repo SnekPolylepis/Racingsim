@@ -69,9 +69,11 @@ func run() -> void:
 		"v2 settings round trip stays outside legacy settings"
 	)
 	app.frontend.show_page("car")
+	var keys = app.presets.keys()
+	var next_key = keys[(keys.find(app.preset_key) + 1) % keys.size()]
 	app.frontend.cycle_v2_car()
 	check(
-		app.preset_key == "roadster" and app.car.p.name == app.presets.roadster.name,
+		app.preset_key == next_key and app.car.p.name == app.presets[next_key].name,
 		"car picker changes body"
 	)
 	app.frontend.show_page("circuit")
@@ -80,7 +82,7 @@ func run() -> void:
 		app.frontend.cycle_v2_track()
 		picked.append(app.frontend.selected_track)
 	check(
-		picked == ["spa", "nordschleife_s1", "nordschleife", "chicago", "proving_ground"],
+		picked == ["spa", "nordschleife", "chicago", "monaco", "proving_ground"],
 		"circuit picker cycles every circuit: " + str(picked)
 	)
 	app.frontend.cycle_v2_track()

@@ -1,0 +1,266 @@
+{
+  "note": "Per-building overrides keyed by OSM element (w=way, r=relation). Only what the cited source states; anything unsourced stays on OSM data. h = roof height above street (m). bands = [from_m, to_m, kind, colour] facade bands. crown = extra geometry on the roof. Sources fetched 2026-09-28.",
+  "buildings": {
+    "w148544831": {
+      "name": "Carbide & Carbon Building (230 N Michigan)",
+      "src": "en.wikipedia.org/wiki/Carbide_&_Carbon_Building: 37 storeys, 153 m, clad in black granite, green and gold terra cotta, gold leaf",
+      "h": 153.0,
+      "k": "terracotta",
+      "c": "#2f4a3a",
+      "bands": [
+        [
+          0,
+          9,
+          "stone",
+          "#1a1a1c"
+        ],
+        [
+          138,
+          153,
+          "terracotta",
+          "#b8963c"
+        ]
+      ],
+      "crown": {
+        "type": "spire",
+        "h": 12.0,
+        "r": 3.0,
+        "c": "#c9a23e"
+      }
+    },
+    "w210671717": {
+      "name": "Crain Communications Building (150 N Michigan)",
+      "src": "en.wikipedia.org/wiki/Crain_Communications_Building: 582 ft (177 m), 39 floors, slanted 'cut' top split by a gap ('Diamond Building')",
+      "h": 150.0,
+      "crown": {
+        "type": "slant",
+        "h": 27.0
+      }
+    },
+    "r17414022": {
+      "name": "Metropolitan Tower (310 S Michigan)",
+      "src": "en.wikipedia.org/wiki/Metropolitan_Tower_(Chicago): 145 m incl. crown, limestone, 40 ft zinc-coated stainless pyramid, 20 ft glass beehive lit deep blue",
+      "h": 127.0,
+      "k": "stone",
+      "crown": {
+        "type": "pyramid",
+        "h": 12.2,
+        "c": "#8e9296",
+        "beacon": {
+          "h": 6.1,
+          "r": 2.4,
+          "c": "#2a5cff"
+        }
+      }
+    },
+    "w124873931": {
+      "name": "Railway Exchange Building (224 S Michigan)",
+      "src": "en.wikipedia.org/wiki/Railway_Exchange_Building_(Chicago): 17 storeys, white-glazed terracotta, illuminated Motorola roof sign since 2012",
+      "k": "terracotta",
+      "c": "#eeebe2",
+      "crown": {
+        "type": "sign",
+        "text": "MOTOROLA",
+        "c": "#ffffff",
+        "face": [
+          1,
+          0
+        ],
+        "shift": [
+          0,
+          0.25
+        ],
+        "src_face": "Commons photo (2010, 'Santa Fe' era): sign over the south half of the roof, facing east toward Michigan Avenue"
+      },
+      "photo": {
+        "file": "rx_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 0.65,
+        "credit": "Vincent Desjardins, CC BY 2.0, commons.wikimedia.org/wiki/File:Chicago_(ILL)_Historic_Michigan_Boulevard_District_%22_Santa_Fe_building_%22_1903_%26_%22_Metropolitan_Tower_%22_1924_(4825792307).jpg"
+      }
+    },
+    "w147399567": {
+      "name": "London Guarantee Building (360 N Michigan)",
+      "src": "en.wikipedia.org/wiki/London_Guarantee_Building: neoclassical, crown a classical cupola modelled after the Stockholm Stadshus / Choragic Monument of Lysicrates",
+      "crown": {
+        "type": "cupola",
+        "h": 14.0,
+        "r": 5.0
+      }
+    },
+    "r15899437": {
+      "name": "Chicago Cultural Center (78 E Washington)",
+      "src": "en.wikipedia.org/wiki/Chicago_Cultural_Center: 32 m, Bedford Blue Limestone on granite, two stained-glass domes set symmetrically atop the two wings",
+      "h": 32.0,
+      "k": "stone",
+      "c": "#c9c6ba",
+      "crown": {
+        "type": "twin_domes",
+        "r": 6.0
+      },
+      "photo": {
+        "file": "ccc_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 1.0,
+        "credit": "w_lemay, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:Chicago_Cultural_Center_(Former_Chicago_Public_Library_Central_Building),_Michigan_Avenue,_Chicago,_IL_-_52891391046.jpg"
+      }
+    },
+    "w127107034": {
+      "name": "One Prudential Plaza (130 E Randolph)",
+      "src": "en.wikipedia.org/wiki/One_Prudential_Plaza: 41 storeys, roof 183 m, antenna 278 m",
+      "h": 183.0,
+      "crown": {
+        "type": "mast",
+        "h": 95.0,
+        "r": 1.2
+      }
+    },
+    "w124865459": {
+      "name": "Pittsfield Building (55 E Washington)",
+      "src": "en.wikipedia.org/wiki/Pittsfield_Building: 38 storeys, roof 168 m, setbacks",
+      "h": 168.0
+    },
+    "r15953438": {
+      "name": "Peoples Gas Building (122 S Michigan)",
+      "src": "en.wikipedia.org/wiki/Peoples_Gas_Building: 21 storeys, 81 m",
+      "h": 81.0
+    },
+    "w124873939": {
+      "name": "Willoughby Tower (8 S Michigan)",
+      "src": "chicagoarchitecture.info / commercialcafe: 134 m, 38 storeys, neo-gothic, variegated Indiana limestone, first two floors granite",
+      "h": 134.0,
+      "k": "stone",
+      "c": "#d6cdb8",
+      "bands": [
+        [
+          0,
+          8,
+          "stone",
+          "#6e6e70"
+        ]
+      ]
+    },
+    "w126982631": {
+      "name": "Six North Michigan (Montgomery Ward tower)",
+      "src": "chicagology / archiseek: pyramid and statue removed 1947, now 282 ft (86 m)",
+      "h": 86.0
+    },
+    "w147476152": {
+      "name": "Chicago Athletic Association (12 S Michigan)",
+      "src": "Library of Congress HABS IL-935: Venetian Gothic, patterned brick and carved limestone",
+      "k": "brick",
+      "photo": {
+        "file": "caa_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 1.0,
+        "credit": "Beyond My Ken, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Chicago_Athletic_Association_Building_12_South_Michigan_Avenue.jpg"
+      }
+    },
+    "w126982632": {
+      "name": "University Club of Chicago (76 E Monroe)",
+      "src": "Wikipedia / chistockimages: collegiate Gothic, Bedford limestone",
+      "k": "stone",
+      "c": "#c9c6ba",
+      "photo": {
+        "file": "uc_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 0.82,
+        "credit": "Beyond My Ken, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:University_Club_of_Chicago_76_East_Monroe_Street.jpg"
+      }
+    },
+    "w145498713": {
+      "name": "Monroe Building (104 S Michigan)",
+      "src": "Pritzker Military Museum: 16 storeys, multi-toned terra cotta and granite, gabled roof and dormers of green Spanish tiles",
+      "k": "terracotta",
+      "crown": {
+        "type": "gable",
+        "h": 6.0,
+        "c": "#4f6b4a"
+      }
+    },
+    "w145493030": {
+      "name": "Orchestra Hall / Symphony Center (220 S Michigan)",
+      "src": "cso.org: deep pink brick with white limestone quoins and lintels, Georgian",
+      "k": "brick",
+      "c": "#a0524a",
+      "photo": {
+        "file": "sym_east.jpg",
+        "face": [
+          1,
+          0
+        ],
+        "frac": 1.0,
+        "credit": "Beyond My Ken, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Orchestra_Hall_Chicago.jpg"
+      }
+    },
+    "w144710192": {
+      "name": "333 North Michigan",
+      "src": "chicagology / Chicago landmark: 121 m, base polished black and purple granite, upper storeys buff limestone and dark terra cotta",
+      "h": 121.0,
+      "k": "stone",
+      "c": "#d9c9a3",
+      "bands": [
+        [
+          0,
+          12,
+          "stone",
+          "#2a2230"
+        ]
+      ]
+    },
+    "w127107033": {
+      "name": "Old Republic Building (307 N Michigan)",
+      "src": "Chicago landmark designation report: light buff glazed terra cotta, Classical Revival",
+      "k": "terracotta",
+      "c": "#e2d3b0"
+    },
+    "w126945440": {
+      "name": "Crown Fountain tower",
+      "src": "en.wikipedia.org/wiki/Crown_Fountain: two 50 ft glass-brick towers with LED screens",
+      "h": 15.24,
+      "glass": 1
+    },
+    "w126945441": {
+      "name": "Crown Fountain tower",
+      "src": "en.wikipedia.org/wiki/Crown_Fountain: two 50 ft glass-brick towers with LED screens",
+      "h": 15.24,
+      "glass": 1
+    },
+    "w126978545": {
+      "name": "Jay Pritzker Pavilion (stage)",
+      "src": "en.wikipedia.org/wiki/Jay_Pritzker_Pavilion: brushed stainless steel ribbon headdress; shape from USGS LiDAR",
+      "pk": 1
+    },
+    "r17460539": {
+      "name": "Wrigley Building",
+      "src": "en.wikipedia.org/wiki/Wrigley_Building: glazed terra-cotta, bright white, south tower 130 m, brightly floodlit at night",
+      "k": "terracotta",
+      "c": "#f4f3ee",
+      "crown": {
+        "type": "flood"
+      }
+    },
+    "w150407241": {
+      "name": "Tribune Tower",
+      "src": "en.wikipedia.org/wiki/Tribune_Tower: 141 m, neo-Gothic limestone, light tan, floodlit at night",
+      "h": 141.0,
+      "k": "stone",
+      "c": "#d8ccb0",
+      "crown": {
+        "type": "flood"
+      }
+    }
+  }
+}

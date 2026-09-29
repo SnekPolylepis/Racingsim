@@ -73,13 +73,13 @@ func shots() -> Array:
 		["spa", "spa-pouhon", ["Pouhon", -160.0]],
 		["spa", "spa-blanchimont", ["Blanchimont", -150.0]],
 		["spa", "spa-bus-stop", ["Bus Stop", -150.0]],
-		["nordschleife_s1", "ns-start", -70.0],
-		["nordschleife_s1", "ns-hatzenbach", ["Hatzenbach 2", -80.0]],
-		["nordschleife_s1", "ns-hatzenbach-bonnet", ["Hatzenbach 2", -80.0], CAM_BONNET],
-		["nordschleife_s1", "ns-hocheichen", ["Hocheichen", -120.0]],
-		["nordschleife_s1", "ns-flugplatz", ["Flugplatz", -150.0]],
-		["nordschleife_s1", "ns-schwedenkreuz", ["Schwedenkreuz", -150.0]],
-		["nordschleife_s1", "ns-aremberg", ["Aremberg", -120.0]],
+		["nordschleife", "ns-start", -70.0],
+		["nordschleife", "ns-hatzenbach", ["Hatzenbach 2", -80.0]],
+		["nordschleife", "ns-hatzenbach-bonnet", ["Hatzenbach 2", -80.0], CAM_BONNET],
+		["nordschleife", "ns-hocheichen", ["Hocheichen", -120.0]],
+		["nordschleife", "ns-flugplatz", ["Flugplatz", -150.0]],
+		["nordschleife", "ns-schwedenkreuz", ["Schwedenkreuz", -150.0]],
+		["nordschleife", "ns-aremberg", ["Aremberg", -120.0]],
 		["nordschleife", "ns-full-adenauer-forst", ["Adenauer Forst", -100.0]],
 		["nordschleife", "ns-full-bergwerk", ["Bergwerk", -120.0]],
 		["nordschleife", "ns-full-karussell", ["Karussell", -80.0]],
@@ -110,6 +110,8 @@ func run():
 		app.update_camera(1.0, true)
 		for i in 10:
 			await process_frame
+		# Without this the grab can return the last presented frame (every full-lap shot came back identical).
+		await RenderingServer.frame_post_draw
 		var path = folder + "/" + shot[1] + ".png"
 		var image = root.get_texture().get_image()
 		if image.save_png(path) != OK:

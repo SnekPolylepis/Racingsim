@@ -4,7 +4,7 @@ extends SceneTree
 
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const SpaGen = preload("res://trackgen/spa.gd")
-const NordschleifeGen = preload("res://trackgen/nordschleife_s1.gd")
+const NordschleifeGen = preload("res://trackgen/nordschleife.gd")
 const ProvingGroundGen = preload("res://trackgen/proving_ground.gd")
 const TrackDriveScene = preload("res://scenes/proving/track_drive.tscn")
 
@@ -26,7 +26,7 @@ func _initialize() -> void:
 
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://tracks3d"))
 	var asset: Node3D = null
-	if track_id == "nordschleife_s1":
+	if track_id == "nordschleife":
 		asset = NordschleifeGen.build_asset()
 	elif track_id == "spa":
 		asset = SpaGen.build_asset()

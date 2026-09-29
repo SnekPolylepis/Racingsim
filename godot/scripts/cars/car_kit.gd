@@ -11,6 +11,15 @@ var paint_mat
 var dark = Color("111820")
 
 
+## Imported parts cast shadows unless see-through: alpha-textured grilles, glass and decals cast solid ones
+## (the 296's EXT_Grid mesh put a 4.5 m dark box on the road).
+static func shadow_mode(part: MeshInstance3D) -> GeometryInstance3D.ShadowCastingSetting:
+	var mat = part.mesh.surface_get_material(0)
+	if mat is BaseMaterial3D and mat.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+		return GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+
+
 func start(visuals, preset, is_ghost, label):
 	v = visuals
 	p = preset

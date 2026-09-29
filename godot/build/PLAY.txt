@@ -28,7 +28,7 @@ CIRCUITS
                     the OpenStreetMap centreline. A point-to-point section; the rest follows.
 
 CARS
-  Mazda MX-5 (NA 1.6), GT (high downforce) and the Ferrari 296 GT3, chosen in the menu
+  Mazda MX-5 (NA 1.6), GT (high downforce), Ferrari 296 GT3, Ferrari F2004 and Red Bull RB19, chosen in the menu
   (Race > Car), each with its own PS2-era model and working head and tail lamps at night.
   Settings > Driving picks Simcade (assisted) or Simulation handling and the aids (TCS, ASM,
   ABS); the Garage edits the setup. Records are kept per car, setup and handling model.
@@ -38,6 +38,21 @@ DRIVING
   E/Shift and Q/Ctrl shift up/down, R reset to the grid.
   V change camera (chase, high chase, bonnet, two overhead), Y telemetry, B debug.
   Esc pauses. Controllers work too (left stick, triggers, bumpers); rebind in Settings > Controls.
+
+NEW: MONACO
+  Circuit de Monaco - the 3.3 km Grand Prix lap on the real streets: Sainte-Devote, the climb to
+  Casino Square, Mirabeau, the Fairmont hairpin, the tunnel, the chicane, the Swimming Pool and
+  Rascasse, among Monaco's real buildings.
+
+NEW IN THE PREVIEW 8 REFRESH
+  - Two new cars: the Ferrari F2004 and the Red Bull RB19.
+  - Chicago: L trains running on the elevated tracks, boats and piers on the lake, photo
+    facades on Michigan Avenue, parked cars, and a wet NFS-style night by default.
+  - Sharper picture (native resolution with anti-aliasing) and a new chase camera.
+  - Monza and the old Nordschleife T13-Aremberg section are gone; the full Nordschleife stays.
+  - New car and circuit menus: a list with details for each; Enter picks.
+  - F2004 and RB19 handle like formula cars (7 and 8 gears, strong brakes); the RB19 is navy.
+  - Lighter rain.
 
 NEW IN PREVIEW 8
   - Ferrari 296 GT3: a detailed model in the Verstappen Racing livery, with its real wheels.

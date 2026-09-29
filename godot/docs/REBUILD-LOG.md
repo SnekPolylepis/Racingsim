@@ -2809,3 +2809,65 @@ Credits in both THIRD-PARTY files. Gates `-All -Features` 40/40.
 
 ## 2026-09-28  RELEASE Rebuild Preview 8  (Claude Opus 5.5)
 v0.1.0-preview.8 from main after ASSET-02 (#79): Sketchfab Ferrari, Chicago landmarks and props, Nordschleife nature, real-light nights. Verification below in the release notes.
+
+## 2026-09-29  DONE Preview 8 refresh from rb-chicago-nfs, macOS build  (Claude Opus 5.5)
+The preview.8 folder was synced from the `Racingsim-rb-chicago-nfs` working copy (2026-09-28 21:24): F2004/RB19 via `glb_car.gd`, the L trains, lakefront harbour, facade photos, NFS wet-night look, chase camera. Fixes on top:
+- **Kenney textures:** the car/city kit GLBs reference `Textures/colormap.png`; the PNGs sat at each kit root, so 186 import errors and untextured props. Each kit's own colormap is now also in `Textures/`.
+- **Monza removed** (owner, P6-03 "not wanted"): out of `V2_TRACKS`, `track_drive.gd` GENERATORS, `HORIZON_STYLES` and the export `include_filter`. `monza.glb` in the copy is an unfetched LFS pointer; `trackgen/monza.gd`, `assets/tracks/monza/` and the `tools/monza_*`/`surface_*` debug scripts are left on disk, unreferenced.
+- **Credits:** `build/THIRD-PARTY.md` lacked the new rows (F2004, RB19, facade photos, Chicago sky, Quaternius cars, footprints, LiDAR); synced from `THIRD-PARTY.md`.
+- **macOS:** `packaging/fetch-macos.py` + `build-macos.sh` on an Apple M4: universal app, `codesign --verify --deep --strict` OK, exported `--v2-export-check` V2 EXPORT PASS. Gates were not run; gdformat not installed on this Mac.
+
+## 2026-09-29  DONE NS-LOOK-01 Nordschleife review fixes  (Claude Opus 5.5)
+- **Review tool:** `tests/v2/track_screenshots.gd` grabbed the frame without waiting for `frame_post_draw`, so after the long full-lap bake every `ns-full-*` shot was the same stale image. It now waits; the six shots differ.
+- **Tree cards over the road (Bergwerk):** `add_forest` tested clearance at the card's origin only; a 2x-scaled bush card on the bank reached half its width over the road. Both `nordschleife.gd` and `nordschleife_s1.gd` now clear `TREE_CLEAR_M` (or the undergrowth value) plus half the card width, capped at the 24 m hash cell. Found by hiding each Scenery group in turn (`EifelNear`). `spa.gd` has the same pattern and was not changed.
+- **Car shadow box:** Godot casts solid shadows from alpha-blended surfaces; the 296's alpha-textured `EXT_Grid` (4.5 x 1.7 m) put a hard dark box on the road. `car_kit.gd` `shadow_mode()` turns shadows off for transparent parts; `f296gt3.gd` and `glb_car.gd` use it.
+- **Contact patch:** at native resolution the blob's 4x4 stipple averaged into a flat grey quad; `contact_strength()` is 0 by day when shadows are cast. Night is unchanged.
+- `tests/visual/clip_scan.gd -- --track=nordschleife` reports only terrain at road height 7 m out (the verge); it did not report the overhanging card, so it is not yet a useful gate for this track.
+- **Gates on macOS (`tools/ci_gates.py`, 39 suites):** 38 pass. Fixed two stale tests from the chicago-nfs work: `front_end` assumed the 296 was the last car (the picker now reaches the F2004 next), and `chicago_clip` did not allowlist the elevated L deck (5.9 m over the upper street). **Still failing: `chassis_spike`** — the F2004 and RB19 presets still move 0.04-0.06 m/s one second after being set down on the flat (other cars 0.000001); needs a suspension/damping look, not changed here.
+
+## 2026-09-29  DONE owner batch: formula cars, rain, pickers, S1 removal, Nordschleife look  (Claude Opus 5.5)
+- **Formula cars (`data/cars.json`):** the rest creep was yaw inertia: izz 665/878 let both cars yaw at 0.04-0.06 rad/s on flat ground forever (bisected against the 296; the solver settles once izz is ~950 for the F2004 and ~1400 for the RB19, which is also what mass spread over a 4.5 m / 5.6 m car gives). ipitch scaled with it. Brakes 7000 N m capped the RB19 at ~2.5 g; now 11000/16000 N m (total) for ~5 g. 7 and 8 gears with the overall ratios expressed on a 5.5 final drive so every garage-editable gear (1-6) sits inside `setup_fields.json`'s slider ranges (above them the handling toggle clamped the ratios and changed the record key). RB19 torque 560 N m and a curve that fades above 12,000 rpm: ~710 kW peak, not 835. Measured on flat: F2004 0-100 3.1 s, top 331 km/h; RB19 3.4 s, 339 km/h; 200-0 ~66/71 m. The solver's sensitivity to low izz is not fixed, only avoided.
+- **RB19 paint:** the model ships without its livery (logos exist only in the metal/roughness map on UV2); `rb19_0.jpg` royal blues were shifted to navy keeping shading. No Red Bull logos.
+- **Rain (`game.gd` `set_rain`):** 3500 streaks of 0.01 x 0.45 m at alpha 0.13, emitter 6-54 m ahead of the camera (was 6000 of 0.015 x 0.7 at 0.22, some passing the lens).
+- **Pickers (`front_end.gd`):** one button per car / circuit, the current one ticked, cursor starts on it, `preview` drives a detail panel; Enter picks (`pick_car` goes on to the circuit list, `pick_track` loads). `cycle_v2_*` kept for tests.
+- **Nordschleife S1 removed:** menu, `track_drive` GENERATORS, `laps.gd`, gates, export filter (its four data files), export probe, screenshots/review (shots now on the same corners of the full lap). Generator and suite moved to the macOS Trash (`racingsim-s1-2026-09-29`); the data files stay on disk. `HORIZON_STYLES` gave the Eifel hills only to S1; the full lap now has them.
+- **Nordschleife look:** verge 1.5 -> 0.8 m, armco offset 0.3 -> 0.2 m. `road_v2` `macro` is now an instance uniform; the full lap sets 1.6 (more repair patches, drift and stains). The soft rectangle behind the car at Doettinger Hoehe in the NS-LOOK-01 shots is one of these repair patches, not a shadow.
+- Gates (macOS, ci_gates.py): 38/38 pass. Mac app rebuilt: V2 EXPORT PASS, codesign OK.
+
+## 2026-09-29  DONE MON-01 Circuit de Monaco; RB19 wheels  (Claude Opus 5.5)
+- **Monaco:** see `trackgen/data/monaco/README.md` for the data pipeline and limits. OSM lap 3.32 km (official 3.337). Heights from Copernicus GLO-30 (low envelope, tunnel bridged, 120 m smooth, grade <= 12 %). `trackgen/monaco.gd`: Catmull-Rom road through 4 m points, per-corner widths 4.6-6.0 m half, kerbs at corners, concrete barriers + catch fences (none in the tunnel), DEM ground level with the road to 12 m, 3,914 buildings on the shared facade shader in Riviera tints, 498 mapped trees, piers, sea, tunnel walls/ceiling, lamps (4.6 m in the tunnel), gantry. Wired into menu (TRACK_INFO), `track_drive`, `laps.gd`, export filter and probe, flat horizon. Lap bot: 0 off-track / 0 walls for all three gate cars; baselines recorded (296 GT3 131-135 s).
+- **RB19 wheels:** its front tyre nodes carry ~3.5 deg of camber (rears ~1.4 deg), so spinning them about the game's axle wobbled them. `glb_car.gd` now rotates each wheel's own axle (the local axis nearest the spin axis) onto it before centring. F2004 unchanged (its axle is already exact).
+- **PHYS-IZZ** queued (QUEUE.md) and drafted as a GitHub issue.
+- Gates 38/38 (includes Monaco laps for roadster/gt/296). Mac app rebuilt: V2 EXPORT PASS (loads Monaco), codesign OK.
+
+## 2026-09-29  DONE MON-02 Monaco from references  (Claude Opus 5.5)
+- **Chicanes:** our lap plotted over OSM showed the two 1-2-1 smoothing passes had flattened the Nouvelle Chicane and both Swimming Pool jinks. Now 3 m resampling with no global smoothing; kinks under 6.5 m radius are relaxed locally (a 10 m limit collapsed the Fairmont hairpin and Portier and cost 100 m). A 2-point Avenue de Monte-Carlo way (1551240830) made an out-and-back spike; dropped. Lap 3.31 km.
+- **Tunnel (reference photos, Commons):** flat ceiling at 5.4 m, tiled inner wall (`shaders/monaco_tunnel.gdshader`) with an emissive lamp strip and an OmniLight every 36 m, sea side a low wall + pillars every 6 m with open bays; level frame. Street lamps and catch fence stop at the portals (fences now follow the road, not the wall, so their metres match). Barriers are armco everywhere, as photographed.
+- **Retaining walls:** ground steeper than ~40 deg uses the masonry wall material (the tunnel-exit photo).
+- **Harbour:** ~motor yachts moored stern-to along the OSM pontoons (MultiMesh, 12-40 m).
+- Laps: clean (0 off / 0 walls) for all three gate cars, ~4 % slower than before with the real chicanes; baselines re-recorded.
+- Gates 38/38; Mac app rebuilt: V2 EXPORT PASS, codesign OK.
+
+## 2026-09-29  DONE MON-03 Monaco pool, Portier, grandstands, Casino Square  (Claude Opus 5.5)
+References: Commons "Circuit de Monaco - Virage de la Piscine", "- Sortie du virage de la piscine", "- Portier" photos; onboard-style views.
+- **Portier -> tunnel:** the tunnel took every Boulevard Louis II `tunnel=yes` way, including the Portier underpass (1470365900), so the roof and tiled wall covered the Portier corner. Now only 4230891 + 1230247123: the tunnel starts ~80 m after Portier (1763-2125 m).
+- **Swimming Pool "no walls":** the section ran through an empty plain. Grandstands as at the GP (`STANDS` in monaco.gd): main stand opposite the pits, Casino, Tabac, the long harbour stand and the pool-side stand, Rascasse. The OSM Stade Nautique basin (osm-pool.json) is drawn as water.
+- **Frontage:** buildings near the road were dropped whole (19, incl. the Hotel de Paris, whose OSM outline comes 5.6 m from the street centreline). Now only a footprint centred on the road is dropped; corners within 8 m are pushed back to 8 m. 0 dropped; streets like Massenet are now the building canyon of the onboards.
+- **Casino Square:** the Casino (161769674) and Hotel de Paris (relation 8280869) in cream stone at their real heights.
+- Clip scan: nothing over the drivable road except the tunnel, the gantry and the Fairmont above the tunnel. Gates 38/38.
+
+## 2026-09-29  DONE MON-04 Monaco ad panels and impact blocks  (Claude Opus 5.5)
+- **Ad panels:** 6 m panels flat on the armco face both sides, end to end, in a generic sponsor palette (no real brands); none in the tunnel (`_ad_panels`). The shared Billboards script angles boards toward traffic on posts, which stood them across the road edge here, so it is not used.
+- **Impact blocks:** alternating red/white blocks along the outside barrier +-25 m round Sainte-Devote, Mirabeau Haute, the hairpin, Portier, the Nouvelle Chicane and Rascasse (outside from the turn direction). Visual; armco keeps collision.
+- **Bug:** `Basis.scaled()` scales along world axes in Godot 4, so every non-uniformly scaled MultiMesh instance in monaco.gd (panels, blocks, yachts, tunnel pillars and lamps) was stretched along world X/Z, not its own axes. Now `Basis(...) * Basis.from_scale(...)`. The two other `.scaled()` uses in the project (chicago_kit, nature_scatter) are uniform and unaffected.
+- Gates 38/38.
+
+## 2026-09-29  DONE MON-05 Monaco apartment facades  (Claude Opus 5.5)
+- `shaders/monaco_facade.gdshader`: procedural Riviera facades on the OSM buildings (no textures): palette render colour (same vertex-colour encoding as chicago_facade), 3.4 m window bays on 3.1 m floors, shutters (green/grey) on ~half the buildings, balcony slab + railing + shadow per floor on ~75 %, shopfront ground floor, terracotta/grey roofs; after hours ~35 % of windows (70 % of shopfronts) glow.
+- **Night toggle fix:** NightGlow.set_night only walked mesh-surface materials of two named shaders; Monaco's buildings used a material override and never lit. The material now sits on the mesh surface, and set_night toggles any ShaderMaterial whose shader declares `afterhours` (the fixed `CITY_FACADE_SHADER` const is gone).
+- Gates 38/38.
+- **Hillside gardens:** ground more than 35 m from the road (`city.json` ground `paved` mask) is garden (`park` material) instead of bare paving/earth; steep slopes stay masonry. Gates 38/38.
+- **Casino towers:** the two square towers of the Casino's square-side facade (cream stone, 7 m above the roof, verdigris copper pyramid caps), placed at the ends of the footprint edge nearest Casino Square (`_casino_towers`). From the chase camera they sit ~80 m off, largely behind the Hotel de Paris frontage. Gates 38/38.
+- **Ad panel designs (MON-06):** `shaders/ad_panel.gdshader` gives each barrier panel one of four generic layouts (block wordmark, diagonal stripe, round logo + wordmark, two-tone split) from abstract bars, no real text or brands; layout and seed per instance (custom data). BoxMesh UVs are a 3x2 face atlas, remapped per face.
+- **Garden trees:** ~30 % of the hillside garden cells get a tree card (shared tree atlas), so the gardens are no longer open lawn. Gates 38/38.
+- **Lap survey (every 250 m):** grandstand roofs cantilevered out over the track at the start and pool (Grandstand's roof spans past its front at 3 m offset); Monaco's temporary stands are open, so no roofs (the STANDS roof column is gone). Ad panels now pitch with the road (they stepped up the Beau Rivage climb). Gates 38/38.

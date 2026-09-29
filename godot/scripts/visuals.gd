@@ -342,6 +342,8 @@ func make_car(p, ghost = false):
 			return preload("res://scripts/cars/gt.gd").new().build(self, p, ghost)
 		"gt3":
 			return preload("res://scripts/cars/f296gt3.gd").new().build(self, p, ghost)
+		"glb":
+			return preload("res://scripts/cars/glb_car.gd").new().build(self, p, ghost)
 	var root = Node3D.new()
 	var body = Node3D.new()
 	root.add_child(body)
@@ -716,6 +718,10 @@ func set_cast_shadows(value):
 
 
 func contact_strength():
+	# By day the sun's shadow grounds the car; at native resolution the patch's 4x4 stipple averaged into a
+	# flat grey box around it.
+	if cast_shadows and not night:
+		return 0.0
 	var base = NIGHT_CONTACT if night else DAY_CONTACT
 	return base * (CAST_SHADOW_CONTACT if cast_shadows else 1.0)
 

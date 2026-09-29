@@ -6,8 +6,6 @@ extends RefCounted
 ## own .scn, so materials aren't shared instances at runtime and have to be walked and toggled per track.
 
 const NIGHT_GLOW_SHADER = preload("res://shaders/night_glow.gdshader")
-## Chicago city facades (CHI-02) carry the same `afterhours` uniform.
-const CITY_FACADE_SHADER = preload("res://shaders/chicago_facade.gdshader")
 
 static var cache: ShaderMaterial
 
@@ -40,5 +38,13 @@ static func _set_mesh(mesh: Mesh, on: bool) -> void:
 		return
 	for i in mesh.get_surface_count():
 		var mat = mesh.surface_get_material(i)
-		if mat is ShaderMaterial and (mat.shader == NIGHT_GLOW_SHADER or mat.shader == CITY_FACADE_SHADER):
+		# Any shader with an `afterhours` uniform (night glow, the Chicago and Monaco facades, ...).
+		if mat is ShaderMaterial and mat.shader != null and _has_afterhours(mat.shader):
 			mat.set_shader_parameter("afterhours", on)
+
+
+static func _has_afterhours(shader: Shader) -> bool:
+	for u in shader.get_shader_uniform_list():
+		if u.name == "afterhours":
+			return true
+	return false

@@ -19,9 +19,9 @@ const DT = 1.0 / 240
 const BASELINE = "res://docs/rebuild/laps-v2-baseline.json"
 const TRACKS = {
 	"chicago": "res://trackgen/chicago.gd",
+	"monaco": "res://trackgen/monaco.gd",
 	"proving_ground": "res://trackgen/proving_ground.gd",
 	"spa": "res://trackgen/spa.gd",
-	"nordschleife_s1": "res://trackgen/nordschleife_s1.gd",
 	"nordschleife": "res://trackgen/nordschleife.gd"
 }
 var presets

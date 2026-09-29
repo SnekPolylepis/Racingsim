@@ -416,7 +416,7 @@ static func add_undergrowth(
 
 
 ## Look-10: a darker, semi-transparent ground tint under the forest canopy (ART-DIRECTION.md "Trackside
-## enclosure"); see nordschleife_s1.gd's copy for the reasoning. Doesn't touch grip or surface ids.
+## enclosure"); see nordschleife.gd for the reasoning. Doesn't touch grip or surface ids.
 static func add_forest_floor(
 	asset: Node3D,
 	road: RoadPath,

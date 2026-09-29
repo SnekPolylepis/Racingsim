@@ -29,7 +29,7 @@ The three data folders at the root are a portable save location. The game defaul
 
 ## Circuits
 
-Three are included: **Monza**, **Spa-Francorchamps** and the **Nürburgring Nordschleife**. Spa and the Nordschleife are built from OpenStreetMap survey data (© OpenStreetMap contributors, ODbL) with real DEM elevation — 7.004 km and 20.832 km respectively, the latter spanning nearly 300 m of vertical. Widths, curbs, runoff and scenery are approximations, not surveyed reproductions. The offline pipeline that builds them is documented in [`godot/trackgen/`](godot/trackgen/README.md).
+Included: the **Proving Ground**, **Spa-Francorchamps**, the full 20.8 km **Nürburgring Nordschleife** **Chicago — River & Lake** and the **Circuit de Monaco**. Spa and the Nordschleife are built from OpenStreetMap survey data (© OpenStreetMap contributors, ODbL) with real DEM elevation — 7.004 km and 20.832 km respectively, the latter spanning nearly 300 m of vertical. Widths, curbs, runoff and scenery are approximations, not surveyed reproductions. The offline pipeline that builds them is documented in [`godot/trackgen/`](godot/trackgen/README.md).
 
 You can also draw your own in the editor, or bring in a real circuit outline from GPX, GeoJSON or OSM via **Circuits → Import real circuit…**.
 

@@ -1,4 +1,4 @@
-extends Node3D
+﻿extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
 ## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
@@ -40,12 +40,13 @@ const DEFAULT_SETTINGS = {
 	"debug": false,
 	"telemetry": false,
 	"quality": 1,
-	"render_resolution": 0,
+	"render_resolution": 2,
 	"upscale": 1,
-	"colour_dither": true,
+	"colour_dither": false,
 	"speed_blur": 1,
 	"time_of_day": 0,
-	"native_msaa": false,
+	"look_rev": 0,
+	"native_msaa": true,
 	"output_mode": 0,
 	"crt_filter": false,
 	"framebuffer_colour": 0,
@@ -101,7 +102,7 @@ var applied_time = -1
 var applied_horizon = ""
 ## Which wooded-hill silhouette each circuit's sky carries (RetroAssets.HILLS).
 const HORIZON_STYLES = {
-	"chicago": "flat", "proving_ground": "generic", "spa": "ardennes", "nordschleife_s1": "eifel"
+	"chicago": "flat", "monaco": "flat", "proving_ground": "generic", "spa": "ardennes", "nordschleife": "eifel"
 }
 var ui
 var instruments
@@ -138,6 +139,7 @@ var skid_times = []
 var prev_pose = {}
 var v2_smoke = false
 var v2_flow_test = false
+var cam_dir = Vector3.ZERO
 var v2_export_check = false
 var v2_visual_smoke = false
 var v2_surface
@@ -172,6 +174,8 @@ func _ready():
 		or "--features" in OS.get_cmdline_user_args()
 	)
 	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--v2-car="):
+			preset_key = arg.trim_prefix("--v2-car=")
 		if arg.begins_with("--v2-track="):
 			v2_track_id = arg.get_slice("=", 1)
 	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()
@@ -361,8 +365,19 @@ func set_quality(value):
 	environment.ssao_enabled = quality == 2
 	environment.ssao_radius = 1.4
 	environment.ssao_intensity = 1.6
-	environment.ssr_enabled = false
-	environment.glow_enabled = false
+	# Owner 2026-09-28: NFS-era wet-city look. SSR mirrors neon in the wet road, HDR glow blooms lamps/signs.
+	environment.ssr_enabled = true
+	environment.ssr_max_steps = 96
+	environment.ssr_fade_in = 0.1
+	environment.ssr_fade_out = 1.5
+	environment.ssr_depth_tolerance = 0.4
+	environment.glow_enabled = true
+	environment.glow_intensity = 0.6
+	environment.glow_bloom = 0.08
+	environment.glow_hdr_threshold = 1.3
+	environment.glow_blend_mode = Environment.GLOW_BLEND_MODE_ADDITIVE
+	for i in 7:
+		environment.set_glow_level(i, 1.0 if i in [1, 2, 3, 4, 5] else 0.0)
 	environment.sdfgi_enabled = false
 
 
@@ -383,6 +398,14 @@ func setup_v2():
 		for key in ["keys", "pad"]:
 			if saved.get(key) is Dictionary:
 				settings[key] = saved[key]
+	# Owner 2026-09-28: the SD raster read as blurry; move saved settings to native + MSAA once.
+	if int(settings.look_rev) < 1:
+		settings.render_resolution = 2
+		settings.native_msaa = true
+	# Rev 2: ordered dither speckled facades at native resolution.
+	if int(settings.look_rev) < 2:
+		settings.look_rev = 2
+		settings.colour_dither = false
 	if v2_smoke or v2_present or v2_flow_test or v2_export_check:
 		settings.folder = "user://native-tests/v2"
 	elif settings.folder == "user://":
@@ -467,18 +490,15 @@ func check_exported_v2_assets() -> void:
 	var inputs = (
 		FileAccess.file_exists("res://trackgen/data/chicago/route.json")
 		and FileAccess.file_exists("res://trackgen/data/chicago/city.json")
+		and FileAccess.file_exists("res://trackgen/data/monaco/city.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/kerbs.json")
-		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline.json")
-		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain.json")
-		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem_full.raw")
-		and FileAccess.file_exists("res://trackgen/data/nordschleife/kerbs.json")
 		and ResourceLoader.exists("res://assets/chicago/downtown-kit/meshes/Metal_FirstFloor_Window.res")
 		and ResourceLoader.exists("res://assets/chicago/downtown-kit/textures/trim.jpg")
 		and ResourceLoader.exists("res://assets/chicago/facade-array/albedo.png")
@@ -493,9 +513,9 @@ func check_exported_v2_assets() -> void:
 		and ResourceLoader.exists("res://assets/chicago/surfaces/pavement_05/pavement_05_rough_1k.jpg")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
-	ok = ok and load_v2_track("nordschleife_s1") and track.id == "nordschleife_s1" and track.length > 3000.0
 	ok = ok and load_v2_track("nordschleife") and track.id == "nordschleife" and track.length > 20000.0
 	ok = ok and load_v2_track("chicago") and track.id == "chicago" and track.length > 5000.0
+	ok = ok and load_v2_track("monaco") and track.id == "monaco" and track.length > 3000.0
 	print("V2 EXPORT ", "PASS" if ok else "FAIL")
 	var scene_tree = get_tree()
 	for player in find_children("*", "AudioStreamPlayer", true, false):
@@ -520,8 +540,11 @@ func load_v2_track(id: String) -> bool:
 		track.free()
 	track = next
 	add_child(track)
-	apply_track_night()
 	v2_track_id = id
+	# Chicago is an NFS night city by default; the player can still switch in Settings.
+	if id == "chicago":
+		settings.time_of_day = 1
+	apply_track_night()
 	if environment != null:
 		apply_time_of_day()
 	v2_surface = track.surface()
@@ -799,7 +822,7 @@ func physics_v2(dt):
 		sound.impact(impact)
 	if race.update_asset(car, track, dt):
 		save_record()
-		message("New best lap · " + RaceModel.time_text(race.best))
+		message("New best lap Â· " + RaceModel.time_text(race.best))
 	if race.sectors_dirty:
 		save_sectors()
 	elapsed += dt
@@ -992,11 +1015,44 @@ func update_camera(dt, snap = false):
 		camera.position = pos + Vector3.UP * 120
 		camera.look_at(pos, Vector3(0, 0, -1) if settings.camera == 3 else forward)
 		return
+	# No rain under Lower Wacker's deck (the route's only covered stretch, below 3 m).
+	var rain = camera.get_node_or_null("Rain")
+	if rain:
+		rain.visible = rain.emitting and pos.y > 3.0
+	if settings.camera == 0:
+		chase_camera(dt, snap, pos, forward)
+		return
 	camera.position = desired if snap else camera.position.lerp(desired, 1 - exp(-dt * 7))
 	var ground = camera_ground
 	camera.position.y = maxf(camera.position.y, ground + (.6 if settings.camera == 2 else 1.6))
 	camera.look_at(target, model.root.basis.y if settings.camera == 2 else Vector3.UP)
 	camera.fov = lerpf(camera.fov, 64 + minf(car.speed * .12, 8), minf(dt * 2, 1))
+
+
+## Chase cam (owner 2026-09-28). The camera orbits on a smoothed yaw direction instead of lerping its
+## position, so it never jitters with the chassis.
+## Simcade = NFS: swings toward the direction of travel (shows drifts), lazy yaw, pulls back and widens FOV
+## with speed. Sim = Assetto Corsa: tight to the car's heading, almost rigid, constant FOV, no speed tricks.
+func chase_camera(dt: float, snap: bool, pos: Vector3, forward: Vector3) -> void:
+	var nfs = car.simcade_enabled
+	var flat_fwd = Vector3(forward.x, 0, forward.z).normalized()
+	var aim = flat_fwd
+	var vel = Vector3(car.vel.x, 0, car.vel.z)
+	if nfs and vel.length() > 4.0 and vel.normalized().dot(flat_fwd) > 0:
+		aim = flat_fwd.lerp(vel.normalized(), 0.6).normalized()
+	if snap or cam_dir == Vector3.ZERO:
+		cam_dir = aim
+	else:
+		var rate = 3.2 if nfs else 9.0
+		cam_dir = cam_dir.slerp(aim, 1 - exp(-dt * rate)).normalized()
+	var kmh = car.speed * 3.6
+	var dist = (5.6 + (clampf(kmh / 250.0, 0, 1) * 1.6 if nfs else 0.0)) * zoom_user
+	var height = (1.75 if nfs else 1.55) * zoom_user * lerpf(1.4, 0.85, settings.tilt)
+	camera.position = pos - cam_dir * dist + Vector3.UP * height
+	camera.position.y = maxf(camera.position.y, camera_ground + 0.8)
+	camera.look_at(pos + cam_dir * (4.0 if nfs else 6.0) + Vector3.UP * (0.9 if nfs else 0.75), Vector3.UP)
+	var fov = 62 + clampf(kmh / 250.0, 0, 1) * 16 if nfs else 58.0
+	camera.fov = fov if snap else lerpf(camera.fov, fov, minf(dt * 3, 1))
 
 
 func _input(event):
@@ -1124,6 +1180,14 @@ func apply_time_of_day():
 		var sky = Sky.new()
 		var paint = PanoramaSkyMaterial.new()
 		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(night, horizon)
+		# Chicago: sky-only HDRIs (Poly Haven, CC0) so the lake horizon stays open: no painted hills by day and
+		# no foreign skyline at night. Night is an overcast sky lit from below by city light.
+		if v2_track_id == "chicago":
+			paint.panorama = load(
+				"res://assets/chicago/sky/%s.hdr"
+				% ("kloppenheim_07_puresky" if night else "kloofendal_48d_partly_cloudy_puresky")
+			)
+			paint.energy_multiplier = 0.6 if night else 0.9
 		sky.sky_material = paint
 		environment.sky = sky
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient
@@ -1163,10 +1227,60 @@ func apply_time_of_day():
 			environment.fog_depth_begin = 180 if night else 350
 			environment.fog_depth_end = 1900 if night else 2800
 			camera.far = 3200
+		# NFSU night haze: lamps and neon scatter in a thin volumetric fog; filmic keeps the highlights.
+		var nfs_night = night and v2_track_id == "chicago"
+		environment.volumetric_fog_enabled = nfs_night
+		environment.volumetric_fog_density = 0.004
+		environment.volumetric_fog_albedo = Color("b8a894")
+		environment.volumetric_fog_length = 120.0
+		environment.volumetric_fog_ambient_inject = 0.0
+		environment.tonemap_mode = (
+			Environment.TONE_MAPPER_FILMIC if nfs_night else Environment.TONE_MAPPER_LINEAR
+		)
+		environment.tonemap_exposure = 0.82 if nfs_night else 1.0
+		set_rain(nfs_night)
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
 			warm_ghost.call_deferred()
 	apply_track_night()
+
+
+## NFSU2 drizzle: camera-parented streak particles, built on first use.
+func set_rain(on: bool) -> void:
+	var rain = camera.get_node_or_null("Rain") as GPUParticles3D
+	if rain == null:
+		if not on:
+			return
+		rain = GPUParticles3D.new()
+		rain.name = "Rain"
+		# Owner 2026-09-29: streaks passing the lens covered the screen. The box now starts 6 m ahead of the
+		# camera (z -6..-54) and the streaks are thinner, shorter and fainter.
+		rain.amount = 3500
+		rain.lifetime = 0.9
+		rain.local_coords = false
+		rain.visibility_aabb = AABB(Vector3(-40, -30, -60), Vector3(80, 60, 80))
+		var pm = ParticleProcessMaterial.new()
+		pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+		pm.emission_box_extents = Vector3(30, 2, 24)
+		pm.direction = Vector3(0.05, -1, 0)
+		pm.spread = 3.0
+		pm.initial_velocity_min = 22.0
+		pm.initial_velocity_max = 28.0
+		pm.gravity = Vector3(0, -9.8, 0)
+		rain.process_material = pm
+		var quad = QuadMesh.new()
+		quad.size = Vector2(0.01, 0.45)
+		var mat = StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y
+		mat.albedo_color = Color(0.75, 0.8, 0.9, 0.13)
+		quad.material = mat
+		rain.draw_pass_1 = quad
+		rain.position = Vector3(0, 12, -30)
+		camera.add_child(rain)
+	rain.emitting = on
+	rain.visible = on
 
 
 ## Look-2: the loaded TrackAsset's sodium lamps and the road_v2 amber streaks follow Afterhours.

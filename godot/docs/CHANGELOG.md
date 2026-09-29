@@ -1,5 +1,26 @@
 # Native changelog
 
+## 2026-09-29 — Monaco
+
+- Circuit de Monaco (3.32 km): the real Grand Prix streets from OpenStreetMap, heights from the Copernicus DEM, the tunnel under the Fairmont, 3,900 real buildings, the harbour. Widths and kerbs per corner from the published layout.
+- RB19 wheels squared to their axles (the fronts wobbled from ~3.5° of baked-in camber).
+
+## 2026-09-29 — Preview 8 refresh (Chicago NFS pass)
+
+- New cars: Ferrari F2004 and Red Bull RB19 (Sketchfab, CC BY 4.0), loaded by the generic `scripts/cars/glb_car.gd` from any GLB with FL/FR/RL/RR wheel nodes; presets from published specs.
+- Chicago: moving CTA trains on the elevated L (`trackgen/chicago_l.gd`, `scripts/track/l_trains.gd`); moored sailboats, piers, breakwaters and Pritzker Pavilion from OSM and LiDAR (`trackgen/chicago_harbor.gd`); photo facades on five Michigan Avenue landmarks; parked Quaternius cars; storey counts from City of Chicago footprints; Poly Haven sky HDRIs.
+- Look: NFS-style wet night by default in Chicago (screen-space reflections, HDR glow); native resolution with MSAA instead of the SD raster; no rain under Lower Wacker.
+- Chase camera rewritten: Simcade swings toward the direction of travel and widens with speed; Simulation stays tight to the heading.
+- Monza removed from the menu, loader and export filters (its model was never committed).
+- Kenney kit textures moved to the `Textures/` paths the models expect (they rendered untextured before).
+- macOS universal build made and checked on an Apple M4.
+- Nordschleife: wide bush cards no longer hang over the road from steep banks (e.g. Bergwerk).
+- Menu: car and circuit pickers are lists with a detail panel (power, weight, gears; country, length, description); Enter picks and moves on.
+- Formula cars: realistic yaw/pitch inertia (they no longer creep at rest), 7-speed F2004 and 8-speed RB19, brakes for ~5 g, RB19 ~700 kW and ~340 km/h; RB19 repainted from royal blue to its navy.
+- Rain: thinner, fainter streaks that start 6 m ahead of the camera.
+- Nordschleife: the old T13-Aremberg section is gone (the full lap replaces it); armco ~2.4 m from the edge line (was ~3.2 m); more repair patches and stains; Eifel hill horizon.
+- Cars: the 296's see-through grilles no longer cast a solid 4.5 m box shadow; the dithered contact patch is off by day when the sun casts real shadows.
+
 ## 2026-09-28 — Rebuild Preview 8
 
 - Ferrari 296 GT3 Sketchfab model replaces the procedural body (ASSET-02).

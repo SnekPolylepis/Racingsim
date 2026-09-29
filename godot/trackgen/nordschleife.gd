@@ -155,12 +155,13 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		"kerb_height": 0.045,
 		"rib_height": 0.006,
 		"rib_pitch": 0.75,
-		# Narrow roadside enclosure: 0.5 m grass shoulder, 1.5 m verge, armco at 0.3 m beyond verge
+		# Narrow roadside enclosure: 0.5 m grass shoulder, 0.8 m verge, armco 0.2 m beyond (~2.4 m from the
+		# edge line, as in GT4 and on the real track; it was ~3.2 m)
 		"runoff_left": 4.0 if paddock else 0.5,
 		"runoff_right": 4.0 if paddock else 0.5,
 		"runoff_surface": 4 if paddock else 2,
-		"verge_left": 1.5,
-		"verge_right": 1.5,
+		"verge_left": 0.8,
+		"verge_right": 0.8,
 		"verge_slope_deg": 0.0,
 		"verge_surface": 2,
 		"verge_surface_left": -1,
@@ -386,7 +387,8 @@ static func add_forest(
 	var clear = road_clearance(asset.get_node("Main"))
 	for i in multimesh.instance_count:
 		var xf: Transform3D = trees.last_bake.xforms[i]
-		if near_road(clear, xf.origin):
+		# A card reaches half its width from its origin: wide bush cards on a bank overhung the road.
+		if near_road(clear, xf.origin, minf(TREE_CLEAR_M + xf.basis.x.length() * 0.5, CLEAR_M)):
 			xf = Transform3D(Basis.from_scale(Vector3.ZERO), xf.origin)
 		elif not terrain.is_empty():
 			xf.origin.y = terrain_height(terrain, xf.origin)
@@ -407,14 +409,14 @@ static func road_clearance(road) -> Dictionary:
 	return cells
 
 
-static func near_road(cells: Dictionary, point: Vector3) -> bool:
+static func near_road(cells: Dictionary, point: Vector3, clear_m: float = TREE_CLEAR_M) -> bool:
 	var at = Vector2(point.x, point.z)
 	var cx = floori(point.x / CLEAR_M)
 	var cz = floori(point.z / CLEAR_M)
 	for dx in [-1, 0, 1]:
 		for dz in [-1, 0, 1]:
 			for p in cells.get(Vector2i(cx + dx, cz + dz), []):
-				if at.distance_squared_to(p) < TREE_CLEAR_M * TREE_CLEAR_M:
+				if at.distance_squared_to(p) < clear_m * clear_m:
 					return true
 	return false
 
@@ -847,6 +849,8 @@ static func build_asset() -> Node3D:
 	var road_mesh = asset.get_node_or_null("Road/Main") as GeometryInstance3D
 	if road_mesh:
 		road_mesh.set_instance_shader_parameter("concrete_band", band)
+		# The real surface is a patchwork of repairs and stains (GT4 reference frames); 1.0 read as new tarmac.
+		road_mesh.set_instance_shader_parameter("macro", 1.6)
 	else:
 		push_warning("Nordschleife: Road/Main render mesh not found; Karussell concrete skipped")
 
@@ -865,8 +869,8 @@ static func build_asset() -> Node3D:
 	var terrain = add_terrain(asset)
 
 	# Barriers: Armco along track, pit concrete at T13
-	add_wall(asset, "LeftArmco", WallPath.Side.LEFT, 0, 0.0, -1.0, 0.3)
-	add_wall(asset, "RightArmco", WallPath.Side.RIGHT, 0, 0.0, -1.0, 0.3)
+	add_wall(asset, "LeftArmco", WallPath.Side.LEFT, 0, 0.0, -1.0, 0.2)
+	add_wall(asset, "RightArmco", WallPath.Side.RIGHT, 0, 0.0, -1.0, 0.2)
 	add_wall(asset, "PitConcrete", WallPath.Side.RIGHT, 2, measured - 200.0, 120.0, 0.5)
 
 	# Tyre walls at heavy-impact outside runoffs

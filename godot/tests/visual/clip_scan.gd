@@ -10,9 +10,11 @@ var step = 5.0
 ## How far above the road surface a foreign mesh counts (2 cm catches coplanar streets that z-fight the track).
 var threshold = 0.02
 const ALLOWED = ["Road", "Walls", "LeftBarrierFence", "RightBarrierFence", "Lights", "Gantry", "TimingLine"]
-## Deliberate structures over the road (Upper Wacker over Lower Wacker, signal mast arms, the start gantry).
+## Deliberate structures over the road (Upper Wacker over Lower Wacker, the elevated L, signal mast arms, the
+## start gantry).
 const OVERHEAD = [
 	"Scenery/Wacker",
+	"Scenery/City/ElevatedL",
 	"Scenery/LaneMarkings",
 	"Scenery/StreetFurniture",
 	"Scenery/StartGantry",

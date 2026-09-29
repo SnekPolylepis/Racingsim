@@ -131,7 +131,7 @@ All paths below are relative to `godot/`.
 
 ## Known boundaries
 
-Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. All three cars have dedicated procedural models (`ferrari_296.gd`, `scripts/cars/mx5.gd`, `scripts/cars/gt.gd`); These are not licensed manufacturer models. On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
+Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. Car bodies: procedural GT (`scripts/cars/gt.gd`), an imported MX-5, and Sketchfab models for the 296 GT3, F2004 and RB19 (credits in THIRD-PARTY.md). On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
 
 ## PS2-era art direction (2026-09-21)
 
@@ -139,8 +139,18 @@ Start with [ART-DIRECTION.md](ART-DIRECTION.md) for the shared world/UI output c
 
 `car.simcade_enabled` selects the handling model. Models instantiated by historical headless tests default to Simulation; game settings default to Simcade. Always set the intended model explicitly in new harnesses. Handling enters record identity; time of day and renderer settings do not.
 
+## Monaco circuit (MON-01)
+
+`trackgen/monaco.gd` builds the lap from `trackgen/data/monaco/city.json` (road with heights, ground grid,
+buildings, trees, piers), written offline by the Python scripts in that folder (see its README). The tunnel
+span is `city.json` `tunnel` (road indices) and the asset meta `tunnel` (metres); it has walls and a
+ceiling and no catch fence. `city.json` is in the export filter and `check_exported_v2_assets()`.
+
 ## Chicago circuit (CHI-01)
 
+`trackgen/chicago_l.gd` builds the elevated L (trains move in `scripts/track/l_trains.gd`) and
+`trackgen/chicago_harbor.gd` the lakefront boats and piers; both are visual only. GLB cars with FL/FR/RL/RR
+wheel nodes load through `scripts/cars/glb_car.gd` (preset `"body": "glb"`, `"model": res://…`).
 `trackgen/chicago.gd` builds the Chicago road, both Wacker decks, city and landmarks from
 `trackgen/data/chicago/route.json`. Read that directory's README before changing geography.
 Registration is in `FrontEnd.V2_TRACKS` and `TrackDrive.GENERATORS`; the data is included by every

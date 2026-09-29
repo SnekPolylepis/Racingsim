@@ -19,7 +19,7 @@ func build(visuals, preset, ghost):
 	kit.body.add_child(body)
 	var ghost_mat = visuals.paint_material(Color.WHITE, true) if ghost else null
 	for part in body.find_children("*", "MeshInstance3D", true, false):
-		part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		part.cast_shadow = Kit.shadow_mode(part)
 		if ghost:
 			part.material_override = ghost_mat
 			continue
