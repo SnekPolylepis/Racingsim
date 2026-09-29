@@ -42,7 +42,7 @@ const DEFAULT_SETTINGS = {
 	"quality": 1,
 	"render_resolution": 2,
 	"upscale": 1,
-	"colour_dither": true,
+	"colour_dither": false,
 	"speed_blur": 1,
 	"time_of_day": 0,
 	"look_rev": 0,
@@ -398,9 +398,12 @@ func setup_v2():
 				settings[key] = saved[key]
 	# Owner 2026-09-28: the SD raster read as blurry; move saved settings to native + MSAA once.
 	if int(settings.look_rev) < 1:
-		settings.look_rev = 1
 		settings.render_resolution = 2
 		settings.native_msaa = true
+	# Rev 2: ordered dither speckled facades at native resolution.
+	if int(settings.look_rev) < 2:
+		settings.look_rev = 2
+		settings.colour_dither = false
 	if v2_smoke or v2_present or v2_flow_test or v2_export_check:
 		settings.folder = "user://native-tests/v2"
 	elif settings.folder == "user://":
@@ -1013,6 +1016,10 @@ func update_camera(dt, snap = false):
 		camera.position = pos + Vector3.UP * 120
 		camera.look_at(pos, Vector3(0, 0, -1) if settings.camera == 3 else forward)
 		return
+	# No rain under Lower Wacker's deck (the route's only covered stretch, below 3 m).
+	var rain = camera.get_node_or_null("Rain")
+	if rain:
+		rain.visible = rain.emitting and pos.y > 3.0
 	if settings.camera == 0:
 		chase_camera(dt, snap, pos, forward)
 		return
@@ -1174,6 +1181,10 @@ func apply_time_of_day():
 		var sky = Sky.new()
 		var paint = PanoramaSkyMaterial.new()
 		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(night, horizon)
+		# Chicago nights use a real city-lit HDRI sky (Poly Haven rooftop_night, CC0).
+		if night and v2_track_id == "chicago":
+			paint.panorama = load("res://assets/chicago/sky/rooftop_night_2k.hdr")
+			paint.energy_multiplier = 0.35
 		sky.sky_material = paint
 		environment.sky = sky
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient

@@ -49,7 +49,7 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
-const CACHE_REVISION = 115
+const CACHE_REVISION = 116
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -944,6 +944,7 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		tools.append(st)
 	var stations = road.last_bake.stations
 	var lights = 0
+	var edges = facade_edges()
 	for i in range(0, stations.size(), 14):
 		var at = stations[i]
 		var basis = Basis.looking_at(at.tangent, Vector3.UP)
@@ -951,9 +952,14 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 			if rng.randf() < 0.35:
 				continue
 			var k = rng.randi() % colors.size()
-			var lateral = HALF_WIDTH + 6.5 + rng.randf() * 2.0
-			var base = at.pos + basis.x * side * lateral
-			# ponytail: signs are placed on a fixed offset, not snapped to real facades; some float in plazas.
+			# Street level only (Lower Wacker is a tunnel), and only where a real OSM facade faces the route.
+			if at.pos.y < 3.0:
+				continue
+			var out = Vector3(basis.x.x, 0, basis.x.z).normalized() * side
+			var hit = facade_hit(edges, Vector2(at.pos.x, at.pos.z), Vector2(out.x, out.z), HALF_WIDTH + 2.0, 45.0)
+			if hit == null:
+				continue
+			var base = Vector3(hit.x, ChicagoCity.STREET_Y, hit.y) - out * 0.25
 			if rng.randf() < 0.5:
 				# Storefront sign: neon text facing the road, with an underline tube.
 				var y = 3.2 + rng.randf() * 2.5
@@ -968,7 +974,7 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 				sign.modulate = colors[k] * 3.5
 				sign.outline_modulate = Color(colors[k].r, colors[k].g, colors[k].b, 0.35)
 				sign.position = base + Vector3(0, y + .5, 0)
-				sign.basis = Basis.looking_at(basis.x * side, Vector3.UP)
+				sign.basis = Basis.looking_at(out, Vector3.UP)
 				sign.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				sign.visible = false
 				sign.set_meta("chicago_night", true)
@@ -1002,6 +1008,44 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		var node = mesh_node(asset, parent, "Neon%d" % k, mesh, Vector3.ZERO)
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		node.set_meta("chicago_night", true)
+
+
+## OSM building edges in 25 m cells (by edge midpoint), for snapping signs onto real facades.
+static func facade_edges() -> Dictionary:
+	var doc = JSON.parse_string(FileAccess.get_file_as_string(ChicagoCity.DATA))
+	var cells = {}
+	for b in doc.buildings:
+		var ring = ChicagoCity._ring(b.f)
+		for j in ring.size():
+			var a = ring[j]
+			var c = ring[(j + 1) % ring.size()]
+			var k = Vector2i(floori((a.x + c.x) * .5 / 25.0), floori((a.y + c.y) * .5 / 25.0))
+			cells.get_or_add(k, []).append([a, c])
+	return cells
+
+
+## Nearest facade crossing of the ray o + d*t, t in (near, far); null if none.
+static func facade_hit(cells: Dictionary, o: Vector2, d: Vector2, near: float, far: float):
+	var end = o + d * far
+	var best = INF
+	var hit = null
+	var seen = {}
+	var t = 0.0
+	while t <= far:
+		var p = o + d * t
+		for dx in [-1, 0, 1]:
+			for dz in [-1, 0, 1]:
+				var k = Vector2i(floori(p.x / 25.0) + dx, floori(p.y / 25.0) + dz)
+				if seen.has(k) or not cells.has(k):
+					continue
+				seen[k] = true
+				for e in cells[k]:
+					var x = Geometry2D.segment_intersects_segment(o, end, e[0], e[1])
+					if x != null and o.distance_to(x) > near and o.distance_to(x) < best:
+						best = o.distance_to(x)
+						hit = x
+		t += 25.0
+	return hit
 
 
 ## Road sampling helpers shared by the street dressing: [curve, sorted section keys, elevation spline].

@@ -152,3 +152,4 @@ textures reduced.
 - "Low Poly Night City Building Skyline" by 99.Miles, CC BY 4.0 (`assets/chicago/landmarks/night_skyline.glb`).
 
 | Quaternius Cars Bundle (parked cars, Chicago) | Quaternius via poly.pizza | CC0 1.0 | godot/assets/chicago/cars-q/ |
+| rooftop_night HDRI (Chicago night sky) | Poly Haven | CC0 1.0 | godot/assets/chicago/sky/ |

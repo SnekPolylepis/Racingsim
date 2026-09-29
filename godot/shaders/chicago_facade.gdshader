@@ -25,7 +25,7 @@ uniform float glow_energy = 1.4;
 // sills and a darker storefront band on the ground floor. 0 leaves the bare photo texture.
 uniform float day_windows = 1.0;
 
-varying float seed;
+varying flat float seed;
 varying flat float kind;
 varying flat float roof;
 
