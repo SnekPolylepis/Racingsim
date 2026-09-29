@@ -28,4 +28,24 @@ func run():
 		await RenderingServer.frame_post_draw
 		var img = root.get_viewport().get_texture().get_image()
 		img.save_png("user://chi-%s-%s.png" % [tag, "night" if night else "day"])
+	# Fixed street-level views along Michigan Avenue (world(): x=(lon+87.6244)*82860, z=(41.8848-lat)*111320).
+	app.set_process(false)
+	var views = {
+		"mich-north": [Vector3(0, 11, 250), Vector3(-5, 40, -380)],
+		"mich-south": [Vector3(0, 11, -120), Vector3(-5, 30, 700)],
+		"mich-aerial": [Vector3(250, 220, 300), Vector3(-80, 60, -100)],
+	}
+	for night in [0, 1]:
+		app.settings.time_of_day = night
+		app.apply_time_of_day()
+		for key in views:
+			app.camera.position = views[key][0]
+			app.camera.look_at(views[key][1], Vector3.UP)
+			app.camera.fov = 60
+			for i in 30:
+				await process_frame
+			await RenderingServer.frame_post_draw
+			root.get_viewport().get_texture().get_image().save_png(
+				"user://chi-%s-%s-%s.png" % [tag, key, "night" if night else "day"]
+			)
 	quit(0)

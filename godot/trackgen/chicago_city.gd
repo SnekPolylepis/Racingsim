@@ -13,6 +13,7 @@ extends RefCounted
 ##   Parks      parks, gardens and lawns in grass
 ## Geometry is batched per 600 m chunk and material, so the whole city is a few hundred draw calls at most.
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
+const ChicagoCrowns = preload("res://trackgen/chicago_crowns.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const FACADE_SHADER = preload("res://shaders/chicago_facade.gdshader")
 const DATA = "res://trackgen/data/chicago/city.json"
@@ -87,9 +88,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	# Buildings.
 	var near_route = []
 	var kept_buildings = []
+	var crowns = []
 	var i = 0
 	for b in doc.buildings:
 		var ring = _ring(b.f)
+		# Facade bands (landmarks.json) share the building's footprint; 0.25 m proud so the walls don't fight.
+		if b.has("band"):
+			var bc = _centroid(ring)
+			for j in ring.size():
+				ring[j] += (ring[j] - bc).normalized() * 0.25
 		i += 1
 		if ring.size() < 3 or _touches_route(route, ring, 6.0) or _near_any(skip_at, _centroid(ring)):
 			continue
@@ -100,6 +107,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
 		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
 		_building(facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint)
+		if b.has("cr"):
+			crowns.append([ring, STREET_Y + float(b.h), b.cr])
 		stats.buildings += 1
 		kept_buildings.append([ring, float(b.h), i])
 		var centre = _centroid(ring)
@@ -207,6 +216,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			)
 			holder.add_child(node)
 			node.owner = asset
+	ChicagoCrowns.build(asset, holder, crowns)
+	stats["crowns"] = crowns.size()
 	return stats
 
 

@@ -264,6 +264,7 @@ def main():
             b = {"f": simplify(pts, 0.25), "h": round(h, 1) if h is not None else None, "k": kind_of(tags, h or 0, e["id"])}
             if colour_of(tags):
                 b["c"] = colour_of(tags)
+            b["o"] = e["type"][0] + str(e["id"])
             buildings.append(b)
 
     # Heights OSM lacks: the city's storey count for the footprint containing the building's centre.
@@ -314,8 +315,55 @@ def main():
             parts.append(b)
     centres = [(sum(p[0] for p in b["f"]) / len(b["f"]), sum(p[1] for p in b["f"]) / len(b["f"])) for b in parts]
     kept = [b for b in buildings if not any(inside(c, b["f"]) for c in centres)]
+    replaced = [b for b in buildings if any(inside(c, b["f"]) for c in centres)]
     print("parts %d replace %d parent outlines" % (len(parts), len(buildings) - len(kept)))
     buildings = kept + parts
+
+    # Sourced per-building overrides (landmarks.json): height, facade, colour, facade bands, roof crown.
+    with open(os.path.join(HERE, "landmarks.json"), encoding="utf-8") as f:
+        marks = json.load(f)["buildings"]
+    used = set()
+    extra = []
+    for b in buildings:
+        m = marks.get(b.pop("o", ""))
+        if m is None:
+            continue
+        used.add(m["name"])
+        b.pop("u", None)
+        for key in ("h", "k", "c"):
+            if key in m:
+                b[key] = m[key]
+        if "crown" in m:
+            b["cr"] = m["crown"]
+        for lo, hi, kind, colour in m.get("bands", []):
+            extra.append({"f": b["f"], "h": min(hi, b["h"]), "m": lo, "k": kind, "c": colour, "band": 1})
+    # Landmarks drawn by their OSM parts: facade on every part, crown and top band on the tallest,
+    # base band on the ground-level parts. OSM part heights stay (they are the real massing).
+    for parent in replaced:
+        m = marks.get(parent.get("o", ""))
+        if m is None:
+            continue
+        mine = [b for b, c in zip(parts, centres) if inside(c, parent["f"])]
+        if not mine:
+            continue
+        used.add(m["name"])
+        for b in mine:
+            for key in ("k", "c"):
+                if key in m:
+                    b[key] = m[key]
+        top = max(mine, key=lambda b: b["h"])
+        if "crown" in m:
+            top["cr"] = m["crown"]
+        for lo, hi, kind, colour in m.get("bands", []):
+            if lo == 0:
+                for b in mine:
+                    if not b.get("m"):
+                        extra.append({"f": b["f"], "h": min(hi, b["h"]), "m": 0, "k": kind, "c": colour, "band": 1})
+            else:
+                span = hi - lo
+                extra.append({"f": top["f"], "h": top["h"], "m": top["h"] - span, "k": kind, "c": colour, "band": 1})
+    buildings += extra
+    print("landmark overrides applied: %d/%d %s" % (len(used), len(marks), sorted(set(m["name"] for m in marks.values()) - used)))
 
     roads = []
     for e in load("downtown-roads.json"):
