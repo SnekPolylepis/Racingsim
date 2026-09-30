@@ -97,6 +97,13 @@ func _physics_process(_delta):
 				if base > 0 and r.lap > 0:
 					timing = "baseline %.2f s (%+.2f%%)" % [base, (r.lap / base - 1) * 100]
 					timing_ok = absf(r.lap / base - 1) < .02
+				var hairpin_ok = (
+					not (id == "monaco" and key in ["f2004", "rb19"])
+					or r.hairpin_min_speed >= 6.8
+				)
+				var hairpin_speed = (
+					"n/a" if r.hairpin_min_speed <= 0 else "%.0f km/h" % (r.hairpin_min_speed * 3.6)
+				)
 				check(
 					(
 						r.ok
@@ -104,10 +111,11 @@ func _physics_process(_delta):
 						and r.off == 0
 						and r.walls == 0
 						and r.props == 0
+						and hairpin_ok
 						and timing_ok
 					),
 					(
-						"%s: lap %.2f s, %d off-track wheel-ticks, %d wall-contact ticks, %d prop-contact ticks (%d props), max %.1f m off the line, top %.0f km/h; %s"
+						"%s: lap %.2f s, %d off-track wheel-ticks, %d wall-contact ticks, %d prop-contact ticks (%d props), max %.1f m off the line, top %.0f km/h, Fairmont min %s; %s"
 						% [
 							name,
 							r.lap,
@@ -117,6 +125,7 @@ func _physics_process(_delta):
 							r.prop_count,
 							r.max_off_line,
 							r.top * 3.6,
+							hairpin_speed,
 							timing
 						]
 					)
@@ -166,6 +175,9 @@ func lap(asset, key, simcade):
 	var wall_ticks = 0
 	var max_off_line = 0.0
 	var top = 0.0
+	var hairpin_min_speed = INF
+	var hairpin_corners: Dictionary = asset.get_meta("corners", {})
+	var hairpin_at = hairpin_corners.get("Grand Hotel Hairpin", -INF)
 	var ok = true
 	var prev = c.pos
 	var time = 0.0
@@ -173,6 +185,10 @@ func lap(asset, key, simcade):
 	var cap = 2.5 * asset.length / 15.0 + 60.0
 	while time < cap:
 		c.input = bot.command(c)
+		var hairpin_delta = absf(bot.s - hairpin_at)
+		hairpin_delta = minf(hairpin_delta, asset.length - hairpin_delta)
+		if hairpin_at >= 0.0 and hairpin_delta <= 35.0:
+			hairpin_min_speed = minf(hairpin_min_speed, c.speed)
 		c.step(DT, surf, true)
 		if WallContact.step(c, walls) > 0:
 			wall_ticks += 1
@@ -224,5 +240,6 @@ func lap(asset, key, simcade):
 		"props": prop_ticks,
 		"prop_count": props.props.size(),
 		"max_off_line": max_off_line,
-		"top": top
+		"top": top,
+		"hairpin_min_speed": hairpin_min_speed if is_finite(hairpin_min_speed) else 0.0
 	}
