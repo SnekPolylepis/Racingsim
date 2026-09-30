@@ -3008,4 +3008,18 @@ Owner requested another pass after the delivered branch. Continuing in the same 
 - In `v2_panels.gd`, updated the Time of Day setting label to display `"Afterhours (Green Hell)"` when Nordschleife is active.
 - **Validation:** `parse check` PASS (1s, clean), `front_end` gate 29/29 checks PASS (10s), `optimization` gate 21/21 checks PASS (1s), and standalone state detection logic verified with exit code 0.
 
+## 2026-09-30  DONE AUDIO-01  (Gemini)
+
+- Overhauled racing audio architecture in `godot/scripts/audio.gd` for all vehicle types and dynamic interactions:
+  - **Engine Voices & Range**: Differentiated car voices based on body and engine specs (`roadster` raspy inline-4 voice 0.85; `coupe` V8 throaty growl voice 0.72; `gt3` twin-turbo V6 race car voice 1.06; `f2004` screaming V10 voice 1.36 with raised pitch ceiling up to 3.2 allowing 18,800 RPM F1 redline without clipping; `rb19` turbo-hybrid V6 voice 1.16).
+  - **Transmission Straight-Cut Gear Whine**: Added procedural straight-cut spur gear mesh harmonic synthesis (`whine` player) scaling with vehicle speed and load (both power and engine-braking overrun), with race car differentiation.
+  - **Kerb Rumble & Surface Acoustics**: Added dedicated procedural kerb rumble (`kerb` player) tuned to rhythmic chassis thrumming over apex kerb ribs (`surf.id == 1`), scaling with corner load and speed; boosted gravel trap roar and stone scatter (`surf.id == 3`).
+  - **Aerodynamic Wind Turbulence**: Added high-speed aerodynamic air rush (`wind` player) with pink-filtered turbulence and sub-bass buffeting scaling smoothly with vehicle velocity above 35 km/h.
+  - **Tyre Scrub vs Screech**: Separated granular rubber scrub noise and friction screech with dynamic frequency modulation based on slip severity and velocity.
+  - **Impact Dynamics & Shift Transitions**: Polished impact sound with structural low thud, metallic scrape, and randomized pitch variation; added dog-ring shift clack with momentary throttle-cut load attenuation.
+  - **Lifecycle Safety**: Added `NOTIFICATION_ENTER_TREE` playback and `is_inside_tree()` guards across all 16 players, ensuring leak-free shutdown on exit.
+- Added comprehensive unit test and regression gate `tests/v2/audio_test.gd` registered in `tools/gates.json`.
+- **Validation**: `audio` gate 64/64 checks PASS (0 failures, 0s), `car_models` 76/76 checks PASS (2s), `front_end` 29/29 checks PASS (2s), `parse check` PASS (1s, clean).
+
+
 
