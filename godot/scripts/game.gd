@@ -16,6 +16,7 @@ const Controls = preload("res://scripts/controls.gd")
 const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
 const FFB = preload("res://scripts/ffb.gd")
+const WheelBridge = preload("res://scripts/wheel_bridge.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const NightGlow = preload("res://scripts/track/night_glow.gd")
@@ -80,6 +81,17 @@ const DEFAULT_SETTINGS = {
 	"ffb_damper": 0.25,
 	"ffb_kerb": 1.0,
 	"ffb_road": 0.8,
+	"wheel_enabled": true,
+	"wheel_gain": 0.35,
+	"wheel_profile":
+	{
+		"throttle": {"axis": 4, "released": 0.0, "pressed": 1.0},
+		"brake": {"axis": 3, "released": 0.0, "pressed": 1.0},
+		"shiftUp": {"button": 4},
+		"shiftDown": {"button": 5},
+		"handbrake": {"button": 2},
+		"steer_sign": 1.0
+	},
 	"folder": "user://"
 }
 var settings = DEFAULT_SETTINGS.duplicate(true)
@@ -89,6 +101,7 @@ var race = RaceModel.new()
 var visuals = Visuals.new()
 var storage = Storage.new()
 var controls = Controls.new()
+var wheel = WheelBridge.new()
 var ffb = FFB.new()
 var presets = {}
 var setup_fields = []
@@ -200,6 +213,7 @@ func _notification(what):
 
 func _exit_tree():
 	ffb.stop()
+	wheel.close()
 
 
 func message(value):
@@ -434,6 +448,9 @@ func setup_v2():
 		push_error(storage.error)
 		return
 	controls.configure(settings)
+	if settings.wheel_enabled and not (v2_smoke or v2_present or v2_flow_test or v2_export_check):
+		wheel.start(get_window())
+		ffb.wheel = wheel
 	car = CarBody.new()
 	car.simcade_enabled = settings.handling_model == 0
 	car.configure(presets[preset_key])
@@ -633,6 +650,12 @@ func set_v2_setting(key: String, value: Variant) -> void:
 		return
 	var changed = settings[key] != value
 	settings[key] = value
+	if key == "wheel_enabled":
+		if value and wheel.process_id < 0 and controls.poll_hardware:
+			wheel.start(get_window())
+			ffb.wheel = wheel
+		if not value:
+			wheel.stop()
 	controls.configure(settings)
 	car.simcade_enabled = int(settings.handling_model) == 0
 	car.simcade_steering = settings.simcade_grip_assist
@@ -817,6 +840,21 @@ func physics_v2(dt):
 	if v2_tick < 3:
 		return
 	car.input = controls.update(dt, car.speed)
+	var wheel_driving = (
+		settings.wheel_enabled and (wheel.present & 1) != 0 and v2_bot == null and not v2_present
+	)
+	car.steer_falloff = 0.0 if wheel_driving else float(car.p.get("steerFalloff", 14.0))
+	car.simcade_steering = settings.simcade_grip_assist and not wheel_driving
+	if wheel_driving:
+		var wheel_input = wheel.command(settings.wheel_profile)
+		wheel_input.clutch = car.input.clutch
+		wheel_input.handbrake = maxf(wheel_input.handbrake, car.input.handbrake)
+		car.input = wheel_input
+		for action in ["shiftUp", "shiftDown"]:
+			var down = wheel.value(settings.wheel_profile.get(action, {}), 0) > 0.5
+			if down and not controls.previous.get("wheel_" + action, false):
+				controls.events.append(action)
+			controls.previous["wheel_" + action] = down
 	# The bot keeps driving after the laps while the presentation check times frames.
 	if v2_present or v2_bot != null:
 		if v2_bot == null:
@@ -995,6 +1033,7 @@ func render_v2(dt):
 
 ## Fixed 240 Hz simulation only. Preserve controls -> car -> collisions -> race ordering.
 func _physics_process(dt):
+	wheel.poll()
 	physics_v2(dt)
 
 

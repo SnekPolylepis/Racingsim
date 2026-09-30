@@ -81,7 +81,7 @@ Built circuits are cached in the tracks3d folder beside it. Deleting that cache 
 
 ## Troubleshooting and known limits
 
-If a circuit takes a long time to load the first time, that is the one-off build; later loads use the cache. If the game ever starts with odd settings, deleting the v2 settings.json restores the defaults. Controllers use Godot's standard gamepad mapping. Settings > Controls includes controller rumble for tyre load, road surfaces and impacts; it stops in menus, while paused and when the window loses focus. Steering-wheel torque output is not supported. Physical rumble hardware has not been validated for this preview.
+If a circuit takes a long time to load the first time, that is the one-off build; later loads use the cache. If the game ever starts with odd settings, deleting the v2 settings.json restores the defaults. Controllers use Godot's standard gamepad mapping. Settings > Controls includes controller rumble for tyre load, road surfaces and impacts; it stops in menus, while paused and when the window loses focus. Windows now supports the connected Fanatec CSL DD with USB Moza mBooster/CRP2 pedals: linear steering, right paddle upshift, left paddle downshift, throttle and brake. Settings > Controls has the wheel toggle, force gain (35% initially) and pedal endpoint calibration. The zero-force hardware check passed; driving feel still needs an owner playtest. Restart the game after reconnecting the hardware. Physical gamepad rumble remains unvalidated.
 
 This is a preview:
 - Circuits: the Proving Ground, Spa, the full 20.8 km Nordschleife, Chicago and Monaco.

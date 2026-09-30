@@ -1,5 +1,10 @@
 # Native build, verification and troubleshooting
 
+Windows CSL DD + USB Moza mBooster/CRP2 validation: `tools/wheel_check.gd` runs
+windowed and creates/updates a zero-magnitude DirectInput constant-force effect.
+The headless `wheel` gate checks independent pedal/wheel values, endpoint scaling,
+button isolation, force gain and stop behavior. See `native/README.md` for limits.
+
 Mac setup, build commands and evidence: [MACOS.md](MACOS.md).
 
 ## Commands

@@ -2,7 +2,7 @@ extends RefCounted
 class_name ForceFeedback
 
 ## Steering-cue processor and gamepad rumble output (FFB-01).
-## Torque is computed for telemetry; no steering-wheel force-feedback backend is implemented.
+## DirectInput torque is sent to the connected CSL DD through the Windows wheel bridge.
 ## Synthesizes self-aligning torque, low-speed centering/damper resistance,
 ## asymmetric kerb and bump kickback, and dual-motor haptic rumble/impact cues.
 ## Features soft-saturation clipping protection to preserve road details under high load.
@@ -27,6 +27,7 @@ var kerb_phase: float = 0.0
 var impact_decay: float = 0.0
 var current_device: int = 0
 var was_active: bool = false
+var wheel = null
 
 
 static func _prop(obj, name: String, default = null):
@@ -120,6 +121,9 @@ func update(
 	is_clipping = absf(total_torque) > 1.0
 	clip_depth = maxf(0.0, absf(total_torque) - 1.0)
 	output_torque = soft_clip(total_torque, SOFT_CLIP_KNEE)
+	if wheel != null:
+		wheel.active = active and enabled and settings.get("wheel_enabled", true) and (wheel.present & 1) != 0
+		wheel.torque = output_torque * clampf(float(settings.get("wheel_gain", 0.35)), 0.0, 1.0)
 
 	# 5. Dual-motor haptic rumble cues
 	# Weak motor: High-frequency texture (kerb rumble, gravel/grass chatter, tyre scrub)
@@ -165,6 +169,8 @@ func update(
 
 ## Stop all vibration immediately and reset transient states.
 func stop(device_id: int = -1):
+	if wheel != null:
+		wheel.stop()
 	var dev = device_id if device_id >= 0 else current_device
 	if dev >= 0:
 		Input.stop_joy_vibration(dev)

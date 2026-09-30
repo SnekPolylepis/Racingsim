@@ -4,9 +4,14 @@
 
 Controller rumble settings are `ffb_enabled` (default true), `ffb_gain` (1.0),
 `ffb_damper` (0.25), `ffb_kerb` (1.0) and `ffb_road` (0.8). The historical key
-prefix is retained for saved-settings compatibility; hardware output is gamepad
-vibration, not steering-wheel torque. These presentation settings do not change
-record identity. Rumble stops in menus, on pause, focus loss and exit.
+prefix is retained for saved-settings compatibility. Windows also outputs CSL DD
+constant-force steering torque through `native/wheel_bridge.exe`. `wheel_enabled`
+(true), `wheel_gain` (0.35) and `wheel_profile` select the owner's USB rig and pedal
+endpoints. Pedal values are normalized from `released` to `pressed`, including
+reversed endpoints. The measured mBooster/CRP2 throttle is axis 4, brake axis 3;
+CSL DD steering is axis 0, right paddle button 4 and left paddle button 5.
+These settings do not change record identity. Output stops in menus, on pause,
+focus loss and exit; native effects expire after 100 ms without refresh.
 
 Additional recognized settings are `output_mode` (0 clean progressive, 1 interlaced), `crt_filter` (boolean), `framebuffer_colour` (0 24-bit, 1 RGB555), `screen_aspect` (0 4:3, 1 16:9), and `ui_mode` (0 Authentic, 1 Sharp). Defaults are progressive, no CRT filter, 24-bit, 16:9 and Authentic UI. These cosmetic choices are excluded from record identity. Frontend paint/rim choices and last-lap replay are session presentation state; existing setup/track/ghost schemas are unchanged.
 
