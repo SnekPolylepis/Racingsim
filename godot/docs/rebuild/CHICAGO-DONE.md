@@ -1,0 +1,64 @@
+# Chicago completion checklist
+
+Owner goal, 2026-09-30. Branch: `rb/monaco-formula-cars`.
+Check an item only after inspecting an in-game screenshot proving it. Record the
+image path and the source evidence beside each completed item. Partial coverage
+does not prove the whole route. Defaults: keep map-derived details when no source
+exists; retain fictional circuit connectors explicitly labelled in the route docs.
+No Monza, car or physics changes. Heavy gates are skipped by owner direction.
+
+## Building massing
+
+- [ ] Inventory every route-visible building within approximately 400 m and skyline/landmark sightlines from Lake Shore Drive and the river.
+- [ ] Fetch missing USGS LiDAR coverage for that full inventory.
+- [ ] Apply measured roof shape and OSM building parts without overlapping parent/part geometry.
+- [ ] Resolve every `u:1` two-storey placeholder from source data; list any still without usable evidence.
+- [ ] Verify sourced crowns and setbacks; no invented height or roof feature.
+- [ ] Inspect driver and skyline screenshots along the entire route; no remaining generic flat-box substitutions.
+
+## Lower Wacker
+
+- [ ] Verify double-deck tunnel dimensions and alignment from cited real-world references.
+- [ ] Verify structural columns, beams and ceilings from driver view.
+- [ ] Verify sodium fixtures and lighting by day/night screenshots.
+- [ ] Verify ramps and portals; distinguish real geometry from fictional race connectors.
+- [ ] Verify sourced signage and placements.
+- [ ] Verify wet concrete, grime and road/ceiling/wall material scale from driver view.
+
+## Facades and storefronts
+
+- [ ] Inventory route-facing storefronts/buildings along Wacker, State, Wabash, Lake Shore Drive and the Loop.
+- [ ] Extend `landmarks.json` with cited source per building and supported materials/colours.
+- [ ] Apply real business signs from `signs.json`; verify names and placement.
+- [ ] Acquire licensed rectified Commons photos for key facades and record attribution.
+- [ ] Verify facade bands, ground floors, windows and entrances against sourced counterparts.
+- [ ] Inspect the full route in screenshots; no unverified coverage claim.
+
+## Loose ends and screenshot findings
+
+- [ ] Verify moored boats, mooring placement and waterline contact.
+- [ ] Verify Pritzker pylons and pavilion structure.
+- [ ] Verify road/river bridge structures and BP Bridge geometry.
+- [ ] Verify L stations and track/platform/support alignment.
+- [ ] Verify Wrigley clock faces and tower placement.
+- [ ] Find and replace placeholder textures using licensed, sourced assets.
+- [ ] Inspect for floating/misplaced objects, overlaps, missing surfaces and clipping; add individual findings below.
+
+## Resource workflow and acceptance
+
+- [ ] Inventory suitable assets in Desktop asset folders before acquiring new models/textures; preserve those folders.
+- [ ] Follow local assets → signed-in Sketchfab CC0/CC-BY → Poly Haven/ambientCG/Commons → Blender order; record licence/source for every acquired asset.
+- [ ] Game launches, Chicago loads, and a drive completes without crashing; inspect driver screenshots.
+- [ ] Commit working milestones and push this branch periodically.
+- [ ] Re-export and verify the final Windows executable after Chicago work.
+
+## Final audit (perform after visual completion)
+
+- [ ] Write `godot/docs/AUDIT-2026-09-30.md`: temp/debug files, UID orphans, duplicates, unused assets/source packs, stale worktrees, ignores, sizes/LFS, bake time, draw calls and texture sizes.
+- [ ] Report the proposed deletion list and request owner approval before deleting; preserve all saves and Desktop assets and every unproven candidate.
+- [ ] Apply only proved-safe, authorized cleanup/optimisations and verify the game again.
+- [ ] Re-read this checklist and audit every requirement against current screenshots and source evidence before declaring completion.
+
+## Evidence and newly discovered items
+
+No screenshot-backed items completed yet in this goal run.
