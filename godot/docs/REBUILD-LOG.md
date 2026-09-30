@@ -2912,3 +2912,8 @@ References: Commons "Circuit de Monaco - Virage de la Piscine", "- Sortie du vir
 ## 2026-09-29 Monaco Pool stand spacing (Codex)
 - Pulled the two open Swimming Pool temporary stands from 10 m to 5 m beyond the verge, reducing the empty apron between the barriers and spectators while keeping open supports and no front collision wall.
 - Added two Monaco regression checks for stand spacing; Monaco (17 checks), scenery (11 checks), parsing, and `git diff --check` pass. Windowed Pool capture remains to be taken from a camera positioned at the chicane.
+
+## 2026-09-29 Monaco Pool visual review (Codex)
+- Added a windowed `--focus=monaco-pool` capture mode to the existing screenshot tool and saved `screenshots/monaco-graphics/pool-focused.png`; it frames the first Pool chicane from track level, with the car and HUD hidden.
+- Reduced the spectator-card width in the shared crowd shader to make the open Pool stand crowd read as smaller seated silhouettes. Compared against the [real Piscine grandstand photos](https://commons.wikimedia.org/wiki/Category%3APiscine_%28Circuit_de_Monaco%29) and an [F1 2020 Monaco gameplay frame](https://www.formule1.nl/nieuws/video-een-rondje-monaco-in-de-f1-2020-game/). The track edges remain open in the chicane view; water-side composition and generic city landmarks still need work.
+- **Validation:** Monaco (17 checks), scenery (11 checks), parsing, and `git diff --check` pass (logs `tests/logs/gates/20260929-201117/`).
