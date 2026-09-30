@@ -39,6 +39,17 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
 - Formula presets use 26° maximum front-wheel lock plus a 60 m/s speed falloff. Formula Monaco lap gates
   measure actual speed within 35 m of Fairmont's apex: F2004 stays above 25 km/h and RB19 above 30 km/h
   across Simulation and Simcade, with zero off-track wheel ticks, wall contacts or prop contacts.
+- Fairmont's named OSM marker is near the exit. `fairmont_apex` locates the tightest nearby bend for
+  the planting island, focused captures and input-path acceptance runs. The bed has 9.35 m centreline
+  clearance; it uses the existing credited foliage plus a recoloured CC0 Kenney palm.
+- `tests/v2/monaco.gd` also drives both formulas through Fairmont using injected W/A/S/D or controller
+  events, with default keyboard ramps and controller deadzone/linearity, in both handling models.
+  All eight cases must finish without off-track wheel ticks or wall contacts and stay above 24.5 km/h.
+  The driving reference is automated; these runs do not establish human playtest acceptance.
+
+Daylight screenshots through the main game's presentation chain (separate from the standalone
+track-drive captures): `--script tests/v2/track_screenshots.gd -- --v2-flow-test --track=monaco
+--v2-car=rb19 --out=res://docs/rebuild/screenshots/monaco-graphics/game`.
 
 ## Sources and licences
 

@@ -205,6 +205,13 @@ func _setup_presentation() -> void:
 	var env = Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("769cb8")
+	if track_id == "monaco":
+		var sky = Sky.new()
+		var paint = PanoramaSkyMaterial.new()
+		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(false, "flat")
+		sky.sky_material = paint
+		env.sky = sky
+		env.background_mode = Environment.BG_SKY
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color("8794a0")
 	env.ambient_light_energy = .65

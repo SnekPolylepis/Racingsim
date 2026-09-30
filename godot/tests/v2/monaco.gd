@@ -3,6 +3,10 @@ extends SceneTree
 const Monaco = preload("res://trackgen/monaco.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const TrackDrive = preload("res://scripts/proving/track_drive.gd")
+const Controls = preload("res://scripts/controls.gd")
+const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
+const WallQuery = preload("res://scripts/surface/wall_query.gd")
+const WallContact = preload("res://scripts/vehicle/wall_contact.gd")
 var asset
 var ran = false
 var frames = 0
@@ -56,29 +60,28 @@ func _physics_process(_dt):
 	check(max_grade < 0.125, "road grade stays below 12.5 percent")
 	check(max_curvature < 0.002, "vertical profile has no short launch ramps, including the lap seam")
 	check(asset.version == 4, "changed track geometry has separate record identity")
-	var hairpin_at = asset.get_meta("corners")["Grand Hotel Hairpin"]
-	var pa = curve.sample_baked(hairpin_at - 2.0, true)
-	var pb = curve.sample_baked(hairpin_at, true)
-	var pc = curve.sample_baked(hairpin_at + 2.0, true)
-	var a2 = Vector2(pa.x, pa.z)
-	var b2 = Vector2(pb.x, pb.z)
-	var c2 = Vector2(pc.x, pc.z)
-	var hairpin_radius = (
-		a2.distance_to(b2) * b2.distance_to(c2) * c2.distance_to(a2)
-		/ (2.0 * absf((b2 - a2).cross(c2 - a2)))
-	)
+	var hairpin_at = asset.get_meta("fairmont_apex")
 	var cars = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
-	for key in ["f2004", "rb19"]:
-		var formula = CarBody.new()
-		formula.configure(cars[key])
-		var speed = 45.0 / 3.6
-		var available_lock = deg_to_rad(formula.setup.maxSteer) / (1.0 + speed / formula.steer_falloff)
-		var required_lock = atan((formula.p.a + formula.p.b) / hairpin_radius)
-		check(
-			available_lock >= required_lock,
-			key + " has enough front-wheel lock for the Fairmont centreline at 45 km/h"
-		)
 	var surf = asset.surface()
+	var planter = asset.get_node("Scenery/FairmontPlanter")
+	var nearest = curve.get_closest_point(planter.position)
+	var clearance = Vector2(nearest.x - planter.position.x, nearest.z - planter.position.z).length()
+	results.planter_centerline_clearance = clearance
+	check(clearance > 8.0, "Fairmont planter stays inside the island, clear of the road and barrier")
+	for key in ["f2004", "rb19"]:
+		for simcade in [false, true]:
+			for keyboard in [false, true]:
+				var drive = _hairpin_input(cars[key], simcade, hairpin_at, surf, keyboard)
+				var label = (
+					key
+					+ (" Simcade" if simcade else " Simulation")
+					+ (" keyboard" if keyboard else " controller")
+				)
+				results[label] = drive
+				check(
+					drive.finished and drive.walls == 0 and drive.off == 0 and drive.minimum_kmh >= 24.5,
+					label + " clears Fairmont through input events"
+				)
 	var space = asset.get_world_3d().direct_space_state
 	var open = true
 	var paved = true
@@ -129,15 +132,15 @@ func _physics_process(_dt):
 	var rascasse_retained = true
 	for side in [-1.0, 1.0]:
 		var ray = PhysicsRayQueryParameters3D.create(
-			rascasse.pos + Vector3.UP * 0.5,
-			rascasse.pos + Vector3.UP * 0.5 + rascasse_right * side * 12.0,
-			2
+			rascasse.pos + Vector3.UP * 0.5, rascasse.pos + Vector3.UP * 0.5 + rascasse_right * side * 12.0, 2
 		)
 		rascasse_retained = rascasse_retained and not space.intersect_ray(ray).is_empty()
 	check(rascasse_retained, "barriers remain at Rascasse after the Swimming Pool chicanes")
 	check(
-		asset.get_node_or_null("Scenery/HarbourStand") == null
-			and asset.get_node_or_null("Scenery/PoolStand") == null,
+		(
+			asset.get_node_or_null("Scenery/HarbourStand") == null
+			and asset.get_node_or_null("Scenery/PoolStand") == null
+		),
 		"Swimming Pool chicanes have no stand walls or crowd panels"
 	)
 	var d = Monaco.data()
@@ -176,3 +179,61 @@ func _physics_process(_dt):
 	print("MONACO RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
 	quit(0 if failures.is_empty() else 1)
 	return true
+
+
+## Automated driving reference passed through the player's keyboard ramps or controller mapping.
+## This exercises the input path; it does not substitute for a human playtest.
+func _hairpin_input(preset, simcade, at, surf, keyboard) -> Dictionary:
+	var car = CarBody.new()
+	car.simcade_enabled = simcade
+	car.configure(preset)
+	var st = asset.station(at - 65.0)
+	var right = st.tangent.cross(Vector3.UP).normalized()
+	TrackDrive.place_on_grid(car, Transform3D(Basis(right, right.cross(st.tangent), -st.tangent), st.pos))
+	car.launch(45.0 / 3.6)
+	var bot = BotDriver.new(asset.get_node("BotLine"), car, surf)
+	var controls = Controls.new()
+	controls.poll_hardware = false
+	var walls = WallQuery.new(asset, car.hull_half)
+	var result = {"finished": false, "walls": 0, "off": 0, "minimum_kmh": INF}
+	for tick in 240 * 25:
+		var command = bot.command(car)
+		if keyboard:
+			var keys = {
+				KEY_W: command.throttle > controls.raw.throttle,
+				KEY_S: command.brake > controls.raw.brake,
+				KEY_A: command.steer < controls.raw.steer - 0.002,
+				KEY_D: command.steer > controls.raw.steer + 0.002
+			}
+			for key in keys:
+				var event = InputEventKey.new()
+				event.physical_keycode = key
+				event.pressed = keys[key]
+				controls.handle(event, true)
+		else:
+			for action in ["steer", "throttle", "brake"]:
+				var event = InputEventJoypadMotion.new()
+				event.device = 0
+				event.axis = controls.pad[action].axis
+				var value = float(command[action])
+				event.axis_value = (
+					(
+						signf(value)
+						* (controls.dead + (1.0 - controls.dead) * pow(absf(value), 1.0 / controls.linearity))
+					)
+					if action == "steer" and value != 0.0
+					else value
+				)
+				controls.handle(event, true)
+		car.input = controls.update(1.0 / 240.0, car.speed)
+		car.step(1.0 / 240.0, surf, true)
+		result.walls += WallContact.step(car, walls)
+		for wheel in car.wheels:
+			if wheel.load > 0 and wheel.surf.id >= 2:
+				result.off += 1
+		if absf(bot.s - at) < 35.0:
+			result.minimum_kmh = minf(result.minimum_kmh, car.speed * 3.6)
+		if bot.s > at + 65.0:
+			result.finished = true
+			break
+	return result

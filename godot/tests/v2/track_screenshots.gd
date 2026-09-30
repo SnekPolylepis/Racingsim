@@ -1,8 +1,8 @@
 extends SceneTree
-## Daylight review captures of the Proving Ground, Spa and the Nordschleife through the real
+## Daylight review captures of Monaco, Proving Ground, Spa and Nordschleife through the real
 ## presentation chain (the default 640x448 Authentic look), HUD hidden. Run windowed (never
 ## --headless), with the flow-test flag so the user's settings file is untouched:
-##   tools/Godot.exe --path . --script tests/v2/track_screenshots.gd -- --v2-flow-test [--out=<dir>] [--compare]
+##   tools/Godot.exe --path . --script tests/v2/track_screenshots.gd -- --v2-flow-test [--track=monaco] [--out=<dir>] [--compare]
 ## Writes <dir>/<shot>.png (default user://track-shots) and prints TRACK SHOTS RESULTS.
 ## --compare additionally writes <dir>/<shot>-compare.png for every shot with a reference frame in
 ## docs/art/reference/ (REFERENCE_MAP below): ours on the left, the reference on the right, both labelled.
@@ -41,6 +41,7 @@ const REFERENCE_DIR = "res://docs/art/reference/"
 var failures = []
 var folder = "user://track-shots"
 var compare = false
+var only_track = ""
 
 
 func _initialize():
@@ -49,12 +50,17 @@ func _initialize():
 			folder = arg.trim_prefix("--out=")
 		elif arg == "--compare":
 			compare = true
+		elif arg.begins_with("--track="):
+			only_track = arg.trim_prefix("--track=")
 	call_deferred("run")
 
 
 ## [track, shot, station (a corner name plus metres, or metres from the start), camera (optional)].
 func shots() -> Array:
 	return [
+		["monaco", "monaco-fairmont", ["Grand Hotel Hairpin", -30.0]],
+		["monaco", "monaco-fairmont-apex", ["Grand Hotel Hairpin", 0.0], CAM_BONNET],
+		["monaco", "monaco-pool", ["Piscine", -45.0]],
 		["proving_ground", "pg-start", -45.0],
 		["proving_ground", "pg-turn1", 200.0],
 		["proving_ground", "pg-back-straight", 550.0],
@@ -99,13 +105,18 @@ func run():
 	var helper = NightShots.new()
 	var loaded = ""
 	for shot in shots():
+		if not only_track.is_empty() and shot[0] != only_track:
+			continue
 		if shot[0] != loaded:
 			if not app.load_v2_track(shot[0]):
 				failures.append("load " + shot[0])
 				continue
 			loaded = shot[0]
 			app.start_v2_drive()
-		helper.pose(app, helper.station(app.track, shot[2]), false)
+		var at = helper.station(app.track, shot[2])
+		if shot[1].begins_with("monaco-fairmont"):
+			at = app.track.get_meta("fairmont_apex") + float(shot[2][1])
+		helper.pose(app, at, false)
 		app.settings.camera = shot[3] if shot.size() > 3 else CAM_CHASE
 		app.update_camera(1.0, true)
 		for i in 10:
@@ -127,6 +138,7 @@ func run():
 			await write_compare(shot[1], image)
 	app.queue_free()
 	await process_frame
+	helper.free()
 	print("TRACK SHOTS RESULTS ", JSON.stringify({"failures": failures}))
 	quit(0 if failures.is_empty() else 1)
 

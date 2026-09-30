@@ -137,6 +137,10 @@ landmark is used.
 
 ## ASSET-02 models (Sketchfab, downloaded by the owner 2026-09-26; reduced with tools/blender/)
 
+Monaco's Fairmont island palm: Kenney, [Nature Kit 2.1](https://kenney.nl/assets/nature-kit),
+CC0 1.0. Original `tree_palmDetailedTall.glb`, used at 4.5× scale. Model and original licence in
+`assets/nature/kenney/`.
+
 All CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified: re-oriented, scaled, split, decimated,
 textures reduced.
 

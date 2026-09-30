@@ -18,6 +18,7 @@ const TrackLights = preload("res://scripts/track/track_lights.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
 const CatchFence = preload("res://scripts/track/catch_fence.gd")
 const Grandstand = preload("res://scripts/track/grandstand.gd")
+const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 ## Corners with escape roads / run-off that carry red and white impact blocks (Commons "Portier" photo).
 const BLOCK_CORNERS = [
 	"Sainte-Devote", "Mirabeau Haute", "Grand Hotel Hairpin", "Portier", "Nouvelle Chicane", "La Rascasse"
@@ -321,12 +322,31 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 
 
 ## Low, non-colliding planting island inside the Fairmont hairpin (official trackside reference).
-static func _fairmont_island(asset: Node3D, parent: Node, road: Node, station: float, terrain: Dictionary) -> void:
+static func _fairmont_island(
+	asset: Node3D, parent: Node, road: Node, station: float, terrain: Dictionary
+) -> void:
 	var curve: Curve3D = road.working_curve()
-	# Sample far enough apart to avoid an unstable circumcentre on the shallow approach.
-	var p0 = curve.sample_baked(station - 12.0, true)
+	# The named OSM corner marker is near the exit. Centre the bed on the actual tightest bend.
+	var bend = 0.0
+	var apex = station
+	for offset in range(-40, 41, 2):
+		var at = station + offset
+		var before = curve.sample_baked(at - 4.0, true)
+		var point = curve.sample_baked(at, true)
+		var after = curve.sample_baked(at + 4.0, true)
+		var angle = absf(
+			Vector2(point.x - before.x, point.z - before.z).angle_to(
+				Vector2(after.x - point.x, after.z - point.z)
+			)
+		)
+		if angle > bend:
+			bend = angle
+			apex = at
+	station = apex
+	asset.set_meta("fairmont_apex", apex)
+	var p0 = curve.sample_baked(station - 8.0, true)
 	var p1 = curve.sample_baked(station, true)
-	var p2 = curve.sample_baked(station + 12.0, true)
+	var p2 = curve.sample_baked(station + 8.0, true)
 	var a = Vector2(p0.x, p0.z)
 	var b = Vector2(p1.x, p1.z)
 	var c = Vector2(p2.x, p2.z)
@@ -352,7 +372,7 @@ static func _fairmont_island(asset: Node3D, parent: Node, road: Node, station: f
 	bed.top_radius = 2.7
 	bed.bottom_radius = 2.9
 	bed.height = 0.32
-	bed.radial_segments = 8
+	bed.radial_segments = 24
 	var rim_mat = StandardMaterial3D.new()
 	rim_mat.albedo_color = Color(0.56, 0.48, 0.36)
 	rim_mat.roughness = 0.9
@@ -365,29 +385,38 @@ static func _fairmont_island(asset: Node3D, parent: Node, road: Node, station: f
 	soil.top_radius = 2.62
 	soil.bottom_radius = 2.62
 	soil.height = 0.04
-	soil.radial_segments = 8
-	var green_mat = StandardMaterial3D.new()
-	green_mat.albedo_color = Color(0.22, 0.34, 0.17)
-	green_mat.roughness = 1.0
-	soil.material = green_mat
+	soil.radial_segments = 24
+	var soil_mat = StandardMaterial3D.new()
+	soil_mat.albedo_color = Color(0.24, 0.20, 0.14)
+	soil_mat.roughness = 1.0
+	soil.material = soil_mat
 	var planting = MeshInstance3D.new()
 	planting.mesh = soil
 	planting.position = Vector3(center.x, ground_y + 0.34, center.y)
 	attach(asset, parent, planting, "FairmontPlanting")
-	for i in 3:
-		var shrub = SphereMesh.new()
-		shrub.radius = 0.62
-		shrub.height = 1.0
-		shrub.radial_segments = 6
-		shrub.rings = 3
-		var shrub_mat = StandardMaterial3D.new()
-		shrub_mat.albedo_color = [Color(0.34, 0.42, 0.2), Color(0.48, 0.5, 0.24), Color(0.24, 0.36, 0.17)][i]
-		shrub_mat.roughness = 1.0
-		shrub.material = shrub_mat
+	var palm = MeshInstance3D.new()
+	palm.mesh = PropMesh.mesh("res://assets/nature/kenney/palm.glb")
+	for surface in palm.mesh.get_surface_count():
+		var material = palm.mesh.surface_get_material(surface).duplicate()
+		material.albedo_color = Color("556b2f") if material.resource_name == "leafsGreen" else Color("77614b")
+		material.metallic = 0.0
+		material.roughness = 0.9
+		palm.set_surface_override_material(surface, material)
+	palm.scale = Vector3.ONE * 4.5
+	palm.position = Vector3(center.x, ground_y + 0.58, center.y)
+	attach(asset, parent, palm, "FairmontPalm")
+	var shrub = PropMesh.mesh("res://assets/nature/rocks-foliage/grass_bush.glb")
+	for i in 7:
 		var bush = MeshInstance3D.new()
 		bush.mesh = shrub
-		var angle = TAU * i / 3.0
-		bush.position = Vector3(center.x + cos(angle) * 1.25, ground_y + 0.82, center.y + sin(angle) * 1.25)
+		var angle = TAU * i / 6.0
+		var radius = 0.0 if i == 6 else 1.55
+		bush.position = Vector3(
+			center.x + cos(angle) * radius, ground_y + 0.36, center.y + sin(angle) * radius
+		)
+		bush.rotation.y = angle
+		bush.scale = Vector3.ONE * (1.3 if i == 6 else 1.1)
+		bush.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		attach(asset, parent, bush, "FairmontShrub%d" % i)
 
 
