@@ -87,6 +87,7 @@ func _physics_process(_dt):
 	check(retained, "barriers remain on the Tabac approach outside the Swimming Pool chicanes")
 	for name in ["HarbourStand", "PoolStand"]:
 		var stand = asset.get_node(name)
+		check(stand.offset == 5.0, name + " sits close behind the track barriers")
 		var mesh = asset.get_node("Scenery/" + name).mesh
 		var arrays = mesh.surface_get_arrays(0)
 		var vertices = arrays[Mesh.ARRAY_VERTEX]

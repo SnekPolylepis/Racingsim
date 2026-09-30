@@ -33,7 +33,8 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   local heights and slopes are authored approximations, not surveyed ground truth.
 - Track version 3 uses the mapped raceway entry/exit to open both Swimming Pool chicanes, with 4 m
   paved escape bands. The Tabac approach retains its barriers. Pool stands use open supports and
-  alpha-cut spectator silhouettes instead of solid back/end/riser walls and opaque noise cards.
+  alpha-cut spectator silhouettes instead of solid back/end/riser walls and opaque noise cards; they
+  now sit 5 m beyond the verge to reduce the empty apron between the track and seating.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
 - Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
 - Formula presets use a slower steering-lock falloff, matching their high steering authority at the Fairmont

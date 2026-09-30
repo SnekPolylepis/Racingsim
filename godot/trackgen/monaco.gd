@@ -211,7 +211,8 @@ static func build_asset() -> Node3D:
 		gs.solid_front = st[0] not in ["HarbourStand", "PoolStand"]
 		gs.open_structure = not gs.solid_front
 		if gs.open_structure:
-			gs.offset = 10.0
+			# Temporary Pool stands sit close behind the catch fence, as in trackside photos.
+			gs.offset = 5.0
 		attach(asset, asset, gs, st[0])
 		gs.bake()
 	_yachts(asset, scenery, d.piers)
