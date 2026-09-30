@@ -117,7 +117,7 @@ static func build(
 				tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 				tools.append(tool)
 			chunks[key] = tools
-		_crossing(chunks[key], at, i, box)
+		_crossing(chunks[key], at, i, box, stations)
 		if crossings.find(i) % L_EVERY == L_PHASE:
 			pass  # The real L is built from OSM by chicago_l.gd.
 	for key in chunks:
@@ -146,7 +146,7 @@ static func build(
 		var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
 		var basis = Basis.looking_at(-flat, Vector3.UP).scaled(Vector3.ONE * 0.65)
 		signals.set_instance_transform(
-			n, Transform3D(basis, at.pos - flat * 9.0 - flat.cross(Vector3.UP) * 11.5)
+			n, Transform3D(basis, pole_foot(stations, at, -9.0, -flat.cross(Vector3.UP), 11.5))
 		)
 	var signal_node = MultiMeshInstance3D.new()
 	signal_node.multimesh = signals
@@ -162,7 +162,27 @@ static func _plain(c: Color) -> StandardMaterial3D:
 	return m
 
 
-static func _crossing(tools: Array, at: Dictionary, index: int, box: Callable) -> void:
+## Local station offsets can cut inside the next section of a sharp turn. Move the support out
+## until it clears every nearby road section on this deck; the mast arm can still reach over traffic.
+static func pole_foot(stations: Array, at: Dictionary, lead: float, side: Vector3, offset: float) -> Vector3:
+	var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
+	var foot = at.pos + flat * lead + side * offset
+	while true:
+		var clear = true
+		for station in stations:
+			if (
+				absf(station.pos.y - foot.y) < 2.0
+				and Vector2(station.pos.x - foot.x, station.pos.z - foot.z).length_squared() < 100.0
+			):
+				clear = false
+				break
+		if clear:
+			return foot
+		foot += side * 2.0
+	return foot
+
+
+static func _crossing(tools: Array, at: Dictionary, index: int, box: Callable, stations: Array) -> void:
 	var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
 	var basis = Basis.looking_at(flat, Vector3.UP)
 	var right = basis.x
@@ -185,7 +205,7 @@ static func _crossing(tools: Array, at: Dictionary, index: int, box: Callable) -
 		basis
 	)
 	# Mast arm on the far right corner, reaching over the lanes.
-	var foot = base + flat * 9.0 + right * POLE_OFFSET
+	var foot = pole_foot(stations, at, 9.0, right, POLE_OFFSET)
 	box.call(
 		tools[1], foot + Vector3(0, ARM_HEIGHT * 0.5, 0), Vector3(0.32, ARM_HEIGHT, 0.32), Color.WHITE, basis
 	)

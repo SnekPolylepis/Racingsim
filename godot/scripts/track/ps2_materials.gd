@@ -49,9 +49,10 @@ static func ground(sid: int) -> ShaderMaterial:
 	var mat = ShaderMaterial.new()
 	mat.shader = GROUND_SHADER
 	for kind in [["grass", "grass_ground"], ["gravel", "gravel_floor"], ["runoff", "asphalt_track"]]:
-		mat.set_shader_parameter(kind[0] + "_albedo", tex(kind[1], "diff"))
-		mat.set_shader_parameter(kind[0] + "_normal", tex(kind[1], "nor_gl"))
-		mat.set_shader_parameter(kind[0] + "_rough", tex(kind[1], "rough"))
+		for map in [["albedo", "diff"], ["normal", "nor_gl"], ["rough", "rough"]]:
+			var path = HD + kind[1] + "/" + kind[1] + "_" + map[1] + ".jpg"
+			var texture = load(path) if ResourceLoader.exists(path) else tex(kind[1], map[1])
+			mat.set_shader_parameter(kind[0] + "_" + map[0], texture)
 	var img = Image.create(1, 1, false, Image.FORMAT_RGB8)
 	img.set_pixel(
 		0, 0, Color(1, 0, 0) if sid == GRAVEL else (Color(0, 1, 0) if sid == RUNOFF else Color(0, 0, 0))

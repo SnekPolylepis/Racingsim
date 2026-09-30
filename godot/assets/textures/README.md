@@ -18,3 +18,7 @@ Maps per set: `_diff` (albedo, sRGB), `_nor_gl` (OpenGL-convention normal map, w
 Chicago sets use their original 1K source maps without downsampling. They are CC0 1.0 from
 Poly Haven; the water movement is an original time-driven shader (`shaders/chicago_water.gdshader`),
 not a downloaded texture. See `THIRD-PARTY.md` for set-specific credits and packaged licensing.
+
+Ground materials now prefer the original 2K grass/gravel maps in `assets/textures_hd/`,
+with source URLs/hashes in `assets/textures_hd/ground-sources.json`. The palette maps
+remain available for legacy asset tools; runtime terrain uses world-projected normal detail.

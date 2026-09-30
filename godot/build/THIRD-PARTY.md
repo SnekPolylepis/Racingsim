@@ -137,6 +137,10 @@ landmark is used.
 
 ## ASSET-02 models (Sketchfab, downloaded by the owner 2026-09-26; reduced with tools/blender/)
 
+Monaco's Fairmont island palm: Kenney, [Nature Kit 2.1](https://kenney.nl/assets/nature-kit),
+CC0 1.0. Original `tree_palmDetailedTall.glb`, used at 4.5× scale. Model and original licence in
+`assets/nature/kenney/`.
+
 All CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified: re-oriented, scaled, split, decimated,
 textures reduced.
 
@@ -166,3 +170,12 @@ textures reduced.
 | Red Bull RB19 model ("RB19_Verstappen") | dondifur, Sketchfab fa39f15a0cbe4386a305596a021789e8 | CC BY 4.0 | godot/assets/cars/rb19/ |
 | Autodromo Nazionale Monza Circuit 2020 layout | Tyler_Dave (Dave Love), Sketchfab 25ed955115094de382935aa6d1a1e9c6 | CC BY 4.0 | godot/assets/tracks/monza/ |
 | Monza GP centreline | OpenStreetMap contributors | ODbL 1.0 | godot/trackgen/data/monza/ |
+
+### Circuit ground detail (2026-09-30)
+
+Poly Haven CC0 1.0 [grass_ground](https://polyhaven.com/a/grass_ground) and
+[gravel_floor](https://polyhaven.com/a/gravel_floor), original 2K diffuse, roughness and
+OpenGL normal maps, in `assets/textures_hd/`. Source download URLs and SHA-256 hashes
+are in `assets/textures_hd/ground-sources.json`; each download's MD5 was checked against
+the Poly Haven API. These replace the small palette ground maps at runtime.
+[Poly Haven licence](https://polyhaven.com/license); the existing CC0 legal text applies.

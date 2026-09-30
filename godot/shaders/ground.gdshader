@@ -61,4 +61,13 @@ void fragment() {
 	SPECULAR = mix(0.0, 0.3, t);
 	vec3 ng = mix(texture(grass_normal, g1).rgb, texture(grass_normal, g2).rgb, far);
 	vec3 np = texture(gravel_normal, p1).rgb;
+	vec3 nr = texture(runoff_normal, r1).rgb;
+	// World-projected UVs need a world-projected normal frame. Terrain meshes have no UV tangents;
+	// simply assigning NORMAL_MAP leaves them flat or aligns the detail to unrelated road UVs.
+	vec3 detail = mix(mix(ng, np, m), nr, t) * 2.0 - 1.0;
+	vec3 east = (VIEW_MATRIX * vec4(1.0, 0.0, 0.0, 0.0)).xyz;
+	vec3 south = (VIEW_MATRIX * vec4(0.0, 0.0, 1.0, 0.0)).xyz;
+	vec3 tangent = normalize(east - NORMAL * dot(east, NORMAL));
+	vec3 bitangent = normalize(south - NORMAL * dot(south, NORMAL));
+	NORMAL = normalize(NORMAL * detail.z + (tangent * detail.x + bitangent * detail.y) * mix(0.32, 0.12, far));
 }

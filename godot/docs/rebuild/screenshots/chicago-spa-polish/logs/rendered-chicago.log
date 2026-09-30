@@ -1,0 +1,44 @@
+Godot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 (Apple9)
+
+PASS TrackAsset contract: []
+PASS Bake without warnings
+PASS Closed lap length 8161.2 m
+PASS Full lap tarmac width ±7 m: 0 misses
+PASS Surface/line height error 0.0048 m
+PASS Maximum grade 6.01%
+PASS 3 m headroom throughout lap: 0 intrusions
+PASS Wacker deck at 0 m
+PASS Projection selects 0 m deck
+PASS Wacker deck at 8 m
+PASS Projection selects 8 m deck
+PASS Upper road cannot trigger lower timing gates
+PASS Grid slot on tarmac
+PASS Grid slot on tarmac
+PASS Grid slot on tarmac
+PASS Grid slot on tarmac
+PASS Landmark: Bean
+PASS Landmark: Willis Tower
+PASS Landmark: Navy Pier
+PASS Landmark: Chicago River
+PASS Landmark: Lake Michigan
+PASS Landmark: Wrigley Building
+PASS Landmark: Tribune Tower
+PASS Landmark: Chicago Board of Trade
+PASS Landmark: Michigan Avenue Bridge
+PASS Landmark: State Street Bridge
+PASS Landmark: LaSalle Street Bridge
+PASS Closed bascule bridge rails keep skyline open
+PASS Mapped park footpaths included in committed city meshes
+PASS Traffic signal supports clear both decks and curved driving corridor
+PASS Measured stepped roofs never receive unsupported generic roof props
+PASS Actual elevated L supports stay outside authored road widths
+PASS Tree crowns keep Cloud Gate's plaza and west approach clear
+PASS Batched boxes preserve authored dimensions and rotated local axes
+PASS Chicago scene packs for cache
+PASS Chicago lighting cache saves
+PASS Cached lights follow Afterhours=true
+PASS Cached lights follow Afterhours=false
+PASS Cached lights follow Afterhours=true
+PASS Cached lights follow Afterhours=false
+CHICAGO RESULTS {"checks":40,"failures":[],"length_m":8161.20169752836,"max_grade":0.0601442059254477}

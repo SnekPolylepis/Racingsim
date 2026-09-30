@@ -76,6 +76,8 @@ func bake() -> void:
 
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# Opposing canopy faces need separate normals; smoothing cancels their lighting.
+	st.set_smooth_group(-1)
 	var col_concrete = Color(0.72, 0.73, 0.75)
 	var col_seats = Color(0.2, 0.45, 0.78)
 	var col_roof = Color(0.35, 0.38, 0.42)

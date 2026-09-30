@@ -1,0 +1,36 @@
+{
+  "engine": "Godot 4.6.2 stable",
+  "platform": "Apple M4 / macOS / Metal Forward+",
+  "base": "5a832e5",
+  "branch": "codex/chicago-spa-polish",
+  "lap_step_m": 350,
+  "lap_review": {
+    "chicago": {
+      "day_frames": 24,
+      "night_frames": 24
+    },
+    "spa": {
+      "day_frames": 20,
+      "night_frames": 20
+    }
+  },
+  "notes": [
+    "Shots use main game scene with frozen camera/pose; automated driving is verified separately.",
+    "Spa sheets precede final canopy normal repair; focused pit image records the final fix.",
+    "Existing ObjectDB cleanup warning appears at capture exit; no script errors."
+  ],
+  "files": {
+    "chicago-day-sheet.jpg": "772791b6e4595508bcd5e6ae2a1ce4e9a53492f533873acffeec9c41e2ff4ecc",
+    "chicago-night-sheet.jpg": "9a883b08b52a098165f086dee6ad489ab29724f18256b778aafbcf35ff0c5383",
+    "spa-day-sheet.jpg": "5effe708b9563d93d10f847398c95aeefbaeabd29a6a43aec83baf5da25f8df4",
+    "spa-night-sheet.jpg": "643c01e5f9066ce10a533a2d0848b74756b54726ebd96bac1ffb46864086ca22",
+    "chicago-bean-day.png": "5890b9804319e4070a57e9b144faf14a8244369ba3465454ec47eac98445f2a7",
+    "chicago-riverwalk-day.png": "eb651da28e69d0e02a91b2484b9594921593c2823efe940e8140537e1bc36f4a",
+    "chicago-dusable-day.png": "e7bfb9e85816a5980fce6acedc881574656bfdd516205a56cb2bb3da0774ad98",
+    "chicago-pier-day.png": "6f21b4c15bb78c9e3ce567637c55a3b9ba2ed8cec8bf46b691ed3358e047525a",
+    "chicago-l-clearance-day.png": "7c03dad0ffaba5fd2ddc350606f1e5b0ac455ee95afa232619e26622e5408ad2",
+    "chicago-loop-night.png": "331c2435260a930aaad95e7abd8b11c45d2f591b80c1df11b28de74973e33705",
+    "spa-pit-day.png": "c690d269bf49292161e607625704133c006750afa8786c847b69214b2209659b",
+    "spa-raidillon-day.png": "6220860d969a3002e805d26774feee52b164aa37d50b81b4b83c0739578d8529"
+  }
+}

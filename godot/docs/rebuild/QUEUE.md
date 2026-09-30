@@ -96,3 +96,9 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | P7-01b | Move the SURF table out of track3d.gd; fold car.gd into CarBody; rewrite aids_simcade and flat_equivalence without CarModel; delete track.gd, track3d.gd, tests/dynamics.gd and baseline.json | Claude | P7-01a | done 2026-09-23 (`rb/P7-01b-carmodel`) | |
 | P7-03 | Release packaging (Windows + macOS exports, changelog): first done as v0.1.0-preview.1 | Claude | | done (preview) | re-run per release |
 | PHYS-IZZ | Solver creep at low yaw inertia: a car at rest on flat ground yaws forever (0.04-0.06 rad/s, front wheels counter-rotating) when `izz` is below ~1000-1400 kg m² for its size. F2004/RB19 presets avoid it with realistic izz; the static-friction / low-speed tyre solver should settle for any plausible inertia. Repro: `chassis_spike.gd` "rests on flat" with the f2004 preset at izz 665. Keep the semi-implicit need clamps. | Claude | | open | Found 2026-09-29; GitHub issue |
+
+## Owner-directed visual completion (2026-09-30)
+
+| ID | Task | Who | Needs | Status | Branch / notes |
+|---|---|---|---|---|---|
+| CHI-SPA-POLISH | Finish Chicago and Spa presentation against real-place/game references, with full-lap review and a playable Mac preview | Codex + owner-authorized subagents | | done | `codex/chicago-spa-polish`, from newest GitHub branch `codex/all-project-updates-20260930` (`5a832e5`); retain separately per owner |

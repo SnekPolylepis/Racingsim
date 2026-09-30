@@ -1,4 +1,4 @@
-﻿extends SceneTree
+extends SceneTree
 ## CHI-01. Authored race route on Chicago's geographic scaffold, with explicit game-only connectors.
 ## Source/provenance: trackgen/data/chicago/README.md. Heights and corner easing are authored.
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
@@ -136,6 +136,7 @@ static func multimesh_boxes(
 	if entries.is_empty():
 		return
 	var mesh = BoxMesh.new()
+	mesh.size = Vector3.ONE
 	mesh.material = mat
 	var instances = MultiMesh.new()
 	instances.transform_format = MultiMesh.TRANSFORM_3D
@@ -144,7 +145,7 @@ static func multimesh_boxes(
 	for i in entries.size():
 		var entry = entries[i]
 		var basis: Basis = entry[2] if entry.size() > 2 else Basis.IDENTITY
-		instances.set_instance_transform(i, Transform3D(basis.scaled(entry[1]), entry[0]))
+		instances.set_instance_transform(i, Transform3D(basis * Basis.from_scale(entry[1]), entry[0]))
 	var node = MultiMeshInstance3D.new()
 	node.multimesh = instances
 	attach(asset, parent, node, title)
@@ -168,7 +169,7 @@ static func build_asset() -> Node3D:
 	var asset = TrackAsset.new()
 	asset.name = "Chicago"
 	asset.id = "chicago"
-	asset.display_name = "Chicago â€” River & Lake"
+	asset.display_name = "Chicago — River & Lake"
 	asset.version = 2
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
@@ -328,19 +329,39 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	box(asset, parent, "MillenniumPark", world([41.8821, -87.6226, 7.6]), Vector3(210, .6, 380), lawn)
 	box(asset, parent, "GrantPark", world([41.8800, -87.6210, 7.3]), Vector3(440, .5, 260), lawn)
 	box(asset, parent, "Lakefront", world([41.8800, -87.6166, 6.8]), Vector3(65, .5, 470), pier_walk)
-	# The Riverwalk runs along the water below both road levels (CHI-SC-4): at street height (8.2) these slabs
-	# crossed Upper Wacker 0.4 m above the road.
-	box(
-		asset, parent, "RiverwalkPromenade", world([41.8871, -87.6261, -1.5]), Vector3(22, .3, 170), pier_walk
-	)
-	box(
-		asset,
-		parent,
-		"RiverwalkPromenadeWest",
-		world([41.8870, -87.6309, -1.5]),
-		Vector3(16, .3, 135),
-		pier_walk
-	)
+	# Riverwalk follows the mapped south bank at river level, below Upper Wacker.
+	# The old two floating rectangles sat below WATER_Y and never read as a promenade.
+	var bank = [
+		Vector3(-945.5, 2.65, -244.7),
+		Vector3(-914.5, 2.65, -263.5),
+		Vector3(-813.3, 2.65, -266.4),
+		Vector3(-695.1, 2.65, -267.4),
+		Vector3(-566.3, 2.65, -265.7),
+		Vector3(-447.5, 2.65, -270.4),
+		Vector3(-321.8, 2.65, -270.5),
+		Vector3(-282.3, 2.65, -274.2)
+	]
+	var rails: Array = []
+	var deck: Array = []
+	var stone_cap: Array = []
+	for i in bank.size() - 1:
+		var a: Vector3 = bank[i]
+		var b: Vector3 = bank[i + 1]
+		var tangent = (b - a).normalized()
+		var south = tangent.cross(Vector3.UP)
+		var basis = Basis.looking_at(tangent, Vector3.UP)
+		var mid = (a + b) * .5 - south * 4.0
+		deck.append([mid, Vector3(8, .5, a.distance_to(b) + .2), basis])
+		var edge = mid - south * 3.65
+		stone_cap.append([edge, Vector3(.55, .55, a.distance_to(b)), basis])
+		rails.append([edge + Vector3.UP * 1.05, Vector3(.08, .08, a.distance_to(b)), basis])
+		var n = ceili(a.distance_to(b) / 3.0)
+		for k in n:
+			var at = a.lerp(b, float(k) / n) - south * 7.65
+			rails.append([at + Vector3.UP * .6, Vector3(.08, 1.1, .08)])
+	multimesh_boxes(asset, parent, "RiverwalkPromenade", pier_walk, deck)
+	multimesh_boxes(asset, parent, "RiverwalkCoping", cc0_material("Travertine009"), stone_cap)
+	multimesh_boxes(asset, parent, "RiverwalkRailings", material(Color("253c38")), rails)
 
 
 static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
@@ -465,15 +486,21 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	# The Bean: John Helman's CC BY 4.0 Cloud Gate model (20 x 13 x 10 m) in the chrome material.
 	var bean = world(data().landmarks["Bean"])
 	box(asset, parent, "CloudGatePlaza", bean + Vector3(0, -.1, 0), Vector3(70, .3, 60), stone)
+	# A paved west approach connects the plaza to Michigan Avenue through the park trees.
+	box(
+		asset,
+		parent,
+		"CloudGateWestApproach",
+		Vector3((12.0 + bean.x - 35.0) * .5, bean.y - .1, bean.z),
+		Vector3(bean.x - 47.0, .3, 12.0),
+		stone
+	)
 	var bean_mesh = PropMesh.mesh("res://assets/chicago/landmarks/bean.glb").duplicate()
 	for i in bean_mesh.get_surface_count():
 		bean_mesh.surface_set_material(i, silver)
 	mesh_node(asset, parent, "BeanArch", bean_mesh, bean + Vector3(0, 0.05, 0))
-	# Navy Pier: long low pier, pavilion sheds and the Centennial Wheel silhouette.
+	# Navy Pier decks and exhibition halls are dressed by ChicagoHarbor; retain the wheel landmark.
 	var pier = world(data().landmarks["Navy Pier"])
-	box(asset, parent, "NavyPier", pier + Vector3(190, -.5, 0), Vector3(800, 2, 80), stone)
-	for i in 6:
-		box(asset, parent, "PierPavilion%d" % i, pier + Vector3(i * 95, 9, 0), Vector3(80, 18, 48), stone)
 	var wheel = TorusMesh.new()
 	wheel.inner_radius = 28
 	wheel.outer_radius = 29.5
@@ -558,14 +585,37 @@ static func add_loop_landmarks(
 		cap.material = stone
 		mesh_node(asset, parent, "WrigleyCrown", cap, wrigley + Vector3(tower[0], tower[1] + 4, 0))
 	multimesh_boxes(asset, parent, "WrigleyTerraCottaBands", material(Color("e5ddc7")), terra_cotta_bands)
-	box(
-		asset,
-		parent,
-		"WrigleyClock",
-		wrigley + Vector3(-30, 112, 15),
-		Vector3(7, 7, .8),
-		night_material(Color("f0dfb1"), .75)
-	)
+	# Wrigley's four clock faces are its readable street-level signature.
+	var dial = CylinderMesh.new()
+	dial.top_radius = 3.5
+	dial.bottom_radius = 3.5
+	dial.height = .3
+	dial.radial_segments = 32
+	dial.material = night_material(Color("f0dfb1"), .55)
+	var clock_at = wrigley + Vector3(-30, 112, 15)
+	var clock = mesh_node(asset, parent, "WrigleyClock", dial, clock_at)
+	clock.rotation_degrees.x = 90
+	var clock_marks: Array = []
+	for i in 12:
+		var ang = TAU * i / 12.0
+		clock_marks.append(
+			[
+				clock_at + Vector3(sin(ang) * 2.9, cos(ang) * 2.9, .22),
+				Vector3(.18, .55, .08),
+				Basis(Vector3.FORWARD, ang)
+			]
+		)
+	for hand in [[-.7, 1.7], [.95, 2.5]]:
+		var direction = Vector3(sin(hand[0]), cos(hand[0]), 0)
+		clock_marks.append(
+			[
+				clock_at + direction * hand[1] * .5 + Vector3(0, 0, .26),
+				Vector3(.2, hand[1], .1),
+				Basis(Vector3.FORWARD, hand[0])
+			]
+		)
+	multimesh_boxes(asset, parent, "WrigleyClockHandsAndHours", material(Color("292e2a")), clock_marks)
+
 	# Tribune Tower: pale neo-Gothic vertical piers with a steep central spire.
 	var tribune = world([41.8905, -87.6230, 8])
 	var tribune_piers: Array = []
@@ -588,13 +638,15 @@ static func add_loop_landmarks(
 	var board = world([41.8787, -87.6325, 8])
 	var tiers = [[0.0, 100.0, 84.0], [100.0, 48.0, 66.0], [148.0, 36.0, 44.0]]
 	for tier in tiers:
-		box(
+		facade_block(
 			asset,
 			parent,
 			"BoardOfTradeSetback",
 			board + Vector3(0, tier[1] * .5 + tier[0], 0),
-			Vector3(tier[2], tier[1], tier[2] * .78),
-			material(Color("b9aa8e"))
+			Vector2(tier[2], tier[2] * .78),
+			tier[1],
+			"stone",
+			.44
 		)
 		box(
 			asset,
@@ -611,10 +663,12 @@ static func add_loop_landmarks(
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:
-	var steel = material(Color("36474b"))
-	steel.metallic = .7
-	steel.roughness = .36
-	var stone = material(Color("d1c3a6"))
+	# Closed bascule bridges: riveted red-brown girders below the boulevard, not overhead trusses.
+	# DuSable's Beaux Arts bridgehouses / pylons follow the Chicago Architecture Center reference.
+	var steel = material(Color("593d32"))
+	steel.metallic = .55
+	steel.roughness = .6
+	var stone = cc0_material("Travertine009")
 	var spans = [
 		["MichiganAvenueBridge", 41.88865, -87.6245, 90.0],
 		["StateStreetBridge", 41.8888, -87.6270, 60.0],
@@ -623,43 +677,49 @@ static func add_river_bridges(asset: Node3D, parent: Node) -> void:
 	var steel_boxes: Array = []
 	var deck_boxes: Array = []
 	var house_boxes: Array = []
-	# CHI-LOOK-01: the bridges run north-south across the east-west river (they were laid along it), and sit
-	# under the street level instead of 1.2 m above it. Bridge houses stand at the far (north) corners only,
-	# clear of the Michigan turn.
+	var window_boxes: Array = []
 	for span in spans:
 		var anchor = world([span[1], span[2], 8]) + Vector3(0, -1.25, 0)
 		var length: float = span[3]
 		deck_boxes.append([anchor, Vector3(23, 2.4, length)])
 		for side in [-1, 1]:
-			steel_boxes.append([anchor + Vector3(side * 10.4, 8, 0), Vector3(1.1, 1.1, length)])
-			for i in range(0, int(length), 8):
+			# Low pedestrian rail over a deep side girder; lower-deck bracing visible from the river.
+			steel_boxes.append([anchor + Vector3(side * 11.1, -.6, 0), Vector3(.5, 2.0, length)])
+			for y in [1.65, 2.6]:
+				steel_boxes.append([anchor + Vector3(side * 11.1, y, 0), Vector3(.22, .18, length)])
+			for i in range(0, int(length), 3):
 				var z = -length * .5 + i
-				steel_boxes.append([anchor + Vector3(side * 10.4, 5.0, z), Vector3(.75, 7.0, .75)])
-				steel_boxes.append(
-					[
-						anchor + Vector3(side * 10.4, 5.0, z + 4),
-						Vector3(8.5, .55, .55),
-						Basis(Vector3.UP, PI * .5 + 0.74)
-					]
-				)
+				steel_boxes.append([anchor + Vector3(side * 11.1, 2.0, z), Vector3(.18, 1.3, .18)])
+				if i % 6 == 0:
+					steel_boxes.append([anchor + Vector3(side * 11.1, -.6, z), Vector3(.18, 2.5, .18)])
 		for side in [-1, 1]:
-			var house = anchor + Vector3(side * 22, 0, -(length * .5 + 12))
-			house_boxes.append([house + Vector3(0, 8, 0), Vector3(18, 16, 21)])
-			house_boxes.append([house + Vector3(0, 16.5, 0), Vector3(20, 1.2, 23)])
+			# Keep the southern houses clear of the fictional Lower Wacker racing approach.
+			var house = anchor + Vector3(side * 19, 0, -(length * .5 + 9))
+			house_boxes.append([house + Vector3(0, 4.0, 0), Vector3(9, 8, 10)])
+			house_boxes.append([house + Vector3(0, 8.3, 0), Vector3(10.2, .7, 11.2)])
+			house_boxes.append([house + Vector3(0, 9.0, 0), Vector3(9.5, .5, 10.5)])
+			for x in [-3.75, 3.75]:
+				house_boxes.append([house + Vector3(x, 4.6, 5.15), Vector3(.7, 7.0, .5)])
+			for x in [-2.4, 0.0, 2.4]:
+				window_boxes.append([house + Vector3(x, 5.8, 5.04), Vector3(1.35, 2.5, .12)])
+				house_boxes.append([house + Vector3(x, 4.4, 5.2), Vector3(1.65, .3, .4)])
+			# Compact copper roof, ornamental cap and sculptural panel instead of a fantasy spire.
 			var roof = PrismMesh.new()
-			roof.size = Vector3(20, 7, 23)
-			roof.material = steel
-			mesh_node(asset, parent, span[0] + "BridgeHouseRoof", roof, house + Vector3(0, 20, 0))
-			steel_boxes.append([house + Vector3(0, 26, 0), Vector3(4, 13, 4)])
-			for y in [20.0, 25.0, 31.0]:
-				steel_boxes.append([house + Vector3(0, y, 0), Vector3(11, .65, .65)])
+			roof.size = Vector3(10, 2.6, 11)
+			roof.material = material(Color("42564f"))
+			mesh_node(asset, parent, span[0] + "BridgeHouseRoof", roof, house + Vector3(0, 10.45, 0))
+			house_boxes.append([house + Vector3(0, 2.2, 5.2), Vector3(5.0, 2.2, .25)])
+			for x in [-3.7, 3.7]:
+				house_boxes.append([house + Vector3(x, 9.7, 0), Vector3(.8, 1.0, .8)])
 	multimesh_boxes(asset, parent, "ChicagoBridgeDecks", material(Color("4b5352")), deck_boxes)
 	multimesh_boxes(asset, parent, "ChicagoBridgeSteel", steel, steel_boxes)
 	multimesh_boxes(asset, parent, "ChicagoBridgeHouses", stone, house_boxes)
+	multimesh_boxes(asset, parent, "ChicagoBridgeHouseWindows", material(Color("1d2e33")), window_boxes)
 
 
 static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
-	var concrete = material(Color("737b79"))
+	var concrete = cc0_material("Concrete034")
+	concrete.albedo_color = Color("a4aaa5")
 	var st = road.last_bake.stations
 	var count = 0
 	var deck_tool = SurfaceTool.new()
@@ -933,8 +993,21 @@ const SIGN_FONT = preload("res://assets/fonts/Rajdhani-Bold.ttf")
 const SIGNS = "res://trackgen/data/chicago/signs.json"
 ## Category -> colour index: bars/clubs magenta, food red/amber, cafes green, hotels violet, shops cyan.
 const SIGN_COLOR = {
-	"bar": 0, "pub": 0, "nightclub": 0, "casino": 0, "shop": 1, "pharmacy": 1, "bank": 1,
-	"cafe": 2, "ice_cream": 2, "restaurant": 3, "fast_food": 5, "hotel": 4, "cinema": 4, "theatre": 4, "museum": 4
+	"bar": 0,
+	"pub": 0,
+	"nightclub": 0,
+	"casino": 0,
+	"shop": 1,
+	"pharmacy": 1,
+	"bank": 1,
+	"cafe": 2,
+	"ice_cream": 2,
+	"restaurant": 3,
+	"fast_food": 5,
+	"hotel": 4,
+	"cinema": 4,
+	"theatre": 4,
+	"museum": 4
 }
 
 
@@ -1015,7 +1088,13 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		sign.set_meta("chicago_night", true)
 		attach(asset, parent, sign, "Sign%d" % placed.size())
 		var basis = Basis.looking_at(along, Vector3.UP)
-		facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.1, .08, 3.0 + sign.text.length() * .35), Color.WHITE, basis)
+		facade_box(
+			tools[k],
+			base + Vector3(0, y, 0),
+			Vector3(.1, .08, 3.0 + sign.text.length() * .35),
+			Color.WHITE,
+			basis
+		)
 		if lights < 120 and placed.size() % 2 == 0:
 			lights += 1
 			var light = OmniLight3D.new()

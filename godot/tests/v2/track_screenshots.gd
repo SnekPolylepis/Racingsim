@@ -3,6 +3,7 @@ extends SceneTree
 ## presentation chain (the default 640x448 Authentic look), HUD hidden. Run windowed (never
 ## --headless), with the flow-test flag so the user's settings file is untouched:
 ##   tools/Godot.exe --path . --script tests/v2/track_screenshots.gd -- --v2-flow-test [--track=monaco] [--out=<dir>] [--compare]
+## --night selects Afterhours; --track=<id> --lap-step=<metres> surveys the whole lap.
 ## Writes <dir>/<shot>.png (default user://track-shots) and prints TRACK SHOTS RESULTS.
 ## --compare additionally writes <dir>/<shot>-compare.png for every shot with a reference frame in
 ## docs/art/reference/ (REFERENCE_MAP below): ours on the left, the reference on the right, both labelled.
@@ -42,6 +43,8 @@ var failures = []
 var folder = "user://track-shots"
 var compare = false
 var only_track = ""
+var night = false
+var lap_step = 0.0
 
 
 func _initialize():
@@ -52,6 +55,10 @@ func _initialize():
 			compare = true
 		elif arg.begins_with("--track="):
 			only_track = arg.trim_prefix("--track=")
+		elif arg == "--night":
+			night = true
+		elif arg.begins_with("--lap-step="):
+			lap_step = maxf(50.0, arg.trim_prefix("--lap-step=").to_float())
 	call_deferred("run")
 
 
@@ -100,11 +107,25 @@ func run():
 	root.add_child(app)
 	await process_frame
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))
-	app.settings.time_of_day = 0
+	app.settings.time_of_day = 1 if night else 0
 	app.apply_time_of_day()
 	var helper = NightShots.new()
 	var loaded = ""
-	for shot in shots():
+	var views = shots()
+	if lap_step > 0.0 and not only_track.is_empty():
+		if not app.load_v2_track(only_track):
+			quit(1)
+			return
+		loaded = only_track
+		app.start_v2_drive()
+		app.settings.time_of_day = 1 if night else 0
+		app.apply_time_of_day()
+		views = []
+		var distance = 0.0
+		while distance < app.track.length:
+			views.append([only_track, "%s-%04d" % [only_track, int(distance)], distance])
+			distance += lap_step
+	for shot in views:
 		if not only_track.is_empty() and shot[0] != only_track:
 			continue
 		if shot[0] != loaded:
@@ -113,10 +134,12 @@ func run():
 				continue
 			loaded = shot[0]
 			app.start_v2_drive()
+			app.settings.time_of_day = 1 if night else 0
+			app.apply_time_of_day()
 		var at = helper.station(app.track, shot[2])
 		if shot[1].begins_with("monaco-fairmont"):
 			at = app.track.get_meta("fairmont_apex") + float(shot[2][1])
-		helper.pose(app, at, false)
+		helper.pose(app, at, night)
 		app.settings.camera = shot[3] if shot.size() > 3 else CAM_CHASE
 		app.update_camera(1.0, true)
 		for i in 10:
