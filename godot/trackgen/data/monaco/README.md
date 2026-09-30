@@ -50,12 +50,13 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   the planting island, focused captures and input-path acceptance runs. The bed has 9.35 m centreline
   clearance; it uses the existing credited foliage plus a recoloured CC0 Kenney palm.
 - `tests/v2/monaco.gd` also drives both formulas through Fairmont using injected W/A/S/D or controller
-  events, with default keyboard ramps and controller deadzone/linearity, in both handling models.
+  events at 100 ms decision intervals, with default keyboard ramps and controller deadzone/linearity,
+  in both handling models.
   All eight cases must finish without off-track wheel ticks or wall contacts and stay above 24.5 km/h.
   The driving reference is automated; these runs do not establish human playtest acceptance.
-- The optional `--slow-input` diagnostic holds input decisions for 100 ms. The current controller
-  cases pass, but three keyboard cases fail: F2004 Simcade drops below the speed threshold, and
-  RB19 has off-track wheel ticks in both models plus wall contact in Simulation. This remains open.
+- The 2026-09-29 100 ms run passes all eight cases at minimum speeds of 25.19–31.70 km/h.
+  Earlier coarse keyboard failures came from the replay releasing a key when full requested input
+  equalled current input; it now holds full steering/pedal requests. Production controls are unchanged.
 
 Daylight screenshots through the main game's presentation chain (separate from the standalone
 track-drive captures): `--script tests/v2/track_screenshots.gd -- --v2-flow-test --track=monaco

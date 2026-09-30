@@ -181,8 +181,7 @@ func _physics_process(_dt):
 	return true
 
 
-## Automated driving reference passed through the player's keyboard ramps or controller mapping.
-## --slow-input holds decisions for 100 ms to expose sensitivity to coarse human input timing.
+## Automated driving reference passed through the player's keyboard ramps or controller mapping at 10 Hz.
 ## This exercises the input path; it does not substitute for a human playtest.
 func _hairpin_input(preset, simcade, at, surf, keyboard) -> Dictionary:
 	var car = CarBody.new()
@@ -197,15 +196,15 @@ func _hairpin_input(preset, simcade, at, surf, keyboard) -> Dictionary:
 	controls.poll_hardware = false
 	var walls = WallQuery.new(asset, car.hull_half)
 	var result = {"finished": false, "walls": 0, "off": 0, "minimum_kmh": INF}
-	var input_ticks = 24 if "--slow-input" in OS.get_cmdline_user_args() else 1
+	var input_ticks = 24
 	for tick in 240 * 25:
 		var command = bot.command(car)
 		if keyboard and tick % input_ticks == 0:
 			var keys = {
-				KEY_W: command.throttle > controls.raw.throttle,
-				KEY_S: command.brake > controls.raw.brake,
-				KEY_A: command.steer < controls.raw.steer - 0.002,
-				KEY_D: command.steer > controls.raw.steer + 0.002
+				KEY_W: command.throttle >= 0.99 or command.throttle > controls.raw.throttle,
+				KEY_S: command.brake >= 0.99 or command.brake > controls.raw.brake,
+				KEY_A: command.steer <= -0.99 or command.steer < controls.raw.steer - 0.002,
+				KEY_D: command.steer >= 0.99 or command.steer > controls.raw.steer + 0.002
 			}
 			for key in keys:
 				var event = InputEventKey.new()
