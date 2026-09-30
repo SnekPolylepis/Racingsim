@@ -28,6 +28,15 @@ var current_device: int = 0
 var was_active: bool = false
 
 
+static func _prop(obj, name: String, default = null):
+	if obj is Dictionary:
+		return obj.get(name, default)
+	elif obj != null and name in obj:
+		var val = obj.get(name)
+		return val if val != null else default
+	return default
+
+
 ## Soft saturation curve with linear response up to knee, then smooth asymptotic compression up to 1.0.
 ## Preserves high-frequency details (bumps, kerb edges) from being hard-squared off during heavy cornering.
 static func soft_clip(val: float, knee: float = SOFT_CLIP_KNEE) -> float:
@@ -58,32 +67,34 @@ func update(car, dt: float, impact: float, active: bool, settings: Dictionary, d
 
 	# 1. Self-aligning torque from front tyres (wheels[0].mz + wheels[1].mz)
 	# Positive steer_torque steers right; on the steering wheel, FFB opposes driver steering to provide natural weight.
-	raw_torque = float(car.get("steer_torque", 0.0))
+	raw_torque = float(_prop(car, "steer_torque", 0.0))
 	norm_torque = -raw_torque / REF_TORQUE
 
 	# 2. Centering & scrub damper at low speed / standstill
 	# Real tyres experience scrub friction and mechanical caster resistance when turning at low speed.
 	# At speed > LOW_SPEED_THRESHOLD, tyre pneumatic trail provides natural self-centering.
-	var speed = float(car.get("speed", 0.0))
+	var speed = float(_prop(car, "speed", 0.0))
 	var low_speed_blend = 1.0 - clampf(speed / LOW_SPEED_THRESHOLD, 0.0, 1.0)
 	var steer_in = 0.0
-	if car.get("input") is Dictionary:
-		steer_in = float(car.input.get("steer", 0.0))
+	var car_input = _prop(car, "input")
+	if car_input is Dictionary:
+		steer_in = float(car_input.get("steer", 0.0))
 	centering_force = -steer_in * damper * low_speed_blend
 	# High-speed dynamic yaw damping: attenuates violent tank-slappers
-	var ang_y = car.ang.y if "ang" in car and car.ang is Vector3 else 0.0
+	var ang = _prop(car, "ang")
+	var ang_y = ang.y if ang is Vector3 else 0.0
 	centering_force -= ang_y * 0.04 * (1.0 - low_speed_blend)
 
 	# 3. Asymmetric kerb and suspension bump kickback (torque cues)
 	kerb_torque = 0.0
 	bump_torque = 0.0
-	var wheels = car.get("wheels", [])
-	if wheels.size() >= 2:
+	var wheels = _prop(car, "wheels", [])
+	if wheels is Array and wheels.size() >= 2:
 		var w_fl = wheels[0]
 		var w_fr = wheels[1]
 		# Kerb surface kickback
-		var fl_on_kerb = w_fl.get("surf", {}).get("id", 0) == 1
-		var fr_on_kerb = w_fr.get("surf", {}).get("id", 0) == 1
+		var fl_on_kerb = _prop(_prop(w_fl, "surf", {}), "id", 0) == 1
+		var fr_on_kerb = _prop(_prop(w_fr, "surf", {}), "id", 0) == 1
 		if fl_on_kerb or fr_on_kerb:
 			var rib_pitch = 0.35  # meters
 			kerb_phase += (maxf(speed, 5.0) / rib_pitch) * dt * TAU
@@ -95,8 +106,8 @@ func update(car, dt: float, impact: float, active: bool, settings: Dictionary, d
 			kerb_torque = kick_dir * pulse * 0.3 * kerb_scale
 
 		# Suspension load asymmetry / bump kick
-		var load_fl = float(w_fl.get("load", 0.0))
-		var load_fr = float(w_fr.get("load", 0.0))
+		var load_fl = float(_prop(w_fl, "load", 0.0))
+		var load_fr = float(_prop(w_fr, "load", 0.0))
 		var total_front_load = maxf(100.0, load_fl + load_fr)
 		var load_diff = (load_fl - load_fr) / total_front_load
 		bump_torque = clampf(load_diff * 0.25, -0.35, 0.35) * road_scale
@@ -110,20 +121,22 @@ func update(car, dt: float, impact: float, active: bool, settings: Dictionary, d
 	# 5. Dual-motor haptic rumble cues
 	# Weak motor: High-frequency texture (kerb rumble, gravel/grass chatter, tyre scrub)
 	var weak_rumble = 0.0
-	if wheels.size() >= 2:
+	if wheels is Array and wheels.size() >= 2:
 		var w_fl = wheels[0]
 		var w_fr = wheels[1]
-		if w_fl.get("surf", {}).get("id", 0) == 1 or w_fr.get("surf", {}).get("id", 0) == 1:
+		if _prop(_prop(w_fl, "surf", {}), "id", 0) == 1 or _prop(_prop(w_fr, "surf", {}), "id", 0) == 1:
 			weak_rumble = maxf(weak_rumble, clampf(speed / 25.0, 0.2, 0.9) * kerb_scale * (0.6 + 0.4 * sin(kerb_phase * 2.0)))
-		var surf_id_l = w_fl.get("surf", {}).get("id", 0)
-		var surf_id_r = w_fr.get("surf", {}).get("id", 0)
+		var surf_id_l = _prop(_prop(w_fl, "surf", {}), "id", 0)
+		var surf_id_r = _prop(_prop(w_fr, "surf", {}), "id", 0)
 		if surf_id_l == 3 or surf_id_r == 3:  # Gravel
 			weak_rumble = maxf(weak_rumble, 0.6 * road_scale)
 		elif surf_id_l == 2 or surf_id_r == 2:  # Grass
 			weak_rumble = maxf(weak_rumble, 0.35 * road_scale)
 
 		# Front tyre scrub vibration when near or past grip limit
-		var max_slip = maxf(absf(float(w_fl.get("slipRatio", 0.0))), absf(float(w_fr.get("slipRatio", 0.0))))
+		var slip_fl = absf(float(_prop(w_fl, "slipRatio", 0.0)))
+		var slip_fr = absf(float(_prop(w_fr, "slipRatio", 0.0)))
+		var max_slip = maxf(slip_fl, slip_fr)
 		var scrub_vibe = clampf((max_slip - 0.08) * 3.0, 0.0, 0.5)
 		weak_rumble = maxf(weak_rumble, scrub_vibe)
 
