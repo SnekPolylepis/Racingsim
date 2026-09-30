@@ -109,6 +109,7 @@ const SPOTS = [
 	["bonnet-lower-wacker", [41.88792, -87.6207, 0], CAM_BONNET],
 	["bean-sightline", [41.88266, -87.6244, 8], CAM_CHASE, [41.88266, -87.6233, 11]],
 	["pier-sightline", [41.8862, -87.6139, 13], CAM_CHASE, [41.8917, -87.6059, 23]],
+	["wheel-detail", [41.8912, -87.6059, 8], CAM_CHASE, [41.8917, -87.6059, 38]],
 	["dusable-sightline", [41.8880, -87.6244, 8], CAM_CHASE, [41.88865, -87.6245, 11]],
 	["riverwalk-sightline", [41.88727, -87.6342, 1], CAM_CHASE, [41.88727, -87.6298, 3]],
 ]

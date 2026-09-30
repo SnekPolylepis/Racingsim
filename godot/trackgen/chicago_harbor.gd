@@ -152,7 +152,7 @@ static func _navy_pier(asset: Node3D, parent: Node) -> void:
 	var box = preload("res://trackgen/chicago_l.gd").box
 	box.call(surfaces.stone, origin + Vector3(190, -0.7, 0), Vector3(800, 1.4, 80), Basis.IDENTITY)
 	# Low linked exhibition sheds, deep cornices and tall glazed arcade bays, not six blank cubes.
-	for i in 6:
+	for i in range(1, 6):
 		var c = origin + Vector3(i * 95, 0, 0)
 		box.call(surfaces.brick, c + Vector3(0, 7.2, 0), Vector3(80, 14.4, 44), Basis.IDENTITY)
 		box.call(surfaces.stone, c + Vector3(0, 14.6, 0), Vector3(82, 0.8, 46), Basis.IDENTITY)
@@ -187,6 +187,19 @@ static func _navy_pier(asset: Node3D, parent: Node) -> void:
 				Vector3(81, 0.5, 23),
 				Basis(Vector3.RIGHT, side * 0.18)
 			)
+	# The west wheel plaza stays open; the old first shed intersected the wheel's lower quadrant.
+	var platform = origin + Vector3(0, 2.6, 0)
+	box.call(surfaces.stone, platform + Vector3(0, -.2, 0), Vector3(26, .4, 14), Basis.IDENTITY)
+	for i in 8:
+		box.call(
+			surfaces.stone,
+			origin + Vector3(0, (i + 1) * .325 * .5, -15 + i),
+			Vector3(24, (i + 1) * .325, 1.0),
+			Basis.IDENTITY
+		)
+	box.call(surfaces.roof, platform + Vector3(0, 3.2, -5), Vector3(27, .3, 5), Basis.IDENTITY)
+	for x in [-12.0, 12.0]:
+		box.call(surfaces.steel, platform + Vector3(x, 1.6, -5), Vector3(.22, 3.2, .22), Basis.IDENTITY)
 	# Promenade railing rhythm breaks up the long dock edge from Lakeshore Drive.
 	for side in [-1, 1]:
 		box.call(

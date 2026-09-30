@@ -26,3 +26,7 @@ This builds the complete asset, checks its track contract, required landmarks an
 Reviewed 20 day and 20 Afterhours whole-lap captures (350 m spacing), plus nine named corner/pit views. Dense mixed Ardennes silhouettes, broadleaf summer tint, red/yellow kerbs and paddock structures are consistent around the lap. Grandstand canopies had cancelling smooth normals on opposing faces: flat face normals remove the triangle lighting artefact, confirmed in the fresh pit-straight capture. The scenery suite now checks canopy normal magnitude. This is an authored PS2-era venue approximation, not a surveyed architectural replica.
 
 Affected follow-up suites: scenery 13 checks and Spa landmarks 13 checks, zero failures. Captures end with the existing ObjectDB cleanup warning; no script errors.
+
+## Close-up continuation
+
+Paddock transporters now use native 12-sided cylindrical tyres/hubs and include cab glazing, mirrors, lights, steps, rear doors and side rails. The existing SurfaceTool mesh batches remain; no assets or dependencies added. Fresh main-game paddock capture in `screenshots/chicago-spa-polish/detail-pass/`. The landmark suite now has 14 passing checks, including round tyre geometry and axle width.

@@ -1,6 +1,7 @@
 extends SceneTree
 ## Small content guard: full track bake plus landmark/paint checks, no physics changes.
 const Spa = preload("res://trackgen/spa.gd")
+const Landmarks = preload("res://trackgen/spa_landmarks.gd")
 
 
 func _initialize() -> void:
@@ -29,6 +30,24 @@ func _initialize() -> void:
 			yellow = colour.r > .8 and colour.g > .6 and colour.b < .3
 	assert(yellow, "Spa kerbs must use red/yellow Wallonia colours")
 	assert(absf(asset.length - 6999.732) < .1, "Visual polish changed the surveyed racing length")
-	print("SPA LANDMARKS RESULTS ", JSON.stringify({"checks": 13, "failures": []}))
+	var wheel_surface = SurfaceTool.new()
+	wheel_surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	Landmarks.wheel(wheel_surface, Vector3.ZERO, .55, .34, Color.WHITE)
+	var wheel = wheel_surface.commit().surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+	var round_rim = false
+	var bounded = not wheel.is_empty()
+	var axle_min = INF
+	var axle_max = -INF
+	for point in wheel:
+		var radial = Vector2(point.x, point.y).length()
+		bounded = bounded and radial <= .5501
+		round_rim = round_rim or (absf(point.x) > .01 and absf(point.y) > .01 and absf(radial - .55) < .0001)
+		axle_min = minf(axle_min, point.z)
+		axle_max = maxf(axle_max, point.z)
+	assert(
+		bounded and round_rim and absf(axle_max - axle_min - .34) < .0001,
+		"Transporter wheel must have a circular XY rim and a 0.34 m Z axle"
+	)
+	print("SPA LANDMARKS RESULTS ", JSON.stringify({"checks": 14, "failures": []}))
 	asset.free()
 	quit()

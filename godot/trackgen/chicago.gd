@@ -303,6 +303,10 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	var water = ShaderMaterial.new()
 	water.shader = WATER_SHADER
 	var pier_walk = pbr_texture_set("large_square_pattern_01", "large_square_pattern_01", "diff")
+	# World metres keep paving square across long, rotated promenade slabs.
+	pier_walk.uv1_triplanar = true
+	pier_walk.uv1_world_triplanar = true
+	pier_walk.uv1_scale = Vector3.ONE * .5
 	box(asset, parent, "CityBase", Vector3(-500, -3.8, 0), Vector3(4000, 1, 4000), concrete)
 	# Open lake beyond city.json's clipped lake ring (x 2700), at the lake level in ChicagoCity.LAKE_Y.
 	var lake = box(asset, parent, "LakeMichigan", Vector3(4600, 6.35, 0), Vector3(3900, .2, 6500), water)
@@ -499,41 +503,71 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	for i in bean_mesh.get_surface_count():
 		bean_mesh.surface_set_material(i, silver)
 	mesh_node(asset, parent, "BeanArch", bean_mesh, bean + Vector3(0, 0.05, 0))
-	# Navy Pier decks and exhibition halls are dressed by ChicagoHarbor; retain the wheel landmark.
+	# Navy Pier: official hub 104 ft above deck, 21 spokes and 42 enclosed blue gondolas.
+	# Anchor to the dressed pier deck, rather than route.json's old submerged y2 landmark height.
 	var pier = world(data().landmarks["Navy Pier"])
+	pier.y = ChicagoCity.LAKE_Y + .8
+	var hub = pier + Vector3(0, 31.7, 0)
 	var wheel = TorusMesh.new()
-	wheel.inner_radius = 28
-	wheel.outer_radius = 29.5
-	wheel.rings = 48
+	wheel.inner_radius = 27.85
+	wheel.outer_radius = 28.15
+	wheel.rings = 84
 	wheel.ring_segments = 6
-	wheel.material = night_material(Color("b5dce6"), 2.2)
-	var wn = mesh_node(asset, parent, "CentennialWheel", wheel, pier + Vector3(0, 33, 0))
+	wheel.material = night_material(Color("b5dce6"), 1.6)
+	var wn = mesh_node(asset, parent, "CentennialWheel", wheel, hub)
 	wn.rotation_degrees.x = 90
-	for i in 16:
-		var ang = TAU * i / 16.0
-		var end = pier + Vector3(cos(ang) * 28, 33 + sin(ang) * 28, 0)
-		var spoke = box(
-			asset,
-			parent,
-			"WheelSpoke%d" % i,
-			(end + pier + Vector3(0, 33, 0)) * .5,
-			Vector3(.5, 28, .5),
-			night_material(Color("96c8e0"), 1.3)
+	var spokes: Array = []
+	for i in 21:
+		var ang = TAU * i / 21.0
+		spokes.append(
+			[
+				hub + Vector3(cos(ang), sin(ang), 0) * 14,
+				Vector3(.18, 28, .18),
+				Basis(Vector3.BACK, ang - PI * .5)
+			]
 		)
-		spoke.rotation.z = ang - PI / 2
-		box(
-			asset,
-			parent,
-			"WheelCabin%d" % i,
-			end,
-			Vector3(3.2, 3.8, 3.2),
-			night_material(Color("77b6cc"), 1.0)
-		)
+	multimesh_boxes(asset, parent, "WheelSpokes", night_material(Color("96c8e0"), .65), spokes)
+	var cabins: Array = []
+	var roofs: Array = []
+	var frames: Array = []
+	var glass = material(Color("365c72"))
+	glass.metallic = .12
+	glass.roughness = .23
+	for i in 42:
+		var ang = TAU * i / 42.0
+		var end = hub + Vector3(cos(ang) * 28, sin(ang) * 28, 0)
+		cabins.append([end + Vector3(0, -.65, 0), Vector3(1.9, .5, 1.9)])
+		roofs.append([end + Vector3(0, 1.05, 0), Vector3(2.0, .15, 2.0)])
+		for x in [-.9, .9]:
+			for z in [-.9, .9]:
+				frames.append([end + Vector3(x, .2, z), Vector3(.08, 1.65, .08)])
+		box(asset, parent, "WheelCabin%d" % i, end + Vector3(0, .2, 0), Vector3(1.8, 1.5, 1.8), glass)
+	var blue = material(Color("194778"))
+	multimesh_boxes(asset, parent, "WheelCabinBases", blue, cabins)
+	multimesh_boxes(asset, parent, "WheelCabinRoofs", blue, roofs)
+	multimesh_boxes(asset, parent, "WheelCabinFrames", material(Color("b7c8cb")), frames)
+	# Six structural legs meet the axle; feet stand on the deck, clear of the loading platform.
 	for side in [-1, 1]:
-		var support = box(
-			asset, parent, "WheelSupport%d" % side, pier + Vector3(side * 7, 15, 0), Vector3(2, 33, 2), silver
-		)
-		support.rotation.z = side * .4
+		for z in [-6.0, 0.0, 6.0]:
+			var foot = pier + Vector3(side * 18.2, 0, z)
+			var axle = hub + Vector3(0, 0, z * .3)
+			var leg = box(
+				asset,
+				parent,
+				"WheelSupport",
+				(foot + axle) * .5,
+				Vector3(1.1, 1.1, foot.distance_to(axle)),
+				silver
+			)
+			leg.basis = Basis.looking_at(axle - foot, Vector3.UP)
+	var axle = CylinderMesh.new()
+	axle.top_radius = 1.65
+	axle.bottom_radius = 1.65
+	axle.height = 4.5
+	axle.material = material(Color("d6e0df"))
+	var axle_node = mesh_node(asset, parent, "WheelAxle", axle, hub)
+	axle_node.rotation_degrees.x = 90
+
 	add_loop_landmarks(asset, parent, stone, dark, silver)
 
 
@@ -942,13 +976,14 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
 	add_neon(asset, parent, road)
 	var pier = world(data().landmarks["Navy Pier"])
-	for i in 6:
+	pier.y = ChicagoCity.LAKE_Y + .8
+	for i in range(1, 6):
 		box(
 			asset,
 			parent,
 			"PierRoofLight%d" % i,
-			pier + Vector3(i * 95, 18.2, 24.2),
-			Vector3(80, 1.0, .8),
+			pier + Vector3(i * 95, 14.6, 23.1),
+			Vector3(80, .15, .2),
 			warm
 		)
 	var willis = world(data().landmarks["Willis Tower"])

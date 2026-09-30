@@ -98,13 +98,35 @@ static func paddock_detail(asset: Node3D, road: Node3D, length: float) -> void:
 		var st = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
 		var team = [Color("dddaca"), Color("47747a"), Color("b84836")][i % 3]
-		Builder.add_box(st, Vector3(0, 2.0, 0), Vector3(12, 3.2, 2.7), Color("d4d3c6"))
-		Builder.add_box(st, Vector3(-7, 1.55, 0), Vector3(2.5, 2.5, 2.7), team)
-		Builder.add_box(st, Vector3(-7.35, 2.1, -1.38), Vector3(1.3, .7, .05), Color("26393d"))
+		Builder.add_box(st, Vector3(0, 2.6, 0), Vector3(12, 2.9, 2.7), Color("d4d3c6"))
+		Builder.add_box(st, Vector3(0, 1.0, 0), Vector3(12.2, .28, 2.5), Color("424b4b"))
+		Builder.add_box(st, Vector3(0, 3.95, 0), Vector3(12.1, .12, 2.8), Color("aab3b2"))
+		Builder.add_box(st, Vector3(-7, 1.95, 0), Vector3(2.5, 2.4, 2.7), team)
+		Builder.add_box(st, Vector3(-6.7, 3.25, 0), Vector3(1.9, .3, 2.6), team)
+		Builder.add_box(st, Vector3(-8.29, 2.45, 0), Vector3(.08, 1.0, 2.45), Color("354b53"))
+		Builder.add_box(st, Vector3(-8.31, 1.35, 0), Vector3(.1, .5, 1.65), Color("293437"))
+		Builder.add_box(st, Vector3(-8.35, .83, 0), Vector3(.16, .25, 2.75), Color("a9b3b2"))
+		for z in [-1.0, 1.0]:
+			Builder.add_box(st, Vector3(-8.34, 1.28, z), Vector3(.12, .28, .46), Color("eee4bb"))
+		for z in [-1.38, 1.38]:
+			Builder.add_box(st, Vector3(-7.5, 2.45, z), Vector3(1.0, .85, .06), Color("354b53"))
+			Builder.add_box(st, Vector3(-7.05, 1.63, z), Vector3(.25, .08, .09), Color("bbc4bf"))
+			Builder.add_box(st, Vector3(-7.95, 2.25, z * 1.15), Vector3(.3, .5, .14), Color("313b3d"))
+			Builder.add_box(st, Vector3(-6.8, .75, z), Vector3(1.2, .18, .25), Color("828e8f"))
 		Builder.add_box(st, Vector3(0, 2.1, -1.4), Vector3(11.5, .45, .06), team)
-		for x in [-7.4, -4.4, 3.5, 4.4]:
+		for x in [-7.4, -4.4, 3.4, 4.6]:
 			for z in [-1.32, 1.32]:
-				Builder.add_box(st, Vector3(x, .55, z), Vector3(.85, 1.1, .35), Color("22262a"))
+				wheel(st, Vector3(x, .55, z), .55, .34, Color("252a2b"))
+				wheel(st, Vector3(x, .55, z * 1.13), .29, .045, Color("899595"))
+		# Rear loading doors, centre seam, latch bars, tail lamps and lower side rails.
+		for z in [-.66, .66]:
+			Builder.add_box(st, Vector3(6.04, 2.62, z), Vector3(.09, 2.68, 1.24), Color("bcc5bd"))
+			Builder.add_box(st, Vector3(6.12, 2.62, z), Vector3(.06, 2.45, .065), Color("657272"))
+			Builder.add_box(st, Vector3(6.16, 1.13, z), Vector3(.08, .16, .3), Color("8f2f26"))
+		for z in [-1.38, 1.38]:
+			Builder.add_box(st, Vector3(-.8, .75, z), Vector3(6.2, .12, .1), Color("909e9c"))
+			for x in [-5.0, 0.0, 5.0]:
+				Builder.add_box(st, Vector3(x, 1.25, z), Vector3(.14, .08, .06), Color("c69b41"))
 		for x in [-4, 4]:
 			for z in [-7, -3]:
 				Builder.add_box(st, Vector3(x, 1.5, z), Vector3(.08, 3, .08), Color("bcc1b9"))
@@ -115,6 +137,21 @@ static func paddock_detail(asset: Node3D, road: Node3D, length: float) -> void:
 			st, Vector3(-4.5, 4, -5), Vector3(4.5, 4, -5), Vector3(4.5, 3, -2.5), Vector3(-4.5, 3, -2.5), team
 		)
 		finish(asset, "PaddockTeam%02d" % i, st, xf)
+
+
+static func wheel(st: SurfaceTool, center: Vector3, radius: float, width: float, colour: Color) -> void:
+	# Native low-poly cylinders replace the original box wheels; tyre axes run across the trailer.
+	var cylinder = CylinderMesh.new()
+	cylinder.top_radius = radius
+	cylinder.bottom_radius = radius
+	cylinder.height = width
+	cylinder.radial_segments = 12
+	cylinder.rings = 1
+	var arrays = cylinder.surface_get_arrays(0)
+	var turn = Basis(Vector3.RIGHT, PI * .5)
+	for index in arrays[Mesh.ARRAY_INDEX]:
+		st.set_color(colour)
+		st.add_vertex(center + turn * arrays[Mesh.ARRAY_VERTEX][index])
 
 
 static func build(asset: Node3D, road: Node3D, corners: Dictionary, length: float) -> void:

@@ -72,6 +72,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		push_warning("Chicago city data missing: " + DATA)
 		return {}
 	var route = _route_index(road)
+	var wheel = world_of.call(landmarks["Navy Pier"])
+	var wheel_plaza = PackedVector2Array(
+		[
+			Vector2(wheel.x - 32, wheel.z - 45),
+			Vector2(wheel.x + 32, wheel.z - 45),
+			Vector2(wheel.x + 32, wheel.z + 45),
+			Vector2(wheel.x - 32, wheel.z + 45)
+		]
+	)
 	var skip_at = []
 	for name in OWN_LANDMARKS:
 		if landmarks.has(name):
@@ -103,6 +112,10 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 				ring[j] += (ring[j] - bc).normalized() * 0.25
 		i += 1
 		if ring.size() < 3 or _touches_route(route, ring, 6.0) or _near_any(skip_at, _centroid(ring)):
+			continue
+		# The authored wheel/loading plaza replaces mapped low halls across this footprint.
+		# Centroid-only landmark filtering misses long halls that extend beneath the wheel.
+		if not Geometry2D.intersect_polygons(ring, wheel_plaza).is_empty():
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks

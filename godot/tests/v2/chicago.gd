@@ -79,6 +79,42 @@ func _physics_process(_delta):
 		check(hit.get("surface", -1) == 0, "Grid slot on tarmac")
 	for title in Generator.data().landmarks:
 		check(asset.get_node_or_null("Landmarks/" + title.replace(" ", "")) != null, "Landmark: " + title)
+	var wheel_cabins = 0
+	var lowest_cabin = INF
+	for node in asset.get_node("Scenery").get_children():
+		if node is MeshInstance3D and String(node.name).begins_with("WheelCabin"):
+			wheel_cabins += 1
+			var bounds = node.mesh.get_aabb()
+			lowest_cabin = minf(lowest_cabin, node.position.y + bounds.position.y)
+	check(
+		wheel_cabins == 42 and lowest_cabin > Generator.ChicagoCity.LAKE_Y + .8,
+		"42 enclosed wheel gondolas clear the pier deck: lowest %.2f m" % lowest_cabin
+	)
+	var plaza_wall_hits = 0
+	var plaza_camera = Generator.world([41.8912, -87.6059, 12])
+	var plaza_ray = (Generator.world([41.8917, -87.6059, 38]) - plaza_camera).normalized()
+	var pier_cell = asset.get_node("Scenery/City/Low_2_-2")
+	for surface in pier_cell.mesh.get_surface_count():
+		var arrays = pier_cell.mesh.surface_get_arrays(surface)
+		var vertices = arrays[Mesh.ARRAY_VERTEX]
+		for i in range(0, vertices.size(), 3):
+			var hit = Geometry3D.ray_intersects_triangle(
+				plaza_camera, plaza_ray, vertices[i], vertices[i + 1], vertices[i + 2]
+			)
+			if hit == null:
+				hit = Geometry3D.ray_intersects_triangle(
+					plaza_camera, plaza_ray, vertices[i + 2], vertices[i + 1], vertices[i]
+				)
+			if hit != null and plaza_camera.distance_to(hit) < 50.0:
+				plaza_wall_hits += 1
+	check(plaza_wall_hits == 0, "Mapped pier halls leave wheel/loading plaza approach clear")
+	check(
+		(
+			asset.get_node_or_null("Scenery/PierRoofLight0") == null
+			and is_equal_approx(asset.get_node("Scenery/PierRoofLight1").position.y, 21.9)
+		),
+		"Pier roof lights follow the raised halls and leave the wheel plaza open"
+	)
 	var bridge_steel = asset.get_node("Scenery/ChicagoBridgeSteel").multimesh
 	var rail_top = -INF
 	for i in bridge_steel.instance_count:

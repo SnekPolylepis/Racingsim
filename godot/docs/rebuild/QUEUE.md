@@ -102,3 +102,4 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | ID | Task | Who | Needs | Status | Branch / notes |
 |---|---|---|---|---|---|
 | CHI-SPA-POLISH | Finish Chicago and Spa presentation against real-place/game references, with full-lap review and a playable Mac preview | Codex + owner-authorized subagents | | done | `codex/chicago-spa-polish`, from newest GitHub branch `codex/all-project-updates-20260930` (`5a832e5`); retain separately per owner |
+| CHI-SPA-DETAIL | Continue close-up Riverwalk paving, Centennial Wheel deck clearance and Spa transporter detail | Codex + owner-authorized subagents | CHI-SPA-POLISH | done | `codex/chicago-spa-polish`; see DONE CHI-SPA-DETAIL and detail-pass evidence |

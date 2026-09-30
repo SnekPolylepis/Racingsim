@@ -9,6 +9,7 @@ extends SceneTree
 ## docs/art/reference/ (REFERENCE_MAP below): ours on the left, the reference on the right, both labelled.
 
 const NightShots = preload("res://tests/v2/night_screenshots.gd")
+const SpaLandmarks = preload("res://trackgen/spa_landmarks.gd")
 
 ## Chase (Look-2's default) unless a shot names CAM_BONNET explicitly.
 const CAM_CHASE = 0
@@ -78,6 +79,7 @@ func shots() -> Array:
 		["proving_ground", "pg-turn4", 2150.0],
 		["proving_ground", "pg-final-straight", 2400.0],
 		["spa", "spa-pit-straight", -160.0],
+		["spa", "spa-paddock", -160.0],
 		["spa", "spa-la-source", ["La Source", -130.0]],
 		["spa", "spa-eau-rouge", ["Eau Rouge", -150.0]],
 		["spa", "spa-raidillon", ["Raidillon", -40.0]],
@@ -142,6 +144,10 @@ func run():
 		helper.pose(app, at, night)
 		app.settings.camera = shot[3] if shot.size() > 3 else CAM_CHASE
 		app.update_camera(1.0, true)
+		if shot[1] == "spa-paddock":
+			var xf = SpaLandmarks.frame(app.track.get_node("Main"), app.track.length - 160, 1, 36)
+			app.camera.global_position = xf * Vector3(-22, 12, -12)
+			app.camera.look_at(xf * Vector3(0, 2, 0), Vector3.UP)
 		for i in 10:
 			await process_frame
 		# Without this the grab can return the last presented frame (every full-lap shot came back identical).

@@ -1,0 +1,8 @@
+Gates CI: 1 selected, 43 skipped. Logs: /Users/zainyasin/Desktop/Racingsim-chicago-spa-polish/godot/tests/logs/ci
+Running up to 8 suites concurrently using /Users/zainyasin/Desktop/Racingsim-chicago-spa-polish/godot/tools/Godot.app/Contents/MacOS/Godot
+
+PASS  parse check                            0.6s  clean
+
+======================================================================
+ALL GATES PASSED: 1 run (1 pass, 0 allowed failure, 0 failed) in 0.6s wall clock
+======================================================================

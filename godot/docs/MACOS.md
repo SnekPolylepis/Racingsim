@@ -78,3 +78,7 @@ Exported JSON reports and screenshots are under `~/Library/Application Support/G
 On Apple M4, macOS, Godot 4.6.2 / Metal Forward+, branch `codex/chicago-spa-polish`: universal export (`arm64 x86_64`) and `codesign --verify --deep --strict` passed. Both exported Chicago and Spa `--v2-look --v2-flow-test` runs passed 72 presentation checks with no failures or script errors. Final windowed Chicago geometry suite passed 40 checks, including actual MultiMesh rotated-box readback. Full headless suite passed 43/43 before the last visual fixes; the final five affected suites passed afterward.
 
 Evidence is in `rebuild/screenshots/chicago-spa-polish/logs/`. The export contract passed but the Dummy renderer printed one shader RID leak at shutdown; screenshot tools retain an ObjectDB cleanup warning. Intel hardware, Windows export, physical controls and a new performance matrix were not tested by this branch. The universal binary is ad-hoc signed, as before.
+
+### 2026-09-30 Chicago/Spa close-up continuation
+
+`codex/chicago-spa-polish`: universal export and strict signature verification pass after the wheel/plaza/paving/transporter follow-up. Exported Apple M4 Metal Chicago and Spa presentation drives each pass 72 checks with no script errors. Spa reports an ObjectDB cleanup warning on exit. Logs: `docs/rebuild/screenshots/chicago-spa-polish/detail-pass/`. No Intel or Windows hardware run.
