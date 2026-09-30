@@ -26,7 +26,6 @@ const CAM_BONNET = 2
 ## Scenic spots per track: [name, station]. A station is metres from the start, or [corner name, offset].
 const SCENIC = {
 	"spa": [["eau-rouge-valley", ["Eau Rouge", 40.0]], ["kemmel-crest", ["Raidillon", 250.0]]],
-	"nordschleife": [["flugplatz-crest", ["Flugplatz", -20.0]]],
 	"chicago":
 	[
 		["river-from-bridge", ["Upper River Bend", 30.0]],
@@ -117,6 +116,7 @@ func plan(track, id: String) -> Array:
 	for spot in SCENIC.get(id, []):
 		out.append(["scenic", spot[0], helper.station(track, spot[1])])
 	out.sort_custom(func(a, b): return a[2] < b[2])
+	helper.free()
 	return out
 
 
@@ -184,6 +184,7 @@ func run():
 		f.close()
 	app.queue_free()
 	await process_frame
+	helper.free()
 	print("VISUAL REVIEW DIR ", ProjectSettings.globalize_path(folder))
 	print("VISUAL REVIEW RESULTS ", JSON.stringify({"failures": failures}))
 	quit(0 if failures.is_empty() else 1)

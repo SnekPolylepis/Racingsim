@@ -1,0 +1,307 @@
+{
+  "baseline": "",
+  "bonnet": false,
+  "night": true,
+  "tracks": {
+    "monaco": {
+      "length": 3307.48622792959,
+      "mean_draws": 141.0,
+      "shots": [
+        {
+          "draws": 152,
+          "file": "000-corner-la-rascasse-exit.png",
+          "kind": "corner",
+          "name": "la-rascasse-exit",
+          "station": 0.2
+        },
+        {
+          "draws": 141,
+          "file": "001-corner-anthony-noghes-exit.png",
+          "kind": "corner",
+          "name": "anthony-noghes-exit",
+          "station": 71.2
+        },
+        {
+          "draws": 145,
+          "file": "002-corner-sainte-devote-approach.png",
+          "kind": "corner",
+          "name": "sainte-devote-approach",
+          "station": 351.0
+        },
+        {
+          "draws": 155,
+          "file": "003-corner-sainte-devote-apex.png",
+          "kind": "corner",
+          "name": "sainte-devote-apex",
+          "station": 471.0
+        },
+        {
+          "draws": 157,
+          "file": "004-corner-sainte-devote-exit.png",
+          "kind": "corner",
+          "name": "sainte-devote-exit",
+          "station": 551.0
+        },
+        {
+          "draws": 158,
+          "file": "005-corner-beau-rivage-approach.png",
+          "kind": "corner",
+          "name": "beau-rivage-approach",
+          "station": 557.9
+        },
+        {
+          "draws": 164,
+          "file": "006-corner-beau-rivage-apex.png",
+          "kind": "corner",
+          "name": "beau-rivage-apex",
+          "station": 677.9
+        },
+        {
+          "draws": 169,
+          "file": "007-corner-beau-rivage-exit.png",
+          "kind": "corner",
+          "name": "beau-rivage-exit",
+          "station": 757.9
+        },
+        {
+          "draws": 147,
+          "file": "008-corner-massenet-approach.png",
+          "kind": "corner",
+          "name": "massenet-approach",
+          "station": 956.0
+        },
+        {
+          "draws": 138,
+          "file": "009-corner-casino-square-approach.png",
+          "kind": "corner",
+          "name": "casino-square-approach",
+          "station": 1048.8
+        },
+        {
+          "draws": 135,
+          "file": "010-corner-massenet-apex.png",
+          "kind": "corner",
+          "name": "massenet-apex",
+          "station": 1076.0
+        },
+        {
+          "draws": 139,
+          "file": "011-corner-massenet-exit.png",
+          "kind": "corner",
+          "name": "massenet-exit",
+          "station": 1156.0
+        },
+        {
+          "draws": 144,
+          "file": "012-corner-casino-square-apex.png",
+          "kind": "corner",
+          "name": "casino-square-apex",
+          "station": 1168.8
+        },
+        {
+          "draws": 131,
+          "file": "013-corner-casino-square-exit.png",
+          "kind": "corner",
+          "name": "casino-square-exit",
+          "station": 1248.8
+        },
+        {
+          "draws": 131,
+          "file": "014-corner-mirabeau-haute-approach.png",
+          "kind": "corner",
+          "name": "mirabeau-haute-approach",
+          "station": 1249.1
+        },
+        {
+          "draws": 124,
+          "file": "015-corner-mirabeau-haute-apex.png",
+          "kind": "corner",
+          "name": "mirabeau-haute-apex",
+          "station": 1369.1
+        },
+        {
+          "draws": 162,
+          "file": "016-corner-grand-hotel-hairpin-approach.png",
+          "kind": "corner",
+          "name": "grand-hotel-hairpin-approach",
+          "station": 1405.4
+        },
+        {
+          "draws": 146,
+          "file": "017-corner-mirabeau-haute-exit.png",
+          "kind": "corner",
+          "name": "mirabeau-haute-exit",
+          "station": 1449.1
+        },
+        {
+          "draws": 107,
+          "file": "018-corner-mirabeau-bas-approach.png",
+          "kind": "corner",
+          "name": "mirabeau-bas-approach",
+          "station": 1494.5
+        },
+        {
+          "draws": 139,
+          "file": "019-corner-grand-hotel-hairpin-apex.png",
+          "kind": "corner",
+          "name": "grand-hotel-hairpin-apex",
+          "station": 1525.4
+        },
+        {
+          "draws": 117,
+          "file": "020-corner-portier-approach.png",
+          "kind": "corner",
+          "name": "portier-approach",
+          "station": 1543.8
+        },
+        {
+          "draws": 119,
+          "file": "021-corner-grand-hotel-hairpin-exit.png",
+          "kind": "corner",
+          "name": "grand-hotel-hairpin-exit",
+          "station": 1605.4
+        },
+        {
+          "draws": 117,
+          "file": "022-corner-mirabeau-bas-apex.png",
+          "kind": "corner",
+          "name": "mirabeau-bas-apex",
+          "station": 1614.5
+        },
+        {
+          "draws": 101,
+          "file": "023-corner-portier-apex.png",
+          "kind": "corner",
+          "name": "portier-apex",
+          "station": 1663.8
+        },
+        {
+          "draws": 156,
+          "file": "024-corner-mirabeau-bas-exit.png",
+          "kind": "corner",
+          "name": "mirabeau-bas-exit",
+          "station": 1694.5
+        },
+        {
+          "draws": 142,
+          "file": "025-corner-portier-exit.png",
+          "kind": "corner",
+          "name": "portier-exit",
+          "station": 1743.8
+        },
+        {
+          "draws": 132,
+          "file": "026-corner-tunnel-approach.png",
+          "kind": "corner",
+          "name": "tunnel-approach",
+          "station": 1756.6
+        },
+        {
+          "draws": 134,
+          "file": "027-corner-tunnel-apex.png",
+          "kind": "corner",
+          "name": "tunnel-apex",
+          "station": 1876.6
+        },
+        {
+          "draws": 135,
+          "file": "028-corner-tunnel-exit.png",
+          "kind": "corner",
+          "name": "tunnel-exit",
+          "station": 1956.6
+        },
+        {
+          "draws": 169,
+          "file": "029-corner-nouvelle-chicane-approach.png",
+          "kind": "corner",
+          "name": "nouvelle-chicane-approach",
+          "station": 2224.6
+        },
+        {
+          "draws": 150,
+          "file": "030-corner-nouvelle-chicane-apex.png",
+          "kind": "corner",
+          "name": "nouvelle-chicane-apex",
+          "station": 2344.6
+        },
+        {
+          "draws": 151,
+          "file": "031-corner-nouvelle-chicane-exit.png",
+          "kind": "corner",
+          "name": "nouvelle-chicane-exit",
+          "station": 2424.6
+        },
+        {
+          "draws": 149,
+          "file": "032-corner-tabac-approach.png",
+          "kind": "corner",
+          "name": "tabac-approach",
+          "station": 2430.2
+        },
+        {
+          "draws": 135,
+          "file": "033-corner-tabac-apex.png",
+          "kind": "corner",
+          "name": "tabac-apex",
+          "station": 2550.2
+        },
+        {
+          "draws": 140,
+          "file": "034-corner-tabac-exit.png",
+          "kind": "corner",
+          "name": "tabac-exit",
+          "station": 2630.2
+        },
+        {
+          "draws": 151,
+          "file": "035-corner-piscine-approach.png",
+          "kind": "corner",
+          "name": "piscine-approach",
+          "station": 2673.8
+        },
+        {
+          "draws": 138,
+          "file": "036-corner-piscine-apex.png",
+          "kind": "corner",
+          "name": "piscine-apex",
+          "station": 2793.8
+        },
+        {
+          "draws": 133,
+          "file": "037-corner-piscine-exit.png",
+          "kind": "corner",
+          "name": "piscine-exit",
+          "station": 2873.8
+        },
+        {
+          "draws": 115,
+          "file": "038-corner-la-rascasse-approach.png",
+          "kind": "corner",
+          "name": "la-rascasse-approach",
+          "station": 3107.7
+        },
+        {
+          "draws": 149,
+          "file": "039-corner-anthony-noghes-approach.png",
+          "kind": "corner",
+          "name": "anthony-noghes-approach",
+          "station": 3178.7
+        },
+        {
+          "draws": 142,
+          "file": "040-corner-la-rascasse-apex.png",
+          "kind": "corner",
+          "name": "la-rascasse-apex",
+          "station": 3227.7
+        },
+        {
+          "draws": 164,
+          "file": "041-corner-anthony-noghes-apex.png",
+          "kind": "corner",
+          "name": "anthony-noghes-apex",
+          "station": 3298.7
+        }
+      ]
+    }
+  }
+}

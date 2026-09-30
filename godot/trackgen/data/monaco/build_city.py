@@ -181,7 +181,9 @@ for iz in range(nz):
             # Authored flat Swimming Pool quay: the DSM reads the stands/buildings as cliffs.
             pool_road = near_road(x, z, 100.0)
             if pool_road:
-                h = pool_road[1] - 0.15
+                # Feather the correction back to the sampled hillside; an abrupt rectangle made new cliffs.
+                blend = min(1.0, min(x + 90, 70 - x, z + 85, 165 - z) / 24.0)
+                h = h * (1.0 - blend) + (pool_road[1] - 0.15) * blend
                 prow[-1] = 1
         row.append(round(h, 2))
     ground.append(row)
@@ -207,7 +209,7 @@ def num(v):
 # Casino Square landmarks: OSM tags them as 2-level retail/hotel; heights from their facades (Casino with
 # its towers ~20 m above the square, measured from its lowest corner 14 m below it: 36 m; Hotel de
 # Paris ~26 m). monaco.gd renders them in cream stone.
-LANDMARKS = {161769674: ("casino", 36.0), 8280869: ("hotel_de_paris", 26.0)}
+LANDMARKS = {161769674: ("casino", 36.0), 8280869: ("hotel_de_paris", 26.0), 2093796: ("fairmont", 10.6)}
 buildings = []
 dropped = 0
 for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
@@ -237,7 +239,7 @@ for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
                 px, pz = h[3] + (px - h[3]) * k, h[4] + (pz - h[4]) * k
             pushed.append((px, pz))
         ring = pushed
-        hits = [h for h in [near_road(px, pz, 7.5) for px, pz in ring[::max(1, len(ring) // 12)]] + [near_road(cx, cz, 7.5)] if h]
+        hits = [h for h in [near_road(px, pz, 7.5) for px, pz in ring[::max(1, len(ring) // 12)]] + [near_road(cx, cz, 7.5)] if h and h[2]]
         base = min(ground_at(px, pz) for px, pz in ring)
         if hits:  # over the tunnel (the Fairmont): stands on the rock above the roof
             base = max(base, max(h[1] for h in hits) + 7.0)

@@ -35,7 +35,14 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   Rascasse exit to open both Swimming Pool chicanes, with 4 m paved escape bands. The Pool-side
   stands are omitted; the Tabac approach and Rascasse retain their barriers and stands.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
-- Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
+- Buildings use extruded footprints with a shared facade shader and authored Casino towers;
+  Casino and Hotel de Paris do not yet have detailed landmark models.
+- Nearby apartment footprints have projecting floor slabs; the facade shader varies bay widths,
+  shutters, curtains and glazing. These are architectural approximations, not surveyed balconies.
+  The Fairmont footprint is identified from OSM relation 2093796; roadside buildings are no longer
+  lifted by the tunnel-roof correction unless the nearby road point is actually in the tunnel.
+- The rectangular Pool quay height correction feathers into the surrounding terrain over 24 m.
+  This softens its edge; it does not replace the 30 m DSM with surveyed topography.
 - Formula presets use 26° maximum front-wheel lock plus a 60 m/s speed falloff. Formula Monaco lap gates
   measure actual speed within 35 m of Fairmont's apex: F2004 stays above 25 km/h and RB19 above 30 km/h
   across Simulation and Simcade, with zero off-track wheel ticks, wall contacts or prop contacts.
@@ -46,6 +53,9 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   events, with default keyboard ramps and controller deadzone/linearity, in both handling models.
   All eight cases must finish without off-track wheel ticks or wall contacts and stay above 24.5 km/h.
   The driving reference is automated; these runs do not establish human playtest acceptance.
+- The optional `--slow-input` diagnostic holds input decisions for 100 ms. The current controller
+  cases pass, but three keyboard cases fail: F2004 Simcade drops below the speed threshold, and
+  RB19 has off-track wheel ticks in both models plus wall contact in Simulation. This remains open.
 
 Daylight screenshots through the main game's presentation chain (separate from the standalone
 track-drive captures): `--script tests/v2/track_screenshots.gd -- --v2-flow-test --track=monaco

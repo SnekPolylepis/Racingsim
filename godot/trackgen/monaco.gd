@@ -438,6 +438,8 @@ static func _sea(asset: Node3D, parent: Node, g: Dictionary) -> void:
 static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 	var casino = {}
 	var chunks = {}
+	var balconies = {}
+	var curve: Curve3D = asset.get_node("Main").working_curve()
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 98000
 	for b in list:
@@ -466,7 +468,27 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 			# Casino Square's Belle Epoque stone (Garnier's Casino, the Hotel de Paris).
 			tint = Color(0.96, 0.9, 0.76)
 			layer = ChicagoCity.kind_layer("stone")
-		_extrude(chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), rng.randf(), layer, tint)
+		if b[3] == "fairmont":
+			tint = Color(0.9, 0.84, 0.72)
+		var seed = rng.randf()
+		_extrude(chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), seed, layer, tint)
+		# Nearby apartment terraces need a silhouette and cast shadow, beyond the painted distant facade.
+		var near = curve.get_closest_point(Vector3(c.x, b[1], c.y))
+		if (
+			Vector2(near.x, near.z).distance_to(c) < 90.0
+			and b[2] > 7.0
+			and b[3] not in ["casino", "hotel_de_paris", "roof"]
+		):
+			var outer = Geometry2D.offset_polygon(ring, 1.0)
+			if not outer.is_empty():
+				if not balconies.has(key):
+					var slab = SurfaceTool.new()
+					slab.begin(Mesh.PRIMITIVE_TRIANGLES)
+					balconies[key] = slab
+				var y = float(b[1]) + 3.1
+				while y < float(b[1]) + float(b[2]) - 0.5:
+					_extrude(balconies[key], outer[0], y - 0.18, y, seed, layer, tint)
+					y += 3.1
 	for key in chunks:
 		var st: SurfaceTool = chunks[key]
 		st.generate_normals()
@@ -475,6 +497,17 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 		var node = MeshInstance3D.new()
 		node.mesh = st.commit()
 		attach(asset, parent, node, "Buildings_%d_%d" % [key.x, key.y])
+	var terrace_mat = StandardMaterial3D.new()
+	terrace_mat.albedo_color = Color("d4cbbb")
+	terrace_mat.roughness = 0.85
+	for key in balconies:
+		var slab: SurfaceTool = balconies[key]
+		slab.generate_normals()
+		slab.set_material(terrace_mat)
+		var node = MeshInstance3D.new()
+		node.mesh = slab.commit()
+		node.visibility_range_end = 500.0
+		attach(asset, parent, node, "Balconies_%d_%d" % [key.x, key.y])
 	return casino
 
 
@@ -571,7 +604,7 @@ static func _extrude(
 			st.set_uv(v[k][1])
 			st.add_vertex(v[k][0])
 		u += len
-	st.set_color(Color(0, 0, 1))
+	st.set_color(Color(seed, layer / 8.0, 1, code))
 	var tris = Geometry2D.triangulate_polygon(ring)
 	for i in range(0, tris.size(), 3):
 		for k in [0, 2, 1]:

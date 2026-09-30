@@ -6,7 +6,6 @@ shader_type spatial;
 // r = building seed, b = 1 on roofs, a = 6x6x6 palette index + 1 of the render colour.
 uniform bool afterhours = false;
 const float FLOOR = 3.1;
-const float BAY = 3.4;
 
 varying flat vec4 info;
 
@@ -28,8 +27,9 @@ void fragment() {
 		ALBEDO = hash(vec2(seed, 3.0)) < 0.6 ? vec3(0.62, 0.36, 0.26) : vec3(0.5, 0.5, 0.48);
 		ROUGHNESS = 0.9;
 	} else {
-		vec2 cell = vec2(floor(UV.x / BAY), floor(UV.y / FLOOR));
-		vec2 f = vec2(fract(UV.x / BAY) * BAY, fract(UV.y / FLOOR) * FLOOR);
+		float bay = mix(2.8, 4.4, floor(hash(vec2(seed, 7.0)) * 3.0) * 0.5);
+		vec2 cell = vec2(floor(UV.x / bay), floor(UV.y / FLOOR));
+		vec2 f = vec2(fract(UV.x / bay), fract(UV.y / FLOOR) * FLOOR);
 		bool balconies = hash(vec2(seed, 1.0)) < 0.75;
 		bool shutters = hash(vec2(seed, 2.0)) < 0.5;
 		vec3 shutter_c = hash(vec2(seed, 4.0)) < 0.5 ? vec3(0.22, 0.38, 0.28) : vec3(0.55, 0.55, 0.52);
@@ -38,15 +38,20 @@ void fragment() {
 		bool ground = UV.y < 4.0;
 		if (ground) {
 			// Shopfront: tall glass bays with a dark fascia above.
-			glass = step(0.25, f.x) * step(f.x, BAY - 0.25) * step(0.3, UV.y) * step(UV.y, 3.2);
+			glass = step(0.08, f.x) * step(f.x, 0.92) * step(0.3, UV.y) * step(UV.y, 3.2);
 			col = mix(col * 0.8, vec3(0.08, 0.1, 0.12), glass);
 		} else {
-			float win = step(1.0, f.x) * step(f.x, 2.4) * step(0.55, f.y) * step(f.y, 2.55);
-			float shut = shutters ? (step(0.6, f.x) * step(f.x, 0.98) + step(2.42, f.x) * step(f.x, 2.8))
+			float edge = balconies && !shutters ? 0.16 : 0.29;
+			float win = step(edge, f.x) * step(f.x, 1.0 - edge) * step(0.55, f.y) * step(f.y, 2.55);
+			float shut = shutters ? (step(0.18, f.x) * step(f.x, 0.28) + step(0.72, f.x) * step(f.x, 0.82))
 				* step(0.55, f.y) * step(f.y, 2.55) : 0.0;
 			glass = win;
 			col = mix(col, shutter_c, shut);
-			col = mix(col, vec3(0.1, 0.13, 0.17), win);
+			// Open dark bays, drawn curtains and cool sky reflections break up identical window grids.
+			float curtain = step(0.78, hash(cell + seed * 31.0));
+			vec3 pane = mix(vec3(0.07, 0.10, 0.13), vec3(0.18, 0.23, 0.26), hash(cell + seed * 9.0));
+			pane = mix(pane, render * 0.62, curtain);
+			col = mix(col, pane, win);
 			if (balconies) {
 				// Slab edge at the floor line, white railing above it, its shadow just below.
 				float slab = step(f.y, 0.22);
