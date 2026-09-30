@@ -1,4 +1,4 @@
-﻿extends Node3D
+extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
 ## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
@@ -952,7 +952,9 @@ func render_v2(dt):
 	if ghost_model.root.visible:
 		ghost_model.root.transform = Transform3D(gx.basis, gx.origin - gx.basis.y * car.setup.cgHeight)
 	update_camera(dt)
-	TrackLights.update_pool(lamp_pool, track, camera.global_position, settings.time_of_day == 1)
+	TrackLights.update_pool(
+		lamp_pool, track, camera.global_position, settings.time_of_day == 1 and not is_green_hell()
+	)
 	sound.update(car, dt, not in_menu and not paused, settings)
 	instruments.queue_redraw()
 
@@ -1283,12 +1285,18 @@ func set_rain(on: bool) -> void:
 	rain.visible = on
 
 
+func is_green_hell() -> bool:
+	return int(settings.time_of_day) == 1 and v2_track_id == "nordschleife"
+
+
 ## Look-2: the loaded TrackAsset's sodium lamps and the road_v2 amber streaks follow Afterhours.
 ## Look-9: trackside structures (pit building, grandstand, gantry, billboards) glow too.
+## GREEN-HELL-01: Nordschleife night mode disables track lamps; illuminated only by player headlights.
 func apply_track_night() -> void:
 	var night = settings.time_of_day == 1
-	Ps2Materials.set_afterhours(night, track if track is Node3D else null)
+	var green_hell = is_green_hell()
+	Ps2Materials.set_afterhours(night and not green_hell, track if track is Node3D else null)
 	if track is Node3D:
-		TrackLights.set_night(track, night)
+		TrackLights.set_night(track, night and not green_hell)
 		NightGlow.set_night(track, night)
 		preload("res://scripts/track/chicago_night.gd").set_night(track, night)

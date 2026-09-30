@@ -388,7 +388,8 @@ func open_settings() -> void:
 	check(d, "CRT / composite", s.crt_filter, func(v): setting("crt_filter", v))
 	check(d, "Colour dithering", s.colour_dither, func(v): setting("colour_dither", v))
 	choice(d, "Speed blur", ["Off", "Low", "High"], s.speed_blur, func(v): setting("speed_blur", v))
-	choice(d, "Time of day", ["Afternoon", "Afterhours"], s.time_of_day, func(v): setting("time_of_day", v))
+	var tod_label = "Afterhours (Green Hell)" if app.v2_track_id == "nordschleife" else "Afterhours"
+	choice(d, "Time of day", ["Afternoon", tod_label], s.time_of_day, func(v): setting("time_of_day", v))
 	choice(d, "Graphics quality", ["Low", "Medium", "High"], s.quality, func(v): setting("quality", v))
 	check(d, "Adaptive quality", s.adaptive, func(v): setting("adaptive", v))
 	check(d, "Native resolution MSAA 2x", s.native_msaa, func(v): setting("native_msaa", v))

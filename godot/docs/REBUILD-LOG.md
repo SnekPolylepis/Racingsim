@@ -3002,3 +3002,10 @@ Owner requested another pass after the delivered branch. Continuing in the same 
 - Refreshed all 6 CAR-01 review screenshots in `docs/rebuild/screenshots/car-01/` via `tests/v2/car_01_screenshots.gd` under Vulkan.
 - **Validation:** `car_models` gate 76/76 checks PASS (0 failures, 1s), `parse check` PASS (1s, clean), and windowed screenshot captures completed with 0 failures and empty stderr.
 
+## 2026-09-30  DONE GREEN-HELL-01  (Gemini)
+
+- Implemented the Nürburgring Nordschleife "Green Hell" night mode. When Nordschleife is driven in Afterhours mode (`settings.time_of_day == 1`), `game.gd`'s `is_green_hell()` disables track sodium lamps, sodium halos, amber road streaks, and the pooled dynamic downward lights, allowing the dense Eifel forest circuit to be driven in authentic endurance darkness illuminated solely by the player's 3D forward SpotLight3D headlights and atmospheric moon.
+- In `v2_panels.gd`, updated the Time of Day setting label to display `"Afterhours (Green Hell)"` when Nordschleife is active.
+- **Validation:** `parse check` PASS (1s, clean), `front_end` gate 29/29 checks PASS (10s), `optimization` gate 21/21 checks PASS (1s), and standalone state detection logic verified with exit code 0.
+
+
