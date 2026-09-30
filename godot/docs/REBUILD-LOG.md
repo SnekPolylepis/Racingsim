@@ -3080,3 +3080,8 @@ Owner requested another pass after the delivered branch. Continuing in the same 
 - Added a deterministic two-packet/one-acknowledgement regression: this fails against the previous implementation. Wheel gate now has 18 checks. Added --menu-clicks to the existing windowed hardware check, reusing PresentationCheck's real mouse-event injection with the owner's actual hardware enabled and user settings loaded.
 - wheel/ffb/front_end/parse: 4/4 gates PASS, logs tests/logs/gates/20260930-173902. Live hardware menu clicks: 4/4 PASS (both devices readable, Race opens car selection, Settings opens, Close closes), exit 0 and clean stderr. An initial test helper used the wrong Close caption and failed; corrected to the real "Close · Esc" label before the accepted run.
 - Re-exported Windows with clean stderr. Normal packaged launch reached input idle, ran five seconds with the native helper, and WM_CLOSE exited 0 with clean stderr. Earlier source-only offline menu gates did not cover this live packet-loop starvation; the new check does. Main remains untouched.
+
+## 2026-09-30 DONE FFB-02 pedal assignment correction (Codex)
+
+- Owner requested swapping the pedals after playtest. Swapped the complete throttle/brake mappings in saved v2 settings (preserving endpoint calibration), with a before-pedal-swap backup. Defaults/fallbacks and Controls label now use throttle axis 3, brake axis 4; updated current contract and native notes. Earlier physical axis movement evidence remains historical, but its initial action assignment was corrected by the owner.
+- Wheel 18 checks and parse gate PASS, logs tests/logs/gates/20260930-174400. Windows executable rebuilt with clean stderr and export exit 0.

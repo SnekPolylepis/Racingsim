@@ -8,8 +8,9 @@ The owner's connected CSL DD exposes VID 0EB7 / PID 0020 and two HID collections
 COL01 supplies the real steering/buttons/force-feedback driver; COL02 advertises
 FFB but rejects constant-force creation. Prefer COL01, regardless of enumeration
 order. USB mBooster with the attached CRP2 throttle is VID 346E / PID 0008.
-Throttle axis 4 and brake axis 3 were physically exercised on 2026-09-30, from
-0 to 65535. Right paddle is button 4, left is button 5. Steering uses axis 0 with
+Pedal axes 3 and 4 were physically exercised on 2026-09-30, from 0 to 65535.
+The owner corrected their assignment: throttle axis 3, brake axis 4.
+Right paddle is button 4, left is button 5. Steering uses axis 0 with
 linear input and no speed-dependent lock or Simcade steering cap.
 
 GDScript exchanges fixed-size binary packets with the helper on ephemeral

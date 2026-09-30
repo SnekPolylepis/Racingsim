@@ -105,8 +105,8 @@ func command(profile: Dictionary) -> Dictionary:
 	var steer = clampf(axes[0] * 2.0 - 1.0, -1.0, 1.0) if (present & 1) else 0.0
 	return {
 		"steer": steer * float(profile.get("steer_sign", 1.0)),
-		"throttle": value(profile.get("throttle", {"axis": 0}), 1),
-		"brake": value(profile.get("brake", {"axis": 1}), 1),
+		"throttle": value(profile.get("throttle", {"axis": 3}), 1),
+		"brake": value(profile.get("brake", {"axis": 4}), 1),
 		"clutch": 0.0,
 		"handbrake": value(profile.get("handbrake", {"button": 2}), 0)
 	}

@@ -85,8 +85,8 @@ const DEFAULT_SETTINGS = {
 	"wheel_gain": 0.35,
 	"wheel_profile":
 	{
-		"throttle": {"axis": 4, "released": 0.0, "pressed": 1.0},
-		"brake": {"axis": 3, "released": 0.0, "pressed": 1.0},
+		"throttle": {"axis": 3, "released": 0.0, "pressed": 1.0},
+		"brake": {"axis": 4, "released": 0.0, "pressed": 1.0},
 		"shiftUp": {"button": 4},
 		"shiftDown": {"button": 5},
 		"handbrake": {"button": 2},

@@ -469,7 +469,7 @@ func open_settings() -> void:
 	check(c, "Fanatec CSL DD + Moza pedals", s.wheel_enabled, func(v): setting("wheel_enabled", v))
 	number(c, "Wheel force gain", s.wheel_gain, 0, 1, .05, func(v): setting("wheel_gain", v))
 	label(c, "CSL DD: linear steering · right paddle up / left paddle down", 15)
-	label(c, "Moza: throttle axis 4 / brake axis 3 · keyboard clutch/handbrake/reset still work", 15)
+	label(c, "Moza: throttle axis 3 / brake axis 4 · keyboard clutch/handbrake/reset still work", 15)
 	for action in ["throttle", "brake"]:
 		var pedal = action
 		for field in ["released", "pressed"]:

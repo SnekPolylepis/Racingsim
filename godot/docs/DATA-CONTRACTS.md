@@ -8,7 +8,7 @@ prefix is retained for saved-settings compatibility. Windows also outputs CSL DD
 constant-force steering torque through `native/wheel_bridge.exe`. `wheel_enabled`
 (true), `wheel_gain` (0.35) and `wheel_profile` select the owner's USB rig and pedal
 endpoints. Pedal values are normalized from `released` to `pressed`, including
-reversed endpoints. The measured mBooster/CRP2 throttle is axis 4, brake axis 3;
+reversed endpoints. The owner's corrected mBooster/CRP2 throttle is axis 3, brake axis 4;
 CSL DD steering is axis 0, right paddle button 4 and left paddle button 5.
 These settings do not change record identity. Output stops in menus, on pause,
 focus loss and exit; native effects expire after 100 ms without refresh.
