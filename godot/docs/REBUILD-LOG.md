@@ -2995,3 +2995,10 @@ Owner requested another pass after the delivered branch. Continuing in the same 
 - Continued the same branch: corrected Centennial Wheel deck/cabin heights, authored 21 spokes/42 cabins/six legs, opened the loading plaza, removed overlapping generic footprints and attached surviving hall roof lights to their cornices. Riverwalk uses world-space paving; Spa transporters have round tyres and cab/body details. No new dependencies or assets.
 - Fresh Chicago day/night close-ups and Spa paddock capture reviewed; evidence and logs in `docs/rebuild/screenshots/chicago-spa-polish/detail-pass/`. Affected final headless suites pass: Chicago 43, Spa landmarks 14, clipping 1 (47.1 s), plus parse check (0.6 s). Prior full CI record remains evidence of that earlier run, not a repeated full run.
 - Rebuilt universal Mac app/zip with signature verification. Exported Chicago and Spa presentation drives each pass 72/72 checks with no script errors. Spa reports an ObjectDB cleanup warning on exit; Chicago and build logs are warning-free. Apple M4 Metal hardware only; no Intel/Windows hardware validation. Saves and main remain untouched.
+
+## 2026-09-30  DONE F-CAR-01-tail  (Gemini)
+
+- Moved the Mazda MX-5 NA Afterhours tail-glow quads from the rear bumper (Vector3(-2.027, .62, side * .47)) up and forward into the actual tail lamp housings (Vector3(-1.875, .685, side * .43)), sizing them at Vector3(.010, .065, .11) to fit cleanly inside the red lens section without occluding or clipping the amber turn signal or reverse indicator.
+- Refreshed all 6 CAR-01 review screenshots in `docs/rebuild/screenshots/car-01/` via `tests/v2/car_01_screenshots.gd` under Vulkan.
+- **Validation:** `car_models` gate 76/76 checks PASS (0 failures, 1s), `parse check` PASS (1s, clean), and windowed screenshot captures completed with 0 failures and empty stderr.
+

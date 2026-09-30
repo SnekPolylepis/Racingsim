@@ -43,7 +43,7 @@ func build(visuals, preset, ghost):
 		if not ghost:
 			visuals.headlights.append(weakref(head_glow))
 		var tail_glow = kit.box(
-			"NATailNightGlow", Vector3(-2.027, .62, side * .47), Vector3(.008, .065, .13), "fc3028"
+			"NATailNightGlow", Vector3(-1.875, .685, side * .43), Vector3(.010, .065, .11), "fc3028"
 		)
 		var tail_mat = visuals.material("fc3028", .04, .2).duplicate()
 		tail_mat.emission_enabled = true
