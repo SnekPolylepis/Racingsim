@@ -690,7 +690,10 @@ static func add_wrigley_clocks(asset: Node3D, parent: Node, center: Vector3) -> 
 
 
 static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
-	var concrete = material(Color("737b79"))
+	var concrete = pbr_texture_set("concrete_floor_damaged_01", "concrete_floor_damaged_01", "diff")
+	concrete.uv1_triplanar = true
+	concrete.uv1_world_triplanar = true
+	concrete.uv1_scale = Vector3.ONE / 3.0
 	var st = road.last_bake.stations
 	var count = 0
 	var deck_tool = SurfaceTool.new()
@@ -713,7 +716,7 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 			var girder = at.pos + basis.x * side * 5.0 + Vector3(0, 5.75, 0)
 			facade_box(beam_tool, girder, Vector3(0.45, 0.8, 12.6), Color.WHITE, basis)
 		solid_box(asset, "Ceiling%d" % count, Transform3D(basis, p), Vector3(23, 1.1, 13))
-		if count % 2 == 0:
+		if count % 2 == 0 and at.pos.x > -900.0:
 			for side in [-1, 1]:
 				var post_p = at.pos + basis.x * side * 10.5 + Vector3(0, 3, 0)
 				facade_box(deck_tool, post_p, Vector3(1.1, 6, 1.1), Color.WHITE)
@@ -730,8 +733,49 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	mesh_node(asset, parent, "WackerDeckAndColumns", deck_mesh, Vector3.ZERO)
 	beam_tool.generate_normals()
 	var beam_mesh = beam_tool.commit()
-	beam_mesh.surface_set_material(0, material(Color("3f4443")))
+	beam_mesh.surface_set_material(0, concrete)
 	mesh_node(asset, parent, "WackerBeams", beam_mesh, Vector3.ZERO)
+	# CDOT / Benesch, ASPIRE Fall 2012: N–S viaduct's 3 ft round columns, roughly 32 ft centres.
+	# Keep the existing lateral/vertical race-route offsets pending the complete section/alignment pass.
+	var frame = road_frame(road)
+	var curve: Curve3D = frame[0]
+	var length = curve.get_baked_length()
+	var positions: Array[Vector3] = []
+	var s = 0.0
+	while s < length:
+		var at = RoadBuilder.station_at(curve, road.closed, length, frame[2], s)
+		if at.pos.y <= .1 and at.pos.x <= -900.0 and at.pos.z <= 720.0:
+			var basis = Basis.looking_at(at.tangent, Vector3.UP)
+			for side in [-1, 1]:
+				positions.append(at.pos + basis.x * side * 10.5 + Vector3(0, 3, 0))
+		s += 9.7536
+	var column = CylinderMesh.new()
+	column.top_radius = .4572
+	column.bottom_radius = .4572
+	column.height = 6.0
+	column.radial_segments = 16
+	column.material = concrete
+	var instances = MultiMesh.new()
+	instances.transform_format = MultiMesh.TRANSFORM_3D
+	instances.mesh = column
+	instances.instance_count = positions.size()
+	for i in positions.size():
+		instances.set_instance_transform(i, Transform3D(Basis.IDENTITY, positions[i]))
+		var body = StaticBody3D.new()
+		body.position = positions[i]
+		body.collision_layer = 2
+		body.collision_mask = 0
+		body.set_meta("wall_kind", "concrete")
+		var shape = CollisionShape3D.new()
+		shape.shape = CylinderShape3D.new()
+		shape.shape.radius = .4572
+		shape.shape.height = 6.0
+		body.add_child(shape)
+		attach(asset, asset, body, "WackerRoundColumn%d" % i)
+		shape.owner = asset
+	var columns = MultiMeshInstance3D.new()
+	columns.multimesh = instances
+	attach(asset, parent, columns, "WackerRoundColumns")
 
 
 static func add_road_details(asset: Node3D, parent: Node, road: RoadPath) -> void:

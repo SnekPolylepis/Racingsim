@@ -36,6 +36,19 @@ and rejection of a completely unmeasured footprint; passed on 2026-09-30.
 - Existing race-route connectors are authored circuit geometry, as stated in
   `trackgen/data/chicago/route.json`; they must not be described as a survey.
 
+Inspected the engineering PDF's first-page cross-section rendered with Poppler.
+It shows 13 ft 9 in clearance (4.191 m), a 140 ft total viaduct width (42.672 m),
+26 ft through-lane bays, and six column lines. The article specifies three-foot
+round columns at approximately 32-foot longitudinal centres and concrete ribs.
+The north–south model now uses 0.9144 m diameter cylindrical columns sampled at
+9.7536 m along the route; existing lateral offsets and six-metre column height
+remain authored and unverified. The wider service lanes, full transverse column
+layout and deck-height relationship still require reconstruction. Do not treat
+this partial support correction as completion of the cross-section requirement.
+Ceiling/ribs reuse the existing CC0 Poly Haven damaged concrete maps, with
+world-space three-metre triplanar tiling. Day/night `chi-lower-columns` captures
+were inspected from 1.4 m driver-eye camera positions.
+
 ## Pritzker Pavilion
 
 - Fabricator Zahner:

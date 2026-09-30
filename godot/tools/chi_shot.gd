@@ -50,6 +50,9 @@ func run():
 		"uc": [Vector3(40, 14, 410), Vector3(-46, 30, 423)],
 		"rx": [Vector3(60, 20, 690), Vector3(-35, 45, 701)],
 		"river": [Vector3(-470, 11, -225), Vector3(-150, 4, -262)],
+		"lower-west": [Vector3(-600, 1.4, -234), Vector3(-950, 1.4, -234)],
+		"lower-south": [Vector3(-1035, 1.4, 0), Vector3(-1035, 1.4, 500)],
+		"lower-portal": [Vector3(530, 1.4, -317), Vector3(200, 1.4, -340)],
 		"river-air": [Vector3(-300, 90, -120), Vector3(-450, 0, -300)],
 		"park-air": [Vector3(60, 70, 120), Vector3(170, 0, 280)],
 		"lake-lsd": [Vector3(737, 14, 156), Vector3(1600, 6, 100)],
@@ -76,6 +79,9 @@ func run():
 			if not selected_views.is_empty() and key not in selected_views:
 				continue
 			app.camera.position = views[key][0]
+			var rain = app.camera.get_node_or_null("Rain")
+			if rain:
+				rain.visible = rain.emitting and app.camera.position.y > 3.0
 			app.camera.look_at(views[key][1], Vector3.UP)
 			app.camera.fov = 60
 			for i in 30:
