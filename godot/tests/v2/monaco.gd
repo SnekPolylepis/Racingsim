@@ -95,6 +95,21 @@ func _physics_process(_dt):
 			var hit = surf.contact(st.pos + right * side * 8.0 + Vector3.UP * 2, Vector3.DOWN, 4.0, -1)
 			paved = paved and not hit.is_empty() and hit.get("surface", -1) == 4
 	check(open, "both Swimming Pool chicanes have no roadside wall collision")
+	var pool_gap: Vector2 = asset.get_meta("pool_gap")
+	var gap_clear = true
+	var gap_at = pool_gap.x + 4.0
+	while gap_at < pool_gap.y - 4.0:
+		var gap_station = asset.station(gap_at)
+		var gap_right = gap_station.tangent.cross(Vector3.UP).normalized()
+		for side in [-1.0, 1.0]:
+			var ray = PhysicsRayQueryParameters3D.create(
+				gap_station.pos + Vector3.UP * 0.5,
+				gap_station.pos + Vector3.UP * 0.5 + gap_right * side * 12.0,
+				2
+			)
+			gap_clear = gap_clear and space.intersect_ray(ray).is_empty()
+		gap_at += 8.0
+	check(gap_clear, "wall-free Swimming Pool span stays clear between chicane anchors")
 	check(paved, "open chicane edges have collidable paved escape space")
 	var approach = asset.station(
 		curve.get_closest_offset(Monaco.world_of(43.7361, 7.42181) + Vector3.UP * 3.0)
