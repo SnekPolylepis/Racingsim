@@ -36,6 +36,9 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   alpha-cut spectator silhouettes instead of solid back/end/riser walls and opaque noise cards.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
 - Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
+- Formula presets use a slower steering-lock falloff, matching their high steering authority at the Fairmont
+  hairpin; their bot speed plan accounts for the lock remaining at speed. Monaco laps for the F2004 and RB19
+  pass with zero off-track wheel ticks and wall contacts in both handling models.
 
 ## Sources and licences
 

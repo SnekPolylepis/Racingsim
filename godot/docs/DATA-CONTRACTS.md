@@ -42,7 +42,7 @@ history. The root `tracks/` folder still holds the owner's old documents and mus
 
 ## Presets and setups
 
-Preset keys are `roadster`, `gt`, `f296gt3`. `data/cars.json` contains fixed constants and a default `setup` for each. The garage definition rows are `[group,key,label,min,max,step,unit]`; currently 42 legacy fields grouped into Tires, Suspension, Aero, Brakes, Diff, Gearing and Aids. Presentation-only preset keys (no physics or record effect): `body` (`roadster`, `coupe` or `gt3`, the lofted body style in `visuals.gd::BODIES`), `color`, `rim`, `caliper` (hex colours), `wing` (bool) and `num` (livery number). Missing keys fall back to defaults.
+Preset keys are `roadster`, `gt`, `f296gt3`, `f2004` and `rb19`. `data/cars.json` contains fixed constants and a default `setup` for each. Optional `steerFalloff` (m/s, default 14) sets the speed scale for steering-lock reduction; the Formula presets use 40. The garage definition rows are `[group,key,label,min,max,step,unit]`; currently 42 legacy fields grouped into Tires, Suspension, Aero, Brakes, Diff, Gearing and Aids. Presentation-only preset keys (no physics or record effect): `body` (`roadster`, `coupe` or `gt3`, the lofted body style in `visuals.gd::BODIES`), `color`, `rim`, `caliper` (hex colours), `wing` (bool) and `num` (livery number). Missing keys fall back to defaults.
 
 Chassis keys read by the 6-DOF `CarBody`: `treadWidth` (m, tyre footprint), `unsprungMass` (`[front, rear]` kg per corner; default 3 % of `mass`), `tyreRate` (radial tyre stiffness, N/m; default 260000) and `bodyClearance` (m, the chassis contact box's sill height above static ground; default 0.1). They are fixed constants, not garage fields.
 

@@ -7,6 +7,7 @@ extends SceneTree
 ## grid slot 1 and the lap is timed from its first start-line crossing to the next.
 ## Tracks: every trackgen/*.gd generator listed in TRACKS that exists (proving ground now; Spa when it lands).
 ## `-- --car key` runs one car (tools/run_gates.ps1 splits by car).
+## `-- --simulation-only` skips Simcade for a quicker physics diagnostic; `--diag` adds steering and plan data.
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/laps.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
@@ -83,9 +84,10 @@ func _physics_process(_delta):
 	if FileAccess.file_exists(BASELINE):
 		baseline = JSON.parse_string(FileAccess.get_file_as_string(BASELINE))
 	var record = "--record" in OS.get_cmdline_user_args()
+	var handling_modes = [false] if "--simulation-only" in OS.get_cmdline_user_args() else [false, true]
 	for id in assets:
 		for key in presets:
-			for simcade in [false, true]:
+			for simcade in handling_modes:
 				var r = lap(assets[id], key, simcade)
 				var name = "%s %s %s" % [id, key, "simcade" if simcade else "simulation"]
 				results[name] = r
@@ -150,6 +152,12 @@ func lap(asset, key, simcade):
 	var props = PropSet.from_asset(asset)
 	var prop_ticks = 0
 	var bot = BotDriver.new(asset.get_node("BotLine"), c, surf)
+	if "--diag" in OS.get_cmdline_user_args():
+		var zero_speed = []
+		for i in bot.plan.size():
+			if bot.plan[i] < 0.5:
+				zero_speed.append(roundi(bot.dist[i]))
+		print("  %s %s plan <0.5 m/s at %s" % [key, simcade, zero_speed.slice(0, 12)])
 	var gates = asset.gates()
 	var next_gate = 0
 	var started = -1.0
@@ -177,7 +185,7 @@ func lap(asset, key, simcade):
 				if OS.get_cmdline_user_args().has("--diag") and off % 120 == 1:
 					print(
 						(
-							"  OFF %s %s t=%.1f s=%.0f v=%.1f plan=%.1f lat=%.2f contacts=%d surf=%d"
+							"  OFF %s %s t=%.1f s=%.0f v=%.1f plan=%.1f lat=%.2f steer=%.2f contacts=%d surf=%d"
 							% [
 								key,
 								simcade,
@@ -186,6 +194,7 @@ func lap(asset, key, simcade):
 								c.speed,
 								bot.planned(bot.s, 1.0),
 								bot.lateral,
+								c.input.get("steer", 0.0),
 								c.contacts,
 								w.surf.id
 							]

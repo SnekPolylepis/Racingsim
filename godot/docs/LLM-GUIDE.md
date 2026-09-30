@@ -39,7 +39,7 @@ All paths below are relative to `godot/`.
 | `scripts/cars/f296gt3.gd`, `scripts/ferrari_296.gd` | Imported 296 GT3 body and wheels; retained procedural wheel detail helper | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
 | `scripts/audio.gd` | Recorded engine RPM/load bank, synthesized effects | Engine/tire/road/shift/impact sound; offline assets in `assets/audio/` |
 | `scripts/storage.gd` | JSON validation, safe names, reads/writes | File handling without gameplay state |
-| `data/cars.json` | Three presets, setup defaults and presentation keys (`body`, colours, `num`) | Add/change car constants or looks |
+| `data/cars.json` | Five presets, setup defaults and presentation keys (`body`, colours, `num`) | Add/change car constants or looks |
 | `data/setup_fields.json` | 42 field definitions and seven garage groups | Garage field schema and ranges |
 | `scripts/retro_renderer.gd` | The v2 presentation chain (ARCHITECTURE.md "Presentation chain"): world raster, glow, GPU history, UI viewport holding `V2UIRoot`, console output; `apply_settings()` for every Display setting; `forward_input()` and `to_canvas()`/`from_canvas()` | Display settings, output look, UI scale and input mapping |
 | `scripts/presentation_check.gd` | Windowed Look-3 check run by `--v2-present`/`--v2-look`: each display mode's sizes, frame time, screenshots and real mouse/key/pad input | Add a mode when a Display setting is added |

@@ -210,6 +210,15 @@ func build_plan(bot_line: Path3D, car, surface):
 				var den = cos(theta) - mu * sin(theta)
 				var cap = (g * sin(theta) + mu * (g * cos(theta) + down * v * v)) / maxf(den, .05)
 				v = minf(top, sqrt(maxf(cap, .1) / curv))
+			# The grip plan alone can ask for speeds where speed-sensitive steering has already
+			# removed the lock needed to follow a tight line (the Monaco Fairmont hairpin exposes it).
+			if car.p.get("steerFalloff", 14.0) > 14.0:
+				var required_lock = atan((car.p.a + car.p.b) * curv)
+				var available_lock = deg_to_rad(car.setup.maxSteer)
+				if car.steer_falloff > 0 and required_lock > 1e-5 and required_lock < available_lock:
+					v = minf(v, car.steer_falloff * (available_lock / required_lock - 1.0))
+				elif required_lock >= available_lock:
+					v = 0.0
 		# Crest: vertical curvature from the heights either side (negative = convex).
 		var kv = 2.0 * ((a.y - b.y) / back + (c.y - b.y) / ahead) / (back + ahead)
 		if kv < -1e-5:
@@ -332,6 +341,14 @@ func command(car) -> Dictionary:
 	project(car.pos)
 	var speed = car.speed
 	var look = clampf(8.0 + .35 * speed, 8.0, 45.0)
+	if car.p.get("steerFalloff", 14.0) > 14.0:
+		var curve_a = point_at(s - CHORD)
+		var curve_b = point_at(s)
+		var curve_c = point_at(s + CHORD)
+		if plan_curvature(
+			Vector2(curve_a.x, curve_a.z), Vector2(curve_b.x, curve_b.z), Vector2(curve_c.x, curve_c.z)
+		) > .07:
+			look = minf(look, 5.5)
 	var target = point_at(s + look)
 	var b = car.basis()
 	var fwd = b.x
