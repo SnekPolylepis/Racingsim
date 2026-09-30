@@ -3,7 +3,6 @@ extends RefCounted
 ## Maps simulation (x,y,height) to Godot (x,height,y); model +X forward, +Z right.
 ## Generated scenery and cone references belong to the current world rebuild.
 # All assets are procedural and bundled. Physics remains independent of Godot rigid bodies.
-const NightStyle = preload("res://scripts/night_style.gd")
 const RetroAssets = preload("res://scripts/retro_assets.gd")
 var materials = {}
 var paint_materials = []
@@ -342,6 +341,8 @@ func make_car(p, ghost = false):
 			return preload("res://scripts/cars/gt.gd").new().build(self, p, ghost)
 		"gt3":
 			return preload("res://scripts/cars/f296gt3.gd").new().build(self, p, ghost)
+		"glb":
+			return preload("res://scripts/cars/glb_car.gd").new().build(self, p, ghost)
 	var root = Node3D.new()
 	var body = Node3D.new()
 	root.add_child(body)
@@ -580,7 +581,7 @@ func make_car(p, ghost = false):
 
 
 ## Shared animated running gear. Dedicated bodies must preserve axle positions and this return contract.
-func finish_car(root, body, p, ghost, brake_material, nose = 0.9):
+func finish_car(root, body, p, ghost, brake_material, nose = 0.9, procedural_wheels = true):
 	if not ghost:
 		var shadow = MeshInstance3D.new()
 		shadow.name = "CarDropShadow"
@@ -642,6 +643,10 @@ func finish_car(root, body, p, ghost, brake_material, nose = 0.9):
 		pivot.position = Vector3(p.a if i < 2 else -p.b, R, outer * p.track / 2)
 		var spin = Node3D.new()
 		pivot.add_child(spin)
+		if not procedural_wheels:
+			pivots.append(pivot)
+			spins.append(spin)
+			continue
 		var tire = MeshInstance3D.new()
 		tire.mesh = tire_mesh
 		tire.material_override = material(Color("16191b"), 0, .92)
@@ -716,6 +721,10 @@ func set_cast_shadows(value):
 
 
 func contact_strength():
+	# By day the sun's shadow grounds the car; at native resolution the patch's 4x4 stipple averaged into a
+	# flat grey box around it.
+	if cast_shadows and not night:
+		return 0.0
 	var base = NIGHT_CONTACT if night else DAY_CONTACT
 	return base * (CAST_SHADOW_CONTACT if cast_shadows else 1.0)
 

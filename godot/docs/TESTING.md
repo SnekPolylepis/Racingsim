@@ -56,6 +56,7 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 
 | Suite | What it checks | Notes |
 |---|---|---|
+| `optimization.gd` | Projection against native segment geometry, bounded chronological telemetry, lamp selection and fade against a full distance sort, shared facade night toggles | Synthetic CPU microbenchmarks print timings; no FPS or hardware guarantee |
 | `chassis_spike.gd` | Rest on flat, crest takeoff, bowl lateral demand, free-flight angular momentum, 1 m drop landing, determinism (60 s SHA-256 full-state hash), per-tick cost | Timing gates only with `-Perf` |
 | `surfaces.gd` | Analytic TestSurface shapes (flat, ramp, bowl, crest, ditch, step, block): normals vs gradient, ray hits vs brute-force march, defining quantities, coasting on a grade vs g sin θ | 34 checks |
 | `suspension.gd` | Cross-weight / warp vs rigid-body statics, roof drop, side drop, ditch weave max tilt and body penetration, close two-deck regression | 12 checks |
@@ -70,6 +71,7 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 | `track_asset.gd` | TrackAsset validation (accepts fixture, rejects 8 broken variants), timing-gate crossing, deck resolution, TrackSurface contact, 296 integration lap, per-tick cost | 23 checks; timing gate with `-Perf` |
 | `road_tool.gd` | RoadPath + RoadBuilder: analytic straight heights/bank, a proving loop built with the tool (idempotent re-bake, tessellation, kerb/surface ids, grid slots), 296 lap | 16 checks |
 | `road_tool_v2.gd` | Sausage and ribbed kerbs, per-side verges and runoff, inset ditch (within 2 mm of TestSurface.ditch), elevation spline C2 continuity, grid configuration | 11 checks |
+| `monaco.gd` | Closed elevation profile; independently mapped Swimming Pool chicanes, restored approach barriers, open grandstand geometry, harbour ground mask; roadster/296/RB19 seam crossings at 216 km/h and uphill crest crossings at 162 km/h | 15 checks |
 | `walls.gd` | WallPath (freehand/road-following): face hit on layer 2 only, road-following base within 0.15 mm of the analytic edge, whole-loop closure, validation rejects bad kinds/layers, scatter layout | 8 checks |
 | `terrain.gd` | TerrainPatch: analytic heightmap within 1 cm, chunk-seam continuity, road-stitch (verge match within 2 cm, no terrain poke above road), 296 rest and drive on terrain, 8M-triangle bake performance | 7 checks; timing gate with `-Perf` |
 | `road_density.gd` | Variable lateral road-station density: incompatible count falls back, analytic cross-section match, watertight collision mesh (0 boundary cracks), seam height-step < 1 mm, UV continuity, proving ground scene size | 6 checks |
@@ -83,11 +85,15 @@ All suites are headless (`--headless --path . --script tests/v2/<suite>.gd`). Ea
 
 ```
 --car <preset>        Run only this car (roadster, gt, f296gt3). The gate runner splits by car.
---record              Record new baselines into docs/rebuild/laps-v2-baseline.json instead of comparing.
+--record              Write clean completed laps into docs/rebuild/laps-v2-baseline.json.
+--track=<id>          Run only one track, e.g. --track=monaco.
 --diag                Print per-tick diagnostics (position, speed, off-line distance).
 ```
 
 The baseline file `docs/rebuild/laps-v2-baseline.json` stores one lap time per `<track> <car> <handling>` key. A change that moves a lap by more than 2% fails the gate; re-record deliberately with `--record`.
+Recording rejects non-finite/incomplete laps and laps with off-track wheels, wall contacts or prop contacts.
+The runner covers the three road cars. Formula-car Monaco bot attempts are diagnostic coverage;
+their barrier contacts and Simcade stalls remain a known limitation, separate from the elevation regression.
 
 The Spa bank warning recorded in earlier rebuild runs was resolved by F-P6-01b. The 2026-09-23 P4-06 `-All` run passed 42/42 gates with empty stderr. To check a Windows export's packaged generators and Spa heightmap, run the exported executable with `--headless -- --v2-export-check`; it prints `V2 EXPORT PASS` and exits.
 

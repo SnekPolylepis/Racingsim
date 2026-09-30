@@ -25,10 +25,26 @@ var v2_panels: Control
 const V2_TRACKS = {
 	"proving_ground": "Proving Ground",
 	"spa": "Spa-Francorchamps",
-	"nordschleife_s1": "Nordschleife (T13 - Aremberg)",
 	"nordschleife": "Nürburgring Nordschleife",
-	"chicago": "Chicago — River & Lake"
+	"chicago": "Chicago — River & Lake",
+	"monaco": "Circuit de Monaco"
 }
+## Picker detail lines: [country, length, one-line description].
+const TRACK_INFO = {
+	"proving_ground": ["Test site", "2.6 km", "Flat handling loop with a chicane. Quick to learn."],
+	"spa": ["Belgium", "7.0 km", "Eau Rouge, Raidillon and the Kemmel straight through the Ardennes."],
+	"nordschleife": ["Germany", "20.8 km", "The Green Hell: 73 corners, crests and the banked Karussell."],
+	"chicago":
+	["USA", "8.1 km", "Night street circuit on Michigan Avenue, Lake Shore Drive and both Wacker decks."],
+	"monaco":
+	[
+		"Monaco",
+		"3.3 km",
+		"The Grand Prix streets: Casino Square, the Fairmont hairpin, the tunnel and the harbour."
+	]
+}
+## The car or circuit the picker cursor is on; the detail panel shows it.
+var preview = ""
 
 
 func initialize(owner_app):
@@ -253,20 +269,31 @@ func show_v2_page(next: String) -> void:
 			add_option("Settings", func(): open_v2_panel("settings"), 2)
 			add_option("Quit", app.request_quit, 3)
 		"car":
-			add_option("Continue to circuit", func(): show_page("circuit"), 0)
-			add_option("Car: " + app.car.p.name, cycle_v2_car, 1)
-			add_option("Garage / setup", func(): open_v2_panel("garage"), 2)
-			add_option("Back", back, 3)
+			var keys = app.presets.keys()
+			for i in keys.size():
+				var key = keys[i]
+				var b = add_option(
+					app.presets[key].name + ("   ✓" if key == app.preset_key else ""),
+					func(): pick_car(key),
+					i,
+					Vector2(24, 92)
+				)
+				b.focus_entered.connect(func(): preview = key)
+			add_option("Garage / setup", func(): open_v2_panel("garage"), keys.size(), Vector2(24, 100))
+			add_option("Back", back, keys.size() + 1, Vector2(24, 100))
+			_focus_on(keys.find(app.preset_key))
 		"circuit":
-			add_option("Load circuit", prepare_v2_race, 0)
-			add_option(
-				V2_TRACKS.get(selected_track, "Proving Ground") + "  >",
-				cycle_v2_track,
-				1,
-				Vector2(24, 154),
-				355
-			)
-			add_option("Back", back, 2)
+			var ids = V2_TRACKS.keys()
+			for i in ids.size():
+				var id = ids[i]
+				var b = add_option(
+					V2_TRACKS[id] + ("   ✓" if id == selected_track else ""),
+					func(): pick_track(id),
+					i,
+					Vector2(24, 92)
+				)
+				b.focus_entered.connect(func(): preview = id)
+			add_option("Back", back, ids.size(), Vector2(24, 100))
 		"pause":
 			add_option("Resume", func(): show_page("drive"), 0)
 			add_option("Restart lap", app.restart_v2_lap, 1)
@@ -275,7 +302,9 @@ func show_v2_page(next: String) -> void:
 			add_option("Back to menu", app.return_v2_menu, 4)
 	if selected_track.is_empty():
 		selected_track = app.v2_track_id
-	if not buttons.is_empty():
+	if next == "circuit":
+		_focus_on(V2_TRACKS.keys().find(selected_track))
+	if not buttons.is_empty() and next not in ["car", "circuit"]:
 		call_deferred("focus_first")
 	queue_redraw()
 
@@ -284,6 +313,38 @@ func open_v2_panel(kind: String) -> void:
 	v2_panels.open(kind)
 	choices.visible = false
 	prompt.visible = false
+
+
+## Start the cursor on the current choice rather than the top of the list.
+func _focus_on(index: int) -> void:
+	var b = buttons[maxi(index, 0)]
+	preview = ""
+	_focus_choice.call_deferred(b)
+
+
+func _focus_choice(button: Button) -> void:
+	# A picker can be rebuilt before this deferred call; its old controls are already detached.
+	if is_instance_valid(button) and button.is_inside_tree() and buttons.has(button):
+		button.grab_focus()
+
+
+func pick_car(key: String) -> void:
+	if key != app.preset_key:
+		app.change_v2_car(key)
+	show_page("circuit")
+
+
+func pick_track(id: String) -> void:
+	selected_track = id
+	prepare_v2_race()
+
+
+## Peak power (kW) from the preset's normalised torque curve.
+func peak_kw(p: Dictionary) -> float:
+	var best = 0.0
+	for point in p.get("torqueCurve", [[1.0, 1.0]]):
+		best = maxf(best, p.engineTorque * point[1] * point[0] * p.redline * TAU / 60.0)
+	return best / 1000.0
 
 
 func cycle_v2_car() -> void:
@@ -347,12 +408,27 @@ func draw_v2() -> void:
 		text_at(Vector2(24, 125), app.car.p.name, 20)
 		text_at(Vector2(24, 150), V2_TRACKS.get(app.v2_track_id, app.v2_track_id), 18)
 	elif page == "car":
-		text_at(Vector2(24, 125), app.car.p.name, 24, Color.WHITE, true)
-	elif page in ["circuit", "loading"]:
+		var p = app.presets.get(preview if preview != "" else app.preset_key, app.car.p)
+		draw_rect(Rect2(330, 92, 285, 150), Color(.03, .055, .09, .82))
+		text_at(Vector2(344, 120), p.name, 22, Color.WHITE, true)
+		text_at(Vector2(344, 150), "%d kW   %d kg" % [peak_kw(p), p.mass], 18)
+		text_at(Vector2(344, 174), "%d-speed   %d rpm" % [int(p.get("gears", 6)), p.redline], 18)
+		text_at(Vector2(344, 198), "Downforce  %.1f" % (p.setup.clAF + p.setup.clAR), 18)
+		text_at(Vector2(344, 228), "ENTER  choose and pick a circuit", 14, Color("e2c477"))
+	elif page == "circuit":
+		var id = preview if preview != "" else selected_track
+		var info = TRACK_INFO.get(id, ["", "", ""])
+		draw_rect(Rect2(330, 92, 285, 150), Color(.03, .055, .09, .82))
+		text_at(Vector2(344, 120), V2_TRACKS.get(id, id), 20, Color.WHITE, true)
+		text_at(Vector2(344, 148), info[0] + "   " + info[1], 18)
+		draw_multiline_string(
+			FONT, Vector2(344, 172), info[2], HORIZONTAL_ALIGNMENT_LEFT, 260, 15, -1, Color("c9d2d6")
+		)
+		if id == app.v2_track_id and app.track is Node3D:
+			text_at(Vector2(344, 218), "BEST  " + app.RaceModel.time_text(app.race.best), 16, Color("e2c477"))
+		text_at(Vector2(344, 268), "Car: " + app.car.p.name, 16, Color("c9d2d6"))
+	elif page == "loading":
 		text_at(Vector2(24, 125), V2_TRACKS.get(selected_track, selected_track), 24, Color.WHITE, true)
-		if selected_track == app.v2_track_id and app.track is Node3D:
-			text_at(Vector2(24, 152), "%.3f km" % (app.track.length / 1000.0), 18)
-			text_at(Vector2(24, 179), "BEST  " + app.RaceModel.time_text(app.race.best), 18, Color("e2c477"))
 	if page == "loading":
 		draw_rect(Rect2(24, 275, 340, 10), Color("293942"))
 		draw_rect(Rect2(24, 275, loading_progress * 340, 10), Color("e6bd52"))

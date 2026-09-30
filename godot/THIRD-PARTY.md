@@ -137,6 +137,10 @@ landmark is used.
 
 ## ASSET-02 models (Sketchfab, downloaded by the owner 2026-09-26; reduced with tools/blender/)
 
+Monaco's Fairmont island palm: Kenney, [Nature Kit 2.1](https://kenney.nl/assets/nature-kit),
+CC0 1.0. Original `tree_palmDetailedTall.glb`, used at 4.5× scale. Model and original licence in
+`assets/nature/kenney/`.
+
 All CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified: re-oriented, scaled, split, decimated,
 textures reduced.
 
@@ -150,3 +154,19 @@ textures reduced.
 - "PSX Barrels Pack" by Shazly, CC BY 4.0 (`assets/chicago/barrels/`).
 - "Chicago-Style Econolite 8x5 Signals" by Signalrenders, CC BY 4.0 (`assets/chicago/landmarks/signal_corner.glb`).
 - "Low Poly Night City Building Skyline" by 99.Miles, CC BY 4.0 (`assets/chicago/landmarks/night_skyline.glb`).
+
+| Quaternius Cars Bundle (parked cars, Chicago) | Quaternius via poly.pizza | CC0 1.0 | godot/assets/chicago/cars-q/ |
+| kloofendal_48d_partly_cloudy_puresky and kloppenheim_07_puresky HDRIs (Chicago sky) | Poly Haven | CC0 1.0 | godot/assets/chicago/sky/ |
+| City of Chicago Building Footprints (storey counts) | data.cityofchicago.org syp8-uezg | City of Chicago Data Portal terms | godot/assets/cc0-source/chicago/roadmap/city-footprints.json |
+| USGS 3DEP LiDAR IL 4County Cook 2017 (building roof shapes, Chicago) | USGS via usgs-lidar-public (Entwine) | Public domain (US Government) | baked into godot/trackgen/data/chicago/city.json; fetch_lidar.py |
+| Chicago Athletic Association facade photo | Beyond My Ken, Wikimedia Commons | CC BY-SA 4.0 (texture is a derivative, same licence) | godot/assets/chicago/facade-photos/caa_east.jpg |
+| University Club of Chicago facade photo | Beyond My Ken, Wikimedia Commons | CC BY-SA 4.0 (texture is a derivative, same licence) | godot/assets/chicago/facade-photos/uc_east.jpg |
+| Railway Exchange Building facade photo | Vincent Desjardins, Wikimedia Commons | CC BY 2.0 | godot/assets/chicago/facade-photos/rx_east.jpg |
+| Orchestra Hall (Symphony Center) facade photo | Beyond My Ken, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Orchestra_Hall_Chicago.jpg | texture is a derivative, same licence | godot/assets/chicago/facade-photos/sym_east.jpg |
+| Chicago Cultural Center facade photo | w_lemay, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:Chicago_Cultural_Center_(Former_Chicago_Public_Library_Central_Building),_Michigan_Avenue,_Chicago,_IL_-_52891391046.jpg | texture is a derivative, same licence | godot/assets/chicago/facade-photos/ccc_east.jpg |
+| Circuit de Monaco streets, buildings, trees, parks, piers | OpenStreetMap contributors | ODbL 1.0 | godot/trackgen/data/monaco/ |
+| Copernicus DEM GLO-30 (Monaco elevation) | (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA | Copernicus DEM free licence | godot/trackgen/data/monaco/dem.json, profile.json, city.json |
+| Ferrari F2004 model | Tyler_Dave (Dave Love), Sketchfab 827e64acecba4f008759ae30a5bfeecc | CC BY 4.0 | godot/assets/cars/f2004/ |
+| Red Bull RB19 model ("RB19_Verstappen") | dondifur, Sketchfab fa39f15a0cbe4386a305596a021789e8 | CC BY 4.0 | godot/assets/cars/rb19/ |
+| Autodromo Nazionale Monza Circuit 2020 layout | Tyler_Dave (Dave Love), Sketchfab 25ed955115094de382935aa6d1a1e9c6 | CC BY 4.0 | godot/assets/tracks/monza/ |
+| Monza GP centreline | OpenStreetMap contributors | ODbL 1.0 | godot/trackgen/data/monza/ |

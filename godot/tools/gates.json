@@ -6,6 +6,8 @@
     "game": ["scripts/", "scenes/", "data/", "assets/", "project.godot"]
   },
   "suites": [
+    {"name": "monaco", "script": "tests/v2/monaco.gd", "groups": ["track", "vehicle"], "deps": ["trackgen/monaco.gd", "trackgen/data/monaco/"]},
+    {"name": "optimization", "script": "tests/v2/optimization.gd", "deps": ["scripts/track/track_asset.gd", "scripts/track/track_lights.gd", "scripts/track/night_glow.gd", "scripts/instruments.gd"]},
     {"name": "chassis_spike", "script": "tests/v2/chassis_spike.gd", "groups": ["vehicle"], "perf": true, "perf_args": ["--part", "cost"]},
     {"name": "surfaces", "script": "tests/v2/surfaces.gd", "groups": ["vehicle"]},
     {"name": "suspension", "script": "tests/v2/suspension.gd", "groups": ["vehicle"]},
@@ -36,13 +38,14 @@
     {"name": "laps roadster", "script": "tests/v2/laps.gd", "args": ["--car", "roadster"], "groups": ["vehicle", "track"], "deps": ["docs/rebuild/laps-v2-baseline.json"]},
     {"name": "laps gt", "script": "tests/v2/laps.gd", "args": ["--car", "gt"], "groups": ["vehicle", "track"], "deps": ["docs/rebuild/laps-v2-baseline.json"]},
     {"name": "laps f296gt3", "script": "tests/v2/laps.gd", "args": ["--car", "f296gt3"], "groups": ["vehicle", "track"], "deps": ["docs/rebuild/laps-v2-baseline.json"]},
+    {"name": "laps monaco f2004", "script": "tests/v2/laps.gd", "args": ["--track=monaco", "--car", "f2004"], "groups": ["vehicle", "track"], "deps": ["docs/rebuild/laps-v2-baseline.json"]},
+    {"name": "laps monaco rb19", "script": "tests/v2/laps.gd", "args": ["--track=monaco", "--car", "rb19"], "groups": ["vehicle", "track"], "deps": ["docs/rebuild/laps-v2-baseline.json"]},
     {"name": "terrain", "script": "tests/v2/terrain.gd", "groups": ["vehicle", "track"], "perf": true},
     {"name": "road_density", "script": "tests/v2/road_density.gd", "groups": ["vehicle", "track"]},
     {"name": "scenery", "script": "tests/v2/scenery.gd", "groups": ["vehicle", "track"]},
     {"name": "test_surfaces_scene", "script": "tests/v2/test_surfaces_scene.gd", "groups": ["vehicle"], "deps": ["scripts/proving/", "scenes/proving/"]},
     {"name": "chicago", "script": "tests/v2/chicago.gd", "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/data/chicago/"]},
     {"name": "chicago_clip", "script": "tests/visual/clip_scan.gd", "args": ["--track=chicago"], "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "trackgen/chicago_kit.gd", "trackgen/data/chicago/"]},
-    {"name": "nordschleife_s1", "script": "tests/v2/nordschleife_s1.gd", "groups": ["track"], "deps": ["trackgen/nordschleife_s1.gd", "trackgen/data/nordschleife/"]},
     {"name": "nordschleife", "script": "tests/v2/nordschleife.gd", "groups": ["track"], "deps": ["trackgen/nordschleife.gd", "trackgen/data/nordschleife/"]},
     {"name": "parse check", "kind": "parse", "script": "scripts/game.gd", "groups": ["game"]},
     {"name": "features", "kind": "features", "window": true, "groups": ["game"]}

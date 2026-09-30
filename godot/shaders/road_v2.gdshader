@@ -1,4 +1,4 @@
-shader_type spatial;
+﻿shader_type spatial;
 // TrackAsset asphalt (Look-8, ART-DIRECTION.md "Road"): a 2K photographic asphalt set tiled in metres in
 // both directions, a procedural non-repeating macro layer (broad shading, repair patches with tar seams,
 // a rubbered line), white edge lines, and after-hours amber lamp streaks. RoadBuilder UVs are metres
@@ -20,7 +20,8 @@ uniform float rubber = 0.35;
 // Edge line: `edge_line_inset` metres inside the tarmac edge, `edge_line_width` wide (ART-DIRECTION: ~0.12 m).
 uniform float edge_line_inset = 0.25;
 uniform float edge_line_width = 0.12;
-uniform float macro = 1.0;
+// Per instance so one circuit (the Nordschleife) can carry a more patched, stained surface.
+instance uniform float macro = 1.0;
 // Share of the sharp photo grain kept over a softer mip (the rest is the softened texture).
 uniform float grain_keep = 0.18;
 uniform sampler2D lamp_data : filter_nearest, repeat_disable;
@@ -133,6 +134,13 @@ void fragment() {
 	METALLIC = 0.0;
 	SPECULAR = 0.5;
 	// Damp at night: low enough roughness that each lamp leaves a soft elongated highlight, not a mirror.
-	ROUGHNESS = afterhours ? mix(0.34, 0.55, wear) : mix(0.72, 0.95, wear) - seam * 0.1 + paint * 0.05;
+	// NFSU wet night (owner 2026-09-28): glossy tarmac with mirror puddles in the low spots (blot) and along
+	// the rubbered line; SSR picks up neon and lamps in them.
+	float puddle = smoothstep(0.52, 0.66, blot) * (1.0 - paint);
+	ROUGHNESS = afterhours ? mix(mix(0.38, 0.5, wear), 0.03, puddle) : mix(0.72, 0.95, wear) - seam * 0.1 + paint * 0.05;
+	if (afterhours) {
+		ALBEDO = col * mix(0.8, 0.3, puddle);
+		SPECULAR = mix(0.25, 0.8, puddle);
+	}
 	ROUGHNESS = mix(ROUGHNESS, 0.9, concrete);
 }

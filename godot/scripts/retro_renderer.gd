@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 ## Look-3 PS2 presentation chain for the v2 game (docs/ARCHITECTURE.md, "Presentation").
 ## The world camera renders into `world_view` with square pixels at the presentation's aspect; a
 ## quarter-size glow and two alternating history passes resample it into the console raster (640x448
@@ -151,7 +151,7 @@ func apply_settings():
 		history[i].size = dimensions
 		history[i].get_child(0).size = Vector2(dimensions)
 		passes[i].set_shader_parameter("dithering", s.colour_dither)
-		passes[i].set_shader_parameter("glow_strength", 1.1 if night else .4)
+		passes[i].set_shader_parameter("glow_strength", .45 if night else .25)
 		passes[i].set_shader_parameter("soft", int(s.upscale) == 1)
 		output_views[i].size = output_size
 		output_views[i].get_child(0).size = Vector2(output_size)

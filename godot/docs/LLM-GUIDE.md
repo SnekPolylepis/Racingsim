@@ -36,10 +36,10 @@ All paths below are relative to `godot/`.
 | `scripts/controls.gd` | Bindings, held inputs, ramps, controller polling | Input behavior/remapping |
 | `scripts/instruments.gd` | HUD, minimap, debug, 600-sample graph; `on_asset()` switches the minimap, ghost dot and checkpoint count to TrackAssets | Instrument presentation |
 | `scripts/visuals.gd` | Procedural meshes/materials/scenery and model poses | 3D appearance without changing physics |
-| `scripts/ferrari_296.gd` | Dedicated 296 GT3 body, aero, glazing, livery and racing wheels | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
+| `scripts/cars/f296gt3.gd`, `scripts/ferrari_296.gd` | Imported 296 GT3 body and wheels; retained procedural wheel detail helper | Read [CAR-MODEL.md](CAR-MODEL.md) before changing body geometry |
 | `scripts/audio.gd` | Recorded engine RPM/load bank, synthesized effects | Engine/tire/road/shift/impact sound; offline assets in `assets/audio/` |
 | `scripts/storage.gd` | JSON validation, safe names, reads/writes | File handling without gameplay state |
-| `data/cars.json` | Three presets, setup defaults and presentation keys (`body`, colours, `num`) | Add/change car constants or looks |
+| `data/cars.json` | Five presets, setup defaults and presentation keys (`body`, colours, `num`) | Add/change car constants or looks |
 | `data/setup_fields.json` | 42 field definitions and seven garage groups | Garage field schema and ranges |
 | `scripts/retro_renderer.gd` | The v2 presentation chain (ARCHITECTURE.md "Presentation chain"): world raster, glow, GPU history, UI viewport holding `V2UIRoot`, console output; `apply_settings()` for every Display setting; `forward_input()` and `to_canvas()`/`from_canvas()` | Display settings, output look, UI scale and input mapping |
 | `scripts/presentation_check.gd` | Windowed Look-3 check run by `--v2-present`/`--v2-look`: each display mode's sizes, frame time, screenshots and real mouse/key/pad input | Add a mode when a Display setting is added |
@@ -47,7 +47,7 @@ All paths below are relative to `godot/`.
 | `scripts/record_writer.gd` | Serial background atomic record/sector saves | Flush before read/import/delete/shutdown; immutable completed samples |
 | `scripts/retro_assets.gd`, `scripts/retro_flare.gd` | Generated small art textures, painted sky, occluded flare | Procedural presentation |
 | `data/simcade.json` | Shared Simcade and ASM constants; optional per-car `simcade` overrides | Handling tuning; dynamics targets required |
-| `scripts/night_style.gd` | After-dark floodlights, depth-tested halos/streaks and pit accents for the deleted legacy track | Not on the game path; `scripts/track/track_lights.gd` is its TrackAsset port |
+| `scripts/track/track_lights.gd` | TrackAsset lamps, halos and pooled real lights | Nearest-lamp selection preserves the extra lamp used for fade cutoff |
 | `shaders/*.gdshader`, `assets/textures/` | Road, ground and painted-concrete shaders; CC0 texture sets | Surface look |
 | `.github/workflows/gates.yml`, `tools/ci_gates.py` | CI on every push: gdformat check, parse check and the headless suites from `tools/gates.json` on Linux; exact baselines | Test automation |
 | `tools/run_gates.ps1`, `tools/gates.json` | Local parallel gate runner: affected suites by default, `-All`, `-Perf`, `-Features` | Register every new suite in `gates.json` |
@@ -100,7 +100,7 @@ All paths below are relative to `godot/`.
 
 **New setting:** add a correctly typed entry to `game.gd::DEFAULT_SETTINGS`; add its control in `v2_panels.gd` and apply it in the relevant consumer. A Display/output setting also goes in `game.gd::PRESENTATION_SETTINGS` and is read in `retro_renderer.gd::apply_settings()`. Startup only restores recognized defaults plus key/pad dictionaries. Settings that change competition conditions should reset the run and be represented in record identity. Do not silently mix best laps from incompatible configurations.
 
-**New graphics:** road, verge, terrain and trackside materials come from the TrackAsset builders (`scripts/track/`, `ps2_materials.gd`); cars from `visuals.gd` and `ferrari_296.gd`. Follow [ART-DIRECTION.md](ART-DIRECTION.md).
+**New graphics:** road, verge, terrain and trackside materials come from the TrackAsset builders (`scripts/track/`, `ps2_materials.gd`); cars from `visuals.gd` and `scripts/cars/`. Follow [ART-DIRECTION.md](ART-DIRECTION.md). `CarKit.finish()` creates wheel pivots directly; pass `kit_wheels = false` when supplying imported wheels to avoid building discarded geometry.
 
 **New TrackAsset (v2):** write a generator in `trackgen/<id>.gd` with a static `build_asset()` returning a validated TrackAsset (§5.3: Surfaces on layer 1, Walls on layer 2, TimingLine, Grid, BotLine with smooth handles, optional Props/Scenery/Lights). Keep the RoadPath bank change under 0.20°/m (it warns above that) and leave the terrain's under-road drop tapered. Commit source data under `trackgen/data/<id>/` with its licence and rebuild scripts, and cache raw downloads outside git. Add the id to `tests/v2/laps.gd` TRACKS, record its baseline (`-- --record`) and add a probe like Spa's: racing line on tarmac, no trenches beside the road. Add it to the v2 front end's track list, the export presets' `include_filter` and `check_exported_v2_assets()`, and attribute its data in `THIRD-PARTY.md` and `build/THIRD-PARTY.md`.
 
@@ -131,7 +131,7 @@ All paths below are relative to `godot/`.
 
 ## Known boundaries
 
-Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. All three cars have dedicated procedural models (`ferrari_296.gd`, `scripts/cars/mx5.gd`, `scripts/cars/gt.gd`); These are not licensed manufacturer models. On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
+Exports target Windows x64 and macOS universal. See [MACOS.md](MACOS.md) for Mac validation evidence and remaining limits. Physical controller hardware, force-feedback wheels, other GPUs, online multiplayer and AI racing opponents have not been validated or implemented as applicable. The lap bot is a test controller, not an in-game opponent. Car bodies: procedural GT (`scripts/cars/gt.gd`), an imported MX-5, and Sketchfab models for the 296 GT3, F2004 and RB19 (credits in THIRD-PARTY.md). On the v2 path the 6-DOF car flies with free attitude, lands into its tyres and suspension, and contacts 3-D walls and props. Source comments and tests explain deliberate simplifications; do not casually replace them with generic engine physics.
 
 ## PS2-era art direction (2026-09-21)
 
@@ -139,8 +139,18 @@ Start with [ART-DIRECTION.md](ART-DIRECTION.md) for the shared world/UI output c
 
 `car.simcade_enabled` selects the handling model. Models instantiated by historical headless tests default to Simulation; game settings default to Simcade. Always set the intended model explicitly in new harnesses. Handling enters record identity; time of day and renderer settings do not.
 
+## Monaco circuit (MON-01)
+
+`trackgen/monaco.gd` builds the lap from `trackgen/data/monaco/city.json` (road with heights, ground grid,
+buildings, trees, piers), written offline by the Python scripts in that folder (see its README). The tunnel
+span is `city.json` `tunnel` (road indices) and the asset meta `tunnel` (metres); it has walls and a
+ceiling and no catch fence. `city.json` is in the export filter and `check_exported_v2_assets()`.
+
 ## Chicago circuit (CHI-01)
 
+`trackgen/chicago_l.gd` builds the elevated L (trains move in `scripts/track/l_trains.gd`) and
+`trackgen/chicago_harbor.gd` the lakefront boats and piers; both are visual only. GLB cars with FL/FR/RL/RR
+wheel nodes load through `scripts/cars/glb_car.gd` (preset `"body": "glb"`, `"model": res://…`).
 `trackgen/chicago.gd` builds the Chicago road, both Wacker decks, city and landmarks from
 `trackgen/data/chicago/route.json`. Read that directory's README before changing geography.
 Registration is in `FrontEnd.V2_TRACKS` and `TrackDrive.GENERATORS`; the data is included by every

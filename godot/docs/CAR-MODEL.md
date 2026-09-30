@@ -1,4 +1,28 @@
-# Ferrari 296 GT3: model authoring guide
+# Ferrari 296 GT3: current model and authoring history
+
+The current `gt3` car uses Dave Bored's credited Sketchfab body and wheel assets through
+`scripts/cars/f296gt3.gd`; see `THIRD-PARTY.md` for attribution. `Visuals.make_car()` dispatches
+that builder. The imported body is under `CarKit.body`; the source wheels attach to FL/FR/RL/RR
+steering pivots and spin nodes. `CarKit.finish(root, nose, false)` skips procedural wheel meshes
+that would immediately be replaced by the imported ones. Ghosts keep the same source geometry,
+override its materials, and omit headlights.
+
+The returned dictionary retains `root`, `body`, `pivots`, `spins`, `brakes` and `wheel_r`.
+Coordinates are metres, +X forward, +Y up, +Z right. `game.gd` applies the interpolated 6-DOF
+pose relative to the CG and animates steering, suspension, wheel spin and brake emission.
+`f296gt3.gd` also creates night-only lamp overlays. Transparent imported parts omit solid shadows.
+
+`scripts/ferrari_296.gd` now contains only the procedural `wheel_details()` helper used by
+`Visuals.finish_car()` when procedural wheels are requested. The unused procedural exterior was
+removed in OPT-01 (2026-09-29). Validate changes with the `car_models` gate and windowed
+`-- --v2-present`; the former covers the three original cars plus F2004/RB19 real and ghost wheels.
+See `TESTING.md` for launch/export commands. Old `--art-review` commands below are historical.
+
+## Historical procedural model notes
+
+The following records the retired procedural builder and its measurements. Its geometry functions,
+legacy pose instructions and old checks describe the earlier implementation, rather than current
+editing entry points. The measured triangle counts below are retained as historical evidence.
 
 The Windows game's `gt3` presentation now uses a dedicated exterior in `scripts/ferrari_296.gd`. It replaces the generic loft and the old add-on round tail lamps. The goal is a recognizable 2023 Ferrari 296 GT3 in the existing PS2-inspired night presentation. This is original procedural game geometry built by studying reference images, not a manufacturer-supplied CAD model or a dimensionally certified reproduction. It is not the road-going GTB/GTS or the later GT3 Evo.
 

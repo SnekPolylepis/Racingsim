@@ -7,6 +7,7 @@ extends SceneTree
 ## grid slot 1 and the lap is timed from its first start-line crossing to the next.
 ## Tracks: every trackgen/*.gd generator listed in TRACKS that exists (proving ground now; Spa when it lands).
 ## `-- --car key` runs one car (tools/run_gates.ps1 splits by car).
+## `-- --simulation-only` skips Simcade for a quicker physics diagnostic; `--diag` adds steering and plan data.
 ## Run: tools/Godot.exe --headless --path . --script tests/v2/laps.gd
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
 const BotDriver = preload("res://scripts/vehicle/bot_driver.gd")
@@ -19,9 +20,9 @@ const DT = 1.0 / 240
 const BASELINE = "res://docs/rebuild/laps-v2-baseline.json"
 const TRACKS = {
 	"chicago": "res://trackgen/chicago.gd",
+	"monaco": "res://trackgen/monaco.gd",
 	"proving_ground": "res://trackgen/proving_ground.gd",
 	"spa": "res://trackgen/spa.gd",
-	"nordschleife_s1": "res://trackgen/nordschleife_s1.gd",
 	"nordschleife": "res://trackgen/nordschleife.gd"
 }
 var presets
@@ -41,7 +42,9 @@ func check(ok, what):
 
 
 func _initialize():
-	presets = GatesEnv.only_car(JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json")))
+	presets = GatesEnv.only_car(
+		JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
+	)
 	var selected = ""
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--track="):
@@ -81,9 +84,10 @@ func _physics_process(_delta):
 	if FileAccess.file_exists(BASELINE):
 		baseline = JSON.parse_string(FileAccess.get_file_as_string(BASELINE))
 	var record = "--record" in OS.get_cmdline_user_args()
+	var handling_modes = [false] if "--simulation-only" in OS.get_cmdline_user_args() else [false, true]
 	for id in assets:
 		for key in presets:
-			for simcade in [false, true]:
+			for simcade in handling_modes:
 				var r = lap(assets[id], key, simcade)
 				var name = "%s %s %s" % [id, key, "simcade" if simcade else "simulation"]
 				results[name] = r
@@ -93,10 +97,25 @@ func _physics_process(_delta):
 				if base > 0 and r.lap > 0:
 					timing = "baseline %.2f s (%+.2f%%)" % [base, (r.lap / base - 1) * 100]
 					timing_ok = absf(r.lap / base - 1) < .02
+				var hairpin_ok = (
+					not (id == "monaco" and key in ["f2004", "rb19"])
+					or r.hairpin_min_speed >= 6.8
+				)
+				var hairpin_speed = (
+					"n/a" if r.hairpin_min_speed <= 0 else "%.0f km/h" % (r.hairpin_min_speed * 3.6)
+				)
 				check(
-					r.ok and r.lap > 0 and r.off == 0 and r.walls == 0 and r.props == 0 and timing_ok,
 					(
-						"%s: lap %.2f s, %d off-track wheel-ticks, %d wall-contact ticks, %d prop-contact ticks (%d props), max %.1f m off the line, top %.0f km/h; %s"
+						r.ok
+						and r.lap > 0
+						and r.off == 0
+						and r.walls == 0
+						and r.props == 0
+						and hairpin_ok
+						and timing_ok
+					),
+					(
+						"%s: lap %.2f s, %d off-track wheel-ticks, %d wall-contact ticks, %d prop-contact ticks (%d props), max %.1f m off the line, top %.0f km/h, Fairmont min %s; %s"
 						% [
 							name,
 							r.lap,
@@ -106,6 +125,7 @@ func _physics_process(_delta):
 							r.prop_count,
 							r.max_off_line,
 							r.top * 3.6,
+							hairpin_speed,
 							timing
 						]
 					)
@@ -113,13 +133,17 @@ func _physics_process(_delta):
 	if record:
 		var out = baseline.duplicate()
 		for name in results:
-			if results[name].lap > 0:
+			var r = results[name]
+			if r.ok and r.lap > 0 and r.off == 0 and r.walls == 0 and r.props == 0:
 				out[name] = snappedf(results[name].lap, .001)
 		var f = FileAccess.open(BASELINE, FileAccess.WRITE)
 		f.store_string(JSON.stringify(out, "  ", true) + "\n")
 		f.close()
 		print("RECORDED %s" % BASELINE)
-	print("LAPS RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
+	print(
+		"LAPS RESULTS ",
+		JSON.stringify({"checks": checks, "failures": failures, "results": results})
+	)
 	quit(0 if failures.is_empty() else 1)
 	return true
 
@@ -137,6 +161,12 @@ func lap(asset, key, simcade):
 	var props = PropSet.from_asset(asset)
 	var prop_ticks = 0
 	var bot = BotDriver.new(asset.get_node("BotLine"), c, surf)
+	if "--diag" in OS.get_cmdline_user_args():
+		var zero_speed = []
+		for i in bot.plan.size():
+			if bot.plan[i] < 0.5:
+				zero_speed.append(roundi(bot.dist[i]))
+		print("  %s %s plan <0.5 m/s at %s" % [key, simcade, zero_speed.slice(0, 12)])
 	var gates = asset.gates()
 	var next_gate = 0
 	var started = -1.0
@@ -145,6 +175,9 @@ func lap(asset, key, simcade):
 	var wall_ticks = 0
 	var max_off_line = 0.0
 	var top = 0.0
+	var hairpin_min_speed = INF
+	var hairpin_corners: Dictionary = asset.get_meta("corners", {})
+	var hairpin_at = hairpin_corners.get("Grand Hotel Hairpin", -INF)
 	var ok = true
 	var prev = c.pos
 	var time = 0.0
@@ -152,6 +185,10 @@ func lap(asset, key, simcade):
 	var cap = 2.5 * asset.length / 15.0 + 60.0
 	while time < cap:
 		c.input = bot.command(c)
+		var hairpin_delta = absf(bot.s - hairpin_at)
+		hairpin_delta = minf(hairpin_delta, asset.length - hairpin_delta)
+		if hairpin_at >= 0.0 and hairpin_delta <= 35.0:
+			hairpin_min_speed = minf(hairpin_min_speed, c.speed)
 		c.step(DT, surf, true)
 		if WallContact.step(c, walls) > 0:
 			wall_ticks += 1
@@ -164,7 +201,7 @@ func lap(asset, key, simcade):
 				if OS.get_cmdline_user_args().has("--diag") and off % 120 == 1:
 					print(
 						(
-							"  OFF %s %s t=%.1f s=%.0f v=%.1f plan=%.1f lat=%.2f contacts=%d surf=%d"
+							"  OFF %s %s t=%.1f s=%.0f v=%.1f plan=%.1f lat=%.2f steer=%.2f contacts=%d surf=%d"
 							% [
 								key,
 								simcade,
@@ -173,6 +210,7 @@ func lap(asset, key, simcade):
 								c.speed,
 								bot.planned(bot.s, 1.0),
 								bot.lateral,
+								c.input.get("steer", 0.0),
 								c.contacts,
 								w.surf.id
 							]
@@ -202,5 +240,6 @@ func lap(asset, key, simcade):
 		"props": prop_ticks,
 		"prop_count": props.props.size(),
 		"max_off_line": max_off_line,
-		"top": top
+		"top": top,
+		"hairpin_min_speed": hairpin_min_speed if is_finite(hairpin_min_speed) else 0.0
 	}

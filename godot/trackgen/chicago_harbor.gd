@@ -1,0 +1,113 @@
+extends RefCounted
+## Lakefront dressing from real data (city.json):
+## - a moored sailboat on every OSM mooring point (Monroe Harbor, Navy Pier marina); boats share one
+##   heading as moored boats swing together to the wind (ponytail: fixed heading, no wind model);
+## - OSM piers and breakwaters as concrete decks just above the lake;
+## - LiDAR-measured sculptural steel (Pritzker Pavilion headdress, Great Lawn trellis) as thin shells.
+
+const LAKE_Y = 6.5
+const STREET_Y = 8.0
+const HULL_L = 9.0
+const HULL_W = 3.0
+const MAST_H = 13.0
+
+
+static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
+	var box = preload("res://trackgen/chicago_l.gd").box
+	# Boats.
+	var st = {}
+	for key in ["hull", "deck", "mast"]:
+		st[key] = SurfaceTool.new()
+		st[key].begin(Mesh.PRIMITIVE_TRIANGLES)
+	box.call(st.hull, Vector3(0, 0.35, 0), Vector3(HULL_W, 1.1, HULL_L * 0.8), Basis.IDENTITY)
+	box.call(st.hull, Vector3(0, 0.45, -HULL_L * 0.45), Vector3(HULL_W * 0.55, 0.9, HULL_L * 0.2), Basis.IDENTITY)
+	box.call(st.deck, Vector3(0, 1.2, 0.8), Vector3(HULL_W * 0.6, 0.7, HULL_L * 0.35), Basis.IDENTITY)
+	box.call(st.mast, Vector3(0, 0.9 + MAST_H * .5, -0.6), Vector3(0.14, MAST_H, 0.14), Basis.IDENTITY)
+	box.call(st.mast, Vector3(0, 3.0, 0.9), Vector3(0.1, 0.1, 3.4), Basis.IDENTITY)
+	var mats = {"hull": _mat(Color("eef0ee"), 0.0, 0.35), "deck": _mat(Color("c9c3b6"), 0.0, 0.6), "mast": _mat(Color("b8bcc0"), 0.8, 0.3)}
+	var boat = ArrayMesh.new()
+	for key in st:
+		st[key].generate_normals()
+		st[key].set_material(mats[key])
+		st[key].commit(boat)
+	var moorings: Array = doc.get("moorings", [])
+	var mm = MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = boat
+	mm.instance_count = moorings.size()
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 60611
+	for i in moorings.size():
+		var yaw = deg_to_rad(200.0 + rng.randf_range(-12.0, 12.0))
+		mm.set_instance_transform(i, Transform3D(Basis(Vector3.UP, yaw) * rng.randf_range(0.8, 1.25), Vector3(moorings[i][0], LAKE_Y - 0.2, moorings[i][1])))
+	var boats = MultiMeshInstance3D.new()
+	boats.name = "MooredBoats"
+	boats.multimesh = mm
+	parent.add_child(boats)
+	boats.owner = asset
+	# Piers and breakwaters.
+	var pier = SurfaceTool.new()
+	pier.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for p in doc.get("piers", []):
+		var pts: Array = p.p
+		for k in pts.size() - 1:
+			var a = Vector3(pts[k][0], LAKE_Y + 0.6, pts[k][1])
+			var b = Vector3(pts[k + 1][0], LAKE_Y + 0.6, pts[k + 1][1])
+			if a.distance_to(b) < 0.1:
+				continue
+			box.call(pier, (a + b) * .5, Vector3(float(p.w), 1.6, a.distance_to(b) + 0.2), Basis.looking_at(b - a, Vector3.UP))
+	pier.generate_normals()
+	var pier_node = MeshInstance3D.new()
+	pier_node.name = "Piers"
+	pier_node.mesh = pier.commit()
+	pier_node.material_override = _mat(Color("a8a59c"), 0.0, 0.85)
+	parent.add_child(pier_node)
+	pier_node.owner = asset
+	# LiDAR steel shells.
+	var steel = SurfaceTool.new()
+	steel.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var cells = 0
+	for sh in doc.get("shells", []):
+		var x0 = float(sh[0])
+		var z0 = float(sh[1])
+		var w = int(sh[2])
+		var h = int(sh[3])
+		var c = float(sh[4])
+		var thick = float(sh[6])
+		var raw = Marshalls.base64_to_raw(str(sh[5]))
+		var at = func(i: int, j: int) -> float: return raw.decode_u16((j * w + i) * 2) * 0.1 if i >= 0 and j >= 0 and i < w and j < h else 0.0
+		for j in h:
+			for i in w:
+				var y = at.call(i, j)
+				if y <= 0.0:
+					continue
+				var p = Vector3(x0 + (i + .5) * c, STREET_Y + y - thick * .5, z0 + (j + .5) * c)
+				if thick >= 1.0:
+					box.call(steel, p, Vector3(c, thick, c), Basis.IDENTITY)
+				else:
+					# Trellis: a thin pipe node per measured cell, linked to measured neighbours (incl. diagonals),
+					# so the lattice reads as pipes instead of a solid canopy.
+					box.call(steel, p, Vector3(thick, thick, thick), Basis.IDENTITY)
+					for n in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1)]:
+						var ny = at.call(i + n.x, j + n.y)
+						if ny <= 0.0 or absf(ny - y) > 1.5:
+							continue
+						var q = Vector3(x0 + (i + n.x + .5) * c, STREET_Y + ny - thick * .5, z0 + (j + n.y + .5) * c)
+						box.call(steel, (p + q) * .5, Vector3(thick * .6, thick * .6, p.distance_to(q)), Basis.looking_at(q - p, Vector3.UP))
+				cells += 1
+	steel.generate_normals()
+	var steel_node = MeshInstance3D.new()
+	steel_node.name = "PritzkerSteel"
+	steel_node.mesh = steel.commit()
+	steel_node.material_override = _mat(Color("c7cbcf"), 0.9, 0.22)
+	parent.add_child(steel_node)
+	steel_node.owner = asset
+	return {"boats": moorings.size(), "steel_cells": cells}
+
+
+static func _mat(c: Color, metal: float, rough: float) -> StandardMaterial3D:
+	var m = StandardMaterial3D.new()
+	m.albedo_color = c
+	m.metallic = metal
+	m.roughness = rough
+	return m

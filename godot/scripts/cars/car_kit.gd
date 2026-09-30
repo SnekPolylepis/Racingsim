@@ -11,6 +11,15 @@ var paint_mat
 var dark = Color("111820")
 
 
+## Imported parts cast shadows unless see-through: alpha-textured grilles, glass and decals cast solid ones
+## (the 296's EXT_Grid mesh put a 4.5 m dark box on the road).
+static func shadow_mode(part: MeshInstance3D) -> GeometryInstance3D.ShadowCastingSetting:
+	var mat = part.mesh.surface_get_material(0)
+	if mat is BaseMaterial3D and mat.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+		return GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+
+
 func start(visuals, preset, is_ghost, label):
 	v = visuals
 	p = preset
@@ -219,7 +228,7 @@ func number_plate(number, x, y, z):
 		body.add_child(label)
 
 
-func finish(root, nose):
+func finish(root, nose, kit_wheels = true):
 	var brake_mat = v.material("ad1212", .08, .2).duplicate()
 	brake_mat.emission_enabled = true
 	brake_mat.emission = Color("ff2018")
@@ -227,8 +236,10 @@ func finish(root, nose):
 	for node in body.find_children("*", "MeshInstance3D", true, false):
 		if node.name.begins_with("GTTailCluster") or node.name.begins_with("RoundTailLamp"):
 			node.material_override = brake_mat
-	var model = v.finish_car(root, body, p, ghost, brake_mat, nose)
-	replace_wheels(model, "road" if p.get("body", "") == "roadster" else "race")
+	# Build only the wheel geometry the car will keep; imported wheels arrive after this call.
+	var model = v.finish_car(root, body, p, ghost, brake_mat, nose, false)
+	if kit_wheels:
+		replace_wheels(model, "road" if p.get("body", "") == "roadster" else "race")
 	return model
 
 

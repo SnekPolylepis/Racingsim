@@ -67,7 +67,7 @@ var simcade = SIMCADE_DEFAULTS.duplicate(true)
 var asm_active = false
 var asm_cut = 0.0
 var asm_brakes = [0.0, 0.0, 0.0, 0.0]
-## Speed at which steering lock halves (m/s); 0 disables speed-sensitive steering. Set per input device by game.gd.
+## Speed scale for speed-sensitive steering lock (m/s); 0 disables the falloff.
 var steer_falloff = 14.0
 ## Steering grip assist (radians, 0 = off): stops the driver steering the fronts much past their peak
 ## slip angle in the direction they are already steering. Countersteer is never limited or forced.
@@ -179,6 +179,7 @@ var last_rot = Quaternion.IDENTITY
 func configure(preset):
 	p = preset.duplicate(true)
 	setup = p.setup.duplicate(true)
+	steer_falloff = float(p.get("steerFalloff", 14.0))
 	wheels.clear()
 	for i in 4:
 		wheels.append(

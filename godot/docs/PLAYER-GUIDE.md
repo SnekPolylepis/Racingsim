@@ -23,7 +23,7 @@ Spa-Francorchamps is built from real survey data:
 
 Eau Rouge and Raidillon climb as they really do. Runoff areas are approximations for now.
 
-The cars are the Mazda MX-5 (NA 1.6), a GT car with high downforce, and the Ferrari 296 GT3. The car models are placeholders; better ones are coming.
+The cars are the Mazda MX-5 (NA 1.6), a GT car with high downforce, the Ferrari 296 GT3, the Ferrari F2004 and the Red Bull RB19. The F2004 (605 kg, 18,300 rpm V10) and RB19 (798 kg) are Sketchfab models with physics presets built from published figures.
 
 ## Driving and gear changes
 
@@ -84,7 +84,7 @@ Built circuits are cached in the tracks3d folder beside it. Deleting that cache 
 If a circuit takes a long time to load the first time, that is the one-off build; later loads use the cache. If the game ever starts with odd settings, deleting the v2 settings.json restores the defaults. Physical controllers work through Godot's standard gamepad mapping; wheels and force feedback are not supported.
 
 This is a preview:
-- Circuits: the Proving Ground, Spa, Nordschleife (first section and the full 20.8 km lap) and Chicago.
+- Circuits: the Proving Ground, Spa, the full 20.8 km Nordschleife, Chicago and Monaco.
 - The full Nordschleife's kerbs and scenery are less finished than Spa's.
 - Chicago is an authored racing route on real street geometry, with two invented ramp connectors.
 - Choose Afterhours in Settings for the night lighting.

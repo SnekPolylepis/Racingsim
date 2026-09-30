@@ -23,9 +23,9 @@ Driving inputs can be remapped in Settings. In automatic mode, hold the brake wh
 
 ## Included
 
-- Monza, Spa and the Nürburgring Nordschleife; roadster (a 1990 Mazda MX-5, NA 1.6: 2.265 m wheelbase, 955 kg, 136 Nm, 7200 rpm redline, five-speed, 185/60R14, no ABS or traction control), GT and Ferrari 296 GT3 parameter presets. Spa is built from OpenStreetMap data (© OpenStreetMap contributors, ODbL) with real DEM elevation; see `trackgen/`.
+- Proving Ground, Spa, the Nürburgring Nordschleife and Chicago; roadster (a 1990 Mazda MX-5, NA 1.6: 2.265 m wheelbase, 955 kg, 136 Nm, 7200 rpm redline, five-speed, 185/60R14, no ABS or traction control), GT and Ferrari 296 GT3 parameter presets. Spa is built from OpenStreetMap data (© OpenStreetMap contributors, ODbL) with real DEM elevation; see `trackgen/`.
 - Original fixed 240 Hz four-wheel vehicle dynamics: Pacejka tires, load transfer, suspension, clutch, differential, gearing, ABS/TC, temperature, optional wear, slope gravity and crest/dip loading. Native additions: per-wheel road height (raised, ridged curbs; crest and bank geometry act through the suspension), surface + core tire temperatures and self-aligning torque output.
-- Dedicated procedural 296 GT3 and lofted roadster/GT bodies with arches, lights, aero parts, liveries and detailed wheels; render interpolation between physics ticks for smooth motion at any refresh rate.
+- Sketchfab 296 GT3, F2004 and RB19 models, an imported MX-5 and a procedural GT body, with night lights and animated wheels; render interpolation between physics ticks for smooth motion at any refresh rate.
 - Console presentation at 640×448 SD / 720p / Native, 4:3 or anamorphic 16:9, clean 480p component, optional 480i fields and CRT/composite. Authentic low-resolution menus/HUD are default; Sharp UI is optional. Offline CLUT/RGB555 texture builds, reflective paint, crossed-card woods, lamp halos and GPU history blur work on both renderers.
 - Original boot/title/idle driving demo, race mode, car/setup/paint/rim and circuit selection, real preparation stages, grid countdown, pause, lap time sheet and last-lap replay. Keyboard, controller and mouse navigation; synthesized menu sounds.
 - Simcade (default) or the preserved Simulation handling model, separate records, TCS/ASM 0–10 and ABS, with compatible legacy setups.
@@ -63,7 +63,7 @@ Windows checks from this directory:
 & .\build\RacingSim.exe -- --features
 ```
 
-- Full-lap regression drives Monza and Spa with zero off-track steps and valid recorded ghosts.
+- Full-lap regression drives every circuit with zero off-track steps and valid recorded ghosts.
 - Native integration checks cover driving, all cars/tracks, audio capture/mute/pause, remapping, garage/settings, JSON round trips, record storage and smaller-window layout. Screenshots and `feature-results.json` go to `tests/` for source runs and `user://native-tests/` for exported runs. Test saves/settings are isolated in `native-tests`.
 
 The game uses Godot's Forward+ renderer with an automatic OpenGL fallback. The follow-up tests both Forward+ and OpenGL on the local RTX 4080; see the dated report for the measured full-lap matrix. Physical controller hardware has not been tested. macOS uses Metal by default; validation and build instructions are in [MACOS.md](docs/MACOS.md).

@@ -6,6 +6,7 @@ var app
 var number_font = preload("res://assets/fonts/Rajdhani-Bold.ttf")
 const READ_FONT = preload("res://assets/fonts/Rajdhani-Medium.ttf")
 var samples = []
+var sample_head = 0
 var accumulator = 0.0
 var map_points = PackedVector2Array()
 var map_low = Vector2.ZERO
@@ -25,6 +26,7 @@ func initialize(owner_app):
 
 func reset():
 	samples.clear()
+	sample_head = 0
 	accumulator = 0
 	rebuild_map()
 
@@ -65,9 +67,12 @@ func sample(car, dt):
 	if accumulator < 1.0 / 60:
 		return
 	accumulator = 0
-	samples.append([car.speed, car.input.throttle, car.input.brake, car.input.steer])
-	if samples.size() > 600:
-		samples.pop_front()
+	var value = [car.speed, car.input.throttle, car.input.brake, car.input.steer]
+	if samples.size() < 600:
+		samples.append(value)
+	else:
+		samples[sample_head] = value
+		sample_head = (sample_head + 1) % 600
 
 
 func text(pos, value, font_size = 16, color = Color.WHITE):
@@ -344,7 +349,8 @@ func draw_telemetry():
 			continue
 		var pts = PackedVector2Array()
 		for i in samples.size():
-			var v = samples[i][k] / 80 if k == 0 else ((samples[i][k] + 1) / 2 if k == 3 else samples[i][k])
+			var value = samples[(sample_head + i) % samples.size()][k]
+			var v = value / 80 if k == 0 else ((value + 1) / 2 if k == 3 else value)
 			pts.append(
 				(
 					rect.position

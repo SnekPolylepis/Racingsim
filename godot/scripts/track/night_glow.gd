@@ -6,8 +6,6 @@ extends RefCounted
 ## own .scn, so materials aren't shared instances at runtime and have to be walked and toggled per track.
 
 const NIGHT_GLOW_SHADER = preload("res://shaders/night_glow.gdshader")
-## Chicago city facades (CHI-02) carry the same `afterhours` uniform.
-const CITY_FACADE_SHADER = preload("res://shaders/chicago_facade.gdshader")
 
 static var cache: ShaderMaterial
 
@@ -29,16 +27,31 @@ static func set_night(root: Node, on: bool) -> void:
 		return
 	# MeshInstance3D (pit building, grandstand, gantry) and MultiMeshInstance3D (billboards) both keep
 	# their material on a Mesh resource; walk both node types.
+	var materials = {}
+	var shaders = {}
 	for node in group.find_children("*", "MeshInstance3D", true, false):
-		_set_mesh(node.mesh, on)
+		_set_mesh(node.mesh, on, materials, shaders)
 	for node in group.find_children("*", "MultiMeshInstance3D", true, false):
-		_set_mesh(node.multimesh.mesh if node.multimesh else null, on)
+		_set_mesh(node.multimesh.mesh if node.multimesh else null, on, materials, shaders)
 
 
-static func _set_mesh(mesh: Mesh, on: bool) -> void:
+static func _set_mesh(mesh: Mesh, on: bool, materials: Dictionary, shaders: Dictionary) -> void:
 	if mesh == null:
 		return
 	for i in mesh.get_surface_count():
 		var mat = mesh.surface_get_material(i)
-		if mat is ShaderMaterial and (mat.shader == NIGHT_GLOW_SHADER or mat.shader == CITY_FACADE_SHADER):
+		if not mat is ShaderMaterial or mat.shader == null or materials.has(mat):
+			continue
+		materials[mat] = true
+		# Any shader with an `afterhours` uniform (night glow, the Chicago and Monaco facades, ...).
+		if not shaders.has(mat.shader):
+			shaders[mat.shader] = _has_afterhours(mat.shader)
+		if shaders[mat.shader]:
 			mat.set_shader_parameter("afterhours", on)
+
+
+static func _has_afterhours(shader: Shader) -> bool:
+	for u in shader.get_shader_uniform_list():
+		if u.name == "afterhours":
+			return true
+	return false

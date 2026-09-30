@@ -34,3 +34,12 @@ powershell -ExecutionPolicy Bypass -File tools/run_gates.ps1 -All -Features
 Data folders (`tracks/`, `setups/`, `ghosts/`) at the repo root are user files from the pre-rebuild game; don't delete or reformat them. The game saves under `user://v2`.
 
 A browser implementation (`racing-sim.html`) was removed on 2026-09-22. It is in git history only. Don't revive it or treat it as a physics reference.
+
+## Owner direction (2026-09-28): no self-imposed ceilings
+
+This overrides any stricter wording elsewhere in the docs.
+
+- **Visuals first.** Target: a mid-2000s Need for Speed night city (Underground 1/2, Most Wanted). Wet, reflective roads; sodium and neon light; heavy bloom; dense street dressing. Use glow, SSR, volumetric fog, SDFGI, reflection probes, decals, whatever reads well. The "retro chain omits screen-space lighting" rule is lifted.
+- **Assets:** use any CC0 / permissively licensed textures and models you can find (Poly Haven, ambientCG, Kenney, Quaternius, Sketchfab CC0/CC-BY with credit). 2K+ textures are fine. The ~5 MB commit budget is gone; record licences in `THIRD-PARTY.md`.
+- **Performance budgets are advisory.** Target 60 fps on the dev PC (RTX 4080); per-feature µs budgets and perf gates don't block visual work.
+- **Verification is: the game launches, loads the track and drives without crashing.** Full gate runs, screenshot matrices and reports are optional; run them when they're cheap or something looks broken. Iron out the details later.

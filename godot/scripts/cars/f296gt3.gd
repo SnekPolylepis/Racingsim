@@ -19,7 +19,7 @@ func build(visuals, preset, ghost):
 	kit.body.add_child(body)
 	var ghost_mat = visuals.paint_material(Color.WHITE, true) if ghost else null
 	for part in body.find_children("*", "MeshInstance3D", true, false):
-		part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		part.cast_shadow = Kit.shadow_mode(part)
 		if ghost:
 			part.material_override = ghost_mat
 			continue
@@ -27,7 +27,7 @@ func build(visuals, preset, ghost):
 		for lamp in FRONT_LAMPS + REAR_LAMPS:
 			if source.begins_with(lamp):
 				_lamp(visuals, part, Color("fff1d4") if lamp in FRONT_LAMPS else Color("ff3020"))
-	var model = kit.finish(root, 1.1)
+	var model = kit.finish(root, 1.1, false)
 	_wheels(model, visuals, ghost_mat)
 	return model
 

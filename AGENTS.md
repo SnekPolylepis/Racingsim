@@ -15,3 +15,5 @@ Preserve user files in root `tracks/`, `setups/` and `ghosts/` (saves from the p
 Keep documentation synchronized with actual source, and distinguish recorded test results from guarantees. Dated evidence in `godot/docs/CHANGELOG.md`, `PS2-SIMCADE-REPORT.md` and `MACOS.md` is a record of runs that happened; correct it only when it was wrong when written, not to match later changes.
 
 No delegation or approval requirements are introduced by this file.
+
+Owner direction 2026-09-28: visual quality over self-imposed limits. See the 'Owner direction' section in CLAUDE.md; it overrides stricter budgets, gates and art restrictions in the docs.

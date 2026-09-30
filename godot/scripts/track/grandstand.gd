@@ -28,6 +28,8 @@ const NightGlow = preload("res://scripts/track/night_glow.gd")
 @export var has_roof = true
 @export_range(3.0, 12.0, 0.5) var roof_height = 5.0
 @export var has_crowd = true
+## Temporary stands expose steel supports instead of solid concrete back/end walls.
+@export var open_structure = false
 ## If true, creates a concrete front barrier on layer 2 under Walls/<name>.
 @export var solid_front = true
 
@@ -111,7 +113,8 @@ func bake() -> void:
 			# Riser (vertical)
 			var r0_top = sl0.point + sl0.outward * d1 + sl0.up * h1
 			var r1_top = sl1.point + sl1.outward * d1 + sl1.up * h1
-			SceneryBuilder.add_quad(st, t0_out, t1_out, r1_top, r0_top, col_concrete)
+			if not open_structure:
+				SceneryBuilder.add_quad(st, t0_out, t1_out, r1_top, r0_top, col_concrete)
 
 			# Crowd cards on tier
 			if has_crowd:
@@ -138,7 +141,13 @@ func bake() -> void:
 		var bk1_bot = sl1.point + sl1.outward * total_depth - sl1.up * 0.2
 		var bk0_top = sl0.point + sl0.outward * total_depth + sl0.up * total_rise
 		var bk1_top = sl1.point + sl1.outward * total_depth + sl1.up * total_rise
-		SceneryBuilder.add_quad(st, bk0_bot, bk1_bot, bk1_top, bk0_top, col_concrete)
+		if open_structure:
+			if i % 2 == 0:
+				SceneryBuilder.add_box(
+					st, (bk0_bot + bk0_top) * 0.5, Vector3(0.15, total_rise, 0.15), col_pillars
+				)
+		else:
+			SceneryBuilder.add_quad(st, bk0_bot, bk1_bot, bk1_top, bk0_top, col_concrete)
 
 		# Roof if enabled
 		if has_roof:
@@ -160,7 +169,11 @@ func bake() -> void:
 		var p_back_base = sl.point + sl.outward * total_depth - sl.up * 0.2
 		var p_back_top = sl.point + sl.outward * total_depth + sl.up * total_rise
 
-		if idx == 0:
+		if open_structure:
+			SceneryBuilder.add_box(
+				st, (p_back_base + p_back_top) * 0.5, Vector3(0.15, total_rise, 0.15), col_pillars
+			)
+		elif idx == 0:
 			SceneryBuilder.add_quad(st, p_base, p_back_base, p_back_top, sl.point, col_concrete)
 		else:
 			SceneryBuilder.add_quad(st, p_back_base, p_base, sl.point, p_back_top, col_concrete)
@@ -224,5 +237,6 @@ func bake() -> void:
 		"rows": rows,
 		"has_roof": has_roof,
 		"solid_front": solid_front,
+		"open_structure": open_structure,
 		"slices": slices.size()
 	}

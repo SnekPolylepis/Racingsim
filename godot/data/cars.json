@@ -1,311 +1,529 @@
 {
-  "roadster": {
-    "name": "Mazda MX-5 (NA 1.6)",
-    "body": "roadster",
-    "color": "#c1272d",
-    "rim": "#c7cdd0",
-    "caliper": "#b8322a",
-    "mass": 955,
-    "unsprungMass": [28, 30],
-    "tyreRate": 190000,
-    "bodyClearance": 0.13,
-    "izz": 1060,
-    "ipitch": 1200,
-    "iroll": 315,
-    "a": 1.087,
-    "b": 1.178,
-    "track": 1.415,
-    "wheelR": 0.289,
-    "wheelI": 0.75,
-    "engineTorque": 136,
-    "redline": 7200,
-    "idle": 850,
-    "engineI": 0.12,
-    "engineBrake": 0.08,
-    "torqueCurve": [
-      [
-        0,
-        0.55
-      ],
-      [
-        0.2,
-        0.7
-      ],
-      [
-        0.4,
-        0.82
-      ],
-      [
-        0.55,
-        0.9
-      ],
-      [
-        0.7,
-        0.97
-      ],
-      [
-        0.76,
-        1
-      ],
-      [
-        0.9,
-        0.95
-      ],
-      [
-        1,
-        0.85
-      ]
-    ],
-    "clutchTorque": 300,
-    "reverse": 3.758,
-    "setup": {
-      "tireMu": 1.15,
-      "tireBlat": 9.0,
-      "tireBlong": 11.0,
-      "loadSens": 0.11,
-      "tempOpt": 65,
-      "tempWindow": 40,
-      "pressureHeat": 1,
-      "cgHeight": 0.46,
-      "springF": 24000,
-      "springR": 21000,
-      "bumpF": 1600,
-      "reboundF": 2400,
-      "bumpR": 1500,
-      "reboundR": 2300,
-      "arbF": 12000,
-      "arbR": 4000,
-      "cdA": 0.64,
-      "clAF": 0.02,
-      "clAR": 0.03,
-      "brakeTorque": 4200,
-      "brakeBias": 0.65,
-      "handbrakeTorque": 1800,
-      "diffType": 1,
-      "diffPreload": 35,
-      "diffPower": 0.45,
-      "diffCoast": 0.2,
-      "layout": 0,
-      "awdRear": 0.6,
-      "awdLock": 0.3,
-      "finalDrive": 4.3,
-      "gear1": 3.136,
-      "gear2": 1.888,
-      "gear3": 1.33,
-      "gear4": 1.0,
-      "gear5": 0.814,
-      "gear6": 0.814,
-      "shiftTime": 0.25,
-      "maxSteer": 32,
-      "absOn": 0,
-      "absIntensity": 0.6,
-      "tcOn": 0,
-      "tcIntensity": 0.4
-    },
-    "gears": 5
+ "roadster": {
+  "name": "Mazda MX-5 (NA 1.6)",
+  "body": "roadster",
+  "color": "#c1272d",
+  "rim": "#c7cdd0",
+  "caliper": "#b8322a",
+  "mass": 955,
+  "unsprungMass": [
+   28,
+   30
+  ],
+  "tyreRate": 190000,
+  "bodyClearance": 0.13,
+  "izz": 1060,
+  "ipitch": 1200,
+  "iroll": 315,
+  "a": 1.087,
+  "b": 1.178,
+  "track": 1.415,
+  "wheelR": 0.289,
+  "wheelI": 0.75,
+  "engineTorque": 136,
+  "redline": 7200,
+  "idle": 850,
+  "engineI": 0.12,
+  "engineBrake": 0.08,
+  "torqueCurve": [
+   [
+    0,
+    0.55
+   ],
+   [
+    0.2,
+    0.7
+   ],
+   [
+    0.4,
+    0.82
+   ],
+   [
+    0.55,
+    0.9
+   ],
+   [
+    0.7,
+    0.97
+   ],
+   [
+    0.76,
+    1
+   ],
+   [
+    0.9,
+    0.95
+   ],
+   [
+    1,
+    0.85
+   ]
+  ],
+  "clutchTorque": 300,
+  "reverse": 3.758,
+  "setup": {
+   "tireMu": 1.15,
+   "tireBlat": 9.0,
+   "tireBlong": 11.0,
+   "loadSens": 0.11,
+   "tempOpt": 65,
+   "tempWindow": 40,
+   "pressureHeat": 1,
+   "cgHeight": 0.46,
+   "springF": 24000,
+   "springR": 21000,
+   "bumpF": 1600,
+   "reboundF": 2400,
+   "bumpR": 1500,
+   "reboundR": 2300,
+   "arbF": 12000,
+   "arbR": 4000,
+   "cdA": 0.64,
+   "clAF": 0.02,
+   "clAR": 0.03,
+   "brakeTorque": 4200,
+   "brakeBias": 0.65,
+   "handbrakeTorque": 1800,
+   "diffType": 1,
+   "diffPreload": 35,
+   "diffPower": 0.45,
+   "diffCoast": 0.2,
+   "layout": 0,
+   "awdRear": 0.6,
+   "awdLock": 0.3,
+   "finalDrive": 4.3,
+   "gear1": 3.136,
+   "gear2": 1.888,
+   "gear3": 1.33,
+   "gear4": 1.0,
+   "gear5": 0.814,
+   "gear6": 0.814,
+   "shiftTime": 0.25,
+   "maxSteer": 32,
+   "absOn": 0,
+   "absIntensity": 0.6,
+   "tcOn": 0,
+   "tcIntensity": 0.4
   },
-  "gt": {
-    "name": "GT (high downforce)",
-    "body": "coupe",
-    "rim": "#2b3035",
-    "caliper": "#c9c9c9",
-    "color": "#e4c13a",
-    "shade": "#746326",
-    "wing": true,
-    "num": "07",
-    "mass": 1260,
-    "unsprungMass": [40, 43],
-    "tyreRate": 300000,
-    "izz": 1900,
-    "ipitch": 2200,
-    "iroll": 520,
-    "a": 1.3,
-    "b": 1.45,
-    "track": 1.66,
-    "wheelR": 0.34,
-    "wheelI": 1.4,
-    "engineTorque": 500,
-    "redline": 8200,
-    "idle": 1100,
-    "engineI": 0.14,
-    "engineBrake": 0.12,
-    "torqueCurve": [
-      [
-        0,
-        0.5
-      ],
-      [
-        0.2,
-        0.72
-      ],
-      [
-        0.4,
-        0.9
-      ],
-      [
-        0.6,
-        1
-      ],
-      [
-        0.8,
-        0.97
-      ],
-      [
-        0.92,
-        0.9
-      ],
-      [
-        1,
-        0.78
-      ]
-    ],
-    "clutchTorque": 900,
-    "reverse": 3,
-    "setup": {
-      "tireMu": 1.55,
-      "tireBlat": 11,
-      "tireBlong": 14,
-      "loadSens": 0.1,
-      "tempOpt": 78,
-      "tempWindow": 40,
-      "pressureHeat": 1.1,
-      "cgHeight": 0.36,
-      "springF": 90000,
-      "springR": 100000,
-      "bumpF": 5500,
-      "reboundF": 7500,
-      "bumpR": 6000,
-      "reboundR": 8000,
-      "arbF": 45000,
-      "arbR": 25000,
-      "cdA": 0.95,
-      "clAF": 1.3,
-      "clAR": 1.9,
-      "brakeTorque": 11000,
-      "brakeBias": 0.66,
-      "handbrakeTorque": 3000,
-      "diffType": 1,
-      "diffPreload": 80,
-      "diffPower": 0.6,
-      "diffCoast": 0.35,
-      "layout": 0,
-      "awdRear": 0.65,
-      "awdLock": 0.4,
-      "finalDrive": 3.6,
-      "gear1": 2.9,
-      "gear2": 2,
-      "gear3": 1.52,
-      "gear4": 1.22,
-      "gear5": 1.02,
-      "gear6": 0.88,
-      "shiftTime": 0.06,
-      "maxSteer": 26,
-      "absOn": 1,
-      "absIntensity": 0.6,
-      "tcOn": 1,
-      "tcIntensity": 0.3
-    }
-  },
-  "f296gt3": {
-    "name": "Ferrari 296 GT3",
-    "body": "gt3",
-    "rim": "#bac2c8",
-    "caliper": "#e2b43b",
-    "color": "#bd383f",
-    "shade": "#6d1218",
-    "wing": true,
-    "num": "51",
-    "mass": 1300,
-    "unsprungMass": [42, 45],
-    "tyreRate": 340000,
-    "izz": 1850,
-    "ipitch": 2100,
-    "iroll": 480,
-    "a": 1.54,
-    "b": 1.11,
-    "track": 1.68,
-    "wheelR": 0.345,
-    "wheelI": 1.35,
-    "engineTorque": 640,
-    "redline": 8000,
-    "idle": 1250,
-    "engineI": 0.13,
-    "engineBrake": 0.11,
-    "torqueCurve": [
-      [
-        0,
-        0.4
-      ],
-      [
-        0.15,
-        0.76
-      ],
-      [
-        0.3,
-        0.96
-      ],
-      [
-        0.5,
-        1
-      ],
-      [
-        0.7,
-        0.98
-      ],
-      [
-        0.85,
-        0.92
-      ],
-      [
-        1,
-        0.82
-      ]
-    ],
-    "clutchTorque": 1000,
-    "reverse": 2.9,
-    "setup": {
-      "tireMu": 1.62,
-      "tireBlat": 11.5,
-      "tireBlong": 14.5,
-      "loadSens": 0.11,
-      "tempOpt": 80,
-      "tempWindow": 38,
-      "pressureHeat": 1.15,
-      "cgHeight": 0.33,
-      "springF": 100000,
-      "springR": 115000,
-      "bumpF": 6000,
-      "reboundF": 8000,
-      "bumpR": 6500,
-      "reboundR": 8500,
-      "arbF": 50000,
-      "arbR": 30000,
-      "cdA": 1.1,
-      "clAF": 1.6,
-      "clAR": 2.5,
-      "brakeTorque": 12500,
-      "brakeBias": 0.63,
-      "handbrakeTorque": 3000,
-      "diffType": 1,
-      "diffPreload": 100,
-      "diffPower": 0.65,
-      "diffCoast": 0.4,
-      "layout": 0,
-      "awdRear": 0.65,
-      "awdLock": 0.4,
-      "finalDrive": 3.7,
-      "gear1": 2.75,
-      "gear2": 2.05,
-      "gear3": 1.62,
-      "gear4": 1.33,
-      "gear5": 1.12,
-      "gear6": 0.95,
-      "shiftTime": 0.04,
-      "maxSteer": 24,
-      "absOn": 1,
-      "absIntensity": 0.5,
-      "tcOn": 1,
-      "tcIntensity": 0.35
-    }
+  "gears": 5
+ },
+ "gt": {
+  "name": "GT (high downforce)",
+  "body": "coupe",
+  "rim": "#2b3035",
+  "caliper": "#c9c9c9",
+  "color": "#e4c13a",
+  "shade": "#746326",
+  "wing": true,
+  "num": "07",
+  "mass": 1260,
+  "unsprungMass": [
+   40,
+   43
+  ],
+  "tyreRate": 300000,
+  "izz": 1900,
+  "ipitch": 2200,
+  "iroll": 520,
+  "a": 1.3,
+  "b": 1.45,
+  "track": 1.66,
+  "wheelR": 0.34,
+  "wheelI": 1.4,
+  "engineTorque": 500,
+  "redline": 8200,
+  "idle": 1100,
+  "engineI": 0.14,
+  "engineBrake": 0.12,
+  "torqueCurve": [
+   [
+    0,
+    0.5
+   ],
+   [
+    0.2,
+    0.72
+   ],
+   [
+    0.4,
+    0.9
+   ],
+   [
+    0.6,
+    1
+   ],
+   [
+    0.8,
+    0.97
+   ],
+   [
+    0.92,
+    0.9
+   ],
+   [
+    1,
+    0.78
+   ]
+  ],
+  "clutchTorque": 900,
+  "reverse": 3,
+  "setup": {
+   "tireMu": 1.55,
+   "tireBlat": 11,
+   "tireBlong": 14,
+   "loadSens": 0.1,
+   "tempOpt": 78,
+   "tempWindow": 40,
+   "pressureHeat": 1.1,
+   "cgHeight": 0.36,
+   "springF": 90000,
+   "springR": 100000,
+   "bumpF": 5500,
+   "reboundF": 7500,
+   "bumpR": 6000,
+   "reboundR": 8000,
+   "arbF": 45000,
+   "arbR": 25000,
+   "cdA": 0.95,
+   "clAF": 1.3,
+   "clAR": 1.9,
+   "brakeTorque": 11000,
+   "brakeBias": 0.66,
+   "handbrakeTorque": 3000,
+   "diffType": 1,
+   "diffPreload": 80,
+   "diffPower": 0.6,
+   "diffCoast": 0.35,
+   "layout": 0,
+   "awdRear": 0.65,
+   "awdLock": 0.4,
+   "finalDrive": 3.6,
+   "gear1": 2.9,
+   "gear2": 2,
+   "gear3": 1.52,
+   "gear4": 1.22,
+   "gear5": 1.02,
+   "gear6": 0.88,
+   "shiftTime": 0.06,
+   "maxSteer": 26,
+   "absOn": 1,
+   "absIntensity": 0.6,
+   "tcOn": 1,
+   "tcIntensity": 0.3
   }
+ },
+ "f296gt3": {
+  "name": "Ferrari 296 GT3",
+  "body": "gt3",
+  "rim": "#bac2c8",
+  "caliper": "#e2b43b",
+  "color": "#bd383f",
+  "shade": "#6d1218",
+  "wing": true,
+  "num": "51",
+  "mass": 1300,
+  "unsprungMass": [
+   42,
+   45
+  ],
+  "tyreRate": 340000,
+  "izz": 1850,
+  "ipitch": 2100,
+  "iroll": 480,
+  "a": 1.54,
+  "b": 1.11,
+  "track": 1.68,
+  "wheelR": 0.345,
+  "wheelI": 1.35,
+  "engineTorque": 640,
+  "redline": 8000,
+  "idle": 1250,
+  "engineI": 0.13,
+  "engineBrake": 0.11,
+  "torqueCurve": [
+   [
+    0,
+    0.4
+   ],
+   [
+    0.15,
+    0.76
+   ],
+   [
+    0.3,
+    0.96
+   ],
+   [
+    0.5,
+    1
+   ],
+   [
+    0.7,
+    0.98
+   ],
+   [
+    0.85,
+    0.92
+   ],
+   [
+    1,
+    0.82
+   ]
+  ],
+  "clutchTorque": 1000,
+  "reverse": 2.9,
+  "setup": {
+   "tireMu": 1.62,
+   "tireBlat": 11.5,
+   "tireBlong": 14.5,
+   "loadSens": 0.11,
+   "tempOpt": 80,
+   "tempWindow": 38,
+   "pressureHeat": 1.15,
+   "cgHeight": 0.33,
+   "springF": 100000,
+   "springR": 115000,
+   "bumpF": 6000,
+   "reboundF": 8000,
+   "bumpR": 6500,
+   "reboundR": 8500,
+   "arbF": 50000,
+   "arbR": 30000,
+   "cdA": 1.1,
+   "clAF": 1.6,
+   "clAR": 2.5,
+   "brakeTorque": 12500,
+   "brakeBias": 0.63,
+   "handbrakeTorque": 3000,
+   "diffType": 1,
+   "diffPreload": 100,
+   "diffPower": 0.65,
+   "diffCoast": 0.4,
+   "layout": 0,
+   "awdRear": 0.65,
+   "awdLock": 0.4,
+   "finalDrive": 3.7,
+   "gear1": 2.75,
+   "gear2": 2.05,
+   "gear3": 1.62,
+   "gear4": 1.33,
+   "gear5": 1.12,
+   "gear6": 0.95,
+   "shiftTime": 0.04,
+   "maxSteer": 24,
+   "absOn": 1,
+   "absIntensity": 0.5,
+   "tcOn": 1,
+   "tcIntensity": 0.35
+  }
+ },
+ "f2004": {
+  "name": "Ferrari F2004",
+  "body": "glb",
+  "rim": "#bac2c8",
+  "caliper": "#e2b43b",
+  "color": "#c80a0a",
+  "shade": "#6d1218",
+  "wing": true,
+  "num": "1",
+  "mass": 605,
+  "unsprungMass": [
+   18,
+   20
+  ],
+  "tyreRate": 300000,
+  "izz": 950,
+  "ipitch": 1017,
+  "iroll": 151.25,
+  "a": 1.705,
+  "b": 1.395,
+  "track": 1.32,
+  "wheelR": 0.32,
+  "wheelI": 0.9,
+  "engineTorque": 340,
+  "redline": 18800,
+  "idle": 4000,
+  "engineI": 0.05,
+  "engineBrake": 0.09,
+  "torqueCurve": [
+   [
+    0,
+    0.3
+   ],
+   [
+    0.4,
+    0.6
+   ],
+   [
+    0.7,
+    0.9
+   ],
+   [
+    0.9,
+    1.0
+   ],
+   [
+    1,
+    0.96
+   ]
+  ],
+  "clutchTorque": 1400,
+  "reverse": 3.0,
+  "setup": {
+   "tireMu": 1.75,
+   "tireBlat": 11.5,
+   "tireBlong": 14.5,
+   "loadSens": 0.11,
+   "tempOpt": 80,
+   "tempWindow": 38,
+   "pressureHeat": 1.15,
+   "cgHeight": 0.28,
+   "springF": 120000,
+   "springR": 110000,
+   "bumpF": 6000,
+   "reboundF": 8000,
+   "bumpR": 6500,
+   "reboundR": 8500,
+   "arbF": 30000,
+   "arbR": 20000,
+   "cdA": 1.25,
+   "clAF": 1.53,
+   "clAR": 1.87,
+   "brakeTorque": 11000,
+   "brakeBias": 0.57,
+   "handbrakeTorque": 3000,
+   "diffType": 1,
+   "diffPreload": 100,
+   "diffPower": 0.65,
+   "diffCoast": 0.4,
+   "layout": 0,
+   "awdRear": 0.65,
+   "awdLock": 0.4,
+   "finalDrive": 5.5,
+   "shiftTime": 0.04,
+   "maxSteer": 26,
+   "absOn": 1,
+   "absIntensity": 0.5,
+   "tcOn": 1,
+   "tcIntensity": 0.35,
+   "gear1": 3.64,
+   "gear2": 2.67,
+   "gear3": 2.17,
+   "gear4": 1.83,
+   "gear5": 1.54,
+   "gear6": 1.34,
+   "gear7": 1.16
+  },
+  "model": "res://assets/cars/f2004/f2004.glb",
+  "gears": 7,
+  "steerFalloff": 60,
+  "source": "Wikipedia Ferrari_F2004: 605 kg, 645 kW @ 18,300 rpm, 18,800 max, 13in wheels; wheelbase/track from the model scaled to the published 4,545 mm length; izz/ipitch from mass spread over the 4.5 m car; 7 gears; brakes sized for ~5 g at speed"
+ },
+ "rb19": {
+  "name": "Red Bull RB19",
+  "body": "glb",
+  "rim": "#bac2c8",
+  "caliper": "#e2b43b",
+  "color": "#1e2a52",
+  "shade": "#6d1218",
+  "wing": true,
+  "num": "1",
+  "mass": 798,
+  "unsprungMass": [
+   18,
+   20
+  ],
+  "tyreRate": 300000,
+  "izz": 1400,
+  "ipitch": 1498,
+  "iroll": 199.5,
+  "a": 1.98,
+  "b": 1.62,
+  "track": 1.59,
+  "wheelR": 0.36,
+  "wheelI": 0.9,
+  "engineTorque": 560,
+  "redline": 15000,
+  "idle": 4000,
+  "engineI": 0.05,
+  "engineBrake": 0.09,
+  "torqueCurve": [
+   [
+    0,
+    0.45
+   ],
+   [
+    0.4,
+    0.75
+   ],
+   [
+    0.7,
+    0.95
+   ],
+   [
+    0.8,
+    1.0
+   ],
+   [
+    0.9,
+    0.9
+   ],
+   [
+    1,
+    0.7
+   ]
+  ],
+  "clutchTorque": 1400,
+  "reverse": 3.0,
+  "setup": {
+   "tireMu": 1.75,
+   "tireBlat": 11.5,
+   "tireBlong": 14.5,
+   "loadSens": 0.11,
+   "tempOpt": 80,
+   "tempWindow": 38,
+   "pressureHeat": 1.15,
+   "cgHeight": 0.28,
+   "springF": 120000,
+   "springR": 110000,
+   "bumpF": 6000,
+   "reboundF": 8000,
+   "bumpR": 6500,
+   "reboundR": 8500,
+   "arbF": 30000,
+   "arbR": 20000,
+   "cdA": 1.25,
+   "clAF": 1.8,
+   "clAR": 2.2,
+   "brakeTorque": 16000,
+   "brakeBias": 0.57,
+   "handbrakeTorque": 3000,
+   "diffType": 1,
+   "diffPreload": 100,
+   "diffPower": 0.65,
+   "diffCoast": 0.4,
+   "layout": 0,
+   "awdRear": 0.65,
+   "awdLock": 0.4,
+   "finalDrive": 5.5,
+   "shiftTime": 0.04,
+   "maxSteer": 26,
+   "absOn": 1,
+   "absIntensity": 0.5,
+   "tcOn": 1,
+   "tcIntensity": 0.35,
+   "gear1": 3.25,
+   "gear2": 2.38,
+   "gear3": 1.87,
+   "gear4": 1.54,
+   "gear5": 1.31,
+   "gear6": 1.14,
+   "gear7": 1.01,
+   "gear8": 0.9
+  },
+  "model": "res://assets/cars/rb19/rb19.glb",
+  "gears": 8,
+  "steerFalloff": 60,
+  "source": "Wikipedia Red_Bull_RB19: 798 kg, 775 kW, 15,000 rpm limit; FIA 2022 regs: 3.6 m max wheelbase, 18in wheels (720 mm tyre); track from the model; izz/ipitch from mass spread over the 5.6 m car; 8 gears; brakes sized for ~5 g at speed; engineTorque 560 Nm (~700 kW sustained ICE+ERS, not the 775 kW peak), ~350 km/h top"
+ }
 }

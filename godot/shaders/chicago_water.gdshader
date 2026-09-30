@@ -5,7 +5,7 @@ render_mode diffuse_burley, specular_schlick_ggx;
 // gets shorter, faster chop; the river stays long and slow. Standard PBR specular keeps the water
 // responsive to the scene's sky, reflection probes and city lights without another render pass.
 uniform vec4 deep_color : source_color = vec4(0.018, 0.105, 0.12, 1.0);
-uniform vec4 lake_color : source_color = vec4(0.03, 0.17, 0.26, 1.0);
+uniform vec4 lake_color : source_color = vec4(0.05, 0.24, 0.32, 1.0);
 uniform float flow_speed = 0.022;
 uniform float ripple_scale = 0.075;
 
@@ -56,7 +56,8 @@ void fragment() {
 	float h = water_height(p, t, lake);
 	float hx = water_height(p + vec2(0.55, 0.0), t, lake) - h;
 	float hz = water_height(p + vec2(0.0, 0.55), t, lake) - h;
-	vec3 tangent_normal = normalize(vec3(-hx * ripple_scale * 2.0, 1.0, -hz * ripple_scale * 2.0));
+	// Normal-map blue (+Z) points out of the surface; +Y is the bitangent, not world up.
+	vec3 tangent_normal = normalize(vec3(-hx * ripple_scale * 2.0, -hz * ripple_scale * 2.0, 1.0));
 	NORMAL_MAP = tangent_normal * 0.5 + 0.5;
 	NORMAL_MAP_DEPTH = mix(0.32, 0.78, lake);
 
@@ -64,9 +65,11 @@ void fragment() {
 	// At Lake Shore Drive's grazing angle a near-mirror (roughness 0.1, specular 0.95) showed only the
 	// warm horizon haze, so the lake read as a beige plain. Rougher, lower specular keeps a sky sheen
 	// and the city lights' streaks at night while the blue-green body colour survives.
-	ROUGHNESS = mix(0.3, 0.24, lake);
+	// Owner 2026-09-28: with SSR on and the real sky HDRI the water can be glossy again: it mirrors the
+	// skyline and sky (river) and the open sky over the lake.
+	ROUGHNESS = mix(0.1, 0.07, lake);
 	METALLIC = 0.0;
-	SPECULAR = 0.35;
+	SPECULAR = 0.6;
 	// Reflections come from the environment's sky radiance and the city's lights through the low
 	// roughness above. (A screen-colour read here rendered the lake as a flat beige sheet: the water
 	// sampled its own unlit copy.) Fresnel only darkens the body colour looking straight down.

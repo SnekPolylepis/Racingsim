@@ -27,8 +27,8 @@ func shots() -> Array:
 		["spa", "spa-eau-rouge", ["Eau Rouge", -150.0]],
 		["spa", "spa-kemmel", ["Raidillon", 520.0]],
 		["spa", "spa-pit-straight", -160.0],
-		["nordschleife_s1", "nordschleife-start", -70.0],
-		["nordschleife_s1", "nordschleife-t13", 60.0],
+		["nordschleife", "nordschleife-start", -70.0],
+		["nordschleife", "nordschleife-t13", 60.0],
 	]
 
 

@@ -25,14 +25,16 @@ uniform float glow_energy = 1.4;
 // sills and a darker storefront band on the ground floor. 0 leaves the bare photo texture.
 uniform float day_windows = 1.0;
 
-varying float seed;
+varying flat float seed;
 varying flat float kind;
 varying flat float roof;
+varying flat float tint_code;
 
 void vertex() {
 	seed = COLOR.r;
 	kind = floor(COLOR.g * 8.0 + 0.5);
 	roof = COLOR.b;
+	tint_code = COLOR.a;
 }
 
 float hash21(vec2 p) {
@@ -55,6 +57,14 @@ void fragment() {
 	float h1 = hash21(vec2(seed * 61.7, 3.1));
 	float h2 = hash21(vec2(seed * 17.3, 9.7));
 	base *= mix(0.78, 1.12, h1) * mix(vec3(1.06, 1.0, 0.92), vec3(0.94, 1.0, 1.08), h2);
+	// The building's real OSM facade colour, where tagged: keep the texture's detail, take the hue and value.
+	if (tint_code > 0.002) {
+		float idx = floor(tint_code * 255.0 + 0.5) - 1.0;
+		vec3 real = vec3(floor(idx / 36.0), mod(floor(idx / 6.0), 6.0), mod(idx, 6.0)) / 5.0;
+		real = pow(real, vec3(2.2));
+		float detail_l = dot(base, vec3(0.3, 0.59, 0.11)) / max(dot(tint, vec3(0.3, 0.59, 0.11)), 0.05);
+		base = mix(base, real * detail_l * 1.4, 0.8);
+	}
 	ALBEDO = base;
 	NORMAL_MAP = texture(normal_tex, vec3(uv, kind)).rgb;
 	ROUGHNESS = texture(rough_tex, vec3(uv, kind)).r;
