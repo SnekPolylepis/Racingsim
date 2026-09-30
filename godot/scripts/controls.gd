@@ -192,3 +192,10 @@ func binding_text(action, is_pad = false):
 	for code in keys.get(action, []):
 		names.append(OS.get_keycode_string(int(code)))
 	return " / ".join(names)
+
+
+func get_device_id() -> int:
+	if event_pad >= 0:
+		return event_pad
+	var ids = Input.get_connected_joypads() if poll_hardware else PackedInt32Array()
+	return ids[0] if not ids.is_empty() else 0

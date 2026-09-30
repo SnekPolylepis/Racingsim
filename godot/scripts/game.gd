@@ -15,6 +15,7 @@ const Storage = preload("res://scripts/storage.gd")
 const Controls = preload("res://scripts/controls.gd")
 const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
+const FFB = preload("res://scripts/ffb.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const NightGlow = preload("res://scripts/track/night_glow.gd")
@@ -74,6 +75,11 @@ const DEFAULT_SETTINGS = {
 	"volume": .55,
 	"engine_volume": .8,
 	"effects_volume": .65,
+	"ffb_enabled": true,
+	"ffb_gain": 1.0,
+	"ffb_damper": 0.25,
+	"ffb_kerb": 1.0,
+	"ffb_road": 0.8,
 	"folder": "user://"
 }
 var settings = DEFAULT_SETTINGS.duplicate(true)
@@ -83,6 +89,7 @@ var race = RaceModel.new()
 var visuals = Visuals.new()
 var storage = Storage.new()
 var controls = Controls.new()
+var ffb = FFB.new()
 var presets = {}
 var setup_fields = []
 var preset_key = "f296gt3"
@@ -599,6 +606,8 @@ func return_v2_menu() -> void:
 	in_menu = true
 	paused = false
 	controls.clear()
+	if ffb:
+		ffb.stop()
 	if record_writer:
 		record_writer.flush()
 	if frontend:
@@ -788,6 +797,8 @@ func blend_v2(a: Dictionary, b: Dictionary, fraction: float) -> Dictionary:
 func physics_v2(dt):
 	if in_menu or paused:
 		controls.events.clear()
+		if ffb:
+			ffb.stop()
 		return
 	v2_tick += 1
 	if v2_tick < 3:
@@ -820,6 +831,9 @@ func physics_v2(dt):
 	var impact = old_velocity.distance_to(car.vel)
 	if impact > .15 and sound:
 		sound.impact(impact)
+	if ffb:
+		var pad_id = controls.get_device_id() if controls.has_method("get_device_id") else 0
+		ffb.update(car, dt, impact, not in_menu and not paused and controls.poll_hardware, settings, pad_id)
 	if race.update_asset(car, track, dt):
 		save_record()
 		message("New best lap Â· " + RaceModel.time_text(race.best))

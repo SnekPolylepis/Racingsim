@@ -3030,3 +3030,16 @@ Owner requested another pass after the delivered branch. Continuing in the same 
   - Added regression test `settle_low_izz()` to `tests/v2/chassis_spike.gd` evaluating the F2004 preset at `izz = 665.0`. Motion after 1 s dropped from 0.043909 down to 0.000002 m/s (20,000x improvement).
 - **Validation**: `chassis_spike` 18/18 checks PASS (0 failures), `footprint` 10/10 checks PASS (0 failures), `static_friction` 6/6 checks PASS (0 failures), full regression suite 38/38 gates PASS (0 failures, 250s wall clock), `parse check` PASS.
 
+## 2026-09-30  DONE FFB-01  (Gemini)
+
+- Implemented comprehensive Force Feedback (FFB) and haptic processor in `godot/scripts/ffb.gd`:
+  - **Self-Aligning Steering Torque**: Reads `car.steer_torque` synthesized from front tyre pneumatic trail moments (`wheels[0].mz + wheels[1].mz`), delivering natural resistance during turn-in and authentic grip falloff (light steering feel) when exceeding peak slip angle.
+  - **Standstill Centering & Damper**: Applies tyre scrub resistance and caster centering opposing steering angle at speeds below 5 m/s, with high-speed dynamic yaw damping.
+  - **Road & Kerb Cues**: Generates directional kickback torque and high-frequency dual-motor vibration when front tyres strike kerb ribs (`surf.id == 1`), gravel (`surf.id == 3`), or grass (`surf.id == 2`), scaled by vertical wheel load and speed.
+  - **Impact Dynamics**: Passes low-frequency jolt pulses to the strong vibration motor upon chassis impacts or wall strikes.
+  - **Clipping Protection**: Normalizes torque against 30 N·m reference ceiling and implements soft asymptotic saturation (`soft_clip()`, knee at 0.85) to preserve road and kerb textures during heavy cornering without harsh digital cutoff. Exposes `is_clipping` and `clip_depth` flags.
+  - **Hardware & Lifecycle Safety**: Targets active controller via `controls.get_device_id()`, applies vibration via `Input.start_joy_vibration()`, and automatically zeroes motors and stops vibration on pause, in menus, on window blur, or when `poll_hardware` is disabled.
+- Added Settings UI controls in `godot/scripts/v2_panels.gd` for FFB enabled toggle, gain, centering damper, and road/kerb detail.
+- Added live FFB torque percentage and `[CLIP]` indicator to the telemetry debug overlay in `godot/scripts/instruments.gd`.
+- Created standalone unit test and regression gate `tests/v2/ffb_test.gd` registered in `tools/gates.json`.
+- **Validation**: `ffb` gate 29/29 checks PASS (0 failures, 0s), `laps roadster` 10/10 checks PASS (224s), `chassis_spike` 18/18 checks PASS (54s), `footprint` 10/10 checks PASS (6s), `audio` 64/64 checks PASS (1s), `front_end` 29/29 checks PASS (2s), `parse check` PASS (clean).

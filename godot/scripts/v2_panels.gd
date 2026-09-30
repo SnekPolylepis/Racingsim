@@ -465,6 +465,10 @@ func open_settings() -> void:
 	)
 	check(c, "Steering grip assist · keyboard", s.steer_grip_kb, func(v): setting("steer_grip_kb", v))
 	check(c, "Steering grip assist · controller", s.steer_grip_pad, func(v): setting("steer_grip_pad", v))
+	check(c, "Force feedback", s.get("ffb_enabled", true), func(v): setting("ffb_enabled", v))
+	number(c, "Force feedback gain", s.get("ffb_gain", 1.0), 0, 2, .05, func(v): setting("ffb_gain", v))
+	number(c, "Force feedback damper", s.get("ffb_damper", 0.25), 0, 1, .05, func(v): setting("ffb_damper", v))
+	number(c, "Force feedback road/kerb detail", s.get("ffb_kerb", 1.0), 0, 2, .05, func(v): setting("ffb_kerb", v))
 	label(c, "Click a binding, then press a key, button or axis. Esc cancels.", 15)
 	mappings.clear()
 	for action in [

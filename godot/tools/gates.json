@@ -49,6 +49,7 @@
     {"name": "chicago_clip", "script": "tests/visual/clip_scan.gd", "args": ["--track=chicago"], "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "trackgen/chicago_kit.gd", "trackgen/data/chicago/"]},
     {"name": "nordschleife", "script": "tests/v2/nordschleife.gd", "groups": ["track"], "deps": ["trackgen/nordschleife.gd", "trackgen/data/nordschleife/"]},
     {"name": "audio", "script": "tests/v2/audio_test.gd", "groups": ["game"], "deps": ["scripts/audio.gd", "data/cars.json"]},
+    {"name": "ffb", "script": "tests/v2/ffb_test.gd", "groups": ["game", "vehicle"], "deps": ["scripts/ffb.gd", "scripts/controls.gd"]},
     {"name": "parse check", "kind": "parse", "script": "scripts/game.gd", "groups": ["game"]},
     {"name": "features", "kind": "features", "window": true, "groups": ["game"]}
   ]

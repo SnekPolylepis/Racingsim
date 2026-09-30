@@ -396,8 +396,16 @@ func draw_debug():
 	text(
 		Vector2(x + 14, y + 92),
 		(
-			"Height %.1f m   Grade %+.1f%%   Accel %.2f g   Clutch %.0f%%   Align %+.0f N·m"
-			% [car.elev, fwd.y * 100, car.accel.length() / 9.81, car.clutch_eng * 100, car.steer_torque]
+			"Height %.1f m   Grade %+.1f%%   Accel %.2f g   Clutch %.0f%%   Align %+.0f N·m   FFB %+.0f%%%s"
+			% [
+				car.elev,
+				fwd.y * 100,
+				car.accel.length() / 9.81,
+				car.clutch_eng * 100,
+				car.steer_torque,
+				app.ffb.output_torque * 100.0 if "ffb" in app and app.ffb != null else 0.0,
+				" [CLIP]" if ("ffb" in app and app.ffb != null and app.ffb.is_clipping) else ""
+			]
 		),
 		14
 	)
