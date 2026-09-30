@@ -3021,5 +3021,12 @@ Owner requested another pass after the delivered branch. Continuing in the same 
 - Added comprehensive unit test and regression gate `tests/v2/audio_test.gd` registered in `tools/gates.json`.
 - **Validation**: `audio` gate 64/64 checks PASS (0 failures, 0s), `car_models` 76/76 checks PASS (2s), `front_end` 29/29 checks PASS (2s), `parse check` PASS (1s, clean).
 
+## 2026-09-30  DONE PHYS-IZZ  (Gemini)
 
+- Resolved solver creep and counter-rotating wheel oscillation at low yaw inertia (`izz < 1000-1400 kg m²`):
+  - In `godot/scripts/vehicle/tyre.gd`, the low-speed static friction holding clamp (`stick > 0`) previously computed `fy_need = -vwy * m / 4 / dt`, which assumed pure translation and ignored yaw compliance. When `izz` was low (e.g. F2004 at `izz = 665`), the effective yaw rotational mass per wheel was only ~47 kg vs `m / 4 = 150 kg`, causing the semi-implicit solver to over-correct and drive limit-cycle numerical creep (0.04-0.06 rad/s).
+  - Factored yaw inertia compliance (`inv_m_lat = 4.0 / m + wheelbase_sq / izz` and `inv_m_long = 4.0 / m + track_sq / izz`) into the static friction holding forces (`hx`, `hy`) while preserving the high-speed dynamic `need` clamps.
+  - In `godot/scripts/vehicle/car_body.gd`, updated the standstill hold logic on flat ground to bleed residual wheel angular velocity `w.omega *= 0.96` alongside `ang.y *= 0.96`, settling unbraked counter-rotating wheel creep.
+  - Added regression test `settle_low_izz()` to `tests/v2/chassis_spike.gd` evaluating the F2004 preset at `izz = 665.0`. Motion after 1 s dropped from 0.043909 down to 0.000002 m/s (20,000x improvement).
+- **Validation**: `chassis_spike` 18/18 checks PASS (0 failures), `footprint` 10/10 checks PASS (0 failures), `static_friction` 6/6 checks PASS (0 failures), full regression suite 38/38 gates PASS (0 failures, 250s wall clock), `parse check` PASS.
 

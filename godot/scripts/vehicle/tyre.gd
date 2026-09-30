@@ -150,8 +150,10 @@ static func contact_forces(car, w, i, sf, vwx, vwy, dt, stf, strr, hold = Vector
 		# and across a 37 deg side slope at 26-35 mm/s (P2-02).
 		var stick = 1 - smoothstep(STICK_SPEED, 2 * STICK_SPEED, Vector2(vwx, vwy).length())
 		if stick > 0:
+			var izz = maxf(1.0, float(p.get("izz", 1000.0)))
+			var inv_m_lat = 4.0 / m + (2.0 * p.a * p.a + 2.0 * p.b * p.b) / izz
+			var hy = -vwy * (1.0 / inv_m_lat) / dt - hold.y
 			var hx = need if braked else fx
-			var hy = fy_need
 			var use = sqrt(hx * hx + hy * hy) / peak
 			if use > 1:
 				hx /= use

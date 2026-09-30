@@ -746,6 +746,8 @@ func step(dt, surface, automatic = true):
 			vel_y = normal_v.y + (vel_y - normal_v.y) * .96
 			vel_z = normal_v.z + (vel_z - normal_v.z) * .96
 			ang.y *= .96
+			for w in wheels:
+				w.omega *= .96
 	pos_x += vel_x * dt
 	pos_y += vel_y * dt
 	pos_z += vel_z * dt
