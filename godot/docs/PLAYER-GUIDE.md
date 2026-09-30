@@ -81,7 +81,7 @@ Built circuits are cached in the tracks3d folder beside it. Deleting that cache 
 
 ## Troubleshooting and known limits
 
-If a circuit takes a long time to load the first time, that is the one-off build; later loads use the cache. If the game ever starts with odd settings, deleting the v2 settings.json restores the defaults. Physical controllers work through Godot's standard gamepad mapping; wheels and force feedback are not supported.
+If a circuit takes a long time to load the first time, that is the one-off build; later loads use the cache. If the game ever starts with odd settings, deleting the v2 settings.json restores the defaults. Controllers use Godot's standard gamepad mapping. Settings > Controls includes controller rumble for tyre load, road surfaces and impacts; it stops in menus, while paused and when the window loses focus. Steering-wheel torque output is not supported. Physical rumble hardware has not been validated for this preview.
 
 This is a preview:
 - Circuits: the Proving Ground, Spa, the full 20.8 km Nordschleife, Chicago and Monaco.

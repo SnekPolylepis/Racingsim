@@ -1,5 +1,17 @@
 # macOS build and validation
 
+## Preview 9 cross-export — 2026-09-30
+
+Preview 9 combines the latest Chicago/Spa/Monaco work with Gemini's Miata light,
+Green Hell, audio, low-inertia physics, controller-rumble and gate-runner changes.
+Godot 4.6.2 exported the universal Mac ZIP on Windows with its built-in ad-hoc signer.
+ZIP integrity, executable permissions, arm64/x86_64 Mach-O slices and code-signature
+load commands were checked. These structural checks do not establish signature
+validity under macOS policy or hardware compatibility. This exact build was not
+launched on a Mac, checked with `codesign --verify`, or notarized. Earlier Mac runs
+below remain evidence for their recorded revisions only. Windows runtime checks
+for this release are recorded in REBUILD-LOG.md.
+
 > **Rebuild note (2026-09-23):** the macOS preset exports the rebuilt game. `tools/macos.zip` is the template, and the release zip keeps the app binary executable. The legacy game (Circuits, Choose folder, the old feature suite) was deleted in P7-01a; the "Recorded validation" section below is historical.
 
 The native Godot game has a universal macOS export containing arm64 (Apple Silicon) and x86_64 (Intel). It uses Forward+ with Metal and retains the project's OpenGL fallback. The browser game is separate and unchanged.

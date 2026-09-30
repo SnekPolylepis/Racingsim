@@ -109,7 +109,11 @@ var applied_time = -1
 var applied_horizon = ""
 ## Which wooded-hill silhouette each circuit's sky carries (RetroAssets.HILLS).
 const HORIZON_STYLES = {
-	"chicago": "flat", "monaco": "flat", "proving_ground": "generic", "spa": "ardennes", "nordschleife": "eifel"
+	"chicago": "flat",
+	"monaco": "flat",
+	"proving_ground": "generic",
+	"spa": "ardennes",
+	"nordschleife": "eifel"
 }
 var ui
 var instruments
@@ -187,6 +191,15 @@ func _ready():
 			v2_track_id = arg.get_slice("=", 1)
 	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()
 	setup_v2()
+
+
+func _notification(what):
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		ffb.stop()
+
+
+func _exit_tree():
+	ffb.stop()
 
 
 func message(value):
@@ -833,7 +846,14 @@ func physics_v2(dt):
 		sound.impact(impact)
 	if ffb:
 		var pad_id = controls.get_device_id() if controls.has_method("get_device_id") else 0
-		ffb.update(car, dt, impact, not in_menu and not paused and controls.poll_hardware, settings, pad_id)
+		ffb.update(
+			car,
+			dt,
+			impact,
+			not in_menu and not paused and controls.poll_hardware and get_window().has_focus(),
+			settings,
+			pad_id
+		)
 	if race.update_asset(car, track, dt):
 		save_record()
 		message("New best lap Â· " + RaceModel.time_text(race.best))
@@ -1200,8 +1220,10 @@ func apply_time_of_day():
 		# no foreign skyline at night. Night is an overcast sky lit from below by city light.
 		if v2_track_id == "chicago":
 			paint.panorama = load(
-				"res://assets/chicago/sky/%s.hdr"
-				% ("kloppenheim_07_puresky" if night else "kloofendal_48d_partly_cloudy_puresky")
+				(
+					"res://assets/chicago/sky/%s.hdr"
+					% ("kloppenheim_07_puresky" if night else "kloofendal_48d_partly_cloudy_puresky")
+				)
 			)
 			paint.energy_multiplier = 0.6 if night else 0.9
 		sky.sky_material = paint

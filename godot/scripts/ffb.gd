@@ -1,7 +1,8 @@
 extends RefCounted
 class_name ForceFeedback
 
-## Force Feedback (FFB) processor for steering wheels and gamepads (FFB-01).
+## Steering-cue processor and gamepad rumble output (FFB-01).
+## Torque is computed for telemetry; no steering-wheel force-feedback backend is implemented.
 ## Synthesizes self-aligning torque, low-speed centering/damper resistance,
 ## asymmetric kerb and bump kickback, and dual-motor haptic rumble/impact cues.
 ## Features soft-saturation clipping protection to preserve road details under high load.
@@ -51,7 +52,9 @@ static func soft_clip(val: float, knee: float = SOFT_CLIP_KNEE) -> float:
 
 ## Calculate and output force feedback cues.
 ## Called each physics tick from the vehicle simulation loop.
-func update(car, dt: float, impact: float, active: bool, settings: Dictionary, device_id: int = 0) -> Dictionary:
+func update(
+	car, dt: float, impact: float, active: bool, settings: Dictionary, device_id: int = 0
+) -> Dictionary:
 	current_device = device_id
 	var enabled = settings.get("ffb_enabled", true)
 	if not active or not enabled or car == null:
@@ -125,7 +128,9 @@ func update(car, dt: float, impact: float, active: bool, settings: Dictionary, d
 		var w_fl = wheels[0]
 		var w_fr = wheels[1]
 		if _prop(_prop(w_fl, "surf", {}), "id", 0) == 1 or _prop(_prop(w_fr, "surf", {}), "id", 0) == 1:
-			weak_rumble = maxf(weak_rumble, clampf(speed / 25.0, 0.2, 0.9) * kerb_scale * (0.6 + 0.4 * sin(kerb_phase * 2.0)))
+			weak_rumble = maxf(
+				weak_rumble, clampf(speed / 25.0, 0.2, 0.9) * kerb_scale * (0.6 + 0.4 * sin(kerb_phase * 2.0))
+			)
 		var surf_id_l = _prop(_prop(w_fl, "surf", {}), "id", 0)
 		var surf_id_r = _prop(_prop(w_fr, "surf", {}), "id", 0)
 		if surf_id_l == 3 or surf_id_r == 3:  # Gravel
