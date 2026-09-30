@@ -13,7 +13,9 @@ Throttle axis 4 and brake axis 3 were physically exercised on 2026-09-30, from
 linear input and no speed-dependent lock or Simcade steering cap.
 
 GDScript exchanges fixed-size binary packets with the helper on ephemeral
-loopback UDP ports. It reads both devices independently and never sends force
+loopback UDP ports. Each poll drains its packet batch and replies once; replying
+inside the drain loop can starve the game frame when the helper responds quickly.
+It reads both devices independently and never sends force
 to the Moza pedals. Constant-force effects last 100 ms; pause/focus loss/disabled
 FFB sends a stop, and the helper checks game foreground ownership itself. A
 stalled/dead parent ends the helper after at most three seconds; force expires
@@ -26,6 +28,10 @@ the wheelbase USB mode or unplugging/reconnecting requires restarting the game.
 Zero-force hardware check (windowed, both devices connected):
 
     godot/tools/Godot.exe --path godot --script res://tools/wheel_check.gd
+
+Live-hardware menu clicks (Race, Settings and Close, without driving/force):
+
+    godot/tools/Godot.exe --path godot --script res://tools/wheel_check.gd -- --menu-clicks
 
 This verifies device reads and creation/update of a real constant-force effect
 at zero magnitude. It does not establish subjective torque direction, strength

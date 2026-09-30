@@ -36,5 +36,21 @@ func _initialize():
 	assert(rig.active and rig.torque < 0 and absf(rig.torque) <= .35)
 	ffb.update({}, .01, 0, false, {}, -1)
 	assert(not rig.active and rig.torque == 0.0)
-	print('WHEEL RESULTS {"checks":15,"failures":[]}')
+	# One poll must acknowledge a batch once, rather than feed a reply/read loop.
+	var sender = PacketPeerUDP.new()
+	assert(sender.bind(0, "127.0.0.1") == OK)
+	assert(rig.udp.bind(0, "127.0.0.1") == OK)
+	sender.set_dest_address("127.0.0.1", rig.udp.get_local_port())
+	var packet = PackedByteArray()
+	packet.resize(108)
+	packet.encode_u32(0, Bridge.MAGIC)
+	sender.put_packet(packet)
+	sender.put_packet(packet)
+	await create_timer(.02).timeout
+	rig.poll()
+	await create_timer(.02).timeout
+	assert(sender.get_available_packet_count() == 1)
+	sender.close()
+	rig.close()
+	print('WHEEL RESULTS {"checks":18,"failures":[]}')
 	quit()

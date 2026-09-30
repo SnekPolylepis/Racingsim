@@ -36,6 +36,7 @@ func start(window: Window) -> void:
 
 
 func poll() -> void:
+	var received = false
 	while udp.get_available_packet_count() > 0:
 		var packet = udp.get_packet()
 		if packet.size() != 108 or packet.decode_u32(0) != MAGIC:
@@ -54,6 +55,9 @@ func poll() -> void:
 		for i in range(8):
 			buttons[i] = packet.decode_s32(76 + i * 4)
 		last_packet = Time.get_ticks_msec()
+		received = true
+	# Reply after draining: replying inside the loop lets a fast helper keep it alive forever.
+	if received:
 		_send()
 	if Time.get_ticks_msec() - last_packet > 250:
 		present = 0
