@@ -34,13 +34,35 @@ if (-not $Godot) {
 }
 if (-not $Godot -or -not (Test-Path $Godot)) { Write-Host "Godot.exe not found (copy it to godot/tools/ or set RACINGSIM_GODOT)"; exit 2 }
 
-# Changed files (relative to godot/) since the merge base with $Base, plus uncommitted and untracked work.
+# Resolve git base reference with fallbacks to avoid fatal errors when origin/main is not present.
+$resolvedBase = $Base
+$baseValid = $false
+try {
+    $null = git -C $repo rev-parse --verify --quiet "$resolvedBase^{commit}" 2>$null
+    if ($LASTEXITCODE -eq 0) { $baseValid = $true }
+} catch {}
+if (-not $baseValid) {
+    foreach ($cand in @("origin/HEAD", "origin/codex/all-project-updates-20260930", "origin/master", "main", "master", "HEAD")) {
+        try {
+            $null = git -C $repo rev-parse --verify --quiet "$cand^{commit}" 2>$null
+            if ($LASTEXITCODE -eq 0) { $resolvedBase = $cand; $baseValid = $true; break }
+        } catch {}
+    }
+}
+
+# Changed files (relative to godot/) since the merge base with $resolvedBase, plus uncommitted and untracked work.
 function Get-Changed {
     $files = @()
-    $mb = (git -C $repo merge-base HEAD $Base 2>$null)
-    if ($mb) { $files += (git -C $repo diff --name-only $mb HEAD) }
-    $files += (git -C $repo diff --name-only HEAD)
-    $files += (git -C $repo ls-files --others --exclude-standard)
+    if ($baseValid) {
+        try {
+            $mb = (git -C $repo merge-base HEAD $resolvedBase 2>$null)
+            if ($LASTEXITCODE -eq 0 -and $mb) {
+                $files += (git -C $repo diff --name-only $mb HEAD 2>$null)
+            }
+        } catch {}
+    }
+    try { $files += (git -C $repo diff --name-only HEAD 2>$null) } catch {}
+    try { $files += (git -C $repo ls-files --others --exclude-standard 2>$null) } catch {}
     $files | Where-Object { $_ } | ForEach-Object { $_ -replace '^godot/', '' } | Sort-Object -Unique
 }
 
@@ -124,28 +146,34 @@ function Start-Suite($s, $tag, $perfGates) {
 
 function Wait-All($running, $limit) {
     # Start queued runs up to $limit at a time; returns finished runs.
-    $done = @()
-    while ($running.queue.Count -gt 0 -or $running.active.Count -gt 0) {
-        while ($running.queue.Count -gt 0 -and $running.active.Count -lt $limit) {
-            $next = $running.queue[0]
-            $running.queue = @($running.queue | Select-Object -Skip 1)
-            $running.active += (Start-Suite $next.suite $next.tag $next.perf)
+    $done = [System.Collections.Generic.List[object]]::new()
+    $active = [System.Collections.Generic.List[object]]::new()
+    $q = [System.Collections.Generic.Queue[object]]::new()
+    foreach ($item in $running.queue) { $q.Enqueue($item) }
+
+    while ($q.Count -gt 0 -or $active.Count -gt 0) {
+        while ($q.Count -gt 0 -and $active.Count -lt $limit) {
+            $next = $q.Dequeue()
+            $active.Add((Start-Suite $next.suite $next.tag $next.perf))
         }
-        Start-Sleep -Milliseconds 250
-        $still = @()
-        foreach ($r in $running.active) {
-            if ($r.proc.HasExited) { $done += $r; continue }
+        Start-Sleep -Milliseconds 100
+        for ($i = $active.Count - 1; $i -ge 0; $i--) {
+            $r = $active[$i]
+            if ($r.proc.HasExited) {
+                $done.Add($r)
+                $active.RemoveAt($i)
+                continue
+            }
             if (((Get-Date) - $r.start).TotalSeconds -gt $Timeout) {
                 try { $r.proc.Kill() } catch {}
                 $r.timedOut = $true
-                $done += $r
+                $done.Add($r)
+                $active.RemoveAt($i)
                 continue
             }
-            $still += $r
         }
-        $running.active = $still
     }
-    return $done
+    return @($done)
 }
 
 function Evaluate($r) {
@@ -190,10 +218,20 @@ function Evaluate($r) {
     return @{ name = $s.name; ok = $ok; secs = $secs; note = $note }
 }
 
+function Get-SuiteWeight($suite) {
+    if ($suite.name.StartsWith("laps ")) { return 300 }
+    if ($suite.name -eq "chassis_spike") { return 100 }
+    if ($suite.name.StartsWith("flat_equivalence")) { return 50 }
+    if ($suite.name -eq "monaco" -or $suite.name -eq "proving_ground") { return 40 }
+    if ($suite.perf) { return 20 }
+    return 10
+}
+
 $t0 = Get-Date
 Write-Host ("Gates: {0} selected, {1} skipped as unaffected. Logs: {2}" -f $selected.Count, $skipped.Count, $logs)
+$orderedSelected = @($selected | Sort-Object -Descending { Get-SuiteWeight $_ })
 $state = @{ queue = @(); active = @() }
-foreach ($s in $selected) { $state.queue += @{ suite = $s; tag = ""; perf = $false } }
+foreach ($s in $orderedSelected) { $state.queue += @{ suite = $s; tag = ""; perf = $false } }
 $results = @(Wait-All $state $Jobs | ForEach-Object { Evaluate $_ })
 
 if ($Perf) {

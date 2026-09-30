@@ -3043,3 +3043,12 @@ Owner requested another pass after the delivered branch. Continuing in the same 
 - Added live FFB torque percentage and `[CLIP]` indicator to the telemetry debug overlay in `godot/scripts/instruments.gd`.
 - Created standalone unit test and regression gate `tests/v2/ffb_test.gd` registered in `tools/gates.json`.
 - **Validation**: `ffb` gate 29/29 checks PASS (0 failures, 0s), `laps roadster` 10/10 checks PASS (224s), `chassis_spike` 18/18 checks PASS (54s), `footprint` 10/10 checks PASS (6s), `audio` 64/64 checks PASS (1s), `front_end` 29/29 checks PASS (2s), `parse check` PASS (clean).
+
+## 2026-09-30  DONE OPS-01  (Gemini)
+
+- Delivered high-impact developer workflow, CI, and test execution optimizations across gate runner tools:
+  - **Fatal Base Branch Error Resolution**: In `tools/run_gates.ps1`, the runner previously threw a fatal PowerShell error (`fatal: Not a valid object name origin/main`) whenever running on clones where `origin/main` was absent. Implemented automated fallback resolution traversing `origin/HEAD`, active remote branches, `main`, and `HEAD`, with protected error trapping in git query calls.
+  - **Longest-Processing-Time-First (LPT) Scheduling**: In both `tools/run_gates.ps1` and `tools/ci_gates.py`, queued test suites are now prioritized by estimated execution duration. Long-running suites (`laps` variants, `chassis_spike`, `flat_equivalence`, `monaco`) launch at $t=0$ across parallel worker slots, preventing the multi-minute single-thread tail where 15 worker slots sat idle.
+  - **High-Performance Process Collections**: Replaced $O(N^2)$ array slicing `@($running.queue | Select-Object -Skip 1)` and array rebuilding in PowerShell with native .NET `Queue[object]` and `List[object]` collections, eliminating repetitive memory allocations and pipeline dispatch.
+  - **Process Polling Cadence**: Refined polling sleep interval from 250ms down to 100ms when processes are active, reducing job completion detection latency by up to 150ms per finished suite.
+- **Validation**: `run_gates.ps1` runs cleanly with default arguments (40 gates selected, 0 failed, 242s wall clock), `ci_gates.py` tested cleanly (2 suites, 0 failures, 0.7s).
