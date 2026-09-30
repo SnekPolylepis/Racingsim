@@ -63,5 +63,5 @@ No Monza, car or physics changes. Heavy gates are skipped by owner direction.
 
 2026-09-30: short launch/drive capture verified; all city-wide visual requirements remain open.
 
-- [ ] Replace the Wrigley clock's blank square with sourced circular faces, numerals and hands on all four sides. Confirmed in `chi-drive-check-wrigley-clock-day.png`; tower massing and placement also still require verification.
+- [x] Replace the Wrigley clock's blank square with sourced-diameter circular faces, numerals and hands on all four sides. Inspected `chi-clock-pass2-wrigley-clock-day.png`, `chi-clock-sides-wrigley-clock-{west,east,north}-day.png`, and the initial day/night dial views. Subsequent pass corrected stretched hands. Tower massing, clock surround, final placement and reference-faithful ornament remain under the open Wrigley verification item.
 - [ ] Correct the dense, unsupported Pritzker trellis visible in `chi-goal-baseline-pritzker-day.png`, using source geometry for pipes and column coordinates.

@@ -37,6 +37,18 @@ completed visual verification in `CHICAGO-DONE.md`.
 - Steel fabrication reference:
   https://www.cmrp.com/uploads/millennium_tour_brochure_lores.pdf
 
+## Wrigley clock faces
+
+- BLDG.51 museum's salvaged-building record:
+  https://bldg51.com/2017/06/07/original-cream-colored-wrigley-building-ornamental-terra-cotta-fragment-joins-bldg-51-museum-collection/
+  Records four dials with diameter 19 feet 7 inches. Generated dials use
+  5.969 metres; their current attachment follows the existing tower walls.
+  Static displayed time is 10:10, not a claim about a historical photograph.
+- Ken Lund's 2013 building photograph and metadata:
+  https://commons.wikimedia.org/wiki/File:Wrigley_Building,_Chicago,_Illinois_(9179449469).jpg
+  Reference only; no photograph pixels have been incorporated into assets.
+  The photograph is CC BY-SA 2.0 if subsequently used as an asset.
+
 ## Baseline findings requiring fixes
 
 The `chi-goal-baseline-*` images are in the game's user-data folder.

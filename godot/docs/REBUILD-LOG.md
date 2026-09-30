@@ -2841,6 +2841,7 @@ The preview.8 folder was synced from the `Racingsim-rb-chicago-nfs` working copy
 - Gates 38/38 (includes Monaco laps for roadster/gt/296). Mac app rebuilt: V2 EXPORT PASS (loads Monaco), codesign OK.
 
 ## 2026-09-30  Chicago source coverage and capture milestone (Codex)
+- Follow-up: four 5.969 m Wrigley dials replace the blank square, using the BLDG.51 museum dimension record. All four day views inspected; windowed sides capture exited 0. Existing tower position/crown remain unverified. Fixed Chicago's batched box helper to apply nonuniform scale in local axes; the clock screenshot exposed stretched rotated hands. Monza and physics untouched.
 - Branch `rb/monaco-formula-cars`, owner-directed Chicago goal; full checklist in `rebuild/CHICAGO-DONE.md`. No whole-city completion claim.
 - `chi_shot.gd` now injects the configured throttle through Controls instead of assigning an input overwritten by the physics loop. Windowed `--tag=drive-check --views=wrigley,wrigley-clock` exited 0; displacement 22.63 m, final speed 17.49 m/s. Day/night screenshots inspected. No physics/car edits; heavy gates skipped by owner direction.
 - Corrected Wrigley camera and added a clock close-up; screenshot confirms the existing blank square clock needs replacement. Baseline Pritzker view confirms unsupported, dense trellis geometry. Both remain unchecked.
