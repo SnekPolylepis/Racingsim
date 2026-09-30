@@ -48,7 +48,7 @@ No Monza, car or physics changes. Heavy gates are skipped by owner direction.
 
 - [ ] Inventory suitable assets in Desktop asset folders before acquiring new models/textures; preserve those folders.
 - [ ] Follow local assets → signed-in Sketchfab CC0/CC-BY → Poly Haven/ambientCG/Commons → Blender order; record licence/source for every acquired asset.
-- [ ] Game launches, Chicago loads, and a drive completes without crashing; inspect driver screenshots.
+- [x] Game launches, Chicago loads, and a drive completes without crashing; inspected `chi-drive-check-day.png` and night capture (user-data folder). Windowed capture exited 0, displacement 22.63 m, final speed 17.49 m/s. This is a short launch/drive check, not whole-route acceptance.
 - [ ] Commit working milestones and push this branch periodically.
 - [ ] Re-export and verify the final Windows executable after Chicago work.
 
@@ -61,4 +61,7 @@ No Monza, car or physics changes. Heavy gates are skipped by owner direction.
 
 ## Evidence and newly discovered items
 
-No screenshot-backed items completed yet in this goal run.
+2026-09-30: short launch/drive capture verified; all city-wide visual requirements remain open.
+
+- [ ] Replace the Wrigley clock's blank square with sourced circular faces, numerals and hands on all four sides. Confirmed in `chi-drive-check-wrigley-clock-day.png`; tower massing and placement also still require verification.
+- [ ] Correct the dense, unsupported Pritzker trellis visible in `chi-goal-baseline-pritzker-day.png`, using source geometry for pipes and column coordinates.

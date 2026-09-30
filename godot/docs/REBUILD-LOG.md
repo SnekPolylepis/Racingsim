@@ -2840,6 +2840,12 @@ The preview.8 folder was synced from the `Racingsim-rb-chicago-nfs` working copy
 - **PHYS-IZZ** queued (QUEUE.md) and drafted as a GitHub issue.
 - Gates 38/38 (includes Monaco laps for roadster/gt/296). Mac app rebuilt: V2 EXPORT PASS (loads Monaco), codesign OK.
 
+## 2026-09-30  Chicago source coverage and capture milestone (Codex)
+- Branch `rb/monaco-formula-cars`, owner-directed Chicago goal; full checklist in `rebuild/CHICAGO-DONE.md`. No whole-city completion claim.
+- `chi_shot.gd` now injects the configured throttle through Controls instead of assigning an input overwritten by the physics loop. Windowed `--tag=drive-check --views=wrigley,wrigley-clock` exited 0; displacement 22.63 m, final speed 17.49 m/s. Day/night screenshots inspected. No physics/car edits; heavy gates skipped by owner direction.
+- Corrected Wrigley camera and added a clock close-up; screenshot confirms the existing blank square clock needs replacement. Baseline Pritzker view confirms unsupported, dense trellis geometry. Both remain unchecked.
+- `rebuild/CHICAGO-SOURCES.md` records primary structural references and LiDAR bounds. Full-city USGS download remains live, with six concurrent tile readers and unchanged ordered point reduction; grid has not yet been applied.
+
 ## 2026-09-29  DONE MON-02 Monaco from references  (Claude Opus 5.5)
 - **Chicanes:** our lap plotted over OSM showed the two 1-2-1 smoothing passes had flattened the Nouvelle Chicane and both Swimming Pool jinks. Now 3 m resampling with no global smoothing; kinks under 6.5 m radius are relaxed locally (a 10 m limit collapsed the Fairmont hairpin and Portier and cost 100 m). A 2-point Avenue de Monte-Carlo way (1551240830) made an out-and-back spike; dropped. Lap 3.31 km.
 - **Tunnel (reference photos, Commons):** flat ceiling at 5.4 m, tiled inner wall (`shaders/monaco_tunnel.gdshader`) with an emissive lamp strip and an OmniLight every 36 m, sea side a low wall + pillars every 6 m with open bays; level frame. Street lamps and catch fence stop at the portals (fences now follow the road, not the wall, so their metres match). Barriers are armco everywhere, as photographed.
