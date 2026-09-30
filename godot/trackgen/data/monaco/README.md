@@ -31,10 +31,9 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
 
 - The DSM is 30 m and includes rooftops. The smoothed profile has about 45 m of elevation range;
   local heights and slopes are authored approximations, not surveyed ground truth.
-- Track version 3 uses the mapped raceway entry/exit to open both Swimming Pool chicanes, with 4 m
-  paved escape bands. The Tabac approach retains its barriers. Pool stands use open supports and
-  alpha-cut spectator silhouettes instead of solid back/end/riser walls and opaque noise cards; they
-  now sit 1 m beyond the verge to reduce the empty apron between the track and seating.
+- Track version 4 uses the mapped raceway entry/exit plus 12 m at the Tabac entry and 70 m at the
+  Rascasse exit to open both Swimming Pool chicanes, with 4 m paved escape bands. The Pool-side
+  stands are omitted; the Tabac approach and Rascasse retain their barriers and stands.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
 - Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
 - Formula presets use 26° maximum front-wheel lock plus a 60 m/s speed falloff. Formula Monaco lap gates

@@ -54,8 +54,6 @@ const STANDS = [
 	["MainStand", "", 30.0, 170.0, 0, 12],
 	["CasinoStand", "Casino Square", -30.0, 50.0, 0, 8],
 	["TabacStand", "Tabac", -90.0, 110.0, 0, 10],
-	["HarbourStand", "Piscine", -70.0, 170.0, 0, 12],
-	["PoolStand", "Piscine", -20.0, 90.0, 1, 10],
 	["RascasseStand", "La Rascasse", -70.0, 60.0, 0, 8]
 ]
 ## Riviera render colours for the facade palette: cream, ochre, salmon, white, pale yellow, terracotta.
@@ -104,7 +102,7 @@ static func build_asset() -> Node3D:
 	asset.name = "Monaco"
 	asset.id = "monaco"
 	asset.display_name = "Circuit de Monaco"
-	asset.version = 3
+	asset.version = 4
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
 	road.curve = route_curve(d.road)
@@ -120,7 +118,7 @@ static func build_asset() -> Node3D:
 	# OSM raceway entry/exit, not an arbitrary radius round the Piscine label.
 	var pool_gap = Vector2(
 		road.curve.get_closest_offset(world_of(43.7355741, 7.421779) + Vector3.UP * 2.0) - 12.0,
-		road.curve.get_closest_offset(world_of(43.7338035, 7.4222185) + Vector3.UP * 2.0) + 12.0
+		road.curve.get_closest_offset(world_of(43.7338035, 7.4222185) + Vector3.UP * 2.0) + 70.0
 	)
 	road.sections.append(RoadSection.make(0.0, _section(START_HALF_WIDTH, false)))
 	for c in CORNERS:
@@ -209,11 +207,8 @@ static func build_asset() -> Node3D:
 		# Monaco's temporary stands are open; the builder's cantilever roof reached out over the track.
 		gs.has_roof = false
 		gs.offset = 3.0
-		gs.solid_front = st[0] not in ["HarbourStand", "PoolStand"]
+		gs.solid_front = true
 		gs.open_structure = not gs.solid_front
-		if gs.open_structure:
-			# Temporary Pool stands sit just behind the catch fence, leaving the harbour visible behind them.
-			gs.offset = 1.0
 		attach(asset, asset, gs, st[0])
 		gs.bake()
 	_yachts(asset, scenery, d.piers)

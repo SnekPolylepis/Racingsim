@@ -55,7 +55,7 @@ func _physics_process(_dt):
 	results.crest_station = crest
 	check(max_grade < 0.125, "road grade stays below 12.5 percent")
 	check(max_curvature < 0.002, "vertical profile has no short launch ramps, including the lap seam")
-	check(asset.version == 3, "changed track geometry has separate record identity")
+	check(asset.version == 4, "changed track geometry has separate record identity")
 	var hairpin_at = asset.get_meta("corners")["Grand Hotel Hairpin"]
 	var pa = curve.sample_baked(hairpin_at - 2.0, true)
 	var pb = curve.sample_baked(hairpin_at, true)
@@ -122,18 +122,24 @@ func _physics_process(_dt):
 		)
 		retained = retained and not space.intersect_ray(ray).is_empty()
 	check(retained, "barriers remain on the Tabac approach outside the Swimming Pool chicanes")
-	for name in ["HarbourStand", "PoolStand"]:
-		var stand = asset.get_node(name)
-		check(stand.offset == 1.0, name + " sits close behind the track barriers")
-		var mesh = asset.get_node("Scenery/" + name).mesh
-		var arrays = mesh.surface_get_arrays(0)
-		var vertices = arrays[Mesh.ARRAY_VERTEX]
-		var solid_panel = false
-		for i in range(0, vertices.size(), 3):
-			var cross = (vertices[i + 1] - vertices[i]).cross(vertices[i + 2] - vertices[i])
-			if cross.length() > 2.0 and absf(cross.normalized().y) < 0.1:
-				solid_panel = true
-		check(stand.open_structure and not solid_panel, name + " has no large solid back/end panels")
+	var rascasse = asset.station(
+		curve.get_closest_offset(Monaco.world_of(43.73245, 7.42275) + Vector3.UP * 3.0)
+	)
+	var rascasse_right = rascasse.tangent.cross(Vector3.UP).normalized()
+	var rascasse_retained = true
+	for side in [-1.0, 1.0]:
+		var ray = PhysicsRayQueryParameters3D.create(
+			rascasse.pos + Vector3.UP * 0.5,
+			rascasse.pos + Vector3.UP * 0.5 + rascasse_right * side * 12.0,
+			2
+		)
+		rascasse_retained = rascasse_retained and not space.intersect_ray(ray).is_empty()
+	check(rascasse_retained, "barriers remain at Rascasse after the Swimming Pool chicanes")
+	check(
+		asset.get_node_or_null("Scenery/HarbourStand") == null
+			and asset.get_node_or_null("Scenery/PoolStand") == null,
+		"Swimming Pool chicanes have no stand walls or crowd panels"
+	)
 	var d = Monaco.data()
 	var harbour = Monaco.world_of(43.735, 7.4245)
 	var ix = roundi((harbour.x - d.ground.x0) / d.ground.cell)
