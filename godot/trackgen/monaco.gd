@@ -193,6 +193,7 @@ static func build_asset() -> Node3D:
 	_impact_blocks(asset, scenery, road, corners)
 	var garden_trees = _ground(asset, scenery, d.ground)
 	_sea(asset, scenery, d.ground)
+	_fairmont_island(asset, scenery, road, corners["Grand Hotel Hairpin"], d.ground)
 	var casino = _buildings(asset, scenery, d.buildings)
 	if not casino.is_empty():
 		_casino_towers(asset, scenery, casino, road.working_curve().sample_baked(corners["Casino Square"]))
@@ -322,6 +323,77 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		attach(asset, parent, node, pair[2])
 	return trees
+
+
+## Low, non-colliding planting island inside the Fairmont hairpin (official trackside reference).
+static func _fairmont_island(asset: Node3D, parent: Node, road: Node, station: float, terrain: Dictionary) -> void:
+	var curve: Curve3D = road.working_curve()
+	# Sample far enough apart to avoid an unstable circumcentre on the shallow approach.
+	var p0 = curve.sample_baked(station - 12.0, true)
+	var p1 = curve.sample_baked(station, true)
+	var p2 = curve.sample_baked(station + 12.0, true)
+	var a = Vector2(p0.x, p0.z)
+	var b = Vector2(p1.x, p1.z)
+	var c = Vector2(p2.x, p2.z)
+	var det = 2.0 * (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y))
+	if absf(det) < 1e-4:
+		return
+	var aa = a.length_squared()
+	var bb = b.length_squared()
+	var cc = c.length_squared()
+	var center = Vector2(
+		(aa * (b.y - c.y) + bb * (c.y - a.y) + cc * (a.y - b.y)) / det,
+		(aa * (c.x - b.x) + bb * (a.x - c.x) + cc * (b.x - a.x)) / det
+	)
+	var gx = (center.x - float(terrain.x0)) / float(terrain.cell)
+	var gz = (center.y - float(terrain.z0)) / float(terrain.cell)
+	var ix = clampi(floori(gx), 0, int(terrain.nx) - 2)
+	var iz = clampi(floori(gz), 0, int(terrain.nz) - 2)
+	var tx = clampf(gx - ix, 0.0, 1.0)
+	var tz = clampf(gz - iz, 0.0, 1.0)
+	var h: Array = terrain.h
+	var ground_y = lerpf(lerpf(h[iz][ix], h[iz][ix + 1], tx), lerpf(h[iz + 1][ix], h[iz + 1][ix + 1], tx), tz)
+	var bed = CylinderMesh.new()
+	bed.top_radius = 2.7
+	bed.bottom_radius = 2.9
+	bed.height = 0.32
+	bed.radial_segments = 8
+	var rim_mat = StandardMaterial3D.new()
+	rim_mat.albedo_color = Color(0.56, 0.48, 0.36)
+	rim_mat.roughness = 0.9
+	bed.material = rim_mat
+	var rim = MeshInstance3D.new()
+	rim.mesh = bed
+	rim.position = Vector3(center.x, ground_y + 0.16, center.y)
+	attach(asset, parent, rim, "FairmontPlanter")
+	var soil = CylinderMesh.new()
+	soil.top_radius = 2.62
+	soil.bottom_radius = 2.62
+	soil.height = 0.04
+	soil.radial_segments = 8
+	var green_mat = StandardMaterial3D.new()
+	green_mat.albedo_color = Color(0.22, 0.34, 0.17)
+	green_mat.roughness = 1.0
+	soil.material = green_mat
+	var planting = MeshInstance3D.new()
+	planting.mesh = soil
+	planting.position = Vector3(center.x, ground_y + 0.34, center.y)
+	attach(asset, parent, planting, "FairmontPlanting")
+	for i in 3:
+		var shrub = SphereMesh.new()
+		shrub.radius = 0.62
+		shrub.height = 1.0
+		shrub.radial_segments = 6
+		shrub.rings = 3
+		var shrub_mat = StandardMaterial3D.new()
+		shrub_mat.albedo_color = [Color(0.34, 0.42, 0.2), Color(0.48, 0.5, 0.24), Color(0.24, 0.36, 0.17)][i]
+		shrub_mat.roughness = 1.0
+		shrub.material = shrub_mat
+		var bush = MeshInstance3D.new()
+		bush.mesh = shrub
+		var angle = TAU * i / 3.0
+		bush.position = Vector3(center.x + cos(angle) * 1.25, ground_y + 0.82, center.y + sin(angle) * 1.25)
+		attach(asset, parent, bush, "FairmontShrub%d" % i)
 
 
 static func _sea(asset: Node3D, parent: Node, g: Dictionary) -> void:

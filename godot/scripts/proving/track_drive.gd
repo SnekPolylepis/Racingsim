@@ -8,7 +8,7 @@ const WallContact = preload("res://scripts/vehicle/wall_contact.gd")
 const Controls = preload("res://scripts/controls.gd")
 const Visuals = preload("res://scripts/visuals.gd")
 const VisualAdapter = preload("res://scripts/proving/visual_adapter.gd")
-const PRESET_KEYS = ["roadster", "gt", "f296gt3"]
+const PRESET_KEYS = ["roadster", "gt", "f296gt3", "f2004", "rb19"]
 const GENERATORS = {
 	"chicago": "res://trackgen/chicago.gd",
 	"monaco": "res://trackgen/monaco.gd",

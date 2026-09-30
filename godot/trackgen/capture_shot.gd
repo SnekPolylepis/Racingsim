@@ -14,6 +14,7 @@ const TrackDriveScene = preload("res://scenes/proving/track_drive.tscn")
 var track_id = "spa"
 var out_path = "docs/rebuild/look-4/spa-before.png"
 var focus = ""
+var car_id = "f296gt3"
 var drive_inst: Node3D
 var frames = 0
 var shot_taken = false
@@ -27,8 +28,11 @@ func _initialize() -> void:
 			out_path = arg.trim_prefix("--out=")
 		elif arg.begins_with("--focus="):
 			focus = arg.trim_prefix("--focus=")
+		elif arg.begins_with("--car="):
+			car_id = arg.trim_prefix("--car=")
 
 	drive_inst = TrackDriveScene.instantiate()
+	drive_inst.preset_idx = TrackDrive.PRESET_KEYS.find(car_id)
 
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://tracks3d"))
 	var asset: Node3D = null
@@ -56,27 +60,36 @@ func _process(_delta: float) -> bool:
 	# Give it ~60 frames to finish deferred track loading and settle the chase camera
 	if frames > 60 and not shot_taken:
 		shot_taken = true
-		if focus == "monaco-pool":
-			_focus_monaco_pool()
+		if focus.begins_with("monaco-"):
+			_focus_monaco()
 		_take_shot()
 	return false
 
 
-func _focus_monaco_pool() -> void:
+func _focus_monaco() -> void:
 	TrackLights.set_night(drive_inst.asset, false)
 	var road = drive_inst.asset.get_node("Main")
 	var curve: Curve3D = road.working_curve()
-	var anchor = MonacoGen.world_of(43.73536, 7.42191) + Vector3.UP * 2.0
-	var station = drive_inst.asset.station(curve.get_closest_offset(anchor))
+	var at = 0.0
+	if focus == "monaco-pool":
+		var anchor = MonacoGen.world_of(43.73536, 7.42191) + Vector3.UP * 2.0
+		at = curve.get_closest_offset(anchor)
+	elif focus == "monaco-hairpin":
+		at = drive_inst.asset.get_meta("corners")["Grand Hotel Hairpin"] - 30.0
+	var station = drive_inst.asset.station(at)
 	var forward = station.tangent
 	var right = forward.cross(Vector3.UP).normalized()
 	var up = right.cross(forward).normalized()
 	TrackDrive.place_on_grid(drive_inst.car, Transform3D(Basis(right, up, -forward), station.pos))
+	if focus == "monaco-hairpin":
+		drive_inst.car.launch(45.0 / 3.6)
 	drive_inst.curr_snapshot = drive_inst.car.snapshot()
 	drive_inst.prev_snapshot = drive_inst.curr_snapshot
 	drive_inst.telemetry_visible = false
 	drive_inst.free_fly = true
-	drive_inst.camera.position = station.pos - forward * 9.0 + up * 4.0
+	var distance = 16.0 if focus == "monaco-hairpin" else 9.0
+	var height = 6.0 if focus == "monaco-hairpin" else 4.0
+	drive_inst.camera.position = station.pos - forward * distance + up * height
 	drive_inst.camera.look_at(station.pos + forward * 7.0 + up * 1.4, up)
 
 
