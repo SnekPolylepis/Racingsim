@@ -37,9 +37,9 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   now sit 1 m beyond the verge to reduce the empty apron between the track and seating.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
 - Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
-- Formula presets use a slower steering-lock falloff, matching their high steering authority at the Fairmont
-  hairpin; their bot speed plan accounts for the lock remaining at speed. Monaco laps for the F2004 and RB19
-  pass with zero off-track wheel ticks and wall contacts in both handling models.
+- Formula presets use a 60 m/s steering-lock falloff, leaving both cars enough front-wheel angle for the
+  measured Fairmont centreline radius at 45 km/h. Their bot speed plan accounts for lock remaining at speed;
+  F2004 and RB19 Monaco laps pass with zero off-track wheel ticks and wall contacts in both handling models.
 
 ## Sources and licences
 

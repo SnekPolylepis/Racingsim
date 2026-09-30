@@ -56,6 +56,28 @@ func _physics_process(_dt):
 	check(max_grade < 0.125, "road grade stays below 12.5 percent")
 	check(max_curvature < 0.002, "vertical profile has no short launch ramps, including the lap seam")
 	check(asset.version == 3, "changed track geometry has separate record identity")
+	var hairpin_at = asset.get_meta("corners")["Grand Hotel Hairpin"]
+	var pa = curve.sample_baked(hairpin_at - 2.0, true)
+	var pb = curve.sample_baked(hairpin_at, true)
+	var pc = curve.sample_baked(hairpin_at + 2.0, true)
+	var a2 = Vector2(pa.x, pa.z)
+	var b2 = Vector2(pb.x, pb.z)
+	var c2 = Vector2(pc.x, pc.z)
+	var hairpin_radius = (
+		a2.distance_to(b2) * b2.distance_to(c2) * c2.distance_to(a2)
+		/ (2.0 * absf((b2 - a2).cross(c2 - a2)))
+	)
+	var cars = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
+	for key in ["f2004", "rb19"]:
+		var formula = CarBody.new()
+		formula.configure(cars[key])
+		var speed = 45.0 / 3.6
+		var available_lock = deg_to_rad(formula.setup.maxSteer) / (1.0 + speed / formula.steer_falloff)
+		var required_lock = atan((formula.p.a + formula.p.b) / hairpin_radius)
+		check(
+			available_lock >= required_lock,
+			key + " has enough front-wheel lock for the Fairmont centreline at 45 km/h"
+		)
 	var surf = asset.surface()
 	var space = asset.get_world_3d().direct_space_state
 	var open = true
@@ -102,7 +124,6 @@ func _physics_process(_dt):
 	var ix = roundi((harbour.x - d.ground.x0) / d.ground.cell)
 	var iz = roundi((harbour.z - d.ground.z0) / d.ground.cell)
 	check(d.ground.h[iz][ix] < Monaco.SEA_Y, "mapped harbour water is not filled by DEM ground")
-	var cars = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
 	for key in ["roadster", "f296gt3", "rb19"]:
 		for at in [0.0, crest]:
 			var label = "seam" if at == 0.0 else "crest"
