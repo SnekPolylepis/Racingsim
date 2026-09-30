@@ -18,8 +18,9 @@ corridor at separate heights (0 m and 8 m in the local frame).
 The harbor connector near the Wacker/Lake Shore junction and the south loop near Franklin/Jackson
 are explicitly **game-only** ramp connections. They simplify the real junctions and close the lap.
 They do not represent usable real-world driving directions. Width (16 m), deck height, grades,
-intersection corner radii, barriers and lighting are authored for racing. No LiDAR heights or precise
-building survey were acquired. This is a fictional race event, not the NASCAR Chicago course.
+intersection corner radii, barriers and lighting are authored for racing. Building roof massing uses
+USGS LiDAR grids where available; that does not make the circuit's authored ramps a road survey.
+This is a fictional race event, not the NASCAR Chicago course.
 
 ## Sources and licence
 
@@ -67,8 +68,10 @@ and explicit side-view landmark sightlines through the actual game renderer. Pic
 `sightline` turn the camera from the driver's position; they are not all forward-facing views.
 The original five required landmarks remain permanent geometry/anchors, not just labels. The new
 bridge and skyline forms are additional geometry, and the city uses selected CC0 masonry and paver
-maps. Chicago water is animated; no boats, pedestrians, downloaded landmark models or photo facades
-were introduced.
+maps. Chicago water is animated, with moored boat geometry from the retained map data. Pedestrians
+are absent. The city generator now also uses OSM parts, cited `landmarks.json` overrides and USGS
+roof grids; remaining placeholders and unsourced procedural landmarks are tracked in
+`docs/rebuild/CHICAGO-DONE.md`. Asset licences are recorded in `THIRD-PARTY.md`.
 
 Only this circuit extends the fog/view distance to retain lake and skyline views; other circuits'
 render settings are unchanged. Flat painted sky replaces wooded hills for Chicago. Lamp fixtures

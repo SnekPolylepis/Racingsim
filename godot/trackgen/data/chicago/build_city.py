@@ -8,9 +8,11 @@ metres (+X east, +Z south). Output, all coordinates rounded to 0.1 m:
   roads:     [{"p": [[x, z], ...], "w": carriageway width m, "c": class, "b": 1 if a bridge}]
   water:     [[[x, z], ...], ...] river and water polygons
   parks:     [[[x, z], ...], ...] parks, gardens and grass
-Tunnels and roads below street level are dropped (the circuit authors Lower Wacker itself). Buildings with
-no height tag get one from their footprint area and a stable hash, so the skyline does not change between
-runs. Licence: ODbL 1.0, (c) OpenStreetMap contributors (the same terms as osm-roads.json).
+Tunnels and roads below street level are dropped (the circuit authors Lower Wacker itself). Buildings use
+OSM heights/parts, city storeys and cited landmark overrides, then measured USGS roofs where covered.
+Unresolved heights are flagged u:1; the legacy storey-to-metre conversion and 9.8 m placeholder are not
+surveyed heights. Retain OSM element IDs (o) for source/coverage auditing. Licence: ODbL 1.0,
+(c) OpenStreetMap contributors (the same terms as osm-roads.json); USGS source grids are public domain.
 """
 import hashlib
 import json
@@ -259,7 +261,7 @@ def lidar_massing(ring, grids):
         if hgt.max() <= 0:
             return None
         dm = np.clip(np.round(hgt * 10), 0, 65535).astype("<u2")
-        return [float(x0), float(z0), w, h, float(c), base64.b64encode(dm.tobytes()).decode()], float(hgt.max())
+        return [float(x0), float(z0), w, h, float(c), base64.b64encode(dm.tobytes()).decode()], float(hgt.max()), known.size / int(mask.sum())
     return None
 
 
@@ -365,7 +367,7 @@ def main():
             mh = number(tags.get("min_height", "")) or ((number(tags.get("building:min_level", "")) or 0) * 3.9)
             if h <= mh + 0.5:
                 continue
-            b = {"f": simplify(pts, 0.25), "h": round(h, 1), "k": kind_of(tags, h, e["id"])}
+            b = {"o": e["type"][0] + str(e["id"]), "f": simplify(pts, 0.25), "h": round(h, 1), "k": kind_of(tags, h, e["id"])}
             if mh:
                 b["m"] = round(mh, 1)
             if colour_of(tags):
@@ -383,7 +385,7 @@ def main():
     used = set()
     extra = []
     for b in buildings:
-        m = marks.get(b.pop("o", ""))
+        m = marks.get(b.get("o", ""))
         if m is None:
             continue
         used.add(m["name"])
@@ -438,7 +440,7 @@ def main():
         buildings = [b for b in buildings if not (b in parts and covered(b["f"]))]
         for parent in replaced:
             if covered(parent["f"]):
-                m = marks.get(parent.pop("o", None) or "", {})
+                m = marks.get(parent.get("o", ""), {})
                 for key in ("k", "c"):
                     if key in m:
                         parent[key] = m[key]
@@ -457,6 +459,7 @@ def main():
             if got is None:
                 continue
             b["L"], b["h"] = got[0], round(got[1], 1)
+            b["lc"] = round(got[2], 4)  # Fraction of roof cells supported by returns before gap filling.
             b.pop("u", None)
             b.pop("m", None)
             if b.get("cr", {}).get("type") in LIDAR_REPLACES and "beacon" not in b["cr"]:

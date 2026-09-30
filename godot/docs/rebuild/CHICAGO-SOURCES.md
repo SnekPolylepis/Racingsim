@@ -13,6 +13,19 @@ completed visual verification in `CHICAGO-DONE.md`.
   buildings constructed later need OSM parts or other dated source geometry.
   First-surface DSM includes vegetation; it is not automatically a surveyed roof.
 
+Full-city acquisition completed: 382,913,295 non-noise points, 4,166 × 4,151
+one-metre cells. Compressed source grid is 31,387,163 bytes, retained locally
+under the ignored raw-source folder; `city.json` contains the derived roofs.
+Regeneration produces 3,962 measured building entries plus four facade bands,
+zero `u:1` flags, and retained OSM IDs. `lc` records each footprint's fraction
+of two-metre roof cells with actual returns before median gap filling.
+Four footprints need better evidence: `w1175801212` (60.42%), `w1175801219`
+(75%), `w1361811949` (58.64%), `w1417040524` (8.33%, 0.5 m apparent height).
+The last footprint is not proved to be a building roof by this acquisition.
+Zero placeholder flags does not establish complete accurate roof coverage.
+`test_lidar_massing.py` verifies measured two-height setbacks, coverage reporting
+and rejection of a completely unmeasured footprint; passed on 2026-09-30.
+
 ## Lower Wacker
 
 - Benesch / Chicago DOT engineers, *Wacker Drive*, ASPIRE Fall 2012:

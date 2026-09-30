@@ -41,6 +41,8 @@ func run():
 	app.controls.clear()
 	# Fixed street-level views along Michigan Avenue (world(): x=(lon+87.6244)*82860, z=(41.8848-lat)*111320).
 	app.set_process(false)
+	app.set_physics_process(false)
+	app.instruments.visible = false
 	var views = {
 		"mich-north": [Vector3(0, 11, 250), Vector3(-5, 40, -380)],
 		"mich-south": [Vector3(0, 11, -120), Vector3(-5, 30, 700)],

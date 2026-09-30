@@ -63,5 +63,16 @@ No Monza, car or physics changes. Heavy gates are skipped by owner direction.
 
 2026-09-30: short launch/drive capture verified; all city-wide visual requirements remain open.
 
+Full-city USGS grid acquired and applied on 2026-09-30. Current generated data:
+3,962 LiDAR buildings, four facade bands, zero `u:1` flags. Inspected
+`chi-lidar-full-mich-aerial-day.png`, `chi-lidar-full-mich-north-day.png` and
+`chi-lidar-full-river-air-day.png`; the river aerial camera is inside/behind a
+building and needs relocation. Windowed capture exited 0. The broad massing
+items remain open: four low-return roofs require source review, procedural
+landmarks still bypass measured geometry, and the entire route is not inspected.
+
+- [ ] Resolve low-return LiDAR footprints `w1175801212`, `w1175801219`, `w1361811949`, `w1417040524`; use `lc` in the generated data to distinguish measured cells from gap filling.
+- [ ] Relocate the river aerial camera now occluded by newly restored building geometry.
+
 - [x] Replace the Wrigley clock's blank square with sourced-diameter circular faces, numerals and hands on all four sides. Inspected `chi-clock-pass2-wrigley-clock-day.png`, `chi-clock-sides-wrigley-clock-{west,east,north}-day.png`, and the initial day/night dial views. Subsequent pass corrected stretched hands. Tower massing, clock surround, final placement and reference-faithful ornament remain under the open Wrigley verification item.
 - [ ] Correct the dense, unsupported Pritzker trellis visible in `chi-goal-baseline-pritzker-day.png`, using source geometry for pipes and column coordinates.

@@ -13,6 +13,7 @@ import json
 import os
 import sys
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 import laspy
 import numpy as np
@@ -57,21 +58,26 @@ def main():
                 stack.append(k)
             elif count > 0:
                 nodes.append(k)
-    print("%d tiles" % len(nodes))
+    print("%d tiles" % len(nodes), flush=True)
     os.makedirs(CACHE, exist_ok=True)
     xs, zs, ys, cls = [], [], [], []
-    for i, k in enumerate(nodes):
+    def read_tile(k):
         las = laspy.read(io.BytesIO(get(EPT + "ept-data/%s.laz" % k)))
         m = (las.x >= mx0) & (las.x <= mx1) & (las.y >= my0) & (las.y <= my1)
         if not m.any():
-            continue
+            return None
         lon, lat = to_ll.transform(np.asarray(las.x[m]), np.asarray(las.y[m]))
-        xs.append((lon + 87.6244) * 82860.0)
-        zs.append((41.8848 - lat) * 111320.0)
-        ys.append(np.asarray(las.z[m]))
-        cls.append(np.asarray(las.classification[m]))
-        if i % 50 == 0:
-            print(i, sum(len(a) for a in xs))
+        return ((lon + 87.6244) * 82860.0, (41.8848 - lat) * 111320.0,
+                np.asarray(las.z[m]), np.asarray(las.classification[m]))
+
+    # Network-bound tile reads; retain the same ordered point reduction and measured data.
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        for i, points in enumerate(pool.map(read_tile, nodes)):
+            if points is not None:
+                for target, values in zip((xs, zs, ys, cls), points):
+                    target.append(values)
+            if i % 50 == 0:
+                print(i, sum(len(a) for a in xs), flush=True)
     x = np.concatenate(xs)
     z = np.concatenate(zs)
     y = np.concatenate(ys)
