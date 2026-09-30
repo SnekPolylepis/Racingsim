@@ -3,10 +3,12 @@ extends SceneTree
 ## Run: tools/Godot.exe --path . --script trackgen/capture_shot.gd -- --track=spa --out=docs/rebuild/look-4/spa-before.png
 
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
+const TrackDrive = preload("res://scripts/proving/track_drive.gd")
 const SpaGen = preload("res://trackgen/spa.gd")
 const NordschleifeGen = preload("res://trackgen/nordschleife.gd")
 const ProvingGroundGen = preload("res://trackgen/proving_ground.gd")
 const MonacoGen = preload("res://trackgen/monaco.gd")
+const TrackLights = preload("res://scripts/track/track_lights.gd")
 const TrackDriveScene = preload("res://scenes/proving/track_drive.tscn")
 
 var track_id = "spa"
@@ -61,18 +63,21 @@ func _process(_delta: float) -> bool:
 
 
 func _focus_monaco_pool() -> void:
+	TrackLights.set_night(drive_inst.asset, false)
 	var road = drive_inst.asset.get_node("Main")
 	var curve: Curve3D = road.working_curve()
 	var anchor = MonacoGen.world_of(43.73536, 7.42191) + Vector3.UP * 2.0
 	var station = drive_inst.asset.station(curve.get_closest_offset(anchor))
-	var right = station.tangent.cross(Vector3.UP).normalized()
-	drive_inst.model.root.visible = false
+	var forward = station.tangent
+	var right = forward.cross(Vector3.UP).normalized()
+	var up = right.cross(forward).normalized()
+	TrackDrive.place_on_grid(drive_inst.car, Transform3D(Basis(right, up, -forward), station.pos))
+	drive_inst.curr_snapshot = drive_inst.car.snapshot()
+	drive_inst.prev_snapshot = drive_inst.curr_snapshot
 	drive_inst.telemetry_visible = false
 	drive_inst.free_fly = true
-	drive_inst.camera.position = station.pos - right * 14.0 - station.tangent * 14.0 + Vector3.UP * 5.0
-	drive_inst.camera.look_at(
-		station.pos + right * 6.0 + station.tangent * 4.0 + Vector3.UP * 2.0, Vector3.UP
-	)
+	drive_inst.camera.position = station.pos - forward * 9.0 + up * 4.0
+	drive_inst.camera.look_at(station.pos + forward * 7.0 + up * 1.4, up)
 
 
 func _take_shot() -> void:

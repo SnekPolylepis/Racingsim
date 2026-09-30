@@ -211,8 +211,8 @@ static func build_asset() -> Node3D:
 		gs.solid_front = st[0] not in ["HarbourStand", "PoolStand"]
 		gs.open_structure = not gs.solid_front
 		if gs.open_structure:
-			# Temporary Pool stands sit close behind the catch fence, as in trackside photos.
-			gs.offset = 5.0
+			# Temporary Pool stands sit just behind the catch fence, leaving the harbour visible behind them.
+			gs.offset = 1.0
 		attach(asset, asset, gs, st[0])
 		gs.bake()
 	_yachts(asset, scenery, d.piers)
@@ -329,6 +329,7 @@ static func _sea(asset: Node3D, parent: Node, g: Dictionary) -> void:
 	plane.size = Vector2(6000, 6000)
 	var mat = ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	mat.set_shader_parameter("deep_color", Color(0.08, 0.42, 0.52))
 	plane.material = mat
 	var node = MeshInstance3D.new()
 	node.mesh = plane
