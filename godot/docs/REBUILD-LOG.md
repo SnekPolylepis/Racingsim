@@ -3006,3 +3006,29 @@ trees. Validate with the same fixed views and source photos. No source code
 changed in this final inspection. Last implementation milestone 6ed4cb8 is
 pushed on rb/monaco-formula-cars. Full Chicago scope remains open; final export
 and audit are deferred until visual completion. Goal paused explicitly by owner.
+
+
+### 2026-09-30 — Chicago photographed wall geometry (da60baf)
+
+Chicago continues in the isolated chicago-facades worktree on
+rb/monaco-formula-cars, preserving Gemini's shared checkout and the latest
+combined playtest executable. Fixed exterior photo ordering; the shared edge
+selection now also samples measured street-facing roof cells. Photos attach to
+that median height instead of the highest return anywhere over the building.
+The five photographed buildings' LiDAR cells are clipped to mapped footprints,
+retaining measured roof steps without projecting raster walls through photos.
+Other buildings retain existing raster geometry pending broader verification.
+
+Bounded assert check PASS: four facade directions/both windings, clipped mesh
+bounds, retained rear roof step, and correct front height despite that step.
+Exit 0, empty stderr. Windowed photo-footprint capture exited 0, empty stderr,
+24.21 m drive and final speed 18.50 m/s. Inspected Symphony, CAA, UC and Railway
+Exchange daylight plus Symphony night. Full Symphony/CAA details now visible;
+UC/RX source crops still leave generic lower-floor coverage. Historical source
+banners, baked-in people/vehicles, crop/aspect and nighttime treatment remain
+open. Checklist records only the narrow screenshot-verified fixes.
+
+Heavy gates skipped; car/physics/Monza and exported playtest executable untouched.
+Generated UID sidecars for the older two Chicago checks match the combined
+playtest branch. New photo check UID committed with its script. Generated
+inventory imports are preserved, unstaged, for the final audit.
