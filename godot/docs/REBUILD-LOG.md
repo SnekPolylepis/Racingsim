@@ -3101,3 +3101,40 @@ architecture remain open. Broad facade/sign acceptance is not claimed.
 Existing bounded photo geometry check passes, exit 0 and empty stderr; check
 logic unchanged. Three edited scripts already match formatter. Heavy gates
 skipped; car/physics/Monza, saves/Desktop assets and playtest exe unchanged.
+
+### 2026-09-30 — Page Brothers State Street coverage
+
+Previous goal turn made source and screenshot progress (19fcc82). Added a
+cited Page Brothers record for OSM w124873930. City landmark record distinguishes
+the 1902 brick State Street wall from the surviving iron Lake Street front:
+https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?lanId=1393
+Only ph changes in generated city data: same building count, all measured
+heights/grid and original material defaults retained. West photo coverage uses
+its own annotated source quadrilateral and mapped edge 2, reusing the existing
+Daniel Schwen 2009 theatre source. Credit now names both facade derivatives.
+No new texture or renderer code; existing footprint clipping/projective UV path.
+
+Attempted Marc Realty Commons source and its 1280 preview: both CMYK JPEG,
+Godot import failed with stderr despite exit 0. Rejected as runtime assets.
+Downloaded references are preserved in TEMP; the temporary attempted asset and
+import metadata were moved out of godot to codex-page-brothers-unused-cmyk.jpg
+and its .import in TEMP. No Desktop assets, saves or preexisting assets deleted.
+Smallbones 2010 and Teemu008 2012 references reviewed; ground coverage is cropped
+or bus-occluded. Neither added as a game texture.
+
+Initial runtime exit 0, empty stderr, 33.81 m driven at final 23.71 m/s. Inspected
+State Street whole/ground daylight and theatre night. Original Lake camera was
+inside w144846553; corrected to mapped clear street z=-118. Second capture exit
+0, empty stderr, 21.99 m, 17.06 m/s. Final source capture after preserving original
+material default: exit 0, empty stderr, 24.83 m, 18.88 m/s. Inspected final
+chi-page-final-page-state-{day,night}.png and page-lake-day.png. West bays, cornice
+and ground openings now follow the source. Lake Street remains generic and
+unaccepted; photographed car/people/lamps, historic storefront content, theatre
+sign overlap, wall depth, roof returns and night fidelity remain open.
+
+The low-return inventory was also rechecked: first two are small mapped shelter/
+roof footprints with measured 102.5/145 m returns; 400 Lake Shore already excludes
+2017 survey; Navy Pier boat house still has 0.5 m old-survey height and needs its
+post-acquisition source/model. No changes or completion claim for these records.
+One edited script matches formatter; diff check clean. Heavy gates skipped.
+Monza, car/physics, primary workspace and combined playtest executable unchanged.
