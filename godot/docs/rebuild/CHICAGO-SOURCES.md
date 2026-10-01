@@ -174,3 +174,29 @@ The previous capture's throttle assignment was overwritten by the normal
 controls update. Its stationary screenshots did not demonstrate driving.
 The revised tool injects a held configured throttle key and fails below five
 metres of displacement; car and physics source remain untouched.
+
+## Actual-course building inventory and clearance (2026-09-30)
+
+`chi_shot.gd -- --tag=course-clearance --route-survey` captures forward views
+at 1.4 m eye height every 200 m and writes actual BotLine curve samples every
+5 m to `user://chi-course-clearance-route.json`. `--assemble-survey` with the
+same tag assembles existing day/night captures into six-column atlases; rows
+advance 1,200 m. Run `python trackgen/data/chicago/inventory_route.py <survey-json>`
+to regenerate `route-inventory.csv`, including OSM source links, tags, measured
+coverage, direct landmark provenance and actual renderer omissions.
+
+All 3,962 non-band entries remain in the catalog. 928 are near-route candidates
+(402.5 m cutoff allows half the 5 m sampling interval); 547 at least 80 m tall
+are skyline candidates, not a visibility determination. Near-route entries
+have 90 material tags, 48 colour tags and 24 direct cited landmark overrides.
+The corrected renderer tests actual route points inside a footprint, rather
+than its own centroid, and removes the additional six-metre building margin.
+34 previously omitted footprints return; 13 near-route clearance omissions and
+three separate-landmark omissions still require alignment/part review.
+
+Inspected all 82 views in day/night atlases and individual 800/4,200/7,600 m
+views. The restored Art Institute wing and Wacker neighbours fill missing
+masses; generic facades and unsourced/floating cornices/roof props remain.
+The 8,160.75 m course survey exited 0, empty stderr, 25.39 m drive. A bounded
+headless clearance check passed nearby-preservation, enclosing-footprint and
+edge-clearance cases. No whole-city facade acceptance follows from this pass.

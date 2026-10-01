@@ -1,6 +1,7 @@
 extends SceneTree
 ## In-game Chicago captures from the real drive view. Windowed:
 ##   tools/Godot.exe --path . --script tools/chi_shot.gd -- --v2-flow-test [--tag=x] [--views=wrigley,river]
+## --route-survey captures the whole course every 200 m and exports its measured camera/curve positions.
 
 
 func _initialize():
@@ -15,6 +16,9 @@ func run():
 			tag = a.trim_prefix("--tag=")
 		if a.begins_with("--views="):
 			selected_views = a.trim_prefix("--views=").split(",", false)
+	if "--assemble-survey" in OS.get_cmdline_user_args():
+		quit(assemble_survey(tag))
+		return
 	var app = load("res://main.tscn").instantiate()
 	root.add_child(app)
 	await process_frame
@@ -86,6 +90,25 @@ func run():
 		"wrigley-clock-north": [Vector3(23, 120, -465), Vector3(23, 120, -424)],
 		"mich-aerial": [Vector3(250, 220, 300), Vector3(-80, 60, -100)],
 	}
+	if "--route-survey" in OS.get_cmdline_user_args():
+		views.clear()
+		var curve: Curve3D = app.track.get_node("BotLine").curve
+		var length = curve.get_baked_length()
+		var survey = {"length": length, "step": 200, "curve_step": 5, "curve": [], "views": []}
+		survey["excluded"] = app.track.get_meta("city", {}).get("excluded", [])
+		for s in range(0, ceili(length), 5):
+			var point = curve.sample_baked(s, true)
+			survey.curve.append([point.x, point.y, point.z])
+		for s in range(0, ceili(length), 200):
+			var point = curve.sample_baked(s, true) + Vector3.UP * 1.4
+			var ahead = curve.sample_baked(fposmod(s + 20.0, length), true) + Vector3.UP * 1.4
+			var key = "route-%05dm" % s
+			views[key] = [point, ahead]
+			survey.views.append({"key": key, "station": s, "position": [point.x, point.y, point.z]})
+		FileAccess.open("user://chi-%s-route.json" % tag, FileAccess.WRITE).store_string(
+			JSON.stringify(survey)
+		)
+		print("CHICAGO SURVEY length=", length, " stations=", survey.views.size())
 	for night in [0, 1]:
 		app.settings.time_of_day = night
 		app.apply_time_of_day()
@@ -95,7 +118,15 @@ func run():
 			app.camera.position = views[key][0]
 			var rain = app.camera.get_node_or_null("Rain")
 			if rain:
-				rain.visible = rain.emitting and not key.begins_with("lower-")
+				var covered = (
+					key.begins_with("lower-")
+					or (
+						key.begins_with("route-")
+						and views[key][0].y < lower_eye + .1
+						and views[key][0].z <= 720
+					)
+				)
+				rain.visible = rain.emitting and not covered
 			app.camera.look_at(views[key][1], Vector3.UP)
 			app.TrackLights.update_pool(app.lamp_pool, app.track, app.camera.global_position, bool(night))
 			app.camera.fov = 60
@@ -106,3 +137,23 @@ func run():
 				"user://chi-%s-%s-%s.png" % [tag, key, "night" if night else "day"]
 			)
 	quit(0)
+
+
+func assemble_survey(tag: String) -> int:
+	var survey = JSON.parse_string(FileAccess.get_file_as_string("user://chi-%s-route.json" % tag))
+	if not survey is Dictionary or survey.get("views", []).is_empty():
+		push_error("No route survey to assemble")
+		return 1
+	for phase in ["day", "night"]:
+		var atlas = Image.create(1920, ceili(survey.views.size() / 6.0) * 200, false, Image.FORMAT_RGB8)
+		for i in survey.views.size():
+			var path = "user://chi-%s-%s-%s.png" % [tag, survey.views[i].key, phase]
+			var thumbnail = Image.load_from_file(path)
+			if thumbnail == null or thumbnail.is_empty():
+				push_error("Missing route capture: " + path)
+				return 1
+			thumbnail.resize(320, 200, Image.INTERPOLATE_LANCZOS)
+			atlas.blit_rect(thumbnail, Rect2i(0, 0, 320, 200), Vector2i((i % 6) * 320, (i / 6) * 200))
+		atlas.save_png("user://chi-%s-route-overview-%s.png" % [tag, phase])
+	print("CHICAGO SURVEY assembled ", survey.views.size(), " views per phase")
+	return 0

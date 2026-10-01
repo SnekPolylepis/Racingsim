@@ -92,3 +92,15 @@ landmarks still bypass measured geometry, and the entire route is not inspected.
 - [x] Correct Pritzker steel's local height datum and replace the dense raster-neighbour lattice with traced round segments. Inspected `chi-measured-pipes-pritzker-day.png` and the pylon close-up: measured lattice is distinct and lower, rather than a floating dense canopy. This is an intermediate one-metre inference, not full pavilion acceptance.
 - [ ] Resolve Pritzker raster bends, stray/disconnected returns, missing/occluded pipes, per-member diameters and variable column-cover joints; `chi-measured-pipes-pritzker-day.png` shows these remaining limitations.
 - [x] Replace the one-metre trellis sampling with quarter-metre data and suppress unanchored fragments/raster stair steps on long chains. Inspected `chi-supported-pipes-pritzker-day.png` and `chi-supported-pipes-pritzker-joint-day.png`; main arches are visibly smoother. Short hooks, support gaps, tree-return ambiguity and full geometry/material acceptance remain open above.
+
+- [x] Correct false building clearance exclusions caused by testing a building centroid inside its own footprint. Inspected `chi-course-clearance-route-00800m-day.png`, `route-04200m-day.png`, `route-07600m-day.png` and both complete course atlases: 34 previously omitted footprints restored, including the Art Institute wing. Actual route containment/edge clearance still excludes intersecting footprints.
+- [x] Capture a forward driver-height overview every 200 m around the actual 8,160.75 m course in daylight and at night (41 views per phase). Inspected `chi-course-clearance-route-overview-{day,night}.png`. This is sampling evidence, not acceptance of all facades or lateral sightlines.
+- [ ] Reconcile the 13 remaining near-route clearance omissions and three separate-landmark omissions with real route alignment/building parts; preserve genuine road clearance.
+- [ ] Replace hash-generated storefront/cornice and roof clutter with sourced geometry. Survey images show unsupported/floating details over stepped LiDAR roofs; retain source assets pending the final audit.
+
+Route inventory now records all 3,962 non-band building entries, including 928
+within approximately 400 m and 547 tall skyline candidates. Candidates are not
+proof of visibility. Near-route records contain 90 OSM material tags, 48 colour
+tags and 24 entries with direct cited landmark overrides. Zero unresolved flags
+is a data result, not full visual acceptance. Current windowed survey exited 0,
+with empty stderr and 25.39 m driven; broad building/facade items stay open.

@@ -2937,3 +2937,18 @@ remain open; generic river facades/ground-floor blocks are still visible.
 Offline crossing/support-pruning/local-frame/zero-edge check passed; heavy gates
 skipped as directed. Monza and car/physics untouched. Final export/audit await
 whole-city visual completion.
+
+### 2026-09-30 — Chicago actual-course inventory and building clearance
+
+Captured the actual 8,160.75 m course every 200 m by day/night, with 5 m curve
+samples and actual renderer omission metadata. Added a reproducible CSV catalog
+of 3,962 non-band entries: 928 near-route and 547 tall skyline candidates.
+Fixed the shared clearance helper's false centroid containment test and removed
+the extra six-metre building buffer. 34 real footprints return; 13 near-route
+clearance exclusions and three landmark proximity exclusions remain.
+
+Bounded headless clearance check passed all three geometry cases. Windowed
+survey exited 0, empty stderr, 25.39 m drive. Inspected both 41-view atlases and
+800/4,200/7,600 m individuals; restored museum/Wacker masses are visible. Generic
+facades and floating hash-selected details remain open. Heavy gates skipped;
+Monza/car/physics untouched. No full facade/massing acceptance or final export.

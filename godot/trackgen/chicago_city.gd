@@ -85,7 +85,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	# visibility range; towers stay in `chunks` so the skyline reaches the fog.
 	var low_chunks = {}
 	var flat_chunks = {}
-	var stats = {"buildings": 0, "roads": 0, "ground_tiles": 0, "water": 0, "parks": 0}
+	var stats = {"buildings": 0, "roads": 0, "ground_tiles": 0, "water": 0, "parks": 0, "excluded": []}
 	var holder = Node3D.new()
 	holder.name = "City"
 	parent.add_child(holder)
@@ -103,7 +103,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			for j in ring.size():
 				ring[j] += (ring[j] - bc).normalized() * 0.25
 		i += 1
-		if ring.size() < 3 or _touches_route(route, ring, 6.0) or _near_any(skip_at, _centroid(ring)):
+		var exclusion = ""
+		if ring.size() < 3:
+			exclusion = "invalid footprint"
+		elif _touches_route(route, ring, 0.0):
+			exclusion = "authored route clearance"
+		elif _near_any(skip_at, _centroid(ring)):
+			exclusion = "separate landmark proximity"
+		if not exclusion.is_empty():
+			stats.excluded.append({"city_index": i - 1, "osm_id": b.get("o", ""), "reason": exclusion})
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
@@ -451,9 +459,17 @@ static func _touches_route(route: Dictionary, ring: PackedVector2Array, margin: 
 		for k in n:
 			if _route_dist(route, a.lerp(b, float(k) / n), reach) < reach:
 				return true
-	# A footprint can straddle the route between its corners: test the centroid too.
-	var c = _centroid(ring)
-	return Geometry2D.is_point_in_polygon(c, ring) and _route_dist(route, c, 60.0) < 30.0
+	# A nearby building centroid does not mean the road is inside the footprint.
+	# Check actual route samples in the footprint's indexed bounding cells instead.
+	var bounds = Rect2(ring[0], Vector2.ZERO)
+	for p in ring:
+		bounds = bounds.expand(p)
+	for x in range(floori(bounds.position.x / 25.0), floori(bounds.end.x / 25.0) + 1):
+		for z in range(floori(bounds.position.y / 25.0), floori(bounds.end.y / 25.0) + 1):
+			for q in route.get(Vector2i(x, z), []):
+				if Geometry2D.is_point_in_polygon(Vector2(q.x, q.z), ring):
+					return true
+	return false
 
 
 static func _near_low_route(route: Dictionary, p: Vector2, reach: float) -> bool:
