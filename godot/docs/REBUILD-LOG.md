@@ -3069,3 +3069,35 @@ https://www.amorino.com/en/stores/chicago
 
 Heavy gates skipped. Monza, car/physics, shared Gemini checkout, user assets,
 saves and the combined playable executable are unchanged.
+
+### 2026-09-30 — Chicago Theatre source coverage and unsupported neon
+
+The preceding turn produced a combined playable export; Chicago continues in
+the isolated chicago-facades worktree without replacing that executable.
+Disabled the category-colour/random-height neon generator. OSM business
+records and old helpers/assets are retained for the final audit. UC night
+capture confirms unsupported labels/bars absent; actual sign coverage remains
+open. This changes appearance, not the mapped business locations.
+
+Chicago Theatre w124873919 now has licensed full architectural coverage from
+Daniel Schwen, 17 April 2009, CC BY-SA 4.0:
+https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg
+Unchanged original 4710775 bytes, SHA-256 a04075c81275c75057541638d78f4fde205fbedc0e8ba5dc5c6fd47d86250a2a.
+Native import uses BC7/ASTC with mipmaps and 4096 maximum dimension.
+The referenced concave footprint edge 2 is the State Street wall; longest-wall
+selection otherwise selects the recessed auditorium edge. Only this building
+changes k/ph in generated city data; measured heights/grid remain unchanged.
+No inferred colour override added. Projective UV annotations reuse the existing
+mesh path. Credits identify the photo derivative and share-alike licence.
+
+Initial capture exit 0, empty stderr, 24.06 m driven, 18.40 m/s. Inspected
+theatre daylight/night and UC night. Full view initially intersected opposite
+footprint w145208573; corrected to mapped open street x=-310. Corrected capture
+exit 0, empty stderr, 22.78 m driven, 17.59 m/s. Inspected full theatre day/night.
+Arch/ornament/entrance coverage visible; projecting marquee lettering clips
+and historical listings/scaffolding/people remain in photo. Blade, marquee
+depth, faithful night illumination, roof returns and adjacent Page Brothers
+architecture remain open. Broad facade/sign acceptance is not claimed.
+Existing bounded photo geometry check passes, exit 0 and empty stderr; check
+logic unchanged. Three edited scripts already match formatter. Heavy gates
+skipped; car/physics/Monza, saves/Desktop assets and playtest exe unchanged.

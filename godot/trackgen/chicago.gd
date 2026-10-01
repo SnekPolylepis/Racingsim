@@ -1032,7 +1032,10 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath, lamps
 	var mesh = fixtures.commit()
 	mesh.surface_set_material(0, sodium)
 	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
-	add_neon(asset, parent, road)
+	# OSM supplies business names/positions, not sign colours, dimensions or heights.
+	# Keep those records and the old helper until the final audit; source-faithful
+	# photographic signs remain in the landmark facades.
+	asset.set_meta("neon_signs", 0)
 	var pier = world(data().landmarks["Navy Pier"])
 	for i in 6:
 		box(

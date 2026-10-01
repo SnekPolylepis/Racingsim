@@ -72,6 +72,8 @@ func run():
 		"mich-south": [Vector3(0, 11, -120), Vector3(-5, 30, 700)],
 		"caa": [Vector3(10, 14, 330), Vector3(-49, 30, 346)],
 		"uc": [Vector3(10, 14, 410), Vector3(-46, 30, 423)],
+		"theatre": [Vector3(-305, 12, -51), Vector3(-275, 25, -51)],
+		"theatre-full": [Vector3(-310, 22, -51), Vector3(-275, 22, -51)],
 		"uc-ground": [Vector3(0, 9.4, 422), Vector3(-21, 12, 422)],
 		"uc-full": [Vector3(20, 27, 422), Vector3(-21, 30, 422)],
 		"caa-full": [Vector3(30, 26, 346), Vector3(-22, 30, 346)],

@@ -333,6 +333,40 @@
       "name": "Monadnock Building",
       "k": "brick",
       "src": "https://www.architecture.org/online-resources/buildings-of-chicago/monadnock-building: brick construction; https://sah-archipedia.org/buildings/IL-01-031-0059: brick piers and southern extension matching brick colour. No new colour sample or ornament inferred."
+    },
+    "w124873919": {
+      "name": "Chicago Theatre (175 N State Street)",
+      "src": "https://en.wikipedia.org/wiki/Chicago_Theatre#Architecture: off-white architectural terra cotta; OSM way 124873919 and https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg identify the photographed building. Roof heights remain measured USGS data.",
+      "k": "terracotta",
+      "photo": {
+        "file": "theatre_2009_full.jpg",
+        "face": [
+          -1,
+          0
+        ],
+        "edge": 2,
+        "frac": 1.0,
+        "quad": [
+          [
+            0.423,
+            0.282
+          ],
+          [
+            0.705,
+            0.137
+          ],
+          [
+            0.705,
+            0.919
+          ],
+          [
+            0.418,
+            0.92
+          ]
+        ],
+        "credit": "Daniel Schwen, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg",
+        "attachment": "Mapped State Street wall edge 2, not the longer recessed auditorium edge. Projected source rectangle is the cornice-to-pavement wall; projecting blade/marquee and scaffolding occlude part of the photograph and need separate geometry. Source was taken 17 April 2009; event listings are historical."
+      }
     }
   }
 }
