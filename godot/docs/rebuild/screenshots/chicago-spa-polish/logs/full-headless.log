@@ -1,0 +1,50 @@
+Gates CI: 43 selected, 1 skipped. Logs: /Users/zainyasin/Desktop/Racingsim-chicago-spa-polish/godot/tests/logs/ci
+Running up to 4 suites concurrently using /Users/zainyasin/Desktop/Racingsim-chicago-spa-polish/godot/tools/Godot.app/Contents/MacOS/Godot
+
+PASS  optimization                           1.5s  21 checks, 0 failures
+PASS  suspension                           952.3s  12 checks, 0 failures
+PASS  surfaces                             954.3s  36 checks, 0 failures
+PASS  monaco                               961.6s  25 checks, 0 failures
+PASS  static_friction                       11.1s  6 checks, 0 failures
+PASS  energy_wall                           46.6s  6 checks, 0 failures
+PASS  flat_equivalence roadster             60.8s  4 checks, 0 failures
+PASS  flat_equivalence gt                   58.8s  4 checks, 0 failures
+PASS  aids_simcade roadster simulation       9.7s  10 checks, 0 failures
+PASS  chassis_spike                        1041.5s  17 checks, 0 failures
+PASS  aids_simcade gt simulation            10.6s  10 checks, 0 failures
+PASS  flat_equivalence f296gt3              44.8s  4 checks, 0 failures
+PASS  aids_simcade roadster simcade         22.4s  28 checks, 0 failures
+PASS  aids_simcade f296gt3 simulation       10.8s  10 checks, 0 failures
+PASS  barrier                                3.8s  9 checks, 0 failures
+PASS  footprint                             12.9s  10 checks, 0 failures
+PASS  aids_simcade gt simcade               24.3s  28 checks, 0 failures
+PASS  aids_simcade f296gt3 simcade          24.8s  28 checks, 0 failures
+PASS  car_models                             2.9s  76 checks, 0 failures
+PASS  props                                 17.9s  13 checks, 0 failures
+PASS  kerb_map                               0.8s  12 checks, 0 failures
+PASS  particles                              0.5s  24 checks, 0 failures
+PASS  track_asset                            8.3s  23 checks, 0 failures
+PASS  race                                  23.5s  10 checks, 0 failures
+PASS  road_tool                              8.3s  16 checks, 0 failures
+PASS  road_tool_v2                           4.3s  11 checks, 0 failures
+PASS  front_end                             22.8s  29 checks, 0 failures
+PASS  walls                                  8.2s  8 checks, 0 failures
+PASS  proving_ground                        52.2s  26 checks, 0 failures
+PASS  laps monaco f2004                     46.3s  2 checks, 0 failures
+PASS  laps monaco rb19                      47.5s  2 checks, 0 failures
+PASS  terrain                               30.3s  7 checks, 0 failures
+PASS  road_density                           4.4s  6 checks, 0 failures
+PASS  scenery                               22.1s  12 checks, 0 failures
+PASS  test_surfaces_scene                    4.3s  14 checks, 0 failures
+PASS  chicago                               21.8s  37 checks, 0 failures
+PASS  spa_landmarks                         22.2s  13 checks, 0 failures
+PASS  chicago_clip                          27.2s  1 checks, 0 failures
+PASS  nordschleife                          74.1s  7 checks, 0 failures
+PASS  parse check                            1.4s  clean
+PASS  laps gt                              436.2s  10 checks, 0 failures
+PASS  laps f296gt3                         434.2s  10 checks, 0 failures
+PASS  laps roadster                        476.6s  10 checks, 0 failures
+
+======================================================================
+ALL GATES PASSED: 43 run (43 pass, 0 allowed failure, 0 failed) in 1562.6s wall clock
+======================================================================

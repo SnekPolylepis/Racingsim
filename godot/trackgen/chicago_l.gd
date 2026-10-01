@@ -21,6 +21,14 @@ static func build(asset: Node3D, parent: Node, tracks: Array, train_lines: Array
 	for key in ["steel", "rail", "body", "glass", "door", "bonnet", "sign"]:
 		st[key] = SurfaceTool.new()
 		st[key].begin(Mesh.PRIMITIVE_TRIANGLES)
+	var road = asset.get_node("Main")
+	var stations: Array = road.last_bake.stations
+	var keys: Array = road.sections.duplicate()
+	keys.sort_custom(func(a, b): return a.at < b.at)
+	var widths = PackedFloat32Array()
+	for station in stations:
+		var sec = road.RoadBuilder.section_at(keys, station.s, road.last_bake.length, road.closed)
+		widths.append(maxf(sec.width_left, sec.width_right) + 1.0)
 	var deck_y = STREET_Y + DECK_TOP
 	var trains = 0
 	for t in tracks.size():
@@ -40,21 +48,38 @@ static func build(asset: Node3D, parent: Node, tracks: Array, train_lines: Array
 			# Deck and the two plate girders under the rails; two rails on top.
 			box(st.steel, mid + Vector3(0, -0.2, 0), Vector3(TRACK_W, 0.4, seg + 0.3), basis)
 			for side in [-1, 1]:
-				box(st.steel, mid + basis.x * side * (TRACK_W * .5 - .15) + Vector3(0, -GIRDER_H * .5, 0), Vector3(0.3, GIRDER_H, seg + 0.3), basis)
-				box(st.rail, mid + basis.x * side * 0.72 + Vector3(0, 0.08, 0), Vector3(0.08, 0.16, seg + 0.3), basis)
+				box(
+					st.steel,
+					mid + basis.x * side * (TRACK_W * .5 - .15) + Vector3(0, -GIRDER_H * .5, 0),
+					Vector3(0.3, GIRDER_H, seg + 0.3),
+					basis
+				)
+				box(
+					st.rail,
+					mid + basis.x * side * 0.72 + Vector3(0, 0.08, 0),
+					Vector3(0.08, 0.16, seg + 0.3),
+					basis
+				)
 			# Columns down to the street at a steady spacing along the track.
 			var d = fmod(COLUMN_EVERY - fmod(run, COLUMN_EVERY), COLUMN_EVERY)
 			while d < seg:
 				var at = a.lerp(b, d / seg)
-				box(st.steel, Vector3(at.x, STREET_Y + (DECK_TOP - GIRDER_H) * .5, at.z), Vector3(0.5, DECK_TOP - GIRDER_H, 0.5), basis)
+				# Keep the trestle deck continuous, but bridge the race road without a support in its lanes.
+				if column_clear(Vector3(at.x, STREET_Y, at.z), stations, widths):
+					box(
+						st.steel,
+						Vector3(at.x, STREET_Y + (DECK_TOP - GIRDER_H) * .5, at.z),
+						Vector3(0.5, DECK_TOP - GIRDER_H, 0.5),
+						basis
+					)
 				d += COLUMN_EVERY
 			run += seg
 	var mats = {
 		"steel": _mat(Color("4a4f52"), 0.6, 0.55),
 		"rail": _mat(Color("6e6a66"), 0.9, 0.4),
-		"body": _mat(Color("b9bdc0"), 0.9, 0.28),
+		"body": _mat(Color("a1a6a9"), 0.55, 0.6),
 		"glass": _mat(Color("1c2126"), 0.2, 0.1),
-		"door": _mat(Color("9ea2a5"), 0.9, 0.3),
+		"door": _mat(Color("969b9e"), 0.5, 0.58),
 		"bonnet": _mat(Color("d8d8d4"), 0.0, 0.5),
 		"sign": _mat(Color("ff9a2a"), 0.0, 0.5),
 	}
@@ -75,6 +100,18 @@ static func build(asset: Node3D, parent: Node, tracks: Array, train_lines: Array
 	parent.add_child(node)
 	node.owner = asset
 	return trains
+
+
+static func column_clear(foot: Vector3, stations: Array, widths: PackedFloat32Array) -> bool:
+	for i in stations.size():
+		var p: Vector3 = stations[i].pos
+		if (
+			p.y + 3.0 >= foot.y
+			and p.y <= foot.y + DECK_TOP - GIRDER_H
+			and Vector2(p.x - foot.x, p.z - foot.z).length_squared() < widths[i] * widths[i]
+		):
+			return false
+	return true
 
 
 ## Trains that move (scripts/track/l_trains.gd): one shared 5000-series car mesh, 8 instances per train,
@@ -123,12 +160,31 @@ static func _car_mesh(mats: Dictionary) -> ArrayMesh:
 	box(st.body, c, Vector3(CAR_W, body_h, CAR_L - 1.6), basis)
 	for e in [-1, 1]:
 		box(st.bonnet, c + Vector3(0, 0, e * (CAR_L * .5 - 0.5)), Vector3(CAR_W - 0.05, body_h, 1.0), basis)
-		box(st.sign, c + Vector3(0, body_h * .38, e * (CAR_L * .5 - 0.02)), Vector3(1.4, 0.22, 0.05), basis)
-		box(st.rail, c + Vector3(0, -body_h * .5 - 0.25, e * (CAR_L * .5 - 2.4)), Vector3(2.2, 0.5, 2.4), basis)
+		box(st.sign, c + Vector3(0, body_h * .38, e * (CAR_L * .5 + .01)), Vector3(1.4, 0.22, 0.05), basis)
+		box(st.glass, c + Vector3(0, .45, e * (CAR_L * .5 + .02)), Vector3(2.1, .85, .05), basis)
+		box(
+			st.rail,
+			c + Vector3(0, -body_h * .5 - 0.25, e * (CAR_L * .5 - 2.4)),
+			Vector3(2.2, 0.5, 2.4),
+			basis
+		)
 	for side in [-1, 1]:
-		box(st.glass, c + Vector3(side * (CAR_W * .5 + 0.01), 0.45, 0), Vector3(0.02, 0.9, CAR_L - 3.0), basis)
+		# Separate rubber-framed panes and two door pairs, so the car reads as CTA stock rather than a tube.
+		for z in [-5.65, -1.8, 0.0, 1.8, 5.65]:
+			box(st.glass, c + Vector3(side * (CAR_W * .5 + .025), .45, z), Vector3(.035, .95, 1.25), basis)
 		for dz in [-0.25, 0.25]:
-			box(st.door, c + Vector3(side * (CAR_W * .5 + 0.02), -0.2, dz * CAR_L), Vector3(0.02, 2.0, 1.4), basis)
+			var at = c + Vector3(side * (CAR_W * .5 + .02), -.2, dz * CAR_L)
+			box(st.door, at, Vector3(.02, 2.0, 1.4), basis)
+			for split in [-1, 1]:
+				box(st.glass, at + Vector3(side * .02, .65, split * .34), Vector3(.025, .8, .5), basis)
+		# Stainless lower-body fluting catches light gently below the black window line.
+		for y in [-.65, -.82, -.99]:
+			box(
+				st.door,
+				c + Vector3(side * (CAR_W * .5 + .025), y, 0),
+				Vector3(.025, .045, CAR_L - 1.7),
+				basis
+			)
 	var mesh = ArrayMesh.new()
 	for key in st:
 		st[key].generate_normals()

@@ -145,6 +145,7 @@ static func multimesh_boxes(
 	if entries.is_empty():
 		return
 	var mesh = BoxMesh.new()
+	mesh.size = Vector3.ONE
 	mesh.material = mat
 	var instances = MultiMesh.new()
 	instances.transform_format = MultiMesh.TRANSFORM_3D
@@ -177,7 +178,7 @@ static func build_asset() -> Node3D:
 	var asset = TrackAsset.new()
 	asset.name = "Chicago"
 	asset.id = "chicago"
-	asset.display_name = "Chicago â€” River & Lake"
+	asset.display_name = "Chicago — River & Lake"
 	asset.version = 3
 	asset.set_meta("wacker_floor_y", ChicagoCity.LOW_ROAD_Y)
 	asset.default_time_of_day = "day"
@@ -375,6 +376,10 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	var water = ShaderMaterial.new()
 	water.shader = WATER_SHADER
 	var pier_walk = pbr_texture_set("large_square_pattern_01", "large_square_pattern_01", "diff")
+	# World metres keep paving square across long, rotated promenade slabs.
+	pier_walk.uv1_triplanar = true
+	pier_walk.uv1_world_triplanar = true
+	pier_walk.uv1_scale = Vector3.ONE * .5
 	box(asset, parent, "CityBase", Vector3(-500, -3.8, 0), Vector3(4000, 1, 4000), concrete)
 	# Open lake beyond city.json's clipped lake ring (x 2700), at the lake level in ChicagoCity.LAKE_Y.
 	var lake = box(asset, parent, "LakeMichigan", Vector3(4600, 6.35, 0), Vector3(3900, .2, 6500), water)
@@ -401,19 +406,39 @@ static func add_water_and_parks(asset: Node3D, parent: Node) -> void:
 	box(asset, parent, "MillenniumPark", world([41.8821, -87.6226, 7.6]), Vector3(210, .6, 380), lawn)
 	box(asset, parent, "GrantPark", world([41.8800, -87.6210, 7.3]), Vector3(440, .5, 260), lawn)
 	box(asset, parent, "Lakefront", world([41.8800, -87.6166, 6.8]), Vector3(65, .5, 470), pier_walk)
-	# The Riverwalk runs along the water below both road levels (CHI-SC-4): at street height (8.2) these slabs
-	# crossed Upper Wacker 0.4 m above the road.
-	box(
-		asset, parent, "RiverwalkPromenade", world([41.8871, -87.6261, -1.5]), Vector3(22, .3, 170), pier_walk
-	)
-	box(
-		asset,
-		parent,
-		"RiverwalkPromenadeWest",
-		world([41.8870, -87.6309, -1.5]),
-		Vector3(16, .3, 135),
-		pier_walk
-	)
+	# Riverwalk follows the mapped south bank at river level, below Upper Wacker.
+	# The old two floating rectangles sat below WATER_Y and never read as a promenade.
+	var bank = [
+		Vector3(-945.5, 2.65, -244.7),
+		Vector3(-914.5, 2.65, -263.5),
+		Vector3(-813.3, 2.65, -266.4),
+		Vector3(-695.1, 2.65, -267.4),
+		Vector3(-566.3, 2.65, -265.7),
+		Vector3(-447.5, 2.65, -270.4),
+		Vector3(-321.8, 2.65, -270.5),
+		Vector3(-282.3, 2.65, -274.2)
+	]
+	var rails: Array = []
+	var deck: Array = []
+	var stone_cap: Array = []
+	for i in bank.size() - 1:
+		var a: Vector3 = bank[i]
+		var b: Vector3 = bank[i + 1]
+		var tangent = (b - a).normalized()
+		var south = tangent.cross(Vector3.UP)
+		var basis = Basis.looking_at(tangent, Vector3.UP)
+		var mid = (a + b) * .5 - south * 4.0
+		deck.append([mid, Vector3(8, .5, a.distance_to(b) + .2), basis])
+		var edge = mid - south * 3.65
+		stone_cap.append([edge, Vector3(.55, .55, a.distance_to(b)), basis])
+		rails.append([edge + Vector3.UP * 1.05, Vector3(.08, .08, a.distance_to(b)), basis])
+		var n = ceili(a.distance_to(b) / 3.0)
+		for k in n:
+			var at = a.lerp(b, float(k) / n) - south * 7.65
+			rails.append([at + Vector3.UP * .6, Vector3(.08, 1.1, .08)])
+	multimesh_boxes(asset, parent, "RiverwalkPromenade", pier_walk, deck)
+	multimesh_boxes(asset, parent, "RiverwalkCoping", cc0_material("Travertine009"), stone_cap)
+	multimesh_boxes(asset, parent, "RiverwalkRailings", material(Color("253c38")), rails)
 
 
 static func add_city(asset: Node3D, parent: Node, road: RoadPath) -> void:
@@ -538,48 +563,84 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	# The Bean: John Helman's CC BY 4.0 Cloud Gate model (20 x 13 x 10 m) in the chrome material.
 	var bean = world(data().landmarks["Bean"])
 	box(asset, parent, "CloudGatePlaza", bean + Vector3(0, -.1, 0), Vector3(70, .3, 60), stone)
+	# A paved west approach connects the plaza to Michigan Avenue through the park trees.
+	box(
+		asset,
+		parent,
+		"CloudGateWestApproach",
+		Vector3((12.0 + bean.x - 35.0) * .5, bean.y - .1, bean.z),
+		Vector3(bean.x - 47.0, .3, 12.0),
+		stone
+	)
 	var bean_mesh = PropMesh.mesh("res://assets/chicago/landmarks/bean.glb").duplicate()
 	for i in bean_mesh.get_surface_count():
 		bean_mesh.surface_set_material(i, silver)
 	mesh_node(asset, parent, "BeanArch", bean_mesh, bean + Vector3(0, 0.05, 0))
-	# Navy Pier: long low pier, pavilion sheds and the Centennial Wheel silhouette.
+	# Navy Pier: official hub 104 ft above deck, 21 spokes and 42 enclosed blue gondolas.
+	# Anchor to the dressed pier deck, rather than route.json's old submerged y2 landmark height.
 	var pier = world(data().landmarks["Navy Pier"])
-	box(asset, parent, "NavyPier", pier + Vector3(190, -.5, 0), Vector3(800, 2, 80), stone)
-	for i in 6:
-		box(asset, parent, "PierPavilion%d" % i, pier + Vector3(i * 95, 9, 0), Vector3(80, 18, 48), stone)
+	pier.y = ChicagoCity.LAKE_Y + .8
+	var hub = pier + Vector3(0, 31.7, 0)
 	var wheel = TorusMesh.new()
-	wheel.inner_radius = 28
-	wheel.outer_radius = 29.5
-	wheel.rings = 48
+	wheel.inner_radius = 27.85
+	wheel.outer_radius = 28.15
+	wheel.rings = 84
 	wheel.ring_segments = 6
-	wheel.material = night_material(Color("b5dce6"), 2.2)
-	var wn = mesh_node(asset, parent, "CentennialWheel", wheel, pier + Vector3(0, 33, 0))
+	wheel.material = night_material(Color("b5dce6"), 1.6)
+	var wn = mesh_node(asset, parent, "CentennialWheel", wheel, hub)
 	wn.rotation_degrees.x = 90
-	for i in 16:
-		var ang = TAU * i / 16.0
-		var end = pier + Vector3(cos(ang) * 28, 33 + sin(ang) * 28, 0)
-		var spoke = box(
-			asset,
-			parent,
-			"WheelSpoke%d" % i,
-			(end + pier + Vector3(0, 33, 0)) * .5,
-			Vector3(.5, 28, .5),
-			night_material(Color("96c8e0"), 1.3)
+	var spokes: Array = []
+	for i in 21:
+		var ang = TAU * i / 21.0
+		spokes.append(
+			[
+				hub + Vector3(cos(ang), sin(ang), 0) * 14,
+				Vector3(.18, 28, .18),
+				Basis(Vector3.BACK, ang - PI * .5)
+			]
 		)
-		spoke.rotation.z = ang - PI / 2
-		box(
-			asset,
-			parent,
-			"WheelCabin%d" % i,
-			end,
-			Vector3(3.2, 3.8, 3.2),
-			night_material(Color("77b6cc"), 1.0)
-		)
+	multimesh_boxes(asset, parent, "WheelSpokes", night_material(Color("96c8e0"), .65), spokes)
+	var cabins: Array = []
+	var roofs: Array = []
+	var frames: Array = []
+	var glass = material(Color("365c72"))
+	glass.metallic = .12
+	glass.roughness = .23
+	for i in 42:
+		var ang = TAU * i / 42.0
+		var end = hub + Vector3(cos(ang) * 28, sin(ang) * 28, 0)
+		cabins.append([end + Vector3(0, -.65, 0), Vector3(1.9, .5, 1.9)])
+		roofs.append([end + Vector3(0, 1.05, 0), Vector3(2.0, .15, 2.0)])
+		for x in [-.9, .9]:
+			for z in [-.9, .9]:
+				frames.append([end + Vector3(x, .2, z), Vector3(.08, 1.65, .08)])
+		box(asset, parent, "WheelCabin%d" % i, end + Vector3(0, .2, 0), Vector3(1.8, 1.5, 1.8), glass)
+	var blue = material(Color("194778"))
+	multimesh_boxes(asset, parent, "WheelCabinBases", blue, cabins)
+	multimesh_boxes(asset, parent, "WheelCabinRoofs", blue, roofs)
+	multimesh_boxes(asset, parent, "WheelCabinFrames", material(Color("b7c8cb")), frames)
+	# Six structural legs meet the axle; feet stand on the deck, clear of the loading platform.
 	for side in [-1, 1]:
-		var support = box(
-			asset, parent, "WheelSupport%d" % side, pier + Vector3(side * 7, 15, 0), Vector3(2, 33, 2), silver
-		)
-		support.rotation.z = side * .4
+		for z in [-6.0, 0.0, 6.0]:
+			var foot = pier + Vector3(side * 18.2, 0, z)
+			var axle = hub + Vector3(0, 0, z * .3)
+			var leg = box(
+				asset,
+				parent,
+				"WheelSupport",
+				(foot + axle) * .5,
+				Vector3(1.1, 1.1, foot.distance_to(axle)),
+				silver
+			)
+			leg.basis = Basis.looking_at(axle - foot, Vector3.UP)
+	var axle = CylinderMesh.new()
+	axle.top_radius = 1.65
+	axle.bottom_radius = 1.65
+	axle.height = 4.5
+	axle.material = material(Color("d6e0df"))
+	var axle_node = mesh_node(asset, parent, "WheelAxle", axle, hub)
+	axle_node.rotation_degrees.x = 90
+
 	add_loop_landmarks(asset, parent, stone, dark, silver)
 
 
@@ -654,13 +715,15 @@ static func add_loop_landmarks(
 	var board = world([41.8787, -87.6325, 8])
 	var tiers = [[0.0, 100.0, 84.0], [100.0, 48.0, 66.0], [148.0, 36.0, 44.0]]
 	for tier in tiers:
-		box(
+		facade_block(
 			asset,
 			parent,
 			"BoardOfTradeSetback",
 			board + Vector3(0, tier[1] * .5 + tier[0], 0),
-			Vector3(tier[2], tier[1], tier[2] * .78),
-			material(Color("b9aa8e"))
+			Vector2(tier[2], tier[2] * .78),
+			tier[1],
+			"stone",
+			.44
 		)
 		box(
 			asset,
@@ -677,10 +740,12 @@ static func add_loop_landmarks(
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:
-	var steel = material(Color("36474b"))
-	steel.metallic = .7
-	steel.roughness = .36
-	var stone = material(Color("d1c3a6"))
+	# Closed bascule bridges: riveted red-brown girders below the boulevard, not overhead trusses.
+	# DuSable's Beaux Arts bridgehouses / pylons follow the Chicago Architecture Center reference.
+	var steel = material(Color("593d32"))
+	steel.metallic = .55
+	steel.roughness = .6
+	var stone = cc0_material("Travertine009")
 	var spans = [
 		["MichiganAvenueBridge", 41.88865, -87.6245, 90.0],
 		["StateStreetBridge", 41.8888, -87.6270, 60.0],
@@ -689,39 +754,44 @@ static func add_river_bridges(asset: Node3D, parent: Node) -> void:
 	var steel_boxes: Array = []
 	var deck_boxes: Array = []
 	var house_boxes: Array = []
-	# CHI-LOOK-01: the bridges run north-south across the east-west river (they were laid along it), and sit
-	# under the street level instead of 1.2 m above it. Bridge houses stand at the far (north) corners only,
-	# clear of the Michigan turn.
+	var window_boxes: Array = []
 	for span in spans:
 		var anchor = world([span[1], span[2], 8]) + Vector3(0, -1.25, 0)
 		var length: float = span[3]
 		deck_boxes.append([anchor, Vector3(23, 2.4, length)])
 		for side in [-1, 1]:
-			steel_boxes.append([anchor + Vector3(side * 10.4, 8, 0), Vector3(1.1, 1.1, length)])
-			for i in range(0, int(length), 8):
+			# Low pedestrian rail over a deep side girder; lower-deck bracing visible from the river.
+			steel_boxes.append([anchor + Vector3(side * 11.1, -.6, 0), Vector3(.5, 2.0, length)])
+			for y in [1.65, 2.6]:
+				steel_boxes.append([anchor + Vector3(side * 11.1, y, 0), Vector3(.22, .18, length)])
+			for i in range(0, int(length), 3):
 				var z = -length * .5 + i
-				steel_boxes.append([anchor + Vector3(side * 10.4, 5.0, z), Vector3(.75, 7.0, .75)])
-				steel_boxes.append(
-					[
-						anchor + Vector3(side * 10.4, 5.0, z + 4),
-						Vector3(8.5, .55, .55),
-						Basis(Vector3.UP, PI * .5 + 0.74)
-					]
-				)
+				steel_boxes.append([anchor + Vector3(side * 11.1, 2.0, z), Vector3(.18, 1.3, .18)])
+				if i % 6 == 0:
+					steel_boxes.append([anchor + Vector3(side * 11.1, -.6, z), Vector3(.18, 2.5, .18)])
 		for side in [-1, 1]:
-			var house = anchor + Vector3(side * 22, 0, -(length * .5 + 12))
-			house_boxes.append([house + Vector3(0, 8, 0), Vector3(18, 16, 21)])
-			house_boxes.append([house + Vector3(0, 16.5, 0), Vector3(20, 1.2, 23)])
+			# Keep the southern houses clear of the fictional Lower Wacker racing approach.
+			var house = anchor + Vector3(side * 19, 0, -(length * .5 + 9))
+			house_boxes.append([house + Vector3(0, 4.0, 0), Vector3(9, 8, 10)])
+			house_boxes.append([house + Vector3(0, 8.3, 0), Vector3(10.2, .7, 11.2)])
+			house_boxes.append([house + Vector3(0, 9.0, 0), Vector3(9.5, .5, 10.5)])
+			for x in [-3.75, 3.75]:
+				house_boxes.append([house + Vector3(x, 4.6, 5.15), Vector3(.7, 7.0, .5)])
+			for x in [-2.4, 0.0, 2.4]:
+				window_boxes.append([house + Vector3(x, 5.8, 5.04), Vector3(1.35, 2.5, .12)])
+				house_boxes.append([house + Vector3(x, 4.4, 5.2), Vector3(1.65, .3, .4)])
+			# Compact copper roof, ornamental cap and sculptural panel instead of a fantasy spire.
 			var roof = PrismMesh.new()
-			roof.size = Vector3(20, 7, 23)
-			roof.material = steel
-			mesh_node(asset, parent, span[0] + "BridgeHouseRoof", roof, house + Vector3(0, 20, 0))
-			steel_boxes.append([house + Vector3(0, 26, 0), Vector3(4, 13, 4)])
-			for y in [20.0, 25.0, 31.0]:
-				steel_boxes.append([house + Vector3(0, y, 0), Vector3(11, .65, .65)])
+			roof.size = Vector3(10, 2.6, 11)
+			roof.material = material(Color("42564f"))
+			mesh_node(asset, parent, span[0] + "BridgeHouseRoof", roof, house + Vector3(0, 10.45, 0))
+			house_boxes.append([house + Vector3(0, 2.2, 5.2), Vector3(5.0, 2.2, .25)])
+			for x in [-3.7, 3.7]:
+				house_boxes.append([house + Vector3(x, 9.7, 0), Vector3(.8, 1.0, .8)])
 	multimesh_boxes(asset, parent, "ChicagoBridgeDecks", material(Color("4b5352")), deck_boxes)
 	multimesh_boxes(asset, parent, "ChicagoBridgeSteel", steel, steel_boxes)
 	multimesh_boxes(asset, parent, "ChicagoBridgeHouses", stone, house_boxes)
+	multimesh_boxes(asset, parent, "ChicagoBridgeHouseWindows", material(Color("1d2e33")), window_boxes)
 
 
 static func add_wrigley_clocks(asset: Node3D, parent: Node, center: Vector3) -> void:
@@ -1034,13 +1104,14 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath, lamps
 	mesh_node(asset, parent, "WackerCeilingLuminaires", mesh, Vector3.ZERO)
 	add_neon(asset, parent, road)
 	var pier = world(data().landmarks["Navy Pier"])
-	for i in 6:
+	pier.y = ChicagoCity.LAKE_Y + .8
+	for i in range(1, 6):
 		box(
 			asset,
 			parent,
 			"PierRoofLight%d" % i,
-			pier + Vector3(i * 95, 18.2, 24.2),
-			Vector3(80, 1.0, .8),
+			pier + Vector3(i * 95, 14.6, 23.1),
+			Vector3(80, .15, .2),
 			warm
 		)
 	var willis = world(data().landmarks["Willis Tower"])

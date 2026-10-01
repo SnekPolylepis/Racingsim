@@ -1,5 +1,15 @@
 # Native changelog
 
+## 2026-09-30 — Rebuild Preview 9
+
+- Combines the latest Monaco, Chicago and Spa art work with Gemini's seven follow-up commits.
+- Monaco: open Swimming Pool chicanes, smooth closed elevation profile, formula steering at Fairmont, planted hairpin island and deeper city facades.
+- Chicago/Spa: improved bridges, Riverwalk, Navy Pier wheel/plaza, CTA clearance, pit buildings, paddock vehicles, grandstands and ground materials.
+- Nordschleife Afterhours uses Green Hell darkness with headlights; Mazda MX-5 tail glow sits inside its lamp housings.
+- New car-specific engine voices, transmission whine, kerb rumble, wind rush and impact/shift sounds.
+- Low-yaw-inertia standstill creep fix; controller rumble with steering cues and clipping telemetry. Wheel torque output is not implemented. Rumble stops on pause, menus, loss of focus and exit.
+- Faster gate scheduling and native collections in the Windows runner. Source test/build evidence is recorded in REBUILD-LOG; physical rumble and subjective audio remain unvalidated.
+
 ## 2026-09-29 — Monaco
 
 - Circuit de Monaco (3.32 km): the real Grand Prix streets from OpenStreetMap, heights from the Copernicus DEM, the tunnel under the Fairmont, 3,900 real buildings, the harbour. Widths and kerbs per corner from the published layout.

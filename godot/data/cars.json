@@ -401,7 +401,7 @@
    "awdLock": 0.4,
    "finalDrive": 5.5,
    "shiftTime": 0.04,
-   "maxSteer": 22,
+   "maxSteer": 26,
    "absOn": 1,
    "absIntensity": 0.5,
    "tcOn": 1,
@@ -416,6 +416,7 @@
   },
   "model": "res://assets/cars/f2004/f2004.glb",
   "gears": 7,
+  "steerFalloff": 60,
   "source": "Wikipedia Ferrari_F2004: 605 kg, 645 kW @ 18,300 rpm, 18,800 max, 13in wheels; wheelbase/track from the model scaled to the published 4,545 mm length; izz/ipitch from mass spread over the 4.5 m car; 7 gears; brakes sized for ~5 g at speed"
  },
  "rb19": {
@@ -506,7 +507,7 @@
    "awdLock": 0.4,
    "finalDrive": 5.5,
    "shiftTime": 0.04,
-   "maxSteer": 22,
+   "maxSteer": 26,
    "absOn": 1,
    "absIntensity": 0.5,
    "tcOn": 1,
@@ -522,6 +523,7 @@
   },
   "model": "res://assets/cars/rb19/rb19.glb",
   "gears": 8,
+  "steerFalloff": 60,
   "source": "Wikipedia Red_Bull_RB19: 798 kg, 775 kW, 15,000 rpm limit; FIA 2022 regs: 3.6 m max wheelbase, 18in wheels (720 mm tyre); track from the model; izz/ipitch from mass spread over the 5.6 m car; 8 gears; brakes sized for ~5 g at speed; engineTorque 560 Nm (~700 kW sustained ICE+ERS, not the 775 kW peak), ~350 km/h top"
  }
 }

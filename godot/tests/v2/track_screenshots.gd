@@ -1,13 +1,15 @@
 extends SceneTree
-## Daylight review captures of the Proving Ground, Spa and the Nordschleife through the real
+## Daylight review captures of Monaco, Proving Ground, Spa and Nordschleife through the real
 ## presentation chain (the default 640x448 Authentic look), HUD hidden. Run windowed (never
 ## --headless), with the flow-test flag so the user's settings file is untouched:
-##   tools/Godot.exe --path . --script tests/v2/track_screenshots.gd -- --v2-flow-test [--out=<dir>] [--compare]
+##   tools/Godot.exe --path . --script tests/v2/track_screenshots.gd -- --v2-flow-test [--track=monaco] [--out=<dir>] [--compare]
+## --night selects Afterhours; --track=<id> --lap-step=<metres> surveys the whole lap.
 ## Writes <dir>/<shot>.png (default user://track-shots) and prints TRACK SHOTS RESULTS.
 ## --compare additionally writes <dir>/<shot>-compare.png for every shot with a reference frame in
 ## docs/art/reference/ (REFERENCE_MAP below): ours on the left, the reference on the right, both labelled.
 
 const NightShots = preload("res://tests/v2/night_screenshots.gd")
+const SpaLandmarks = preload("res://trackgen/spa_landmarks.gd")
 
 ## Chase (Look-2's default) unless a shot names CAM_BONNET explicitly.
 const CAM_CHASE = 0
@@ -41,6 +43,9 @@ const REFERENCE_DIR = "res://docs/art/reference/"
 var failures = []
 var folder = "user://track-shots"
 var compare = false
+var only_track = ""
+var night = false
+var lap_step = 0.0
 
 
 func _initialize():
@@ -49,12 +54,21 @@ func _initialize():
 			folder = arg.trim_prefix("--out=")
 		elif arg == "--compare":
 			compare = true
+		elif arg.begins_with("--track="):
+			only_track = arg.trim_prefix("--track=")
+		elif arg == "--night":
+			night = true
+		elif arg.begins_with("--lap-step="):
+			lap_step = maxf(50.0, arg.trim_prefix("--lap-step=").to_float())
 	call_deferred("run")
 
 
 ## [track, shot, station (a corner name plus metres, or metres from the start), camera (optional)].
 func shots() -> Array:
 	return [
+		["monaco", "monaco-fairmont", ["Grand Hotel Hairpin", -30.0]],
+		["monaco", "monaco-fairmont-apex", ["Grand Hotel Hairpin", 0.0], CAM_BONNET],
+		["monaco", "monaco-pool", ["Piscine", -45.0]],
 		["proving_ground", "pg-start", -45.0],
 		["proving_ground", "pg-turn1", 200.0],
 		["proving_ground", "pg-back-straight", 550.0],
@@ -65,6 +79,7 @@ func shots() -> Array:
 		["proving_ground", "pg-turn4", 2150.0],
 		["proving_ground", "pg-final-straight", 2400.0],
 		["spa", "spa-pit-straight", -160.0],
+		["spa", "spa-paddock", -160.0],
 		["spa", "spa-la-source", ["La Source", -130.0]],
 		["spa", "spa-eau-rouge", ["Eau Rouge", -150.0]],
 		["spa", "spa-raidillon", ["Raidillon", -40.0]],
@@ -94,20 +109,45 @@ func run():
 	root.add_child(app)
 	await process_frame
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))
-	app.settings.time_of_day = 0
+	app.settings.time_of_day = 1 if night else 0
 	app.apply_time_of_day()
 	var helper = NightShots.new()
 	var loaded = ""
-	for shot in shots():
+	var views = shots()
+	if lap_step > 0.0 and not only_track.is_empty():
+		if not app.load_v2_track(only_track):
+			quit(1)
+			return
+		loaded = only_track
+		app.start_v2_drive()
+		app.settings.time_of_day = 1 if night else 0
+		app.apply_time_of_day()
+		views = []
+		var distance = 0.0
+		while distance < app.track.length:
+			views.append([only_track, "%s-%04d" % [only_track, int(distance)], distance])
+			distance += lap_step
+	for shot in views:
+		if not only_track.is_empty() and shot[0] != only_track:
+			continue
 		if shot[0] != loaded:
 			if not app.load_v2_track(shot[0]):
 				failures.append("load " + shot[0])
 				continue
 			loaded = shot[0]
 			app.start_v2_drive()
-		helper.pose(app, helper.station(app.track, shot[2]), false)
+			app.settings.time_of_day = 1 if night else 0
+			app.apply_time_of_day()
+		var at = helper.station(app.track, shot[2])
+		if shot[1].begins_with("monaco-fairmont"):
+			at = app.track.get_meta("fairmont_apex") + float(shot[2][1])
+		helper.pose(app, at, night)
 		app.settings.camera = shot[3] if shot.size() > 3 else CAM_CHASE
 		app.update_camera(1.0, true)
+		if shot[1] == "spa-paddock":
+			var xf = SpaLandmarks.frame(app.track.get_node("Main"), app.track.length - 160, 1, 36)
+			app.camera.global_position = xf * Vector3(-22, 12, -12)
+			app.camera.look_at(xf * Vector3(0, 2, 0), Vector3.UP)
 		for i in 10:
 			await process_frame
 		# Without this the grab can return the last presented frame (every full-lap shot came back identical).
@@ -127,6 +167,7 @@ func run():
 			await write_compare(shot[1], image)
 	app.queue_free()
 	await process_frame
+	helper.free()
 	print("TRACK SHOTS RESULTS ", JSON.stringify({"failures": failures}))
 	quit(0 if failures.is_empty() else 1)
 

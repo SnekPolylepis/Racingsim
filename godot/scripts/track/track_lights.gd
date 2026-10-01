@@ -487,11 +487,12 @@ static func update_pool(pool: Array, asset: Node, eye: Vector3, night: bool, ene
 			light.visible = false
 		return
 	var near = []
+	var by_distance = func(a, b): return a[0] < b[0]
 	for i in heads.size():
 		var d = heads[i].distance_squared_to(eye)
 		if near.size() <= pool.size() or d < near[-1][0]:
-			near.append([d, i])
-			near.sort_custom(func(a, b): return a[0] < b[0])
+			var candidate = [d, i]
+			near.insert(near.bsearch_custom(candidate, by_distance, false), candidate)
 			if near.size() > pool.size() + 1:
 				near.pop_back()
 	var cutoff = sqrt(near[-1][0]) if near.size() > pool.size() else 1e9

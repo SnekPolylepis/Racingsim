@@ -107,6 +107,11 @@ const SPOTS = [
 	["loop-aerial-north", [41.8893, -87.6210, 8], CAM_CHASE],
 	["loop-aerial-river", [41.8863, -87.6380, 8], CAM_CHASE],
 	["bonnet-lower-wacker", [41.88792, -87.6207, 0], CAM_BONNET],
+	["bean-sightline", [41.88266, -87.6244, 8], CAM_CHASE, [41.88266, -87.6233, 11]],
+	["pier-sightline", [41.8862, -87.6139, 13], CAM_CHASE, [41.8917, -87.6059, 23]],
+	["wheel-detail", [41.8912, -87.6059, 8], CAM_CHASE, [41.8917, -87.6059, 38]],
+	["dusable-sightline", [41.8880, -87.6244, 8], CAM_CHASE, [41.88865, -87.6245, 11]],
+	["riverwalk-sightline", [41.88727, -87.6342, 1], CAM_CHASE, [41.88727, -87.6298, 3]],
 ]
 
 var failures = []
@@ -145,8 +150,11 @@ func run():
 			app.settings.camera = 2 if spot[0] == "lower-wacker" else spot[2]
 			app.update_camera(1.0, true)
 			if spot[0].begins_with("loop-aerial"):
-				app.camera.global_position = point + Vector3(0.0, 95.0, -45.0)
+				app.camera.global_position = point + Vector3(0.0, 240.0, -45.0)
 				app.camera.look_at(point, Vector3(0.0, 0.0, -1.0))
+			elif spot.size() > 3:
+				app.camera.global_position = point + Vector3.UP * 4.0
+				app.camera.look_at(Generator.world(spot[3]), Vector3.UP)
 			var shot_id: String = spot[0] + ("-night" if night else "-day")
 			var image = await capture(shot_id)
 			if compare and REFERENCE_MAP.has(spot[0]):
@@ -165,6 +173,7 @@ func run():
 func capture(shot_id: String) -> Image:
 	for i in 10:
 		await process_frame
+	await RenderingServer.frame_post_draw
 	var path = folder.path_join(shot_id + ".png")
 	var image = root.get_texture().get_image()
 	if image.save_png(path) != OK:

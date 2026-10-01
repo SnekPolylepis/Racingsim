@@ -11,7 +11,6 @@ const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ARMCO_TEX_PATH = "res://assets/ps2/armco.png"
 const TYRE_TEX_PATH = "res://assets/ps2/tyre.png"
 const CONCRETE_TEX_PATH = "res://assets/ps2/concrete_floor_02_diff.png"
-const CROWD_TEX_PATH = "res://assets/ps2/crowd.png"
 const FENCE_SHADER_PATH = "res://shaders/fence.gdshader"
 
 static var _mat_cache = {}
@@ -64,17 +63,11 @@ static func concrete_material() -> StandardMaterial3D:
 	return mat
 
 
-static func crowd_material() -> StandardMaterial3D:
+static func crowd_material() -> ShaderMaterial:
 	if _mat_cache.has("crowd"):
 		return _mat_cache["crowd"]
-	var mat = StandardMaterial3D.new()
-	if ResourceLoader.exists(CROWD_TEX_PATH):
-		mat.albedo_texture = load(CROWD_TEX_PATH)
-	else:
-		mat.albedo_color = Color(0.85, 0.85, 0.85)
-	mat.roughness = 0.9
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	var mat = ShaderMaterial.new()
+	mat.shader = load("res://shaders/crowd.gdshader")
 	_mat_cache["crowd"] = mat
 	return mat
 
@@ -116,6 +109,7 @@ static func prepare_container(item: Node3D, container_name: String) -> Dictionar
 static func add_box(st: SurfaceTool, center: Vector3, size: Vector3, col: Color) -> void:
 	var h = size * 0.5
 	st.set_color(col)
+	st.set_smooth_group(-1)
 	var corners = [
 		center + Vector3(-h.x, -h.y, -h.z),  # 0: left bottom back
 		center + Vector3(h.x, -h.y, -h.z),  # 1: right bottom back
@@ -126,8 +120,8 @@ static func add_box(st: SurfaceTool, center: Vector3, size: Vector3, col: Color)
 		center + Vector3(h.x, h.y, h.z),  # 6: right top front
 		center + Vector3(-h.x, h.y, h.z)  # 7: left top front
 	]
-	# 6 faces: front, back, top, bottom, left, right (CCW winding when viewed from outside)
-	var quads = [[3, 2, 6, 7], [1, 0, 4, 5], [4, 5, 6, 7], [0, 1, 2, 3], [0, 3, 7, 4], [2, 1, 5, 6]]
+	# Godot front faces wind clockwise from outside. Keep hard edges between the six faces.
+	var quads = [[7, 6, 2, 3], [5, 4, 0, 1], [4, 5, 6, 7], [3, 2, 1, 0], [4, 7, 3, 0], [6, 5, 1, 2]]
 	for q in quads:
 		for idx in [q[0], q[1], q[2], q[0], q[2], q[3]]:
 			st.add_vertex(corners[idx])

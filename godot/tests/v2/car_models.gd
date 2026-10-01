@@ -96,5 +96,19 @@ func run():
 			check(ghost_material_ok, "roadster ghost material")
 		model.root.free()
 		ghost.root.free()
+	for key in ["f2004", "rb19"]:
+		for is_ghost in [false, true]:
+			var v = Visuals.new()
+			var model = v.make_car(cars[key], is_ghost)
+			check(
+				model.pivots.size() == 4 and model.spins.size() == 4,
+				key + " imported wheel contract, ghost=" + str(is_ghost)
+			)
+			for i in 4:
+				check(
+					model.spins[i].get_child_count() == 1 and model.pivots[i].get_child_count() == 1,
+					key + " keeps only source wheel " + str(i)
+				)
+			model.root.free()
 	print("CAR_MODELS RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))
 	quit(0 if failures.is_empty() else 1)

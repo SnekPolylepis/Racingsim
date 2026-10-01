@@ -2,6 +2,17 @@
 
 ## Console presentation settings and completed laps
 
+Controller rumble settings are `ffb_enabled` (default true), `ffb_gain` (1.0),
+`ffb_damper` (0.25), `ffb_kerb` (1.0) and `ffb_road` (0.8). The historical key
+prefix is retained for saved-settings compatibility. Windows also outputs CSL DD
+constant-force steering torque through `native/wheel_bridge.exe`. `wheel_enabled`
+(true), `wheel_gain` (0.35) and `wheel_profile` select the owner's USB rig and pedal
+endpoints. Pedal values are normalized from `released` to `pressed`, including
+reversed endpoints. The owner's corrected mBooster/CRP2 throttle is axis 3, brake axis 4;
+CSL DD steering is axis 0, right paddle button 4 and left paddle button 5.
+These settings do not change record identity. Output stops in menus, on pause,
+focus loss and exit; native effects expire after 100 ms without refresh.
+
 Additional recognized settings are `output_mode` (0 clean progressive, 1 interlaced), `crt_filter` (boolean), `framebuffer_colour` (0 24-bit, 1 RGB555), `screen_aspect` (0 4:3, 1 16:9), and `ui_mode` (0 Authentic, 1 Sharp). Defaults are progressive, no CRT filter, 24-bit, 16:9 and Authentic UI. These cosmetic choices are excluded from record identity. Frontend paint/rim choices and last-lap replay are session presentation state; existing setup/track/ghost schemas are unchanged.
 
 Completed ghost sample arrays are immutable and shared by best-lap and last-lap replay consumers. Starting a lap assigns a new recording array; never clear or append to a completed one. `record_writer.gd` serializes record/sector saves on one worker with a private Storage instance, preserving submission order and temporary-file replacement. The destination identity is resolved when `load_record()` selects the configuration, not recomputed on the finish-line physics tick. Load/import/clear and shutdown flush earlier jobs. Sector jobs copy their three mutable times; worker code never accesses Nodes or live gameplay state.
@@ -42,7 +53,7 @@ history. The root `tracks/` folder still holds the owner's old documents and mus
 
 ## Presets and setups
 
-Preset keys are `roadster`, `gt`, `f296gt3`. `data/cars.json` contains fixed constants and a default `setup` for each. The garage definition rows are `[group,key,label,min,max,step,unit]`; currently 42 legacy fields grouped into Tires, Suspension, Aero, Brakes, Diff, Gearing and Aids. Presentation-only preset keys (no physics or record effect): `body` (`roadster`, `coupe` or `gt3`, the lofted body style in `visuals.gd::BODIES`), `color`, `rim`, `caliper` (hex colours), `wing` (bool) and `num` (livery number). Missing keys fall back to defaults.
+Preset keys are `roadster`, `gt`, `f296gt3`, `f2004` and `rb19`. `data/cars.json` contains fixed constants and a default `setup` for each. Optional `steerFalloff` (m/s, default 14) sets the speed scale for steering-lock reduction; the Formula presets use 60 after the Monaco Fairmont hairpin check showed 40 left the RB19 just short of the centreline lock at 45 km/h. The garage definition rows are `[group,key,label,min,max,step,unit]`; currently 42 legacy fields grouped into Tires, Suspension, Aero, Brakes, Diff, Gearing and Aids. Presentation-only preset keys (no physics or record effect): `body` (`roadster`, `coupe` or `gt3`, the lofted body style in `visuals.gd::BODIES`), `color`, `rim`, `caliper` (hex colours), `wing` (bool) and `num` (livery number). Missing keys fall back to defaults.
 
 Chassis keys read by the 6-DOF `CarBody`: `treadWidth` (m, tyre footprint), `unsprungMass` (`[front, rear]` kg per corner; default 3 % of `mass`), `tyreRate` (radial tyre stiffness, N/m; default 260000) and `bodyClearance` (m, the chassis contact box's sill height above static ground; default 0.1). They are fixed constants, not garage fields.
 

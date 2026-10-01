@@ -18,9 +18,10 @@ const PitBuilding = preload("res://scripts/track/pit_building.gd")
 const MarshalPost = preload("res://scripts/track/marshal_post.gd")
 const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
+const SpaLandmarks = preload("res://trackgen/spa_landmarks.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 5
+const CACHE_REVISION = 6
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -369,6 +370,8 @@ static func add_forest(
 	trees.scale_min = 1.0
 	trees.scale_max = 2.0
 	trees.atlas_kind = atlas_kind
+	if atlas_kind == RoadScatter.AtlasKind.TREES:
+		trees.species_indices = PackedInt32Array([0, 1, 2, 3, 4])
 	asset.add_child(trees)
 	trees.owner = asset
 	trees.bake()
@@ -384,6 +387,9 @@ static func add_forest(
 		elif not terrain.is_empty():
 			xf.origin.y = terrain_height(terrain, xf.origin)
 		multimesh.set_instance_transform(i, xf)
+		# Summer Ardennes canopy; avoid the shared scatter's autumn-gold deciduous tint.
+		if atlas_kind == RoadScatter.AtlasKind.TREES:
+			multimesh.set_instance_color(i, Color(.76, .91, .74))
 
 
 ## Look-10: low vegetation (ferns, brambles, long grass, bushes, saplings) from just behind the
@@ -712,7 +718,7 @@ static func add_scenery_kit(asset: Node3D, road: RoadPath, corners: Dictionary, 
 	pits.follow_road = NodePath("../Main")
 	pits.side = PitBuilding.Side.RIGHT
 	pits.station = measured - 160.0
-	pits.length_m = 130.0
+	pits.length_m = 230.0
 	pits.offset = 12.0
 	pits.has_pit_wall = false
 	asset.add_child(pits)
@@ -726,9 +732,10 @@ static func add_scenery_kit(asset: Node3D, road: RoadPath, corners: Dictionary, 
 	gs_pit.follow_road = NodePath("../Main")
 	gs_pit.side = Grandstand.Side.LEFT
 	gs_pit.station = measured - 120.0
-	gs_pit.length_m = 90.0
-	gs_pit.rows = 8
+	gs_pit.length_m = 145.0
+	gs_pit.rows = 12
 	gs_pit.offset = 8.0
+	gs_pit.roof_height = 7.0
 	gs_pit.has_roof = true
 	gs_pit.solid_front = true
 	asset.add_child(gs_pit)
@@ -771,14 +778,30 @@ static func add_scenery_kit(asset: Node3D, road: RoadPath, corners: Dictionary, 
 	gs_raid.follow_road = NodePath("../Main")
 	gs_raid.side = Grandstand.Side.LEFT
 	gs_raid.station = corners.get("Raidillon", 1100.0) + 40.0
-	gs_raid.length_m = 90.0
-	gs_raid.rows = 10
+	gs_raid.length_m = 130.0
+	gs_raid.rows = 18
 	gs_raid.offset = 12.0
-	gs_raid.has_roof = true
+	gs_raid.has_roof = false
 	gs_raid.solid_front = true
 	asset.add_child(gs_raid)
 	gs_raid.owner = asset
 	gs_raid.bake()
+
+	# Opened in 2023: covered Endurance stand down the La Source descent, opposite the old pits.
+	var gs_endurance = Grandstand.new()
+	gs_endurance.name = "EnduranceGrandstand"
+	gs_endurance.follow_road = NodePath("../Main")
+	gs_endurance.side = Grandstand.Side.LEFT
+	gs_endurance.station = (corners["La Source"] + corners["Eau Rouge"]) * .5
+	gs_endurance.length_m = 150.0
+	gs_endurance.rows = 14
+	gs_endurance.offset = 12.0
+	gs_endurance.roof_height = 8.0
+	gs_endurance.has_roof = true
+	gs_endurance.solid_front = false
+	asset.add_child(gs_endurance)
+	gs_endurance.owner = asset
+	gs_endurance.bake()
 
 	# Bus Stop grandstand (right, chicane exit)
 	var gs_bus = Grandstand.new()
@@ -878,7 +901,7 @@ static func build_asset() -> Node3D:
 	var asset = TrackAsset.new()
 	asset.name = "SpaFrancorchamps"
 	asset.id = "spa"
-	asset.display_name = "Spa-Francorchamps (v0)"
+	asset.display_name = "Spa-Francorchamps"
 	asset.version = 1
 	asset.default_time_of_day = "day"
 	asset.set_meta("cache_revision", CACHE_REVISION)
@@ -957,7 +980,7 @@ static func build_asset() -> Node3D:
 		"ArdennesNear",
 		positions["Raidillon"] + 180.0,
 		positions["Blanchimont"] + 120.0,
-		28.0,
+		48.0,
 		12.0,
 		65.0,
 		601
@@ -968,7 +991,7 @@ static func build_asset() -> Node3D:
 		"ArdennesDeep",
 		positions["Raidillon"] + 200.0,
 		positions["Blanchimont"] + 100.0,
-		34.0,
+		70.0,
 		70.0,
 		180.0,
 		602
@@ -992,7 +1015,7 @@ static func build_asset() -> Node3D:
 		"ArdennesFar",
 		positions["Blanchimont"] + 200.0,
 		positions["Raidillon"] + 200.0,
-		14.0,
+		38.0,
 		110.0,
 		260.0,
 		604
@@ -1015,6 +1038,8 @@ static func build_asset() -> Node3D:
 		asset, road, terrain, positions["Raidillon"] + 180.0, positions["Blanchimont"] + 120.0, 7.0, 20.0
 	)
 	add_scenery_kit(asset, road, positions, measured)
+	SpaLandmarks.build(asset, road, positions, measured)
+	SpaLandmarks.kerb_colours(asset)
 	# Braking countdown and corner name boards (Look-11).
 	asset.set_meta("boards", TrackBoards.build(asset, road, corners, scale_s))
 	add_lighting(asset, road, positions, measured)

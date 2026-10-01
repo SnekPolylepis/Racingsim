@@ -158,6 +158,7 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 		network.material_override = steel_node.material_override
 		parent.add_child(network)
 		network.owner = asset
+	_navy_pier(asset, parent)
 	return {"boats": moorings.size(), "steel_cells": cells, "pavilion_pylons": pylons.size()}
 
 
@@ -167,3 +168,96 @@ static func _mat(c: Color, metal: float, rough: float) -> StandardMaterial3D:
 	m.metallic = metal
 	m.roughness = rough
 	return m
+
+
+## Authored arcade/shed silhouette from Navy Pier's official visitor map and Centennial Vision.
+## Same XZ scaffold as the landmark wheel; quay height follows the actual lake surface.
+static func _navy_pier(asset: Node3D, parent: Node) -> void:
+	var doc = JSON.parse_string(FileAccess.get_file_as_string("res://trackgen/data/chicago/route.json"))
+	var row = doc.landmarks["Navy Pier"]
+	var origin = Vector3((row[1] + 87.6244) * 82860.0, LAKE_Y + 0.8, (41.8848 - row[0]) * 111320.0)
+	var surfaces = {}
+	for key in ["brick", "stone", "glass", "roof", "steel"]:
+		surfaces[key] = SurfaceTool.new()
+		surfaces[key].begin(Mesh.PRIMITIVE_TRIANGLES)
+	var box = preload("res://trackgen/chicago_l.gd").box
+	box.call(surfaces.stone, origin + Vector3(190, -0.7, 0), Vector3(800, 1.4, 80), Basis.IDENTITY)
+	# Low linked exhibition sheds, deep cornices and tall glazed arcade bays, not six blank cubes.
+	for i in range(1, 6):
+		var c = origin + Vector3(i * 95, 0, 0)
+		box.call(surfaces.brick, c + Vector3(0, 7.2, 0), Vector3(80, 14.4, 44), Basis.IDENTITY)
+		box.call(surfaces.stone, c + Vector3(0, 14.6, 0), Vector3(82, 0.8, 46), Basis.IDENTITY)
+		for side in [-1, 1]:
+			for bay in 10:
+				var x = -36.0 + bay * 8.0
+				box.call(
+					surfaces.glass,
+					c + Vector3(x, 7.5, side * 22.12),
+					Vector3(5.8, 10.0, 0.18),
+					Basis.IDENTITY
+				)
+				box.call(
+					surfaces.stone,
+					c + Vector3(x - 3.5, 7.0, side * 22.3),
+					Vector3(0.65, 14.0, 0.6),
+					Basis.IDENTITY
+				)
+			box.call(surfaces.roof, c + Vector3(0, 4.8, side * 26.0), Vector3(82, 0.35, 8.0), Basis.IDENTITY)
+			for bay in 11:
+				box.call(
+					surfaces.steel,
+					c + Vector3(-40 + bay * 8, 2.4, side * 29.3),
+					Vector3(0.22, 4.8, 0.22),
+					Basis.IDENTITY
+				)
+		# Twin sloped roof planes and ridge break the long flat silhouette.
+		for side in [-1, 1]:
+			box.call(
+				surfaces.roof,
+				c + Vector3(0, 17.0, side * 11.0),
+				Vector3(81, 0.5, 23),
+				Basis(Vector3.RIGHT, side * 0.18)
+			)
+	# The west wheel plaza stays open; the old first shed intersected the wheel's lower quadrant.
+	var platform = origin + Vector3(0, 2.6, 0)
+	box.call(surfaces.stone, platform + Vector3(0, -.2, 0), Vector3(26, .4, 14), Basis.IDENTITY)
+	for i in 8:
+		box.call(
+			surfaces.stone,
+			origin + Vector3(0, (i + 1) * .325 * .5, -15 + i),
+			Vector3(24, (i + 1) * .325, 1.0),
+			Basis.IDENTITY
+		)
+	box.call(surfaces.roof, platform + Vector3(0, 3.2, -5), Vector3(27, .3, 5), Basis.IDENTITY)
+	for x in [-12.0, 12.0]:
+		box.call(surfaces.steel, platform + Vector3(x, 1.6, -5), Vector3(.22, 3.2, .22), Basis.IDENTITY)
+	# Promenade railing rhythm breaks up the long dock edge from Lakeshore Drive.
+	for side in [-1, 1]:
+		box.call(
+			surfaces.steel, origin + Vector3(190, 1.1, side * 38), Vector3(795, 0.12, 0.12), Basis.IDENTITY
+		)
+		for i in 80:
+			box.call(
+				surfaces.steel,
+				origin + Vector3(-205 + i * 10, 0.6, side * 38),
+				Vector3(0.12, 1.2, 0.12),
+				Basis.IDENTITY
+			)
+	var mats = {
+		"brick": _mat(Color("886454"), 0.0, 0.85),
+		"stone": _mat(Color("c5bba4"), 0.0, 0.82),
+		"glass": _mat(Color("3b626d"), 0.2, 0.3),
+		"roof": _mat(Color("5d7774"), 0.25, 0.65),
+		"steel": _mat(Color("647176"), 0.65, 0.55)
+	}
+	mats.glass.emission = Color("e1bc79")
+	mats.glass.emission_energy_multiplier = 0.22
+	mats.glass.set_meta("chicago_night", true)
+	for key in surfaces:
+		surfaces[key].generate_normals()
+		var n = MeshInstance3D.new()
+		n.name = "NavyPier" + key.capitalize()
+		n.mesh = surfaces[key].commit()
+		n.material_override = mats[key]
+		parent.add_child(n)
+		n.owner = asset

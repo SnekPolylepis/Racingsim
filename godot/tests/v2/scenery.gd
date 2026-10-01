@@ -26,6 +26,7 @@ const PitBuilding = preload("res://scripts/track/pit_building.gd")
 const MarshalPost = preload("res://scripts/track/marshal_post.gd")
 const ProvingGroundGen = preload("res://trackgen/proving_ground.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
+const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
 
 const DT = 1.0 / 240.0
 
@@ -87,6 +88,7 @@ func _physics_process(_delta: float) -> bool:
 		return true
 	ran = true
 
+	test_box_faces()
 	test_catch_fence()
 	test_grandstand()
 	test_gantry()
@@ -101,6 +103,18 @@ func _physics_process(_delta: float) -> bool:
 	print("SCENERY RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
 	quit(0 if failures.is_empty() else 1)
 	return true
+
+
+func test_box_faces() -> void:
+	var arrays = SceneryBuilder.box_mesh(Vector3(2, 4, 6), Color.WHITE).surface_get_arrays(0)
+	var vertices = arrays[Mesh.ARRAY_VERTEX]
+	var normals = arrays[Mesh.ARRAY_NORMAL]
+	var outward = true
+	for i in range(0, vertices.size(), 3):
+		var center = (vertices[i] + vertices[i + 1] + vertices[i + 2]) / 3.0
+		var face = (vertices[i + 2] - vertices[i]).cross(vertices[i + 1] - vertices[i]).normalized()
+		outward = outward and face.dot(center) > 0.0 and face.dot(normals[i]) > .99
+	check(outward, "Scenery boxes: all twelve triangles face outward with hard face normals")
 
 
 func test_catch_fence() -> void:
@@ -158,6 +172,11 @@ func test_grandstand() -> void:
 	stand.bake()
 
 	var scenery_mesh = stand.get_node_or_null("Scenery/TestStand")
+	var normals_ok = true
+	if scenery_mesh != null:
+		for normal in scenery_mesh.mesh.surface_get_arrays(0)[Mesh.ARRAY_NORMAL]:
+			normals_ok = normals_ok and normal.length() > .99
+	check(normals_ok, "Grandstand: opposing canopy faces retain unit lighting normals")
 	var wall = stand.get_node_or_null("Walls/TestStand")
 	var ok_mesh = scenery_mesh != null and scenery_mesh.mesh != null
 	var ok_wall = (

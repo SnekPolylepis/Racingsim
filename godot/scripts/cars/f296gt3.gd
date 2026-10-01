@@ -27,7 +27,7 @@ func build(visuals, preset, ghost):
 		for lamp in FRONT_LAMPS + REAR_LAMPS:
 			if source.begins_with(lamp):
 				_lamp(visuals, part, Color("fff1d4") if lamp in FRONT_LAMPS else Color("ff3020"))
-	var model = kit.finish(root, 1.1)
+	var model = kit.finish(root, 1.1, false)
 	_wheels(model, visuals, ghost_mat)
 	return model
 

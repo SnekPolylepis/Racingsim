@@ -78,7 +78,7 @@ static func nearest_route(route: Dictionary, p: Vector2, reach: float) -> Vector
 	return at if best < INF else Vector2(INF, INF)
 
 
-## `buildings`: [[ring PackedVector2Array, height m, index int]] for buildings near the route.
+## `buildings`: [[ring, height, index, flat_roof]]; measured stepped roofs keep their own silhouette.
 static func build(asset: Node3D, holder: Node, buildings: Array, route: Dictionary) -> Dictionary:
 	var groups = {}
 	var stats = {"kit_instances": 0}
@@ -127,7 +127,7 @@ static func build(asset: Node3D, holder: Node, buildings: Array, route: Dictiona
 				var storey = basis.scaled_local(Vector3(1.0, STOREY_SCALE, 1.3))
 				_add(groups, shop[0], Transform3D(storey, Vector3(at.x, STREET_Y, at.y)))
 				stats.kit_instances += 1
-				if h >= 9.0 and h <= CORNICE_MAX_H:
+				if h >= 9.0 and h <= CORNICE_MAX_H and entry[3]:
 					var top = basis.scaled_local(CORNICE_SCALE)
 					_add(groups, cornice, Transform3D(top, Vector3(at.x, STREET_Y + h - 2.2, at.y)))
 					stats.kit_instances += 1
@@ -162,7 +162,7 @@ static func _add(groups: Dictionary, name: String, xform: Transform3D) -> void:
 
 
 ## Rooftop clutter (CHI-LOOK-02) on low and mid-rise roofs: wooden water tanks, kit AC units and stair/lift
-## boxes. `buildings` is [[ring, height m, index]] for every kept building. One MultiMesh per kind and 600 m
+## boxes. `buildings` is [[ring, height m, index, flat_roof]]; LiDAR roofs retain their measured equipment. One MultiMesh per kind and 600 m
 ## chunk, culled beyond ROOF_CULL_M.
 const ROOF_CHUNK = 600.0
 const ROOF_CULL_M = 800.0
@@ -178,7 +178,7 @@ static func roof_clutter(asset: Node3D, holder: Node, buildings: Array) -> Dicti
 		var ring: PackedVector2Array = entry[0]
 		var h: float = entry[1]
 		var idx: int = entry[2]
-		if h < 8.0 or h > 120.0 or ring.size() < 3:
+		if h < 8.0 or h > 120.0 or ring.size() < 3 or not entry[3]:
 			continue
 		var tris = Geometry2D.triangulate_polygon(ring)
 		if tris.size() < 3:

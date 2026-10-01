@@ -9,12 +9,16 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
 2. `dem_sample.py <Copernicus_DSM_COG_10_N43_00_E007_00_DEM.tif>` decodes the Copernicus GLO-30 tile
    around Monaco into `dem.json` (the tile itself is not kept).
 3. `build_profile.py` reads road height as the DSM's low envelope (the DSM includes buildings), bridges
-   the tunnel between its portals, smooths over 120 m and limits grade to 12 % -> `profile.json`.
-   Harbour 2-6 m, Sainte-Devote 5.5 m, peak ~50 m before Casino Square, Mirabeau 40 m, Portier 14 m.
-4. `build_city.py` writes `city.json`: the 3 m road with heights (no global smoothing, so the Nouvelle
+   the tunnel between its portals, smooths over 120 m and limits grade to 12 %. It then resamples the
+   complete closed lap at about 3 m, including the formerly missing closing segment, and applies a
+   periodic Gaussian (sigma 60 m) to remove abrupt grade changes -> `profile.json`.
+   The authored approximation ranges from about 2 to 47 m; it is not a surveyed elevation model.
+4. `build_city.py` writes `city.json`: the 3 m road with four-decimal heights (no global plan-view smoothing, so the Nouvelle
    Chicane and Swimming Pool jinks keep the OSM raceway shape; only node kinks under 6.5 m radius are relaxed,
    below which the inside barrier folds over the road), an 8 m ground grid (level with the road
    out to 12 m), 3,900 OSM buildings (heights from OSM tags, else measured from the DSM), trees, parks, piers.
+   The directed OSM coastline masks sea ground below the water; the Swimming Pool quay has an authored
+   flat-ground correction so the DSM's stands/rooftops do not become terrain cliffs.
 
 ## References (not distributed)
 
@@ -25,10 +29,38 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
 
 ## Known limits
 
-- The DSM is 30 m: the total climb reads ~49 m against the ~42 m usually quoted; corner heights are
-  within a few metres. No LiDAR is openly available for Monaco.
+- The DSM is 30 m and includes rooftops. The smoothed profile has about 45 m of elevation range;
+  local heights and slopes are authored approximations, not surveyed ground truth.
+- Track version 4 uses the mapped raceway entry/exit plus 12 m at the Tabac entry and 70 m at the
+  Rascasse exit to open both Swimming Pool chicanes, with 4 m paved escape bands. The Pool-side
+  stands are omitted; the Tabac approach and Rascasse retain their barriers and stands.
 - Road widths and kerbs are authored per corner from the published layout, not surveyed.
-- Buildings are extruded footprints with a shared facade shader; no landmark models (Casino, Hotel de Paris).
+- Buildings use extruded footprints with a shared facade shader and authored Casino towers;
+  Casino and Hotel de Paris do not yet have detailed landmark models.
+- Nearby apartment footprints have projecting floor slabs; the facade shader varies bay widths,
+  shutters, curtains and glazing. These are architectural approximations, not surveyed balconies.
+  The Fairmont footprint is identified from OSM relation 2093796; roadside buildings are no longer
+  lifted by the tunnel-roof correction unless the nearby road point is actually in the tunnel.
+- The rectangular Pool quay height correction feathers into the surrounding terrain over 24 m.
+  This softens its edge; it does not replace the 30 m DSM with surveyed topography.
+- Formula presets use 26° maximum front-wheel lock plus a 60 m/s speed falloff. Formula Monaco lap gates
+  measure actual speed within 35 m of Fairmont's apex: F2004 stays above 25 km/h and RB19 above 30 km/h
+  across Simulation and Simcade, with zero off-track wheel ticks, wall contacts or prop contacts.
+- Fairmont's named OSM marker is near the exit. `fairmont_apex` locates the tightest nearby bend for
+  the planting island, focused captures and input-path acceptance runs. The bed has 9.35 m centreline
+  clearance; it uses the existing credited foliage plus a recoloured CC0 Kenney palm.
+- `tests/v2/monaco.gd` also drives both formulas through Fairmont using injected W/A/S/D or controller
+  events at 100 ms decision intervals, with default keyboard ramps and controller deadzone/linearity,
+  in both handling models.
+  All eight cases must finish without off-track wheel ticks or wall contacts and stay above 24.5 km/h.
+  The driving reference is automated; these runs do not establish human playtest acceptance.
+- The 2026-09-29 100 ms run passes all eight cases at minimum speeds of 25.19–31.70 km/h.
+  Earlier coarse keyboard failures came from the replay releasing a key when full requested input
+  equalled current input; it now holds full steering/pedal requests. Production controls are unchanged.
+
+Daylight screenshots through the main game's presentation chain (separate from the standalone
+track-drive captures): `--script tests/v2/track_screenshots.gd -- --v2-flow-test --track=monaco
+--v2-car=rb19 --out=res://docs/rebuild/screenshots/monaco-graphics/game`.
 
 ## Sources and licences
 

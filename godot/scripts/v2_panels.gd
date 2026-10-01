@@ -388,7 +388,8 @@ func open_settings() -> void:
 	check(d, "CRT / composite", s.crt_filter, func(v): setting("crt_filter", v))
 	check(d, "Colour dithering", s.colour_dither, func(v): setting("colour_dither", v))
 	choice(d, "Speed blur", ["Off", "Low", "High"], s.speed_blur, func(v): setting("speed_blur", v))
-	choice(d, "Time of day", ["Afternoon", "Afterhours"], s.time_of_day, func(v): setting("time_of_day", v))
+	var tod_label = "Afterhours (Green Hell)" if app.v2_track_id == "nordschleife" else "Afterhours"
+	choice(d, "Time of day", ["Afternoon", tod_label], s.time_of_day, func(v): setting("time_of_day", v))
 	choice(d, "Graphics quality", ["Low", "Medium", "High"], s.quality, func(v): setting("quality", v))
 	check(d, "Adaptive quality", s.adaptive, func(v): setting("adaptive", v))
 	check(d, "Native resolution MSAA 2x", s.native_msaa, func(v): setting("native_msaa", v))
@@ -464,7 +465,33 @@ func open_settings() -> void:
 	)
 	check(c, "Steering grip assist · keyboard", s.steer_grip_kb, func(v): setting("steer_grip_kb", v))
 	check(c, "Steering grip assist · controller", s.steer_grip_pad, func(v): setting("steer_grip_pad", v))
-	label(c, "Click a binding, then press a key, button or axis. Esc cancels.", 15)
+	check(c, "Controller rumble", s.get("ffb_enabled", true), func(v): setting("ffb_enabled", v))
+	check(c, "Fanatec CSL DD + Moza pedals", s.wheel_enabled, func(v): setting("wheel_enabled", v))
+	number(c, "Wheel force gain", s.wheel_gain, 0, 1, .05, func(v): setting("wheel_gain", v))
+	label(c, "CSL DD: linear steering · right paddle up / left paddle down", 15)
+	label(c, "Moza: throttle axis 3 / brake axis 4 · keyboard clutch/handbrake/reset still work", 15)
+	for action in ["throttle", "brake"]:
+		var pedal = action
+		for field in ["released", "pressed"]:
+			var endpoint = field
+			number(
+				c,
+				pedal.capitalize() + " " + endpoint,
+				s.wheel_profile[pedal].get(endpoint, 0.0 if endpoint == "released" else 1.0),
+				0,
+				1,
+				.01,
+				func(v):
+					var profile = app.settings.wheel_profile.duplicate(true)
+					profile[pedal][endpoint] = v
+					setting("wheel_profile", profile)
+			)
+	number(c, "Rumble gain", s.get("ffb_gain", 1.0), 0, 2, .05, func(v): setting("ffb_gain", v))
+	number(
+		c, "Steering rumble damping", s.get("ffb_damper", 0.25), 0, 1, .05, func(v): setting("ffb_damper", v)
+	)
+	number(c, "Rumble road/kerb detail", s.get("ffb_kerb", 1.0), 0, 2, .05, func(v): setting("ffb_kerb", v))
+	label(c, "Keyboard / standard gamepad bindings below. Click to change; Esc cancels.", 15)
 	mappings.clear()
 	for action in [
 		"throttle", "brake", "left", "right", "steer", "clutch", "handbrake", "shiftUp", "shiftDown", "reset"

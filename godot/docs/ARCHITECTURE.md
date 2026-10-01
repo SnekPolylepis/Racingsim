@@ -222,4 +222,5 @@ P7-01a (2026-09-23) deleted the pre-rebuild game: JSON tracks, planar collisions
 feature suite. `--features` is an alias for `--v2-present`. P7-01b folded the planar CarModel
 (`scripts/car.gd`) into CarBody, moved the surface table to `scripts/surface/surface_table.gd`, and
 deleted `track.gd`, `track3d.gd` and `tests/dynamics.gd`. Look-3 ported `retro_renderer.gd` onto the
-v2 game (above) and removed its legacy-only parts. `night_style.gd` remains for Look-2.
+v2 game (above) and removed its legacy-only parts. The unused legacy `night_style.gd` furniture and
+corona shader were removed in OPT-01 (2026-09-29); TrackAsset lighting uses `track/track_lights.gd`.

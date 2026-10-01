@@ -15,6 +15,8 @@ const Storage = preload("res://scripts/storage.gd")
 const Controls = preload("res://scripts/controls.gd")
 const Instruments = preload("res://scripts/instruments.gd")
 const Sound = preload("res://scripts/audio.gd")
+const FFB = preload("res://scripts/ffb.gd")
+const WheelBridge = preload("res://scripts/wheel_bridge.gd")
 const Ps2Materials = preload("res://scripts/track/ps2_materials.gd")
 const TrackLights = preload("res://scripts/track/track_lights.gd")
 const NightGlow = preload("res://scripts/track/night_glow.gd")
@@ -74,6 +76,22 @@ const DEFAULT_SETTINGS = {
 	"volume": .55,
 	"engine_volume": .8,
 	"effects_volume": .65,
+	"ffb_enabled": true,
+	"ffb_gain": 1.0,
+	"ffb_damper": 0.25,
+	"ffb_kerb": 1.0,
+	"ffb_road": 0.8,
+	"wheel_enabled": true,
+	"wheel_gain": 0.35,
+	"wheel_profile":
+	{
+		"throttle": {"axis": 3, "released": 0.0, "pressed": 1.0},
+		"brake": {"axis": 4, "released": 0.0, "pressed": 1.0},
+		"shiftUp": {"button": 4},
+		"shiftDown": {"button": 5},
+		"handbrake": {"button": 2},
+		"steer_sign": 1.0
+	},
 	"folder": "user://"
 }
 var settings = DEFAULT_SETTINGS.duplicate(true)
@@ -83,6 +101,8 @@ var race = RaceModel.new()
 var visuals = Visuals.new()
 var storage = Storage.new()
 var controls = Controls.new()
+var wheel = WheelBridge.new()
+var ffb = FFB.new()
 var presets = {}
 var setup_fields = []
 var preset_key = "f296gt3"
@@ -184,6 +204,16 @@ func _ready():
 			v2_track_id = arg.get_slice("=", 1)
 	v2_smoke = v2_visual_smoke or "--v2-smoke" in OS.get_cmdline_user_args()
 	setup_v2()
+
+
+func _notification(what):
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		ffb.stop()
+
+
+func _exit_tree():
+	ffb.stop()
+	wheel.close()
 
 
 func message(value):
@@ -418,6 +448,9 @@ func setup_v2():
 		push_error(storage.error)
 		return
 	controls.configure(settings)
+	if settings.wheel_enabled and not (v2_smoke or v2_present or v2_flow_test or v2_export_check):
+		wheel.start(get_window())
+		ffb.wheel = wheel
 	car = CarBody.new()
 	car.simcade_enabled = settings.handling_model == 0
 	car.configure(presets[preset_key])
@@ -603,6 +636,8 @@ func return_v2_menu() -> void:
 	in_menu = true
 	paused = false
 	controls.clear()
+	if ffb:
+		ffb.stop()
 	if record_writer:
 		record_writer.flush()
 	if frontend:
@@ -615,6 +650,12 @@ func set_v2_setting(key: String, value: Variant) -> void:
 		return
 	var changed = settings[key] != value
 	settings[key] = value
+	if key == "wheel_enabled":
+		if value and wheel.process_id < 0 and controls.poll_hardware:
+			wheel.start(get_window())
+			ffb.wheel = wheel
+		if not value:
+			wheel.stop()
 	controls.configure(settings)
 	car.simcade_enabled = int(settings.handling_model) == 0
 	car.simcade_steering = settings.simcade_grip_assist
@@ -792,11 +833,28 @@ func blend_v2(a: Dictionary, b: Dictionary, fraction: float) -> Dictionary:
 func physics_v2(dt):
 	if in_menu or paused:
 		controls.events.clear()
+		if ffb:
+			ffb.stop()
 		return
 	v2_tick += 1
 	if v2_tick < 3:
 		return
 	car.input = controls.update(dt, car.speed)
+	var wheel_driving = (
+		settings.wheel_enabled and (wheel.present & 1) != 0 and v2_bot == null and not v2_present
+	)
+	car.steer_falloff = 0.0 if wheel_driving else float(car.p.get("steerFalloff", 14.0))
+	car.simcade_steering = settings.simcade_grip_assist and not wheel_driving
+	if wheel_driving:
+		var wheel_input = wheel.command(settings.wheel_profile)
+		wheel_input.clutch = car.input.clutch
+		wheel_input.handbrake = maxf(wheel_input.handbrake, car.input.handbrake)
+		car.input = wheel_input
+		for action in ["shiftUp", "shiftDown"]:
+			var down = wheel.value(settings.wheel_profile.get(action, {}), 0) > 0.5
+			if down and not controls.previous.get("wheel_" + action, false):
+				controls.events.append(action)
+			controls.previous["wheel_" + action] = down
 	# The bot keeps driving after the laps while the presentation check times frames.
 	if v2_present or v2_bot != null:
 		if v2_bot == null:
@@ -824,6 +882,16 @@ func physics_v2(dt):
 	var impact = old_velocity.distance_to(car.vel)
 	if impact > .15 and sound:
 		sound.impact(impact)
+	if ffb:
+		var pad_id = controls.get_device_id() if controls.has_method("get_device_id") else 0
+		ffb.update(
+			car,
+			dt,
+			impact,
+			not in_menu and not paused and controls.poll_hardware and get_window().has_focus(),
+			settings,
+			pad_id
+		)
 	if race.update_asset(car, track, dt):
 		save_record()
 		message("New best lap Â· " + RaceModel.time_text(race.best))
@@ -956,13 +1024,16 @@ func render_v2(dt):
 	if ghost_model.root.visible:
 		ghost_model.root.transform = Transform3D(gx.basis, gx.origin - gx.basis.y * car.setup.cgHeight)
 	update_camera(dt)
-	TrackLights.update_pool(lamp_pool, track, camera.global_position, settings.time_of_day == 1)
+	TrackLights.update_pool(
+		lamp_pool, track, camera.global_position, settings.time_of_day == 1 and not is_green_hell()
+	)
 	sound.update(car, dt, not in_menu and not paused, settings)
 	instruments.queue_redraw()
 
 
 ## Fixed 240 Hz simulation only. Preserve controls -> car -> collisions -> race ordering.
 func _physics_process(dt):
+	wheel.poll()
 	physics_v2(dt)
 
 
@@ -1293,12 +1364,18 @@ func set_rain(on: bool) -> void:
 	rain.visible = on
 
 
+func is_green_hell() -> bool:
+	return int(settings.time_of_day) == 1 and v2_track_id == "nordschleife"
+
+
 ## Look-2: the loaded TrackAsset's sodium lamps and the road_v2 amber streaks follow Afterhours.
 ## Look-9: trackside structures (pit building, grandstand, gantry, billboards) glow too.
+## GREEN-HELL-01: Nordschleife night mode disables track lamps; illuminated only by player headlights.
 func apply_track_night() -> void:
 	var night = settings.time_of_day == 1
-	Ps2Materials.set_afterhours(night, track if track is Node3D else null)
+	var green_hell = is_green_hell()
+	Ps2Materials.set_afterhours(night and not green_hell, track if track is Node3D else null)
 	if track is Node3D:
-		TrackLights.set_night(track, night)
+		TrackLights.set_night(track, night and not green_hell)
 		NightGlow.set_night(track, night)
 		preload("res://scripts/track/chicago_night.gd").set_night(track, night)

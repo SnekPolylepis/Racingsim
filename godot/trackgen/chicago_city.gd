@@ -73,6 +73,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		push_warning("Chicago city data missing: " + DATA)
 		return {}
 	var route = _route_index(road)
+	var wheel = world_of.call(landmarks["Navy Pier"])
+	var wheel_plaza = PackedVector2Array(
+		[
+			Vector2(wheel.x - 32, wheel.z - 45),
+			Vector2(wheel.x + 32, wheel.z - 45),
+			Vector2(wheel.x + 32, wheel.z + 45),
+			Vector2(wheel.x - 32, wheel.z + 45)
+		]
+	)
 	var skip_at = []
 	for name in OWN_LANDMARKS:
 		if landmarks.has(name):
@@ -110,6 +119,10 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "separate landmark proximity"
 		if not exclusion.is_empty():
 			stats.excluded.append({"city_index": i - 1, "osm_id": b.get("o", ""), "reason": exclusion})
+			continue
+		# The authored wheel/loading plaza replaces mapped low halls across this footprint.
+		# Centroid-only landmark filtering misses long halls that extend beneath the wheel.
+		if not Geometry2D.intersect_polygons(ring, wheel_plaza).is_empty():
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
@@ -212,6 +225,24 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			var b = at + side[2]
 			# A two-point ring gives both faces (a->b, then b->a).
 			_walls(_st(chunks, mid, "wall"), PackedVector2Array([a, b]), LOW_FLOOR_Y, STREET_Y - 0.04)
+	# Footpaths must be populated before chunk meshes commit, and sit above the park surface.
+	# Clip short pieces near the course so a park path cannot paint over the racing asphalt.
+	for pth in doc.get("paths", []):
+		var pts = _ring(pth.p)
+		for k in pts.size() - 1:
+			var segments = maxi(1, ceili(pts[k].distance_to(pts[k + 1]) / 3.0))
+			for j in segments:
+				var a = pts[k].lerp(pts[k + 1], float(j) / segments)
+				var b = pts[k].lerp(pts[k + 1], float(j + 1) / segments)
+				var clear = ROUTE_CLEAR + float(pth.w) * .5 + 2.0
+				if a.distance_to(b) < .05 or _route_dist(route, (a + b) * .5, clear) < clear:
+					continue
+				var side = (b - a).orthogonal().normalized() * float(pth.w) * .5
+				var st = _st(flat_chunks, a, "path")
+				for v in [a - side, a + side, b + side, a - side, b + side, b - side]:
+					st.set_normal(Vector3.UP)
+					st.set_uv(v)
+					st.add_vertex(Vector3(v.x, STREET_Y + .04, v.y))
 	# Commit every chunk's surfaces.
 	for group in [
 		[chunks, 0.0, "Chunk"], [low_chunks, LOW_RANGE_M, "Low"], [flat_chunks, FLAT_RANGE_M, "Flat"]
@@ -234,21 +265,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			)
 			holder.add_child(node)
 			node.owner = asset
-	# Footpaths through the parks (OSM), just above the lawn.
-	for pth in doc.get("paths", []):
-		var pts = _ring(pth.p)
-		for k in pts.size() - 1:
-			var a = pts[k]
-			var bb = pts[k + 1]
-			if a.distance_to(bb) < 0.05:
-				continue
-			var side = (bb - a).orthogonal().normalized() * float(pth.w) * .5
-			var st = _st(flat_chunks, a, "path")
-			for v in [a - side, a + side, bb + side, a - side, bb + side, bb - side]:
-				st.set_normal(Vector3.UP)
-				st.set_uv(v)
-				st.add_vertex(Vector3(v.x, STREET_Y - 0.015, v.y))
-	_trees(asset, holder, doc.get("trees", []), route)
+	_trees(asset, holder, doc.get("trees", []), route, world_of.call(landmarks["Bean"]))
 	stats.merge(ChicagoHarbor.build(asset, holder, doc))
 	ChicagoCrowns.build(asset, holder, crowns)
 	stats["l_trains"] = ChicagoL.build(asset, holder, doc.get("elevated", []), doc.get("l_lines", []))
@@ -645,7 +662,7 @@ static func _lidar_wall(st: SurfaceTool, a: Vector3, b: Vector3, n: Vector3, lo:
 
 ## Real mapped trees (OSM natural=tree) within 350 m of the route, kept off the carriageway. Height from the
 ## LiDAR canopy where measured, else the broadleaf card's own range. Same photographic cards as RoadScatter.
-static func _trees(asset: Node3D, holder: Node3D, trees: Array, route: Dictionary) -> void:
+static func _trees(asset: Node3D, holder: Node3D, trees: Array, route: Dictionary, bean: Vector3) -> void:
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 60602
 	var xforms = []
@@ -662,6 +679,13 @@ static func _trees(asset: Node3D, holder: Node3D, trees: Array, route: Dictionar
 		var h = float(t[2]) if float(t[2]) > 0.0 else pick.height * 0.65
 		var w = h * 1.15 * card[2] / card[3]
 		var basis = Basis(Vector3.UP, rng.randf() * TAU) * Basis.from_scale(Vector3(w, h, w))
+		# Cloud Gate is on a paved 70 x 60 m plaza: keep crowns, not only trunks, outside it.
+		var crown = w * 0.71
+		if absf(p.x - bean.x) < 35.0 + crown and absf(p.y - bean.z) < 30.0 + crown:
+			continue
+		# Short paved west entrance from Michigan Avenue to the plaza; retain trees either side.
+		if p.x > 12.0 - crown and p.x < bean.x - 35.0 + crown and absf(p.y - bean.z) < 6.0 + crown:
+			continue
 		xforms.append(Transform3D(basis, Vector3(p.x, STREET_Y - 0.04, p.y)))
 		cards.append(Color(card[0], card[1], card[2], card[3]))
 		tints.append(pick.tint)

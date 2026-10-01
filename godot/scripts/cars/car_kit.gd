@@ -228,7 +228,7 @@ func number_plate(number, x, y, z):
 		body.add_child(label)
 
 
-func finish(root, nose):
+func finish(root, nose, kit_wheels = true):
 	var brake_mat = v.material("ad1212", .08, .2).duplicate()
 	brake_mat.emission_enabled = true
 	brake_mat.emission = Color("ff2018")
@@ -236,8 +236,10 @@ func finish(root, nose):
 	for node in body.find_children("*", "MeshInstance3D", true, false):
 		if node.name.begins_with("GTTailCluster") or node.name.begins_with("RoundTailLamp"):
 			node.material_override = brake_mat
-	var model = v.finish_car(root, body, p, ghost, brake_mat, nose)
-	replace_wheels(model, "road" if p.get("body", "") == "roadster" else "race")
+	# Build only the wheel geometry the car will keep; imported wheels arrive after this call.
+	var model = v.finish_car(root, body, p, ghost, brake_mat, nose, false)
+	if kit_wheels:
+		replace_wheels(model, "road" if p.get("body", "") == "roadster" else "race")
 	return model
 
 

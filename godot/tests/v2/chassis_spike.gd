@@ -69,6 +69,24 @@ func settle(key):
 	)
 
 
+func settle_low_izz():
+	var surf = TestSurface.flat()
+	var c = make("f2004")
+	c.p.izz = 665.0
+	c.inertia.y = 665.0
+	c.place(Vector3.ZERO, 0.0, 0.0)
+	var peak = 0.0
+	for i in 240 * 5:
+		c.input = inp(0, 0, 0)
+		c.step(DT, surf, true)
+		if i > 240:
+			peak = maxf(peak, c.vel.length() + c.ang.length())
+	check(
+		finite(c) and peak < .01,
+		"f2004 at izz 665 rests on flat without solver creep: peak motion %.6f (PHYS-IZZ)" % peak
+	)
+
+
 ## Drive over a crest at a held speed; returns true if all four tyres leave the ground.
 func crest_run(key, surf, v):
 	var c = make(key)
@@ -349,6 +367,7 @@ func _initialize():
 		return
 	for key in presets:
 		settle(key)
+	settle_low_izz()
 	# Flat equivalence (0-100, 100-0, skidpad against the baseline) moved to tests/v2/flat_equivalence.gd
 	# (P2-05), which runs the same procedures against the live CarModel, adds top speed and Simcade, and is
 	# stricter; running both doubled the spike's time for no extra coverage (workflow audit 2026-09-23).

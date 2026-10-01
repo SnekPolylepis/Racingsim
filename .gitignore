@@ -40,6 +40,7 @@ godot/reference/
 # OS / editor noise
 .DS_Store
 Thumbs.db
+godot/native/*.obj
 *.tmp
 __pycache__/
 # Spa bake (11 MB): regenerate from godot/trackgen/spa.gd; the dev drive scene caches it in user://tracks3d/

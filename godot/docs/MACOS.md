@@ -1,5 +1,17 @@
 # macOS build and validation
 
+## Preview 9 cross-export — 2026-09-30
+
+Preview 9 combines the latest Chicago/Spa/Monaco work with Gemini's Miata light,
+Green Hell, audio, low-inertia physics, controller-rumble and gate-runner changes.
+Godot 4.6.2 exported the universal Mac ZIP on Windows with its built-in ad-hoc signer.
+ZIP integrity, executable permissions, arm64/x86_64 Mach-O slices and code-signature
+load commands were checked. These structural checks do not establish signature
+validity under macOS policy or hardware compatibility. This exact build was not
+launched on a Mac, checked with `codesign --verify`, or notarized. Earlier Mac runs
+below remain evidence for their recorded revisions only. Windows runtime checks
+for this release are recorded in REBUILD-LOG.md.
+
 > **Rebuild note (2026-09-23):** the macOS preset exports the rebuilt game. `tools/macos.zip` is the template, and the release zip keeps the app binary executable. The legacy game (Circuits, Choose folder, the old feature suite) was deleted in P7-01a; the "Recorded validation" section below is historical.
 
 The native Godot game has a universal macOS export containing arm64 (Apple Silicon) and x86_64 (Intel). It uses Forward+ with Metal and retains the project's OpenGL fallback. The browser game is separate and unchanged.
@@ -72,3 +84,13 @@ Exported JSON reports and screenshots are under `~/Library/Application Support/G
 - Physical controller behavior, trackpad feel and subjective audible output quality remain untested. Audio PCM checks do not establish those results.
 - No complete Mac performance matrix was measured. Existing Windows RTX 4080 timing reports remain Windows-only evidence.
 - The app is ad-hoc signed; Developer ID signing and public notarization have not been performed.
+
+## Recorded branch preview — 2026-09-30 Chicago / Spa polish
+
+On Apple M4, macOS, Godot 4.6.2 / Metal Forward+, branch `codex/chicago-spa-polish`: universal export (`arm64 x86_64`) and `codesign --verify --deep --strict` passed. Both exported Chicago and Spa `--v2-look --v2-flow-test` runs passed 72 presentation checks with no failures or script errors. Final windowed Chicago geometry suite passed 40 checks, including actual MultiMesh rotated-box readback. Full headless suite passed 43/43 before the last visual fixes; the final five affected suites passed afterward.
+
+Evidence is in `rebuild/screenshots/chicago-spa-polish/logs/`. The export contract passed but the Dummy renderer printed one shader RID leak at shutdown; screenshot tools retain an ObjectDB cleanup warning. Intel hardware, Windows export, physical controls and a new performance matrix were not tested by this branch. The universal binary is ad-hoc signed, as before.
+
+### 2026-09-30 Chicago/Spa close-up continuation
+
+`codex/chicago-spa-polish`: universal export and strict signature verification pass after the wheel/plaza/paving/transporter follow-up. Exported Apple M4 Metal Chicago and Spa presentation drives each pass 72 checks with no script errors. Spa reports an ObjectDB cleanup warning on exit. Logs: `docs/rebuild/screenshots/chicago-spa-polish/detail-pass/`. No Intel or Windows hardware run.

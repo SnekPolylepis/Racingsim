@@ -376,6 +376,22 @@ def main():
 
         selected.append(s)
 
+    def suite_weight(s):
+        name = s.get("name", "")
+        if name.startswith("laps "):
+            return 300
+        if name == "chassis_spike":
+            return 100
+        if name.startswith("flat_equivalence"):
+            return 50
+        if name in ("monaco", "proving_ground"):
+            return 40
+        if s.get("perf"):
+            return 20
+        return 10
+
+    selected.sort(key=suite_weight, reverse=True)
+
     print(f"Gates CI: {len(selected)} selected, {len(skipped)} skipped. Logs: {logs_dir}", flush=True)
     print(f"Running up to {args.jobs} suites concurrently using {godot_bin}\n", flush=True)
 

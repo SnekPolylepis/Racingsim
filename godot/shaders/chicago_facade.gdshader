@@ -21,7 +21,7 @@ uniform bool afterhours = false;
 // punched vertical windows.
 uniform vec2 window_cell = vec2(1.9, 3.9);
 uniform float lit_chance = 0.32;
-uniform float glow_energy = 1.4;
+uniform float glow_energy = 0.72;
 // Daytime window grid (CHI-LOOK-01): the same cells as the night windows, drawn as dark glass panes with
 // sills and a darker storefront band on the ground floor. 0 leaves the bare photo texture.
 uniform float day_windows = 1.0;
@@ -62,11 +62,16 @@ void fragment() {
 	NORMAL_MAP = texture(normal_tex, vec3(uv, kind)).rgb;
 	ROUGHNESS = texture(rough_tex, vec3(uv, kind)).r;
 	METALLIC = glassy * 0.35;
-	vec2 cell = floor(UV / window_cell);
-	vec2 f = fract(UV / window_cell);
+	// Chicago's office ribbons, warehouse bays and older narrow windows have different rhythms.
+	// Stable per-building dimensions prevent an entire street from sharing one square grid.
+	float h1 = hash21(vec2(seed * 61.7, 3.1));
+	float h2 = hash21(vec2(seed * 17.3, 9.7));
+	vec2 bays = window_cell * vec2(mix(0.85, 1.28, h1), mix(0.91, 1.08, h2));
+	vec2 cell = floor(UV / bays);
+	vec2 f = fract(UV / bays);
 	if (!afterhours && day_windows > 0.0) {
 		// Fade the grid out where a cell is under about 3 pixels, so distant towers do not shimmer.
-		vec2 w = fwidth(UV / window_cell);
+		vec2 w = fwidth(UV / bays);
 		// Narrow bays (LOOK-14) would fade twice as soon on width; judge width at half weight so mid-distance towers
 		// keep their grid.
 		float fade = 1.0 - smoothstep(0.25, 0.6, max(w.x * 0.5, w.y));
@@ -103,17 +108,22 @@ void fragment() {
 		// window rolling the same odds made each tower a uniform white speckle.
 		float occupancy = mix(0.05, 0.75, hash21(vec2(cell.y, seed * 53.0))) * (lit_chance / 0.32);
 		float lit = step(1.0 - occupancy - glassy * 0.08, hash21(cell + seed * 97.0));
-		float level = mix(0.55, 1.0, hash21(cell * 1.7 + seed * 5.0));
+		float level = mix(0.24, 0.72, hash21(cell * 1.7 + seed * 5.0));
+		// Offices behind glass: partly lowered blinds and shaded pane edges, not luminous white slabs.
+		float blind = mix(0.32, 0.88, hash21(cell + seed * 7.1));
+		float shade = mix(0.38, 1.0, smoothstep(blind - 0.05, blind + 0.05, f.y));
+		float edge = smoothstep(0.2, 0.35, f.x) * (1.0 - smoothstep(0.65, 0.8, f.x));
+		level *= shade * mix(0.68, 1.0, edge);
 		vec3 warm = vec3(1.0, 0.72, 0.38);
 		vec3 cool = vec3(0.72, 0.84, 1.0);
 		vec3 light = mix(warm, cool, glassy * step(0.5, hash21(cell.yx + seed * 13.0)));
-		ALBEDO = base * 0.35;
+		ALBEDO = mix(base * 0.35, vec3(0.035, 0.047, 0.058), pane * 0.65);
 		vec3 detail = light * pane * lit * level * glow_energy;
 		// Past a few pixels per cell the grid aliases into white noise, so it settles into the facade's
 		// average glow (about a third of each cell is pane, a third of panes lit, at 0.8 level).
-		vec2 w = fwidth(UV / window_cell);
+		vec2 w = fwidth(UV / bays);
 		float far = smoothstep(0.25, 0.6, max(w.x * 0.5, w.y));
-		vec3 average = mix(warm, cool, glassy * 0.5) * 0.36 * lit_chance * 0.8 * glow_energy;
+		vec3 average = mix(warm, cool, glassy * 0.5) * 0.36 * lit_chance * 0.34 * glow_energy;
 		EMISSION = mix(detail, average, far);
 	}
 }

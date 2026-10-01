@@ -21,7 +21,7 @@ func build(visuals, preset, ghost):
 	var front = (centres[0] + centres[1]) * .5
 	var rear = (centres[2] + centres[3]) * .5
 	var fwd = (front - rear).normalized()
-	var right = (centres[1] - centres[0])
+	var right = centres[1] - centres[0]
 	right = (right - fwd * right.dot(fwd)).normalized()
 	var up = right.cross(fwd).normalized()
 	# Car frame: +X nose, +Y up, +Z right. Rows of the rotation are the source axes expressed in it.
@@ -48,7 +48,7 @@ func build(visuals, preset, ghost):
 		if w != null and ghost:
 			for part in w.find_children("*", "MeshInstance3D", true, false):
 				part.material_override = ghost_mat
-	var model = kit.finish(root, preset.a + 0.6)
+	var model = kit.finish(root, preset.a + 0.6, false)
 	for i in 4:
 		var spin: Node3D = model.spins[i]
 		var pivot: Node3D = model.pivots[i]
@@ -81,7 +81,10 @@ func build(visuals, preset, ghost):
 func _find_wheel(src: Node, key: String) -> Node3D:
 	for n in src.find_children("*", "Node3D", true, false):
 		var name = String(n.name).to_upper()
-		if ("WHEEL_" + key in name or "TIRE_" + key in name or "TYRE_" + key in name) and not n.find_children("*", "MeshInstance3D", true, false).is_empty():
+		if (
+			("WHEEL_" + key in name or "TIRE_" + key in name or "TYRE_" + key in name)
+			and not n.find_children("*", "MeshInstance3D", true, false).is_empty()
+		):
 			return n
 	return null
 
@@ -101,7 +104,9 @@ func _to_root(root: Node, node: Node) -> Transform3D:
 func _centre(node: Node3D) -> Vector3:
 	var box = AABB()
 	var first = true
-	for m in node.find_children("*", "MeshInstance3D", true, false) + ([node] if node is MeshInstance3D else []):
+	for m in (
+		node.find_children("*", "MeshInstance3D", true, false) + ([node] if node is MeshInstance3D else [])
+	):
 		var a = _to_root(node, m) * m.get_aabb() if m != node else m.get_aabb()
 		box = a if first else box.merge(a)
 		first = false

@@ -8,7 +8,7 @@ const WallContact = preload("res://scripts/vehicle/wall_contact.gd")
 const Controls = preload("res://scripts/controls.gd")
 const Visuals = preload("res://scripts/visuals.gd")
 const VisualAdapter = preload("res://scripts/proving/visual_adapter.gd")
-const PRESET_KEYS = ["roadster", "gt", "f296gt3"]
+const PRESET_KEYS = ["roadster", "gt", "f296gt3", "f2004", "rb19"]
 const GENERATORS = {
 	"chicago": "res://trackgen/chicago.gd",
 	"monaco": "res://trackgen/monaco.gd",
@@ -205,6 +205,13 @@ func _setup_presentation() -> void:
 	var env = Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("769cb8")
+	if track_id == "monaco":
+		var sky = Sky.new()
+		var paint = PanoramaSkyMaterial.new()
+		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(false, "flat")
+		sky.sky_material = paint
+		env.sky = sky
+		env.background_mode = Environment.BG_SKY
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color("8794a0")
 	env.ambient_light_energy = .65
