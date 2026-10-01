@@ -40,14 +40,22 @@ Both recordings below are offered under **CC0 1.0** on their author pages. Publi
 
 Edits: mono conversion, removal of DC/wind rumble, selected excerpts, pitch stabilization, seamless overlap, level matching and filtered off-throttle variants. `assets/audio/bank-manifest.json` records exact excerpts, tuned RPM anchors, output hashes and PCM measurements. These are sound-designed game voices, not authenticated recordings of the 296 GT3 or each selectable car. No endorsement by the recordists or manufacturer is implied. Only eight edited WAV loops ship; raw MP3 sources stay in the build workspace. Godot 4.6.2 decodes them and the already-present NumPy 2.3.5 runtime builds the loops; no codec/package was downloaded.
 
-## Procedural sim sound synthesis & mixing architecture (2026-09-30)
+## Procedural sim sound synthesis & per-car audio suite (2026-09-30)
 
-Authored entirely in-engine in `scripts/audio.gd` (MIT License) without external binary audio blobs. Generates 22,050 Hz 16-bit PCM procedural streams for:
-- Turbo compressor spool whistle, blow-off valve flutter, and hybrid electric MGU-K motor whine;
-- Separated lateral scrub and longitudinal tyre screech across five surface types (tarmac, kerb, grass, gravel, runoff);
-- Surface interactions: kerb rumble strip thrum, gravel trap roar, grass rustle, and chassis skid-block bottoming;
-- Impact acoustics categorized by barrier material (Armco steel, tyre barrier, concrete wall, and knock-over props);
-- Dynamic multi-bus routing (`Master`, `Engine`, `Tyres`, `World`, `UI`, `Music`) with `AudioEffectLimiter` on Master, `AudioEffectCompressor` on Engine/Tyres, and spatial `AudioEffectReverb` zones for open air, grandstand slap-back, and underpass/tunnel reverb.
+Authored in-engine and via `tools/generate_vehicle_audio_suite.py` (MIT License) without proprietary or external binary audio blobs. All audio assets are generated from mathematical acoustic models (additive/subtractive synthesis, physical harmonic series, FIR bandpass/comb filtering):
+- **Per-Car Engine Sound Banks** (`assets/audio/` + `assets/audio/per-car-manifest.json`):
+  - `roadster`: Mazda MX-5 NA 1.6 Inline-4 (1-3-4-2 firing pulses, intake bark, 7200 RPM redline);
+  - `f296gt3`: Ferrari 296 GT3 (120° V6 Twin-Turbo growl + compressor spool, 8500 RPM redline);
+  - `gt`: Grand Tourer (90° Crossplane V8 with 1-8-4-3-6-5-7-2 burble, 7500 RPM redline);
+  - `f2004`: Ferrari F2004 3.0L V10 (screaming high-order harmonics, 18,500 RPM redline);
+  - `rb19`: Red Bull RB19 (1.6L V6 Turbo Hybrid + MGU-K electric whine, 15,000 RPM redline).
+- **Physical Wavetables & Environmental SFX**:
+  - Turbo compressor spool whistle, blow-off valve flutter, and hybrid electric MGU-K motor whine;
+  - Separated lateral scrub (`tyre_scrub_lat.wav`) and longitudinal tyre spin/lock (`tyre_spin_long.wav`);
+  - Driveline straight-cut gear whine (`gear_whine.wav`) and clutch bite friction (`clutch_bite.wav`);
+  - Surface interactions: kerb rumble strip thrum (`kerb_thrum.wav`), gravel spray (`gravel_spray.wav`), wind rush (`wind_rush.wav`);
+  - Spa-Francorchamps environmental ambience: Ardennes forest breeze, crowd ambience (`crowd_ambience.wav`), and circuit PA announcements (`spa_pa_announcement.wav`);
+  - Spatial acoustic zones (wet sends under Eau Rouge culvert and pit footbridge, grandstand reflections, retaining wall slapback) and dynamic sidechain ducking (-4.5 dB on World bus under high engine load).
 
 ## Circuit geometry and elevation data
 
