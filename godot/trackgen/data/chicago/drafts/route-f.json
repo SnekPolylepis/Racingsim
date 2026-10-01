@@ -1,0 +1,306 @@
+{
+ "origin": [
+  41.8848,
+  -87.6244
+ ],
+ "description": "DRAFT F - Sprint: Shortest: Michigan Ave to Monroe Dr, Columbus Dr to Lower Wacker, short Wacker hairpin. Drops Jackson Dr and Lake Shore Dr. Detours follow real OSM streets (one-way directions respected); the harbor and south connectors are the same game-only links as route.json. Heights are authored.",
+ "landmarks": {
+  "Bean": [
+   41.88266,
+   -87.6233,
+   8
+  ],
+  "Willis Tower": [
+   41.87888,
+   -87.63592,
+   8
+  ],
+  "Navy Pier": [
+   41.8917,
+   -87.6059,
+   2
+  ],
+  "Chicago River": [
+   41.8877,
+   -87.631,
+   -3
+  ],
+  "Lake Michigan": [
+   41.883,
+   -87.609,
+   -3
+  ],
+  "Wrigley Building": [
+   41.8882,
+   -87.6246,
+   8
+  ],
+  "Tribune Tower": [
+   41.8905,
+   -87.623,
+   8
+  ],
+  "Chicago Board of Trade": [
+   41.8787,
+   -87.6325,
+   8
+  ],
+  "Michigan Avenue Bridge": [
+   41.88865,
+   -87.6245,
+   8
+  ],
+  "State Street Bridge": [
+   41.8888,
+   -87.627,
+   8
+  ],
+  "LaSalle Street Bridge": [
+   41.8888,
+   -87.629,
+   8
+  ]
+ },
+ "draft": {
+  "id": "f",
+  "title": "Sprint",
+  "streets": [
+   "East Lower Wacker Drive",
+   "East Monroe Drive",
+   "North Columbus Drive",
+   "South Columbus Drive"
+  ],
+  "osm_way_ids": [
+   23889144,
+   23889162,
+   24308522,
+   56176597,
+   80575527,
+   171819296,
+   230771008,
+   235739316,
+   235739318,
+   319352688,
+   407991200,
+   435657103,
+   721925648,
+   901137883,
+   914786038,
+   1177948379,
+   1285033489,
+   1285033490,
+   1285033491,
+   1434424823
+  ],
+  "near": [
+   [
+    "Vietnam Veterans Memorial",
+    13
+   ],
+   [
+    "Stock Exchange Arch",
+    22
+   ],
+   [
+    "Chicago Architecture Center",
+    24
+   ],
+   [
+    "Michigan Ave Bridge (bridgehouse)",
+    28
+   ],
+   [
+    "Pritzker Military Museum",
+    29
+   ],
+   [
+    "Chicago Cultural Center",
+    47
+   ],
+   [
+    "35 E Wacker (Jewelers Building)",
+    53
+   ],
+   [
+    "Crown Fountain",
+    58
+   ],
+   [
+    "Cloud Gate (the Bean)",
+    91
+   ]
+  ],
+  "longest_straight_m": 820,
+  "right_angles": 4,
+  "new_m": 1260,
+  "dropped_m": 4200,
+  "length_m": 5097,
+  "corners_35": 12,
+  "corners_75": 6,
+  "shortest_block_m": 34
+ },
+ "points": [
+  [
+   41.8848,
+   -87.6244,
+   8,
+   "Michigan Avenue"
+  ],
+  [
+   41.880835,
+   -87.624471,
+   8,
+   "Michigan Ave & Monroe St"
+  ],
+  [
+   41.880877,
+   -87.620794,
+   8,
+   "Columbus Dr & Monroe Dr"
+  ],
+  [
+   41.88297,
+   -87.620543,
+   6.0,
+   "Columbus Dr"
+  ],
+  [
+   41.887947,
+   -87.620662,
+   1.3,
+   "Lower Wacker Dr & Columbus Dr"
+  ],
+  [
+   41.8882,
+   -87.6224,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.88825,
+   -87.6245,
+   0,
+   "Lower Michigan crossing"
+  ],
+  [
+   41.88802,
+   -87.6257,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.88742,
+   -87.62621,
+   0,
+   "Lower Wacker river bend west"
+  ],
+  [
+   41.88709,
+   -87.6266,
+   0,
+   "Lower Wacker river bend"
+  ],
+  [
+   41.8869,
+   -87.6273,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.8869,
+   -87.6348,
+   0,
+   "Lower Wacker west"
+  ],
+  [
+   41.8864,
+   -87.6361,
+   0,
+   "Lower Wacker bend"
+  ],
+  [
+   41.88575,
+   -87.6369,
+   0,
+   "Lower Wacker south"
+  ],
+  [
+   41.883896,
+   -87.636903,
+   0,
+   "Wacker turnaround (game only)"
+  ],
+  [
+   41.884619,
+   -87.63502,
+   4,
+   "Wacker turnaround (game only)"
+  ],
+  [
+   41.885343,
+   -87.636903,
+   8,
+   "Wacker turnaround (game only)"
+  ],
+  [
+   41.88575,
+   -87.6369,
+   8,
+   "Upper Wacker north"
+  ],
+  [
+   41.8864,
+   -87.6361,
+   8,
+   "Upper Wacker bend"
+  ],
+  [
+   41.8869,
+   -87.6348,
+   8,
+   "Upper Wacker riverfront"
+  ],
+  [
+   41.8869,
+   -87.6273,
+   8,
+   "Upper Wacker riverfront"
+  ],
+  [
+   41.88715,
+   -87.62633,
+   8,
+   "Upper Wacker river bend west"
+  ],
+  [
+   41.88768,
+   -87.62586,
+   8,
+   "Upper Wacker river bend"
+  ],
+  [
+   41.88817,
+   -87.62536,
+   8,
+   "Upper Wacker river bend east"
+  ],
+  [
+   41.88823,
+   -87.62496,
+   8,
+   "Upper Wacker Michigan approach"
+  ],
+  [
+   41.88825,
+   -87.6245,
+   8,
+   "Michigan turn"
+  ],
+  [
+   41.8873,
+   -87.6244,
+   8,
+   "Michigan Avenue"
+  ]
+ ]
+}

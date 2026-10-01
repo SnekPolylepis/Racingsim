@@ -1,0 +1,397 @@
+{
+ "origin": [
+  41.8848,
+  -87.6244
+ ],
+ "description": "DRAFT D - Light Touch: One Michigan jog (Madison-Wabash-Monroe) plus the Franklin return. Detours follow real OSM streets (one-way directions respected); the harbor and south connectors are the same game-only links as route.json. Heights are authored.",
+ "landmarks": {
+  "Bean": [
+   41.88266,
+   -87.6233,
+   8
+  ],
+  "Willis Tower": [
+   41.87888,
+   -87.63592,
+   8
+  ],
+  "Navy Pier": [
+   41.8917,
+   -87.6059,
+   2
+  ],
+  "Chicago River": [
+   41.8877,
+   -87.631,
+   -3
+  ],
+  "Lake Michigan": [
+   41.883,
+   -87.609,
+   -3
+  ],
+  "Wrigley Building": [
+   41.8882,
+   -87.6246,
+   8
+  ],
+  "Tribune Tower": [
+   41.8905,
+   -87.623,
+   8
+  ],
+  "Chicago Board of Trade": [
+   41.8787,
+   -87.6325,
+   8
+  ],
+  "Michigan Avenue Bridge": [
+   41.88865,
+   -87.6245,
+   8
+  ],
+  "State Street Bridge": [
+   41.8888,
+   -87.627,
+   8
+  ],
+  "LaSalle Street Bridge": [
+   41.8888,
+   -87.629,
+   8
+  ]
+ },
+ "draft": {
+  "id": "d",
+  "title": "Light Touch",
+  "streets": [
+   "East Madison Street",
+   "East Monroe Street",
+   "North Franklin Street",
+   "South Franklin Street",
+   "South Wabash Avenue",
+   "West Monroe Street"
+  ],
+  "osm_way_ids": [
+   4477285,
+   23700520,
+   145846239,
+   373849342,
+   385889736,
+   452188414,
+   452188415,
+   452188416,
+   611574834,
+   769538379,
+   991212730,
+   991212732,
+   1033816803,
+   1042134771,
+   1049318465,
+   1049318466,
+   1049318467,
+   1051441726,
+   1178254524,
+   1185609017,
+   1185609018,
+   1191329605,
+   1370879490
+  ],
+  "near": [
+   [
+    "Vietnam Veterans Memorial",
+    13
+   ],
+   [
+    "Route 66 start sign",
+    16
+   ],
+   [
+    "Pritzker Military Museum",
+    16
+   ],
+   [
+    "Chicago Architecture Center",
+    24
+   ],
+   [
+    "Art Institute lions",
+    24
+   ],
+   [
+    "Michigan Ave Bridge (bridgehouse)",
+    28
+   ],
+   [
+    "Chicago Cultural Center",
+    45
+   ],
+   [
+    "35 E Wacker (Jewelers Building)",
+    53
+   ],
+   [
+    "Willis Tower",
+    56
+   ],
+   [
+    "Crown Fountain",
+    77
+   ],
+   [
+    "Cloud Gate (the Bean)",
+    95
+   ]
+  ],
+  "longest_straight_m": 968,
+  "right_angles": 15,
+  "new_m": 1120,
+  "dropped_m": 100,
+  "length_m": 8664,
+  "corners_35": 20,
+  "corners_75": 15,
+  "shortest_block_m": 34
+ },
+ "points": [
+  [
+   41.8848,
+   -87.6244,
+   8,
+   "Michigan Avenue"
+  ],
+  [
+   41.882115,
+   -87.624508,
+   8,
+   "Michigan Ave & Madison St"
+  ],
+  [
+   41.882079,
+   -87.626192,
+   8,
+   "Madison St & Wabash Ave"
+  ],
+  [
+   41.880802,
+   -87.626161,
+   8,
+   "Monroe St & Wabash Ave"
+  ],
+  [
+   41.880835,
+   -87.624471,
+   8,
+   "Michigan Ave & Monroe St"
+  ],
+  [
+   41.8783,
+   -87.6244,
+   8,
+   "Jackson turn"
+  ],
+  [
+   41.8784,
+   -87.6173,
+   8,
+   "Lakefront turn"
+  ],
+  [
+   41.8809,
+   -87.6173,
+   8,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8823,
+   -87.6168,
+   8,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8834,
+   -87.6155,
+   9,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8841,
+   -87.6141,
+   11,
+   "Lake Shore Drive"
+  ],
+  [
+   41.8862,
+   -87.6139,
+   13,
+   "Navy Pier view"
+  ],
+  [
+   41.8876,
+   -87.6139,
+   13,
+   "Harbor connector"
+  ],
+  [
+   41.8877,
+   -87.6155,
+   5,
+   "Harbor connector ramp"
+  ],
+  [
+   41.88765,
+   -87.6175,
+   0,
+   "Lower Wacker portal"
+  ],
+  [
+   41.88791,
+   -87.62075,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.8882,
+   -87.6224,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.88825,
+   -87.6245,
+   0,
+   "Lower Michigan crossing"
+  ],
+  [
+   41.88802,
+   -87.6257,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.88742,
+   -87.62621,
+   0,
+   "Lower Wacker river bend west"
+  ],
+  [
+   41.88709,
+   -87.6266,
+   0,
+   "Lower Wacker river bend"
+  ],
+  [
+   41.8869,
+   -87.6273,
+   0,
+   "Lower Wacker"
+  ],
+  [
+   41.8869,
+   -87.6348,
+   0,
+   "Lower Wacker west"
+  ],
+  [
+   41.8864,
+   -87.6361,
+   0,
+   "Lower Wacker bend"
+  ],
+  [
+   41.88575,
+   -87.6369,
+   0,
+   "Lower Wacker south"
+  ],
+  [
+   41.8819,
+   -87.6369,
+   0,
+   "Lower Wacker south"
+  ],
+  [
+   41.877,
+   -87.6369,
+   0,
+   "South connector"
+  ],
+  [
+   41.877,
+   -87.6345,
+   0,
+   "South connector"
+  ],
+  [
+   41.878,
+   -87.6345,
+   4,
+   "South connector ramp"
+  ],
+  [
+   41.878,
+   -87.6369,
+   8,
+   "Upper Wacker portal"
+  ],
+  [
+   41.880628,
+   -87.636998,
+   8,
+   "Wacker Dr & Monroe St"
+  ],
+  [
+   41.88065,
+   -87.635307,
+   8,
+   "Franklin St & Monroe St"
+  ],
+  [
+   41.886769,
+   -87.635439,
+   8,
+   "Franklin St & Upper Wacker Dr"
+  ],
+  [
+   41.8869,
+   -87.6273,
+   8,
+   "Upper Wacker riverfront"
+  ],
+  [
+   41.88715,
+   -87.62633,
+   8,
+   "Upper Wacker river bend west"
+  ],
+  [
+   41.88768,
+   -87.62586,
+   8,
+   "Upper Wacker river bend"
+  ],
+  [
+   41.88817,
+   -87.62536,
+   8,
+   "Upper Wacker river bend east"
+  ],
+  [
+   41.88823,
+   -87.62496,
+   8,
+   "Upper Wacker Michigan approach"
+  ],
+  [
+   41.88825,
+   -87.6245,
+   8,
+   "Michigan turn"
+  ],
+  [
+   41.8873,
+   -87.6244,
+   8,
+   "Michigan Avenue"
+  ]
+ ]
+}
