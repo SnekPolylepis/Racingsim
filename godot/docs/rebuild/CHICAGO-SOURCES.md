@@ -234,3 +234,22 @@ Final bounded capture exited 0, stderr empty, 23.22 m driven. Full facades are
 not accepted: shared window layout, photographed panels, lantern/arcade/base
 geometry, terra-cotta ornament and sampled colour fidelity remain unfinished.
 No source photograph pixels were incorporated by this pass.
+
+## Preserving tagged facade colour in the renderer (2026-09-30)
+
+The old 6×6×6 palette reduced supplied channels to six levels; terra-cotta
+albedo and random building tint then contaminated the source colour, while
+blue daytime panes replaced most tagged glass. Footprint and LiDAR meshes now
+carry red/green in native UV2 and blue in colour alpha, with a separate wall
+flag. The shader uses supplied colour for tagged surfaces/panes, retaining
+normal/roughness maps. Random facade hue/brightness variation is removed.
+No new colour values or architecture are inferred by this rendering change.
+
+Bounded headless `tests/v2/chicago_facade_colour.gd` verifies both mesh paths
+retain red/green within .002 and blue within 1/255; exit 0, empty stderr.
+Windowed source-colour capture rebuilt the cache, exited 0, empty stderr,
+25.96 m drive. Inspected 333 Wacker, 35 Wacker, Reliance, 155 Wacker and
+Monadnock daylight plus 333 night. Blue-green tagged glass and light named
+terra-cotta colours now read distinctly. Shared window proportions and very
+bright night grids still need real facade references; these screenshots do
+not establish full building accuracy or photometric calibration.

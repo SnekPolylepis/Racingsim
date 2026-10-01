@@ -518,11 +518,10 @@ static func _building(
 	var top = STREET_Y + h
 	var c = _centroid(ring)
 	var u = 0.0
-	# Alpha carries the real facade colour as a 6x6x6 palette index + 1 (0 = untagged); see chicago_facade.
-	var code = 0.0
-	if tint.a > 0.0:
-		code = (roundi(tint.r * 5) * 36 + roundi(tint.g * 5) * 6 + roundi(tint.b * 5) + 1) / 255.0
-	walls.set_color(Color(seed, layer / 8.0, 0, code))
+	# UV2 carries sourced red/green; colour alpha carries blue. Wall blue=.25
+	# distinguishes tagged facades from untagged walls (0) and roofs (1).
+	walls.set_uv2(Vector2(tint.r, tint.g))
+	walls.set_color(Color(seed, layer / 8.0, .25 if tint.a > 0.0 else 0.0, tint.b))
 	for i in ring.size():
 		var a = ring[i]
 		var b = ring[(i + 1) % ring.size()]
@@ -565,10 +564,8 @@ static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: fl
 		hgt[k] = raw.decode_u16(k * 2) * 0.1
 	var at = func(i: int, j: int) -> float:
 		return hgt[j * w + i] if i >= 0 and j >= 0 and i < w and j < h else 0.0
-	var code = 0.0
-	if tint.a > 0.0:
-		code = (roundi(tint.r * 5) * 36 + roundi(tint.g * 5) * 6 + roundi(tint.b * 5) + 1) / 255.0
-	var wall_color = Color(seed, layer / 8.0, 0, code)
+	st.set_uv2(Vector2(tint.r, tint.g))
+	var wall_color = Color(seed, layer / 8.0, .25 if tint.a > 0.0 else 0.0, tint.b)
 	for j in h:
 		var i = 0
 		while i < w:

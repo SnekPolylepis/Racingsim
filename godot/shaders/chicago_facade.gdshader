@@ -6,8 +6,9 @@ shader_type spatial;
 // like night_glow.gdshader, so NightGlow.set_night() toggles it.
 render_mode cull_disabled;
 // One material for every building (CHI-LOOK-02): the six facade sets are layers of one texture array. The
-// vertex colour carries red = building seed, green = layer / 8, blue = 1 on roofs. Per-layer tint, glassiness
-// and metres per texture repeat come from the arrays below (order = ChicagoCity.KINDS).
+// Vertex colour: red = seed, green = layer / 8, blue = .25 on tagged walls / 1 on roofs.
+// UV2 = sourced red/green; alpha = sourced blue. Per-layer tint, glassiness and texture scale
+// come from the arrays below (order = ChicagoCity.KINDS).
 uniform sampler2DArray albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2DArray normal_tex : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform sampler2DArray rough_tex : hint_default_white, filter_linear_mipmap, repeat_enable;
@@ -28,13 +29,13 @@ uniform float day_windows = 1.0;
 varying flat float seed;
 varying flat float kind;
 varying flat float roof;
-varying flat float tint_code;
+varying flat vec3 source_colour;
 
 void vertex() {
 	seed = COLOR.r;
 	kind = floor(COLOR.g * 8.0 + 0.5);
 	roof = COLOR.b;
-	tint_code = COLOR.a;
+	source_colour = vec3(UV2, COLOR.a);
 }
 
 float hash21(vec2 p) {
@@ -52,18 +53,10 @@ void fragment() {
 	float glassy = kind_glassy[k];
 	vec2 uv = UV / vec2(kind_tile[k]);
 	vec3 base = texture(albedo_tex, vec3(uv, kind)).rgb * tint;
-	// Per-building variety (CHI-LOOK-01): brightness and a warm/cool lean from the building seed, so a
-	// block of the same facade kind does not read as one repeated slab.
-	float h1 = hash21(vec2(seed * 61.7, 3.1));
-	float h2 = hash21(vec2(seed * 17.3, 9.7));
-	base *= mix(0.78, 1.12, h1) * mix(vec3(1.06, 1.0, 0.92), vec3(0.94, 1.0, 1.08), h2);
-	// The building's real OSM facade colour, where tagged: keep the texture's detail, take the hue and value.
-	if (tint_code > 0.002) {
-		float idx = floor(tint_code * 255.0 + 0.5) - 1.0;
-		vec3 real = vec3(floor(idx / 36.0), mod(floor(idx / 6.0), 6.0), mod(idx, 6.0)) / 5.0;
-		real = pow(real, vec3(2.2));
-		float detail_l = dot(base, vec3(0.3, 0.59, 0.11)) / max(dot(tint, vec3(0.3, 0.59, 0.11)), 0.05);
-		base = mix(base, real * detail_l * 1.4, 0.8);
+	// A sourced colour replaces the unrelated texture colour; normal/roughness
+	// maps retain surface detail. Do not hash a different hue onto real buildings.
+	if (roof > 0.1) {
+		base = pow(source_colour, vec3(2.2));
 	}
 	ALBEDO = base;
 	NORMAL_MAP = texture(normal_tex, vec3(uv, kind)).rgb;
@@ -91,7 +84,11 @@ void fragment() {
 		float tone = hash21(cell + seed * 41.0);
 		// Glass towers reflect more sky; masonry windows are darker and deeper set.
 		vec3 glass = mix(vec3(0.07, 0.09, 0.12), vec3(0.32, 0.4, 0.5), glassy * (0.35 + 0.5 * tone));
-		glass = mix(glass, vec3(0.11, 0.1, 0.09), ground * 0.6);
+		if (roof > 0.1 && glassy > 0.5) {
+			glass = base;
+		} else {
+			glass = mix(glass, vec3(0.11, 0.1, 0.09), ground * 0.6);
+		}
 		vec3 lit_base = base * mix(1.0, 0.82, sill) * mix(1.0, 1.18, trim * (1.0 - ground));
 		ALBEDO = mix(base, mix(lit_base, glass, pane), fade * day_windows);
 		float glossy = pane * fade * day_windows;

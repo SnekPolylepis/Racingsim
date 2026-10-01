@@ -2976,3 +2976,16 @@ cameras and inspected their replacements; inspected 155/Monadnock night.
 Final windowed capture exited 0, empty stderr, 23.22 m drive. Material categories
 are verified, but window proportions/podiums/photo panels/crowns/ornament and
 colour fidelity remain open. Heavy gates skipped; Monza/car/physics untouched.
+
+### 2026-09-30 — Chicago source colour preservation
+
+Replaced six-level facade palette packing with native UV2 red/green plus alpha
+blue; retained separate tagged-wall/roof flags. Shader stops contaminating
+source colour with unrelated texture/hash hues or uniform blue glass panes.
+Normal/roughness detail remains. No new material facts/geometry inferred.
+
+Bounded mesh check passed footprint/LiDAR RGB retention, exit 0, empty stderr.
+Windowed cache rebuild and drive exited 0, empty stderr, 25.96 m driven.
+Inspected five daylight building views and 333 night: tagged glass and light
+terra cotta now read distinctly. Generic windows/ornament/ground floors and
+night brightness remain open. Heavy gates skipped; Monza/car/physics untouched.

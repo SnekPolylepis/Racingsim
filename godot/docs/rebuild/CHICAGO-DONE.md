@@ -114,3 +114,5 @@ with empty stderr and 25.39 m driven; broad building/facade items stay open.
 Eight new material provenance records raise direct cited near-route coverage
 from 24 to 32 entries, still far below 928 candidates. No broad facade item
 is checked by this material pass.
+
+- [x] Preserve source RGB facade colours beyond the old six-level palette and stop replacing tagged glass with a uniform blue pane. Inspected `chi-source-colour-wacker-333-day.png`, `wacker-35-day.png`, `reliance-day.png`, plus 333 night and untagged 155/Monadnock daylight. Source colour distinctions now survive; reference-faithful windows, ornament, calibrated photographic colour and ground floors remain open.
