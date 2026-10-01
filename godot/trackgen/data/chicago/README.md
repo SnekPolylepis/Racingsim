@@ -88,3 +88,16 @@ Afterhours accents are authored by `add_night_details()` and toggled by
 pier, plaza, crown and ceiling fixtures are original procedural geometry. The Bean uses two
 shadowless spotlights; repeated ceiling fixtures share one mesh. Chicago's facade materials use
 reduced window density and emission, while the shared shader's default preserves other tracks.
+
+### Park paths — 2026-09-30
+
+After adding missing Grant Park relation boundaries, city.json contains 1,367
+park path records (all 920 prior geometries retained, 447 newly selected from
+the same staged downtown-trees-paths.json). `path_of()` keeps OSM element ID,
+`surface` and `width_source`. Seventeen paths have an explicit OSM width;
+others retain old 4/2.6 m defaults, explicitly unverified. Concrete, asphalt
+and paving-stone tags select existing native material types; untagged and
+other surfaces retain the old path material pending source-specific finishes.
+Paths are emitted before flat meshes commit, with a 15 mm rendering bias above
+raised park polygons. That bias is not a surveyed elevation. Accurate terrain
+grade, default widths, materials, joins and clipping remain open.

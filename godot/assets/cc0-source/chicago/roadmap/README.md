@@ -89,3 +89,17 @@ lap. `trackgen/chicago.gd`'s own `world()` helper (line 23) converts lon/lat to 
 projection about 41.8848 N, 87.6244 W, with 82860 m/degree longitude (111320 × cos(41.8848°)) and
 111320 m/degree latitude. Apply the same formula to anything pulled from these four files to line it up
 with CHI-01's circuit in the same local frame.
+
+## Park relation supplement — 2026-09-30
+
+`downtown-park-relations.json` adds Grant Park multipolygon relation 19511979,
+which the original ways-only park query omitted. Source:
+https://api.openstreetmap.org/api/0.6/relation/19511979/full.json
+Member-way geometry is assembled from the same response node coordinates;
+relation tags, roles and way IDs retained. Eighteen closed outer rings survive
+the existing city clip/simplification. OpenStreetMap contributors, ODbL 1.0;
+the directory name cc0-source does not change this licence. Native OSM API
+used after Overpass France rejected non-whitelisted usage, Germany returned
+406, Switzerland mirror had no matching elements and private.coffee timed out.
+Existing staged extracts remain unchanged. Generator consumes this supplement
+alongside downtown-water-leisure.json; no guessed lake-distance lawn band.

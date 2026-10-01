@@ -3393,3 +3393,126 @@ South capture exposes lawn on pier; both expose generic docks/supports. Added
 those findings to checklist instead of accepting the marina. One edited script
 matches formatter; diff check clean. Heavy gates skipped, checks unchanged.
 Monza, car/physics, primary workspace and combined playtest executable unchanged.
+
+### 2026-09-30 — Marina approved-plan wings and breezeway
+
+Previous turn made a combined playtest build (progress). Chicago source goal
+continues in chicago-facades/rb/monaco-formula-cars; primary Gemini workspace
+and the new combined executable remain untouched. Re-read plan, queue, log and
+CHICAGO-DONE. Re-inspected PD527 sheets A-2/A-3/A-4 and their container keys.
+
+Replaced w1417040524 single extrusion with twelve approved-plan containers,
+upper deck and west canopy. Container-key dimensions are 8-foot widths,
+20/40-foot lengths and 12.5-foot breezeway; feet converted to metres. Heights
+are A-4 elevation proportions scaled against A-1 21.97-foot total: ground
+2.8379 m, upper deck 2.9375 m, flat upper roof 5.9746 m. These are drawing
+traces, not exact labelled as-built elevations. Canopy uses A-3 2:12 pitch
+and traced levels. Centred on mapped OSM footprint, map-derived registration.
+Existing native building renderer reused; concave deck uses native polygon
+triangulation, and both deck sides render so the breezeway has a ceiling.
+Generator propagates cited plan metadata. City semantic diff confirms only
+w1417040524 plan added, all other 3965 building records/data unchanged.
+
+Initial windowed capture: exit 0, empty stderr, 23.90 m displacement at
+18.30 m/s. Final capture after source pitch refinement/camera correction:
+exit 0, empty stderr, 24.21 m displacement at 18.50 m/s. Inspected final
+breezeway day, aerial day and north night. Clear opening and separate upper
+and lower massing are visible. Default stone/window facade remains wrong,
+no stairs/rails/support details yet, pier has lawn and generic docks/masts;
+full marina acceptance stays open. Source provenance uses existing
+THIRD-PARTY PD527 entry; drawings are not redistributed. Import exit 0
+with empty stderr; two scripts match formatter, semantic data check and
+diff check pass. Heavy gates skipped, check logic unchanged. No export.
+
+### 2026-09-30 — Mapped marina docks and park boundaries
+
+Previous goal turn was progress: marina plan massing committed as 8b591ab.
+Re-read working docs and checklist. Current screenshots exposed lawn over the
+marina and thick dock-outline bars. Staged harbor.json has actual closed areas
+for the marina: w1349703131, w1417040518 and w1417040519, wood surface tags.
+OSM pier documentation distinguishes closed areas/open centre lines:
+https://wiki.openstreetmap.org/wiki/Tag:man_made%3Dpier
+Generator now keeps OSM IDs, area, surface and floating tags, native area decks
+use polygon triangulation, and fully covered footway centre lines are omitted.
+271 records preserved, 71 area flags, three wood tags, no source width changes.
+Vertical envelope remains the preexisting one pending freeboard/support evidence.
+
+Shore ground tiles are clipped to water polygons. Removed unsupported blanket
+lawn for all land within 150 m of a lake edge. Wider review exposed missing park
+relations from original way-only query, so imported authoritative Grant Park
+relation 19511979 via OSM API full.json, eighteen clipped rings added without
+changing existing 606 park polygons. Members reconstructed from response node/
+way coordinates, source/provenance retained. France Overpass whitelist rejection,
+Germany 406, Swiss mirror no matching elements and private.coffee timeout were
+resolved through native OSM API; no blocker. Raw supplement and generator
+consumption committed, existing extracts preserved. THIRD-PARTY updated ODbL.
+
+First capture exit 0 but stderr had pier UV-layout errors; rejected as a pass.
+Removed unused pier UV assignment. Second capture exit 1 with ground UV-layout
+errors and insufficient displacement (0.17 m); corrected shared quad UV emission
+so clipped polygons and tiles share an attribute format. Clean capture exit 0,
+empty stderr, 29.71 m/21.58 m/s. Final mapped-park capture exit 0, empty stderr,
+33.91 m/23.76 m/s. Inspected final marina aerial day/breezeway night, harbor day,
+Lake Shore Drive day and park aerial day. Deck no longer lawn; park greenery
+restored from mapped relation. Building facade, real wood texture, dock levels,
+boat collisions/placement and full waterfront acceptance remain open. Found
+park paths appended after flat batch commit; checklist adds follow-up. Semantic
+data comparison: only pier metadata and appended park rings changed. Formatter
+and diff check pass. Heavy gates skipped; checks unchanged. Primary workspace,
+Monza, physics/car code and combined playtest executable untouched; no export.
+
+### 2026-09-30 — Park path mesh batching and map tags
+
+Previous goal turn progressed dock/park source geometry as c65490a. Re-read
+working docs/checklist; verified paths appended after flat batch commit and
+below raised park polygons. Moved path emission before commit and applied
+15 mm bias above existing raised park layer (not a surveyed elevation).
+
+Generator now retains path OSM IDs, surface tags and width provenance, and
+uses tagged widths when present. Re-derived paths from unchanged staged
+trees/paths extract against newly included park boundaries: 1,367 records,
+all prior 920 geometries retained, 447 additional selections; seventeen OSM
+widths, 1,350 legacy defaults explicitly unverified. Native existing concrete/
+asphalt/paving materials selected by source surface tag; other tags/default
+materials need later acceptance. Semantic comparison proves all other city
+fields unchanged. No new assets/dependencies or physics/car/Monza edits.
+
+Initial capture exited 0 but logged UV-layout errors when paths joined the
+road batch; rejected as a pass. Shared _ribbon had omitted UVs: corrected
+world-coordinate UV emission there, matching flat polygons and tiles. Final
+windowed capture exit 0, empty stderr, 25.31 m displacement at 19.17 m/s.
+Inspected chi-mapped-paths-final lakefront-path daylight, aerial daylight,
+harbor daylight and park-air night. Paths now visible; concrete Lakefront
+Trail w913198822 uses mapped 3 m width. Street-height camera views it from
+water-side position; aerial proves clear path shape. New checklist findings:
+park-edge tile artifacts, joins/clipping, materials/default widths, terrain
+and tree overlaps. Full park/facade/Chicago acceptance stays open. Formatter
+and diff check pass. Heavy gates skipped, checks untouched. Primary Gemini
+workspace and combined playtest executable preserved; no export.
+
+### 2026-09-30 — Exact crossed-park edges on ground tiles
+
+Previous turn progressed native park paths as 4c14da8. Re-read plan, queue,
+log and checklist. Close-up showed grey triangular gaps because a 20 m tile
+was wholly grass or pavement according to its centre, despite clipped water
+and real park geometry. Ground now follows native water clipping even when
+shore tile centre is water; surviving land corners render. Grass is a 5 mm
+render overlay from Geometry2D intersections with the mapped crossed parks,
+rather than a centre-point land-cover choice. Existing low-road cut retained.
+No map coordinates, survey heights or other city fields changed. Empty
+water-clipped cells do not count as emitted ground tiles. Render offsets
+are explicit layering biases, not physical surveyed grades.
+
+Windowed Chicago capture exit 0, empty stderr, 26.70 m displacement at
+19.99 m/s. Inspected chi-park-boundaries lakefront-path-air daylight (triangle
+gaps gone), harbor daylight, marina-plan-air daylight and park-air night.
+Further existing lower-road drive capture exit 0, 24.91 m at 18.93 m/s;
+stderr contains ObjectDB exit-leak warning, no runtime errors. Inspected
+lower-south daylight and lower-west night: cut/covered roadway still visible
+and drivable. This is a geometry regression sample, not full Lower Wacker
+acceptance or a claim of clean shutdown. Final metadata-only tile count
+excludes empty pieces; it does not alter the inspected surfaces. Formatter
+and diff check pass. Full parks, terrain, paths/tree overlaps and all broad
+Chicago requirements remain open. Heavy gates/check logic untouched. No new
+assets/dependencies; Monza, car/physics, primary workspace and playtest EXE
+unchanged. No final audit/export yet.

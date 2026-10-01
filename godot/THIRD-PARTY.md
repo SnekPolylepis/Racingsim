@@ -207,3 +207,11 @@ Poly Haven CC0 1.0 pure-sky HDRIs in `assets/spa/sky/`:
 - `spa_night_puresky.hdr`: [Kloppenheim 07 pure sky](https://polyhaven.com/a/kloppenheim_07_puresky) by Sergej Majboroda. Clean night sky with soft cloud layers for endurance night racing.
 Both are licensed under CC0 1.0 (Public Domain).
 
+### Chicago Grant Park relation supplement
+
+OpenStreetMap contributors, [Grant Park relation 19511979](https://www.openstreetmap.org/relation/19511979),
+[OSM API full geometry](https://api.openstreetmap.org/api/0.6/relation/19511979/full.json),
+fetched 2026-09-30. ODbL 1.0. Staged as
+`godot/assets/cc0-source/chicago/roadmap/downtown-park-relations.json`; eighteen
+clipped outer rings included in city.json. Source node/member coordinates
+assembled without inventing boundaries. Existing Chicago OSM attribution applies.

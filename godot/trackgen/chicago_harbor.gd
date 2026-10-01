@@ -60,8 +60,47 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 	# Piers and breakwaters.
 	var pier = SurfaceTool.new()
 	pier.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var areas = {}
+	for p in doc.get("piers", []):
+		if p.get("area", 0):
+			var ring = PackedVector2Array()
+			for q in p.p.slice(0, -1):
+				ring.append(Vector2(q[0], q[1]))
+			areas[p.o] = ring
 	for p in doc.get("piers", []):
 		var pts: Array = p.p
+		if p.get("area", 0):
+			var ring: PackedVector2Array = areas[p.o]
+			for index in Geometry2D.triangulate_polygon(ring):
+				pier.add_vertex(Vector3(ring[index].x, LAKE_Y + 1.4, ring[index].y))
+			# Retain the previous vertical envelope until dock levels/supports are sourced.
+			for k in ring.size():
+				var a = ring[k]
+				var b = ring[(k + 1) % ring.size()]
+				var vertices = [
+					Vector3(a.x, LAKE_Y - .2, a.y),
+					Vector3(b.x, LAKE_Y - .2, b.y),
+					Vector3(b.x, LAKE_Y + 1.4, b.y),
+					Vector3(a.x, LAKE_Y + 1.4, a.y)
+				]
+				for index in [0, 1, 2, 0, 2, 3]:
+					pier.add_vertex(vertices[index])
+			continue
+		# OSM footway centre lines inside a mapped pier area describe the same deck.
+		var covered = false
+		for ring in areas.values():
+			var inside = true
+			for k in pts.size() - 1:
+				var a = Vector2(pts[k][0], pts[k][1])
+				var b = Vector2(pts[k + 1][0], pts[k + 1][1])
+				for q in [a, (a + b) * .5, b]:
+					if not Geometry2D.is_point_in_polygon(q, ring):
+						inside = false
+			if inside:
+				covered = true
+				break
+		if covered:
+			continue
 		for k in pts.size() - 1:
 			var a = Vector3(pts[k][0], LAKE_Y + 0.6, pts[k][1])
 			var b = Vector3(pts[k + 1][0], LAKE_Y + 0.6, pts[k + 1][1])

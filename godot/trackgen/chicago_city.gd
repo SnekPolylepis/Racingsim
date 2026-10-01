@@ -31,8 +31,8 @@ const LAKE_Y = 6.5
 ## CDOT section: 13 in slab + 2 in overlay above 13 ft 9 in clear space, upper road at y 8.
 const LOW_ROAD_Y = 3.4288
 const LOW_FLOOR_Y = LOW_ROAD_Y - .08
-## Open ground this close to the lake is lakefront lawn (the Lakefront Trail strip OSM leaves unmapped).
-const LAKEFRONT_M = 150.0
+## Candidate tiles for exact shoreline clipping; this does not assign a land cover.
+const SHORE_CLIP_M = 150.0
 const CHUNK = 600.0
 ## The route's half width plus verge: streets and buildings keep this far (plus their own margin) from it.
 const ROUTE_CLEAR = 9.5
@@ -134,7 +134,9 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		# Real OSM data: building:part base height ("m") and facade colour ("c") where tagged.
 		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
 		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
-		if b.has("L"):
+		if b.has("plan"):
+			_plan_building(facade, ring, b.plan, kind_layer(kind), tint)
+		elif b.has("L"):
 			_lidar_building(
 				facade,
 				b.L,
@@ -192,7 +194,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			lo = lo.min(Vector2(p[0], p[1]))
 			hi = hi.max(Vector2(p[0], p[1]))
 	var tile = 20.0
-	var shore = _lakefront_cells(water_polys, tile, LAKEFRONT_M)
+	var shore = _lakefront_cells(water_polys, tile, SHORE_CLIP_M)
 	var water_cells = {}
 	var low_cells = {}
 	var x = floorf(lo.x / tile) * tile
@@ -201,15 +203,36 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		while z < hi.y:
 			var c = Vector2(x + tile * 0.5, z + tile * 0.5)
 			var cell = Vector2i(floori(c.x / tile), floori(c.y / tile))
-			if _in_water(water_polys, c):
+			if _in_water(water_polys, c) and not shore.has(cell):
 				water_cells[cell] = true
 			elif _near_low_route(route, c, 26.0):
 				low_cells[cell] = true
 			else:
-				var lawn = shore.has(cell) or _in_water(crossed_parks, c)
-				var kind = "park" if lawn else "ground"
-				_quad_flat(_st(flat_chunks, c, kind), Vector2(x, z), tile, STREET_Y - 0.04)
-				stats.ground_tiles += 1
+				var pieces = [
+					PackedVector2Array(
+						[
+							Vector2(x, z),
+							Vector2(x + tile, z),
+							Vector2(x + tile, z + tile),
+							Vector2(x, z + tile)
+						]
+					)
+				]
+				if shore.has(cell):
+					# Clip shore tiles even when their centres are water: land corners still exist.
+					for water in water_polys:
+						var remaining = []
+						for piece in pieces:
+							remaining.append_array(Geometry2D.clip_polygons(piece, water))
+						pieces = remaining
+				for piece in pieces:
+					_flat(_st(flat_chunks, c, "ground"), piece, STREET_Y - 0.04)
+					# A thin overlay follows the actual park polygon, not a tile-centre classification.
+					for park in crossed_parks:
+						for lawn in Geometry2D.intersect_polygons(piece, park):
+							_flat(_st(flat_chunks, c, "park"), lawn, STREET_Y - 0.035)
+				if not pieces.is_empty():
+					stats.ground_tiles += 1
 			z += tile
 		x += tile
 	# LOOK-13: the lower-level cut (Lower Wacker and its portal ramps) was a hole in the street down to CityBase
@@ -246,7 +269,17 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 				if a.distance_to(b) < .05 or _route_dist(route, (a + b) * .5, clear) < clear:
 					continue
 				var side = (b - a).orthogonal().normalized() * float(pth.w) * .5
-				var st = _st(flat_chunks, a, "path")
+				var surface = str(pth.get("surface", ""))
+				var kind = (
+					"pavilion"
+					if surface.begins_with("concrete")
+					else (
+						"road"
+						if surface == "asphalt"
+						else ("sidewalk" if surface == "paving_stones" else "path")
+					)
+				)
+				var st = _st(flat_chunks, a, kind)
 				for v in [a - side, a + side, b + side, a - side, b + side, b - side]:
 					st.set_normal(Vector3.UP)
 					st.set_uv(v)
@@ -573,6 +606,38 @@ static func _building(
 	_flat(roof, ring, top)
 
 
+## Approved-plan parts in metres, relative to the mapped footprint centre.
+## Parts use [x, z, width, depth, bottom, top]; surfaces use local XYZ vertices.
+static func _plan_building(
+	st: SurfaceTool, footprint: PackedVector2Array, plan: Dictionary, layer: float, tint: Color
+) -> void:
+	var origin = _centroid(footprint)
+	for part in plan.parts:
+		var a = origin + Vector2(part[0], part[1])
+		var ring = PackedVector2Array(
+			[a, a + Vector2(part[2], 0), a + Vector2(part[2], part[3]), a + Vector2(0, part[3])]
+		)
+		_building(st, st, ring, part[5], 0.0, STREET_Y + part[4], layer, tint)
+	st.set_color(Color(0, 0, 1))
+	for surface in plan.surfaces:
+		var vertices = PackedVector3Array()
+		var outline = PackedVector2Array()
+		for p in surface:
+			vertices.append(Vector3(origin.x + p[0], STREET_Y + p[1], origin.y + p[2]))
+			outline.append(Vector2(p[0], p[2]))
+		var indices = Geometry2D.triangulate_polygon(outline)
+		# Both sides: the balcony deck is also the covered breezeway's ceiling.
+		for side in [false, true]:
+			for j in range(0, indices.size(), 3):
+				var triangle = [vertices[indices[j]], vertices[indices[j + 1]], vertices[indices[j + 2]]]
+				if side:
+					triangle.reverse()
+				st.set_normal((triangle[1] - triangle[0]).cross(triangle[2] - triangle[0]).normalized())
+				for vertex in triangle:
+					st.set_uv(Vector2(vertex.x, vertex.z))
+					st.add_vertex(vertex)
+
+
 ## A building from its measured USGS LiDAR roof: [x0, z0, w, h, cell, base64 u16 decimetres], row-major
 ## over its footprint (0 = outside). Roof runs of equal height become one quad; walls step down to each
 ## lower neighbour. UVs are world metres along the wall and height, so the window grid lines up.
@@ -813,6 +878,7 @@ static func _quad_flat(st: SurfaceTool, at: Vector2, size: float, y: float) -> v
 	var p = [at, at + Vector2(size, 0), at + Vector2(size, size), at + Vector2(0, size)]
 	for idx in [0, 1, 2, 0, 2, 3]:
 		st.set_normal(Vector3.UP)
+		st.set_uv(p[idx])
 		st.add_vertex(Vector3(p[idx].x, y, p[idx].y))
 
 
@@ -874,4 +940,5 @@ static func _ribbon(
 	var p = [a2 - side * half, a2 + side * half, b2 + side * half, b2 - side * half]
 	for idx in [0, 1, 2, 0, 2, 3]:
 		st.set_normal(Vector3.UP)
+		st.set_uv(p[idx])
 		st.add_vertex(Vector3(p[idx].x, y, p[idx].y))
