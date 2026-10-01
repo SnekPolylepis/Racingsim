@@ -102,6 +102,8 @@ func run():
 		"pritzker-pylons": [Vector3(145, 10, 300), Vector3(166, 10, 276)],
 		"pritzker-joint": [Vector3(188, 11, 290), Vector3(166, 13, 276)],
 		"harbor": [Vector3(760, 30, 250), Vector3(1100, 5, 60)],
+		"lakefront-path": [Vector3(921, 9.4, 224), Vector3(888, 8.1, 219)],
+		"lakefront-path-air": [Vector3(875, 25, 235), Vector3(888, 8.1, 219)],
 		"sym": [Vector3(10, 12, 644), Vector3(-17, 25, 644)],
 		"sym-sign": [Vector3(10, 65, 644), Vector3(-17, 65, 644)],
 		"wrigley": [Vector3(10, 12, -350), Vector3(23, 100, -409)],

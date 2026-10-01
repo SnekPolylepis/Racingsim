@@ -243,6 +243,28 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			var b = at + side[2]
 			# A two-point ring gives both faces (a->b, then b->a).
 			_walls(_st(chunks, mid, "wall"), PackedVector2Array([a, b]), LOW_FLOOR_Y, STREET_Y - 0.04)
+	# Add paths before committing the batch. 15 mm bias above raised park polygons avoids z-fighting.
+	for pth in doc.get("paths", []):
+		var pts = _ring(pth.p)
+		for k in pts.size() - 1:
+			var a = pts[k]
+			var bb = pts[k + 1]
+			if a.distance_to(bb) < 0.05:
+				continue
+			var side = (bb - a).orthogonal().normalized() * float(pth.w) * .5
+			var surface = str(pth.get("surface", ""))
+			var kind = (
+				"pavilion"
+				if surface.begins_with("concrete")
+				else (
+					"road" if surface == "asphalt" else ("sidewalk" if surface == "paving_stones" else "path")
+				)
+			)
+			var st = _st(flat_chunks, a, kind)
+			for v in [a - side, a + side, bb + side, a - side, bb + side, bb - side]:
+				st.set_normal(Vector3.UP)
+				st.set_uv(v)
+				st.add_vertex(Vector3(v.x, STREET_Y + 0.035, v.y))
 	# Commit every chunk's surfaces.
 	for group in [
 		[chunks, 0.0, "Chunk"], [low_chunks, LOW_RANGE_M, "Low"], [flat_chunks, FLAT_RANGE_M, "Flat"]
@@ -265,20 +287,6 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			)
 			holder.add_child(node)
 			node.owner = asset
-	# Footpaths through the parks (OSM), just above the lawn.
-	for pth in doc.get("paths", []):
-		var pts = _ring(pth.p)
-		for k in pts.size() - 1:
-			var a = pts[k]
-			var bb = pts[k + 1]
-			if a.distance_to(bb) < 0.05:
-				continue
-			var side = (bb - a).orthogonal().normalized() * float(pth.w) * .5
-			var st = _st(flat_chunks, a, "path")
-			for v in [a - side, a + side, bb + side, a - side, bb + side, bb - side]:
-				st.set_normal(Vector3.UP)
-				st.set_uv(v)
-				st.add_vertex(Vector3(v.x, STREET_Y - 0.015, v.y))
 	_trees(asset, holder, doc.get("trees", []), route)
 	stats.merge(ChicagoHarbor.build(asset, holder, doc))
 	ChicagoCrowns.build(asset, holder, crowns)
@@ -906,4 +914,5 @@ static func _ribbon(
 	var p = [a2 - side * half, a2 + side * half, b2 + side * half, b2 - side * half]
 	for idx in [0, 1, 2, 0, 2, 3]:
 		st.set_normal(Vector3.UP)
+		st.set_uv(p[idx])
 		st.add_vertex(Vector3(p[idx].x, y, p[idx].y))

@@ -3235,3 +3235,32 @@ park paths appended after flat batch commit; checklist adds follow-up. Semantic
 data comparison: only pier metadata and appended park rings changed. Formatter
 and diff check pass. Heavy gates skipped; checks unchanged. Primary workspace,
 Monza, physics/car code and combined playtest executable untouched; no export.
+
+### 2026-09-30 — Park path mesh batching and map tags
+
+Previous goal turn progressed dock/park source geometry as c65490a. Re-read
+working docs/checklist; verified paths appended after flat batch commit and
+below raised park polygons. Moved path emission before commit and applied
+15 mm bias above existing raised park layer (not a surveyed elevation).
+
+Generator now retains path OSM IDs, surface tags and width provenance, and
+uses tagged widths when present. Re-derived paths from unchanged staged
+trees/paths extract against newly included park boundaries: 1,367 records,
+all prior 920 geometries retained, 447 additional selections; seventeen OSM
+widths, 1,350 legacy defaults explicitly unverified. Native existing concrete/
+asphalt/paving materials selected by source surface tag; other tags/default
+materials need later acceptance. Semantic comparison proves all other city
+fields unchanged. No new assets/dependencies or physics/car/Monza edits.
+
+Initial capture exited 0 but logged UV-layout errors when paths joined the
+road batch; rejected as a pass. Shared _ribbon had omitted UVs: corrected
+world-coordinate UV emission there, matching flat polygons and tiles. Final
+windowed capture exit 0, empty stderr, 25.31 m displacement at 19.17 m/s.
+Inspected chi-mapped-paths-final lakefront-path daylight, aerial daylight,
+harbor daylight and park-air night. Paths now visible; concrete Lakefront
+Trail w913198822 uses mapped 3 m width. Street-height camera views it from
+water-side position; aerial proves clear path shape. New checklist findings:
+park-edge tile artifacts, joins/clipping, materials/default widths, terrain
+and tree overlaps. Full park/facade/Chicago acceptance stays open. Formatter
+and diff check pass. Heavy gates skipped, checks untouched. Primary Gemini
+workspace and combined playtest executable preserved; no export.

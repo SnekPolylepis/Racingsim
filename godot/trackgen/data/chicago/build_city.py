@@ -59,6 +59,14 @@ def pier_of(e):
     return p
 
 
+def path_of(e):
+    tags = e.get("tags", {})
+    pts = [xz(g["lat"], g["lon"]) for g in e["geometry"]]
+    width = number(tags.get("width"))
+    return {"p": simplify(pts, 0.3, closed=False), "w": width or (4.0 if tags.get("highway") == "pedestrian" else 2.6),
+            "o": "w" + str(e["id"]), "surface": tags.get("surface", ""), "width_source": "OSM" if width else "legacy default, unverified"}
+
+
 def area(pts):
     a = 0.0
     for i in range(len(pts)):
@@ -611,7 +619,7 @@ def main():
             pts = [xz(g["lat"], g["lon"]) for g in e["geometry"]]
             mid = pts[len(pts) // 2]
             if any(inside(mid, pk) for pk in parks):
-                paths.append({"p": simplify(pts, 0.3, closed=False), "w": 4.0 if t.get("highway") == "pedestrian" else 2.6})
+                paths.append(path_of(e))
     for b in buildings:
         c = (sum(p[0] for p in b["f"]) / len(b["f"]), sum(p[1] for p in b["f"]) / len(b["f"]))
         if b["h"] < 25.0 and any(inside(c, pk) for pk in parks):
