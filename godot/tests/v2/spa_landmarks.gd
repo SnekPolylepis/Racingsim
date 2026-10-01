@@ -13,6 +13,7 @@ func _initialize() -> void:
 		"F1Terrace00",
 		"F1Terrace22",
 		"PitFootbridge",
+		"HotelDeLaSource",
 		"EauRougeBridge",
 		"RaidillonCanopy",
 		"EnduranceGrandstand",
