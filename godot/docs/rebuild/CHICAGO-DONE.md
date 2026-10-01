@@ -158,3 +158,6 @@ Final Page Brothers confirmation: inspected `chi-page-final-page-state-{day,nigh
 
 - [x] Stop placing boats on mapped bollards, piles and posts. Inspected `chi-mooring-fixtures-marina-plan-air-day.png`, `marina-breezeway-night.png` and `harbor-day.png`: dock/amenity masts are removed, buoy-field boats remain. All 649 mapped positions retained with node IDs/categories; 266 fixtures excluded from provisional vessel rendering.
 - [ ] Replace the remaining 383 provisional buoy boats with sourced vessel geometry, occupancy, dimensions, waterline and mooring offset. A buoy is an attachment point, not a vessel centre; current random yaw/scale and box hulls remain unaccepted. Render real dock fixtures only after their geometry/dimensions are sourced.
+
+- [x] Respect surface=wood on the three mapped marina pier areas instead of rendering their tops as concrete. Inspected `chi-mapped-wood-final-marina-plan-air-day.png` and breezeway night: separate wood tops now appear. Uses CC0 material example, not measured installed finish; sides/freeboard remain unchanged and unaccepted.
+- [ ] Match installed dock board direction, dimensions, colour/finish and supports; resolve distant wood-texture aliasing visible in marina aerial before accepting dock materials.

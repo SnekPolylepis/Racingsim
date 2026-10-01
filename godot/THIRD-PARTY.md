@@ -178,3 +178,13 @@ fetched 2026-09-30. ODbL 1.0. Staged as
 `godot/assets/cc0-source/chicago/roadmap/downtown-park-relations.json`; eighteen
 clipped outer rings included in city.json. Source node/member coordinates
 assembled without inventing boundaries. Existing Chicago OSM attribution applies.
+
+### Chicago mapped wooden dock tops (2026-10-01)
+
+Poly Haven [Wood Floor Deck](https://polyhaven.com/a/wood_floor_deck),
+Dimitrios Savva, CC0 1.0. Original 1K diffuse, roughness and OpenGL normal
+images in `assets/textures/chicago/wood_floor_deck/`. `source.json` records
+download URLs, API MD5 and SHA-256. Applied only to three OSM surface=wood
+pier areas. Generic material example, not a photograph of the installed docks;
+exact finish, board layout and dimensions remain unverified. Texture source
+spans approximately 1800 mm per the API, not an installed-dock measurement.

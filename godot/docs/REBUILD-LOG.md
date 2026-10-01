@@ -3318,3 +3318,19 @@ Named Ecume de Mer candidate lacks download control/reuse licence; unavailable.
 Recorded evidence, links, hash and next acceptance criteria in CHICAGO-BOATS.md
 to avoid repeating these unsuitable candidates. No game/code/check/export change;
 full boats and Chicago acceptance remain open.
+
+### 2026-10-01 — PAUSED Chicago at owner request
+
+Wood material applied only to three OSM surface=wood pier areas; existing
+geometry/levels/sides untouched. Poly Haven Wood Floor Deck 1K CC0 by
+Dimitrios Savva, source API dimensions 1800 mm, original maps with verified
+API MD5 and recorded SHA-256/URLs. Local filename search found no suitable
+wood texture; generic material illustrates mapped category, not actual finish.
+Initial capture rejected: nonexistent SurfaceTool.get_vertex_count call.
+Replaced with explicit wooden-area count. Final windowed capture exit 0, empty
+stderr, 27.12 m driven at 20.23 m/s. Inspected marina aerial day/breezeway night;
+wood tops distinct, distant texture aliasing and installed finish remain open.
+Formatter/diff clean. Heavy gates unchanged/skipped. Source/screenshots/handoff
+pushed, latest branches consolidated for pickup. Owner requested stopping point;
+CHICAGO-HANDOFF.md records scope and next steps. Full Chicago unfinished, final
+audit deferred. Existing playable export predates fixture/wood milestones.

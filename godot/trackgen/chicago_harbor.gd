@@ -60,6 +60,9 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 	# Piers and breakwaters.
 	var pier = SurfaceTool.new()
 	pier.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var wooden_area_count = 0
+	var wood = SurfaceTool.new()
+	wood.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var areas = {}
 	for p in doc.get("piers", []):
 		if p.get("area", 0):
@@ -71,8 +74,11 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 		var pts: Array = p.p
 		if p.get("area", 0):
 			var ring: PackedVector2Array = areas[p.o]
+			var deck = wood if p.get("surface", "") == "wood" else pier
+			if deck == wood:
+				wooden_area_count += 1
 			for index in Geometry2D.triangulate_polygon(ring):
-				pier.add_vertex(Vector3(ring[index].x, LAKE_Y + 1.4, ring[index].y))
+				deck.add_vertex(Vector3(ring[index].x, LAKE_Y + 1.4, ring[index].y))
 			# Retain the previous vertical envelope until dock levels/supports are sourced.
 			for k in ring.size():
 				var a = ring[k]
@@ -112,6 +118,25 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 				Vector3(float(p.w), 1.6, a.distance_to(b) + 0.2),
 				Basis.looking_at(b - a, Vector3.UP)
 			)
+	if wooden_area_count > 0:
+		wood.generate_normals()
+		var wooden_decks = MeshInstance3D.new()
+		wooden_decks.name = "MappedWoodDecks"
+		wooden_decks.mesh = wood.commit()
+		var texture_path = "res://assets/textures/chicago/wood_floor_deck/wood_floor_deck_"
+		# Source texture spans 1.8 m; installed board size/direction remains unverified.
+		var material = StandardMaterial3D.new()
+		material.albedo_texture = load(texture_path + "diff_1k.jpg")
+		material.uv1_triplanar = true
+		material.uv1_world_triplanar = true
+		material.uv1_scale = Vector3.ONE / 1.8
+		material.roughness_texture = load(texture_path + "rough_1k.jpg")
+		material.roughness = 1.0
+		material.normal_enabled = true
+		material.normal_texture = load(texture_path + "nor_gl_1k.jpg")
+		wooden_decks.material_override = material
+		parent.add_child(wooden_decks)
+		wooden_decks.owner = asset
 	pier.generate_normals()
 	var pier_node = MeshInstance3D.new()
 	pier_node.name = "Piers"
