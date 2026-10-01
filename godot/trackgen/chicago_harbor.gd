@@ -1,7 +1,7 @@
 extends RefCounted
 ## Lakefront dressing from real data (city.json):
-## - a moored sailboat on every OSM mooring point (Monroe Harbor, Navy Pier marina); boats share one
-##   heading as moored boats swing together to the wind (ponytail: fixed heading, no wind model);
+## - provisional boats at mapped buoys only; dock fixtures are not vessel centres.
+##   Vessel presence, dimensions and offset from each buoy remain unverified.
 ## - OSM piers and breakwaters as concrete decks just above the lake;
 ## - LiDAR-measured sculptural steel (Pritzker Pavilion headdress, Great Lawn trellis) as thin shells.
 
@@ -36,7 +36,7 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 		st[key].generate_normals()
 		st[key].set_material(mats[key])
 		st[key].commit(boat)
-	var moorings: Array = doc.get("moorings", [])
+	var moorings: Array = doc.get("moorings", []).filter(func(m): return m.get("category", "") == "buoy")
 	var mm = MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.mesh = boat
@@ -49,7 +49,7 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 			i,
 			Transform3D(
 				Basis(Vector3.UP, yaw) * rng.randf_range(0.8, 1.25),
-				Vector3(moorings[i][0], LAKE_Y - 0.2, moorings[i][1])
+				Vector3(moorings[i].p[0], LAKE_Y - 0.2, moorings[i].p[1])
 			)
 		)
 	var boats = MultiMeshInstance3D.new()

@@ -3291,3 +3291,18 @@ and diff check pass. Full parks, terrain, paths/tree overlaps and all broad
 Chicago requirements remain open. Heavy gates/check logic untouched. No new
 assets/dependencies; Monza, car/physics, primary workspace and playtest EXE
 unchanged. No final audit/export yet.
+
+### 2026-10-01 — Mooring fixtures mistaken for vessels
+
+Previous turn combined/exported latest owner playtest; authoritative progress.
+Staged harbor.json identifies 383 buoys, 180 bollards, 83 piles and 3 posts.
+Old generator discarded categories/IDs and put a box sailboat on all 649 points,
+causing land/dock mast overlaps. Preserve positions, node IDs, category and
+operator in generated mooring records; renderer now selects only buoys.
+All other city fields equal pre-edit values; all 649 coordinates unchanged.
+Windowed Chicago capture exit 0, empty stderr, 26.70 m displacement, 19.99 m/s.
+Inspected marina aerial day, breezeway night and harbor day: fixture boats
+removed; buoy-field proxy vessels still visible. Full boats remain open:
+occupancy, hulls, waterline, dimensions and offset not yet sourced/accepted.
+Formatter/diff clean. Heavy gates skipped. Monza, physics/car, primary source
+and latest playable export unchanged. No final audit/export.
