@@ -178,13 +178,36 @@
       "k": "stone",
       "c": "#c9c6ba",
       "photo": {
-        "file": "uc_east.jpg",
+        "file": "uc_2018_full.jpg",
         "face": [
           1,
           0
         ],
-        "frac": 0.82,
-        "credit": "Beyond My Ken, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:University_Club_of_Chicago_76_East_Monroe_Street.jpg"
+        "frac": 1.0,
+        "credit": "David Brossard, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:University_Club_of_Chicago_(44385995292).jpg",
+        "quad": [
+          [
+            0.415,
+            0.2865
+          ],
+          [
+            0.834,
+            0.2865
+          ],
+          [
+            0.834,
+            0.891
+          ],
+          [
+            0.395,
+            0.891
+          ]
+        ],
+        "roof_samples": [
+          0.05,
+          0.95
+        ],
+        "attachment": "Main-wall cornice to pavement, source-photo corners in normalized UV; photographed gable is above this rectangle. Eave height uses LiDAR cells at the two facade ends, avoiding the central gable ridge. Lower-right foliage occludes part of the entrance level in the source."
       }
     },
     "w145498713": {

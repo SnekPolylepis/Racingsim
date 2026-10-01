@@ -3006,7 +3006,6 @@ trees. Validate with the same fixed views and source photos. No source code
 changed in this final inspection. Last implementation milestone 6ed4cb8 is
 pushed on rb/monaco-formula-cars. Full Chicago scope remains open; final export
 and audit are deferred until visual completion. Goal paused explicitly by owner.
-
 ## 2026-09-29  DONE OPT-01 owner-requested Ponytail audit and optimization (Codex)
 - **Branch:** `codex/optimize-ponytail` from `rb/monaco-formula-cars` at `dd0a169`, newest local/remote branch after fetch. Owner requested a separate branch; retained for review, not merged into main. This owner-directed scope takes precedence over the idle queue/automatic-main workflow and the audit skill's report-only default.
 - **Complexity:** removed the unused procedural Ferrari exterior, legacy planar-track night furniture and corona shader (795 net retired lines including UID metadata/preload). Kept imported bodies, the procedural wheel helper and TrackAsset lighting. Car builders now create pivots and only the final wheel geometry instead of building and discarding procedural/kit wheels.
@@ -3233,3 +3232,65 @@ empty stderr; exported Chicago drive/menu playback exit 0, empty stderr,
 No heavy gates or additional test logic changes. Normal launcher uses rebuilt
 godot/build/RacingSim.exe. See PLAYTEST-2026-09-30.md for hash and scope.
 Chicago finishing goal remains paused; this is a playable interim build.
+
+### 2026-09-30 — Chicago photographed wall geometry (da60baf)
+
+Chicago continues in the isolated chicago-facades worktree on
+rb/monaco-formula-cars, preserving Gemini's shared checkout and the latest
+combined playtest executable. Fixed exterior photo ordering; the shared edge
+selection now also samples measured street-facing roof cells. Photos attach to
+that median height instead of the highest return anywhere over the building.
+The five photographed buildings' LiDAR cells are clipped to mapped footprints,
+retaining measured roof steps without projecting raster walls through photos.
+Other buildings retain existing raster geometry pending broader verification.
+
+Bounded assert check PASS: four facade directions/both windings, clipped mesh
+bounds, retained rear roof step, and correct front height despite that step.
+Exit 0, empty stderr. Windowed photo-footprint capture exited 0, empty stderr,
+24.21 m drive and final speed 18.50 m/s. Inspected Symphony, CAA, UC and Railway
+Exchange daylight plus Symphony night. Full Symphony/CAA details now visible;
+UC/RX source crops still leave generic lower-floor coverage. Historical source
+banners, baked-in people/vehicles, crop/aspect and nighttime treatment remain
+open. Checklist records only the narrow screenshot-verified fixes.
+
+Heavy gates skipped; car/physics/Monza and exported playtest executable untouched.
+Generated UID sidecars for the older two Chicago checks match the combined
+playtest branch. New photo check UID committed with its script. Generated
+inventory imports are preserved, unstaged, for the final audit.
+
+
+### 2026-09-30 — University Club entrance photo coverage
+
+The preceding goal turn made concrete progress (da60baf/2f9904c): mapped wall
+clipping and measured photo height. This milestone uses David Brossard's
+16 May 2018 full reference, CC BY-SA 2.0:
+https://commons.wikimedia.org/wiki/File:University_Club_of_Chicago_(44385995292).jpg
+Source bitmap copied unchanged (SHA-256
+4d06b18820c621d6e0d5aca330663b4bf47c95a037a1c46677e0d3463b493903),
+1,898,344 bytes; previous crop preserved pending final audit.
+
+Photo corners are annotated normalized source UVs; a 16x16 mesh projects them
+with a homography. No invented/generated image detail or bitmap retouching.
+The main-wall cornice height samples the two measured front ends, avoiding the
+central gable ridge; this is a LiDAR-derived attachment, not a guessed height.
+Only w126982632's photo metadata changed in city.json and landmarks.json;
+all other generated building records, geometry and heights are unchanged.
+The source gable and lower-right foliage remain unresolved in final facade
+acceptance. Original bitmap stays full size; native import uses BC7/ASTC,
+mipmaps and 4096 maximum dimension (14,927,716-byte compressed mip payload).
+
+Bounded geometry check passes four directions/two windings, projective corner
+mapping/straight lines, clipped mesh bounds, retained rear roof step and gable
+eave sampling. Import and test exit 0, stderr empty. First windowed capture:
+exit 0, empty stderr, 27.37 m drive, speed 20.37 m/s. After mipmap import,
+second capture: exit 0, empty stderr, 14.02 m drive, speed 7.38 m/s.
+Inspected UC ground/full, CAA full and Symphony daylight, then final UC ground
+day/night. UC entrance/low windows now visible; CAA cornice fully framed.
+Historic tenants, photographed foliage and nighttime material fidelity remain
+open. Night images also expose arbitrary generated sign colours/heights;
+recorded that finding, without declaring mapped businesses to be invented.
+Amorino's official address is 38 S Michigan:
+https://www.amorino.com/en/stores/chicago
+
+Heavy gates skipped. Monza, car/physics, shared Gemini checkout, user assets,
+saves and the combined playable executable are unchanged.

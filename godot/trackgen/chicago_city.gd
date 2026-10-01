@@ -135,7 +135,14 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
 		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
 		if b.has("L"):
-			_lidar_building(facade, b.L, fmod(i * 0.6180339, 1.0), kind_layer(kind), tint)
+			_lidar_building(
+				facade,
+				b.L,
+				fmod(i * 0.6180339, 1.0),
+				kind_layer(kind),
+				tint,
+				ring if b.has("ph") else PackedVector2Array()
+			)
 		else:
 			_building(
 				facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint
@@ -143,7 +150,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if b.has("cr"):
 			crowns.append([ring, STREET_Y + float(b.h), b.cr])
 		if b.has("ph"):
-			crowns.append([ring, STREET_Y + float(b.h), {"type": "photo", "ph": b.ph, "h": float(b.h)}])
+			var photo_height = _photo_height(ring, b.ph, b.L) if b.has("L") else float(b.h)
+			crowns.append([ring, STREET_Y + photo_height, {"type": "photo", "ph": b.ph, "h": photo_height}])
 		stats.buildings += 1
 	# Building details must come from mapped/cited overrides. Hash-selected kit
 	# cornices and roof props float over stepped roofs and invent architecture.
@@ -568,7 +576,14 @@ static func _building(
 ## A building from its measured USGS LiDAR roof: [x0, z0, w, h, cell, base64 u16 decimetres], row-major
 ## over its footprint (0 = outside). Roof runs of equal height become one quad; walls step down to each
 ## lower neighbour. UVs are world metres along the wall and height, so the window grid lines up.
-static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: float, tint: Color) -> void:
+static func _lidar_building(
+	st: SurfaceTool,
+	grid: Array,
+	seed: float,
+	layer: float,
+	tint: Color,
+	ring: PackedVector2Array = PackedVector2Array()
+) -> void:
 	var x0 = float(grid[0])
 	var z0 = float(grid[1])
 	var w = int(grid[2])
@@ -583,6 +598,9 @@ static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: fl
 		return hgt[j * w + i] if i >= 0 and j >= 0 and i < w and j < h else 0.0
 	st.set_uv2(Vector2(tint.r, tint.g))
 	var wall_color = Color(seed, layer / 8.0, .25 if tint.a > 0.0 else 0.0, tint.b)
+	if not ring.is_empty():
+		_lidar_footprint(st, ring, x0, z0, w, h, c, at, wall_color)
+		return
 	for j in h:
 		var i = 0
 		while i < w:
@@ -639,6 +657,82 @@ static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: fl
 						at.call(k, j)
 					)
 			i = run + 1
+
+
+## Clip measured cells to the mapped footprint, retaining every measured roof step.
+## Photo facades must attach to these walls, not to an outward raster staircase.
+static func _lidar_footprint(
+	st: SurfaceTool,
+	ring: PackedVector2Array,
+	x0: float,
+	z0: float,
+	w: int,
+	h: int,
+	cell: float,
+	at: Callable,
+	wall_color: Color
+) -> void:
+	for j in h:
+		for i in w:
+			var height: float = at.call(i, j)
+			if height <= 0.0:
+				continue
+			var a = Vector2(x0 + i * cell, z0 + j * cell)
+			var square = PackedVector2Array(
+				[a, a + Vector2(cell, 0), a + Vector2(cell, cell), a + Vector2(0, cell)]
+			)
+			for poly in Geometry2D.intersect_polygons(square, ring):
+				st.set_color(Color(0, 0, 1))
+				_flat(st, poly, STREET_Y + height)
+				st.set_color(wall_color)
+				var centre = _centroid(poly)
+				for k in poly.size():
+					var p: Vector2 = poly[k]
+					var q: Vector2 = poly[(k + 1) % poly.size()]
+					var normal = Vector2(q.y - p.y, p.x - q.x).normalized()
+					var mid = (p + q) * .5
+					if normal.dot(mid - centre) < 0:
+						normal = -normal
+					var outside = mid + normal * .01
+					var lo = 0.0
+					if Geometry2D.is_point_in_polygon(outside, ring):
+						lo = at.call(floori((outside.x - x0) / cell), floori((outside.y - z0) / cell))
+					_lidar_wall(
+						st,
+						Vector3(p.x, 0, p.y),
+						Vector3(q.x, 0, q.y),
+						Vector3(normal.x, 0, normal.y),
+						lo,
+						height
+					)
+
+
+## Median of measured cells immediately inside the photographed street wall.
+## The highest return over the whole footprint may belong to a rear tower/adjacent building.
+static func _photo_height(ring: PackedVector2Array, ph: Dictionary, grid: Array) -> float:
+	var wall = ChicagoCrowns.photo_wall(ring, ph)
+	var a: Vector2 = wall[0]
+	var b: Vector2 = wall[1]
+	var normal: Vector2 = wall[2]
+	var cell = float(grid[4])
+	var raw = Marshalls.base64_to_raw(str(grid[5]))
+	var samples = PackedFloat32Array()
+	var count = maxi(1, ceili(a.distance_to(b) / cell))
+	var positions: Array = ph.get("roof_samples", [])
+	if positions.is_empty():
+		for i in count:
+			positions.append((i + .5) / count)
+	for position in positions:
+		var p = a.lerp(b, float(position)) - normal * cell * .5
+		var x = floori((p.x - float(grid[0])) / cell)
+		var z = floori((p.y - float(grid[1])) / cell)
+		if x >= 0 and z >= 0 and x < int(grid[2]) and z < int(grid[3]):
+			var value = raw.decode_u16((z * int(grid[2]) + x) * 2) * .1
+			if value > 0:
+				samples.append(value)
+	assert(not samples.is_empty(), "Photographed facade has no measured roof cells")
+	samples.sort()
+	return samples[samples.size() / 2]
 
 
 static func _lidar_wall(st: SurfaceTool, a: Vector3, b: Vector3, n: Vector3, lo: float, hi: float) -> void:
