@@ -190,36 +190,36 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		while z < hi.y:
 			var c = Vector2(x + tile * 0.5, z + tile * 0.5)
 			var cell = Vector2i(floori(c.x / tile), floori(c.y / tile))
-			if _in_water(water_polys, c):
+			if _in_water(water_polys, c) and not shore.has(cell):
 				water_cells[cell] = true
 			elif _near_low_route(route, c, 26.0):
 				low_cells[cell] = true
 			else:
-				var lawn = _in_water(crossed_parks, c)
-				var kind = "park" if lawn else "ground"
-				var ground = _st(flat_chunks, c, kind)
+				var pieces = [
+					PackedVector2Array(
+						[
+							Vector2(x, z),
+							Vector2(x + tile, z),
+							Vector2(x + tile, z + tile),
+							Vector2(x, z + tile)
+						]
+					)
+				]
 				if shore.has(cell):
-					# A centre outside water does not make the whole 20 m tile land.
-					var pieces = [
-						PackedVector2Array(
-							[
-								Vector2(x, z),
-								Vector2(x + tile, z),
-								Vector2(x + tile, z + tile),
-								Vector2(x, z + tile)
-							]
-						)
-					]
+					# Clip shore tiles even when their centres are water: land corners still exist.
 					for water in water_polys:
 						var remaining = []
 						for piece in pieces:
 							remaining.append_array(Geometry2D.clip_polygons(piece, water))
 						pieces = remaining
-					for piece in pieces:
-						_flat(ground, piece, STREET_Y - 0.04)
-				else:
-					_quad_flat(ground, Vector2(x, z), tile, STREET_Y - 0.04)
-				stats.ground_tiles += 1
+				for piece in pieces:
+					_flat(_st(flat_chunks, c, "ground"), piece, STREET_Y - 0.04)
+					# A thin overlay follows the actual park polygon, not a tile-centre classification.
+					for park in crossed_parks:
+						for lawn in Geometry2D.intersect_polygons(piece, park):
+							_flat(_st(flat_chunks, c, "park"), lawn, STREET_Y - 0.035)
+				if not pieces.is_empty():
+					stats.ground_tiles += 1
 			z += tile
 		x += tile
 	# LOOK-13: the lower-level cut (Lower Wacker and its portal ramps) was a hole in the street down to CityBase

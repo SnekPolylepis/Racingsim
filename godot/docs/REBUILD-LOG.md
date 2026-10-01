@@ -3264,3 +3264,30 @@ park-edge tile artifacts, joins/clipping, materials/default widths, terrain
 and tree overlaps. Full park/facade/Chicago acceptance stays open. Formatter
 and diff check pass. Heavy gates skipped, checks untouched. Primary Gemini
 workspace and combined playtest executable preserved; no export.
+
+### 2026-09-30 — Exact crossed-park edges on ground tiles
+
+Previous turn progressed native park paths as 4c14da8. Re-read plan, queue,
+log and checklist. Close-up showed grey triangular gaps because a 20 m tile
+was wholly grass or pavement according to its centre, despite clipped water
+and real park geometry. Ground now follows native water clipping even when
+shore tile centre is water; surviving land corners render. Grass is a 5 mm
+render overlay from Geometry2D intersections with the mapped crossed parks,
+rather than a centre-point land-cover choice. Existing low-road cut retained.
+No map coordinates, survey heights or other city fields changed. Empty
+water-clipped cells do not count as emitted ground tiles. Render offsets
+are explicit layering biases, not physical surveyed grades.
+
+Windowed Chicago capture exit 0, empty stderr, 26.70 m displacement at
+19.99 m/s. Inspected chi-park-boundaries lakefront-path-air daylight (triangle
+gaps gone), harbor daylight, marina-plan-air daylight and park-air night.
+Further existing lower-road drive capture exit 0, 24.91 m at 18.93 m/s;
+stderr contains ObjectDB exit-leak warning, no runtime errors. Inspected
+lower-south daylight and lower-west night: cut/covered roadway still visible
+and drivable. This is a geometry regression sample, not full Lower Wacker
+acceptance or a claim of clean shutdown. Final metadata-only tile count
+excludes empty pieces; it does not alter the inspected surfaces. Formatter
+and diff check pass. Full parks, terrain, paths/tree overlaps and all broad
+Chicago requirements remain open. Heavy gates/check logic untouched. No new
+assets/dependencies; Monza, car/physics, primary workspace and playtest EXE
+unchanged. No final audit/export yet.
