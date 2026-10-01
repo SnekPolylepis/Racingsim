@@ -3233,3 +3233,8 @@ empty stderr; exported Chicago drive/menu playback exit 0, empty stderr,
 No heavy gates or additional test logic changes. Normal launcher uses rebuilt
 godot/build/RacingSim.exe. See PLAYTEST-2026-09-30.md for hash and scope.
 Chicago finishing goal remains paused; this is a playable interim build.
+
+## 2026-09-30 Latest combined playtest refresh (Codex)
+
+Owner requested one playable build, with checks left alone. Combined AUDIO-02 and latest Chicago photo orientation on codex/latest-playtest-20260930, source 83f6bdf. Export and short Chicago drive exited 0, stderr empty; existing presentation/input probes 72/72. No heavy gates or checklist edits. Packaging evidence: rebuild/PLAYTEST-2026-09-30.md. Main untouched.
+
