@@ -2962,3 +2962,17 @@ used maximum height over lower measured wings, causing floating architecture.
 Windowed capture exited 0, stderr empty, 23.45 m drive. Inspected 800/7,600 m
 daylight views: unsupported floating trim/props absent, generic facade shaders
 and missing sourced ground-floor details remain open. Monza/physics untouched.
+
+### 2026-09-30 — Chicago cited Wacker/Loop facade materials
+
+Added eight cited landmark records; changed seven default material assignments
+on Wacker/Loop buildings to sourced glass, terra cotta or brick. Retained OSM
+333 Wacker colour and measured heights/roof shapes. Rebuilt city data; bounded
+per-building delta assertion confirms geometry/heights unchanged (only k/c and
+an exclusion-text Unicode repair). Catalog direct near-route citations: 32.
+
+Inspected eight daylight detail views, corrected obscured 71 Wacker/Monadnock
+cameras and inspected their replacements; inspected 155/Monadnock night.
+Final windowed capture exited 0, empty stderr, 23.22 m drive. Material categories
+are verified, but window proportions/podiums/photo panels/crowns/ornament and
+colour fidelity remain open. Heavy gates skipped; Monza/car/physics untouched.

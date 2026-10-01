@@ -106,3 +106,11 @@ is a data result, not full visual acceptance. Current windowed survey exited 0,
 with empty stderr and 25.39 m driven; broad building/facade items stay open.
 
 - [x] Disable hash-selected generic shopfront/cornice and roof-clutter placement, retaining all source assets for final audit. Inspected `chi-sourced-details-route-00800m-day.png` and `route-07600m-day.png`: the floating trim/props are absent. Replacement sourced ground-floor detailing remains open; this does not accept generic facade shaders.
+
+- [x] Replace default masonry with cited glass material on 191/155 North Wacker and 111/71 South Wacker, terra cotta on Reliance/35 East Wacker, and brick on Monadnock. Inspected `chi-wacker-materials-wacker-{191,155,111}-day.png`, Reliance, `chi-wacker-materials2-{wacker-35,monadnock}-day.png` and `chi-wacker-materials3-wacker-71-day.png`; source assignments only, not complete facade acceptance.
+- [ ] Complete these eight buildings' actual window proportions, podiums, entrances, 191 Wacker lantern, 155 Wacker arcade, 111 Wacker mullions, Reliance Chicago windows, Monadnock oriels and terra-cotta ornament; replace shared facade-grid substitutions with reference-faithful details.
+- [ ] Review overly bright repeated night windows and LiDAR cell seams/texture moire seen in the Wacker close-ups; preserve sourced material/colour distinctions.
+
+Eight new material provenance records raise direct cited near-route coverage
+from 24 to 32 entries, still far below 928 candidates. No broad facade item
+is checked by this material pass.

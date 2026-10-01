@@ -6,7 +6,7 @@
       "src": "https://www.related.com/press-releases/2026-07-21/related-midwest-completes-crown-installation-400-lake-shore-drive: exterior and crown complete July 2026, 857 ft total height, 72 stories, glass curtain wall and tiered setbacks",
       "h": 261.2,
       "k": "glass",
-      "lidar_exclude": "USGS 2017 acquisition predates this tower's 2024–2026 construction; roof/crown geometry still needs a newer measured or model source."
+      "lidar_exclude": "USGS 2017 acquisition predates this tower's 2024\u00e2\u20ac\u201c2026 construction; roof/crown geometry still needs a newer measured or model source."
     },
     "w148544831": {
       "name": "Carbide & Carbon Building (230 N Michigan)",
@@ -268,6 +268,48 @@
       "crown": {
         "type": "flood"
       }
+    },
+    "w116017092": {
+      "name": "333 Wacker Drive",
+      "k": "glass",
+      "src": "https://www.kpf.com/project/333-wacker-drive: reflective green-glass river facade; stone and stainless-steel base. Existing OSM colour retained; base segmentation remains open."
+    },
+    "w147013355": {
+      "name": "191 North Wacker",
+      "k": "glass",
+      "src": "https://sah-archipedia.org/buildings/IL-01-031-0002: glass tower south of 333 Wacker; https://www.kpf.com/project/191-north-wacker-drive: crown lantern has an outer clear glass sleeve. Lantern detailing remains open."
+    },
+    "w136662656": {
+      "name": "155 North Wacker",
+      "k": "glass",
+      "src": "https://www.155northwacker.com/: full-height glass windows; https://www.gpchicago.com/architecture/155-north-wacker/: cable-supported oversized glass lobby panels and 45-foot south arcade. Arcade geometry remains open."
+    },
+    "w64887962": {
+      "name": "111 South Wacker",
+      "k": "glass",
+      "src": "https://www.gpchicago.com/architecture/111-south-wacker/: unitized high-performance glass curtain wall with stainless-steel V-shaped mullions; non-reflective glass lobby. Mullions/lobby geometry remain open."
+    },
+    "w148685510": {
+      "name": "71 South Wacker",
+      "k": "glass",
+      "src": "https://en.wikipedia.org/wiki/71_South_Wacker: convex steel-and-glass north/south facades. Current measured roof/footprint retained; mullion geometry remains open."
+    },
+    "w124865488": {
+      "name": "35 East Wacker",
+      "k": "terracotta",
+      "src": "https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?counter=2&lanId=1233: terra cotta cladding. Decorative details remain open. https://chistockimages.com/building/jewelers-building/: cream-coloured cladding. Ivory encodes the published cream category, not a measured photographic colour.",
+      "c": "#fffff0"
+    },
+    "w145625877": {
+      "name": "Reliance Building",
+      "k": "terracotta",
+      "src": "https://www.architecture.org/online-resources/buildings-of-chicago/reliance-building: glass and white terra cotta facade. White is a semantic colour, not a measured sample; Chicago-window proportions and ground-floor granite remain open.",
+      "c": "#ffffff"
+    },
+    "w73671128": {
+      "name": "Monadnock Building",
+      "k": "brick",
+      "src": "https://www.architecture.org/online-resources/buildings-of-chicago/monadnock-building: brick construction; https://sah-archipedia.org/buildings/IL-01-031-0059: brick piers and southern extension matching brick colour. No new colour sample or ornament inferred."
     }
   }
 }

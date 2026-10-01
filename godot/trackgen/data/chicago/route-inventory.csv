@@ -34,7 +34,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 375,w147476145,Wabash Jewelers Mall,North Wabash Avenue,17,-110.2,234.6,95.0,85.1,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/147476145
 409,w147776394,Stevens Building,North State Street,17,-199.6,240.5,96.0,164.9,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/147776394
 3565,w1175466069,Stevens Building,North State Street,17,-238.6,229.5,94.0,222.9,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/1175466069
-283,w145625877,Reliance Building,North State Street,20,-341.4,220.9,102.0,305.1,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/145625877
+283,w145625877,Reliance Building,North State Street,20,-341.4,220.9,102.0,305.1,245,1,1,1,1.0,0,,,"https://www.architecture.org/online-resources/buildings-of-chicago/reliance-building: glass and white terra cotta facade. White is a semantic colour, not a measured sample; Chicago-window proportions and ground-floor granite remain open.",,https://www.openstreetmap.org/way/145625877
 143,w124873932,State-Madison Building,North Dearborn Street,1,-361.0,273.8,104.5,305.2,250,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/124873932
 162,w126982634,20 North Michigan,North Michigan Avenue,20,-49.9,234.7,58.5,23.7,260,1,0,1,1.0,0,,brown,,,https://www.openstreetmap.org/way/126982634
 373,w147476140,,North Wabash Avenue,11,-109.9,251.8,41.5,84.8,260,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147476140
@@ -400,7 +400,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 3442,w751499058,Irv Kupcinet Bridgehouse,North Wabash Avenue,,-234.1,-370.8,15.5,109.4,3415,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/751499058
 3443,w751499071,Irv Kupcinet Bridgehouse,North Wabash Avenue,,-202.3,-298.4,15.0,40.8,3465,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/751499071
 3444,w751499087,Coco Bar,,,-195.1,-281.6,14.0,20.1,3475,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/751499087
-3793,w124865488,35 East Wacker,East Wacker Drive,35,-198.3,-192.6,163.5,24.4,3535,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/124865488
+3793,w124865488,35 East Wacker,East Wacker Drive,35,-198.3,-192.6,163.5,24.4,3535,1,1,1,1.0,0,,,"https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?counter=2&lanId=1233: terra cotta cladding. Decorative details remain open. https://chistockimages.com/building/jewelers-building/: cream-coloured cladding. Ivory encodes the published cream category, not a measured photographic colour.",,https://www.openstreetmap.org/way/124865488
 333,w147397536,,North Wabash Avenue,180,-189.1,-69.4,50.5,144.1,3545,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147397536
 124,w124865486,Harold Washington College,East Lake Street,30,-210.3,-138.8,52.5,73.8,3550,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/124865486
 3765,w64389514,Kemper Building,East Wacker Drive,1,-250.8,-190.0,164.5,20.3,3565,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/64389514
@@ -500,7 +500,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 3839,w149215043,River North Point,North Orleans Street,350,-1084.6,-401.8,104.5,192.8,4250,1,1,1,0.9988,0,,,,,https://www.openstreetmap.org/way/149215043
 354,w147398361,,West Lake Street,227,-886.8,-64.3,29.0,113.8,4255,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147398361
 610,w153339076,East Bank Club,North Kingsbury Street,500,-1204.9,-544.3,26.0,391.7,4270,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/153339076
-98,w116017092,333 Wacker Drive,West Wacker Drive,333,-959.4,-151.3,147.5,13.3,4275,1,1,1,1.0,0,glass,#7db9c4,,,https://www.openstreetmap.org/way/116017092
+98,w116017092,333 Wacker Drive,West Wacker Drive,333,-959.4,-151.3,147.5,13.3,4275,1,1,1,1.0,0,glass,#7db9c4,https://www.kpf.com/project/333-wacker-drive: reflective green-glass river facade; stone and stainless-steel base. Existing OSM colour retained; base segmentation remains open.,,https://www.openstreetmap.org/way/116017092
 351,w147398358,,West Lake Street,237,-897.6,-80.7,22.5,107.8,4280,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147398358
 3651,w1276540733,Kinzie Street Bridge House,West Kinzie Street,,-1227.0,-467.8,8.5,386.6,4295,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/1276540733
 515,w149372322,River Cottages,North Canal Street,357-367,-1267.3,-441.8,17.0,381.2,4310,1,0,1,1.0,0,concrete,,,,https://www.openstreetmap.org/way/149372322
@@ -510,7 +510,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 3653,w1276571343,,,,-1266.7,-214.8,12.0,258.2,4380,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/1276571343
 3519,w1020403491,,,,-1383.1,-261.2,11.5,377.8,4380,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/1020403491
 3438,w750299461,Lake Street Bridgehouse,West Lake Street,,-1067.0,-115.8,9.0,34.8,4385,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/750299461
-287,w147013355,191 North Wacker,North Wacker Drive,191,-998.0,-58.1,155.0,11.3,4395,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/147013355
+287,w147013355,191 North Wacker,North Wacker Drive,191,-998.0,-58.1,155.0,11.3,4395,1,1,1,1.0,0,,,https://sah-archipedia.org/buildings/IL-01-031-0002: glass tower south of 333 Wacker; https://www.kpf.com/project/191-north-wacker-drive: crown lantern has an outer clear glass sleeve. Lantern detailing remains open.,,https://www.openstreetmap.org/way/147013355
 3390,w685477973,Lake Street Bridgehouse,West Lake Street,,-1139.9,-116.3,9.0,104.5,4395,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/685477973
 557,w151572001,,North Canal Street,212,-1305.8,-156.8,15.5,265.1,4395,1,0,1,1.0,0,brick,,,,https://www.openstreetmap.org/way/151572001
 820,w210268944,Clinton Street Lofts,North Clinton Street,208-228,-1447.8,-166.5,44.0,383.7,4400,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/210268944
@@ -520,7 +520,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 370,w147476134,,North Wacker Drive,180,-1064.4,-60.8,33.0,18.7,4415,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147476134
 348,w147398355,,North Franklin Street,175,-889.0,-42.2,23.0,135.9,4440,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147398355
 3213,w330879260,150 N Riverside,North Riverside Plaza,150,-1163.1,-54.7,227.5,109.3,4460,1,1,1,1.0,0,glass,,,,https://www.openstreetmap.org/way/330879260
-178,w136662656,155 North Wacker,North Wacker Drive,155,-995.5,-11.7,199.5,14.6,4470,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/136662656
+178,w136662656,155 North Wacker,North Wacker Drive,155,-995.5,-11.7,199.5,14.6,4470,1,1,1,1.0,0,,,https://www.155northwacker.com/: full-height glass windows; https://www.gpchicago.com/architecture/155-north-wacker/: cable-supported oversized glass lobby panels and 45-foot south arcade. Arcade geometry remains open.,,https://www.openstreetmap.org/way/136662656
 376,w147476151,,North Wacker Drive,150,-1075.6,3.4,123.0,25.8,4470,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/147476151
 3530,w1039763412,Small Cheval - Riverside,North Riverside Plaza,150,-1162.5,-11.9,213.5,117.7,4470,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/1039763412
 469,w148680453,Sushi Nova,North Franklin Street,160,-936.2,-6.2,40.0,87.3,4475,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/148680453
@@ -658,7 +658,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 3615,w1189225969,,,,-568.0,794.0,93.5,231.7,5595,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/1189225969
 42,w73696288,Ralph H. Metcalfe Federal Building,West Jackson Boulevard,77,-502.0,798.9,111.0,321.7,5595,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/73696288
 45,w73717433,Union League Club,West Jackson Boulevard,65,-465.8,771.3,96.0,356.2,5595,1,1,1,0.9511,0,,,,,https://www.openstreetmap.org/way/73717433
-37,w73671128,Monadnock Building,West Jackson Boulevard,53,-426.9,808.3,72.0,399.5,5595,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/73671128
+37,w73671128,Monadnock Building,West Jackson Boulevard,53,-426.9,808.3,72.0,399.5,5595,1,0,1,1.0,0,,,https://www.architecture.org/online-resources/buildings-of-chicago/monadnock-building: brick construction; https://sah-archipedia.org/buildings/IL-01-031-0059: brick piers and southern extension matching brick colour. No new colour sample or ornament inferred.,,https://www.openstreetmap.org/way/73671128
 20,w64391487,Kluczynski Federal Building,South Dearborn Street,230,-462.5,707.2,174.5,352.7,5600,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/64391487
 61,w73766157,Brooks Building,West Jackson Boulevard,223,-857.6,766.7,57.0,0.0,5605,1,0,1,1.0,0,,,,authored route clearance,https://www.openstreetmap.org/way/73766157
 60,w73763986,McKinlock Building,West Jackson Boulevard,209,-806.8,770.3,56.5,6.4,5605,1,0,1,1.0,0,,,,authored route clearance,https://www.openstreetmap.org/way/73763986
@@ -700,11 +700,11 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 3832,w148680444,120 Riverside Plaza,South Riverside Plaza,120,-1212.1,532.3,89.5,155.2,6000,1,1,1,1.0,0,steel,#3c4c63,,,https://www.openstreetmap.org/way/148680444
 330,w147350191,Northern Trust Bank,South Wacker Drive,125,-990.2,564.5,141.5,24.0,6010,1,1,1,0.9958,0,,,,,https://www.openstreetmap.org/way/147350191
 3849,w150857018,Quaker Plaza,West Monroe Street,555,-1447.4,501.7,80.5,363.3,6025,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/150857018
-22,w64887962,111 South Wacker,South Wacker Drive,111,-993.7,504.3,212.5,23.3,6065,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/64887962
+22,w64887962,111 South Wacker,South Wacker Drive,111,-993.7,504.3,212.5,23.3,6065,1,1,1,1.0,0,,,https://www.gpchicago.com/architecture/111-south-wacker/: unitized high-performance glass curtain wall with stainless-steel V-shaped mullions; non-reflective glass lobby. Mullions/lobby geometry remain open.,,https://www.openstreetmap.org/way/64887962
 148,w124873938,Williams Building,West Monroe Street,205,-805.3,489.6,48.0,216.5,6075,1,0,1,0.9549,0,,,,,https://www.openstreetmap.org/way/124873938
 3964,r20449794,Presidential Towers,West Madison Street,555-625,-1454.0,381.5,142.0,367.7,6085,1,1,1,0.996,0,,,,,https://www.openstreetmap.org/relation/20449794
 3774,w64889180,10 South Riverside Plaza,South Riverside Plaza,10,-1217.8,399.6,88.5,157.3,6100,1,1,1,1.0,0,steel,#3c4c63,,,https://www.openstreetmap.org/way/64889180
-3833,w148685510,71 South Wacker,South Wacker Drive,71,-969.4,433.8,210.5,21.8,6150,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/148685510
+3833,w148685510,71 South Wacker,South Wacker Drive,71,-969.4,433.8,210.5,21.8,6150,1,1,1,1.0,0,,,https://en.wikipedia.org/wiki/71_South_Wacker: convex steel-and-glass north/south facades. Current measured roof/footprint retained; mullion geometry remains open.,,https://www.openstreetmap.org/way/148685510
 286,w145890500,230 West Monroe,West Monroe Street,230,-867.5,424.0,112.0,144.7,6150,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/145890500
 97,w108240981,200 West Monroe,West Monroe Street,200,-815.1,425.5,94.5,190.8,6150,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/108240981
 3225,w381270891,AT&T,,,-1351.1,361.4,149.5,293.8,6150,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/381270891

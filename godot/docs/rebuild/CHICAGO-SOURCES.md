@@ -208,3 +208,29 @@ No asset files were deleted. Inspected sourced-details 800/7,600 m daylight
 captures; unsourced floating additions disappear. The remaining facade and
 real ground-floor geometry tasks are still open. Capture exited 0, stderr
 empty, 23.45 m drive; day/night captures exist for both selected stations.
+
+## Wacker and Loop facade material pass (2026-09-30)
+
+Added eight cited landmark records: 333/191/155 North Wacker, 111/71 South
+Wacker, 35 East Wacker, Reliance and Monadnock. Seven previously generic
+material assignments change; 333 already had OSM glass/colour and gains its
+architect's provenance. Sources are recorded per entry in `landmarks.json`:
+KPF, Goettsch Partners, the building owner, SAH Archipedia, city landmark
+records, CAC and Wikipedia. 35 East Wacker's cream category is supported by
+the photographer's building record at https://chistockimages.com/building/jewelers-building/;
+ivory encodes that named category, not a calibrated sample. Reliance's white
+category comes from CAC. No guessed heights, crowns or new model assets.
+
+Rebuilt city data: 3,961 LiDAR roofs plus the post-survey 400 Lake Shore tower,
+four facade bands, zero unresolved flags. The per-building delta assertion
+confirmed only material/colour fields and a repaired Unicode dash in 400 Lake
+Shore's exclusion text change; roof geometry/heights remain identical. The
+route catalog now has 32 near-route entries with direct cited overrides.
+
+Inspected all eight daylight detail views, then corrected cameras for obscured
+71 South Wacker and Monadnock and inspected their replacements. Glass tower
+materials and Monadnock brick are visible. Also inspected 155/Monadnock night.
+Final bounded capture exited 0, stderr empty, 23.22 m driven. Full facades are
+not accepted: shared window layout, photographed panels, lantern/arcade/base
+geometry, terra-cotta ornament and sampled colour fidelity remain unfinished.
+No source photograph pixels were incorporated by this pass.
