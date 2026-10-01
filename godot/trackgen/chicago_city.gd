@@ -91,8 +91,6 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	parent.add_child(holder)
 	holder.owner = asset
 	# Buildings.
-	var near_route = []
-	var kept_buildings = []
 	var crowns = []
 	var i = 0
 	for b in doc.buildings:
@@ -134,12 +132,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if b.has("ph"):
 			crowns.append([ring, STREET_Y + float(b.h), {"type": "photo", "ph": b.ph, "h": float(b.h)}])
 		stats.buildings += 1
-		kept_buildings.append([ring, float(b.h), i])
-		var centre = _centroid(ring)
-		if ChicagoKit.nearest_route(route, centre, ChicagoKit.RANGE_M + 40.0).x != INF:
-			near_route.append([ring, float(b.h), i])
-	stats.merge(ChicagoKit.build(asset, holder, near_route, route))
-	stats.merge(ChicagoKit.roof_clutter(asset, holder, kept_buildings))
+	# Building details must come from mapped/cited overrides. Hash-selected kit
+	# cornices and roof props float over stepped roofs and invent architecture.
 	# Streets: sidewalk ribbon under the carriageway.
 	for r in doc.roads:
 		var pts = _ring(r.p)

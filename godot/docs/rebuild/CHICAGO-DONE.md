@@ -104,3 +104,5 @@ proof of visibility. Near-route records contain 90 OSM material tags, 48 colour
 tags and 24 entries with direct cited landmark overrides. Zero unresolved flags
 is a data result, not full visual acceptance. Current windowed survey exited 0,
 with empty stderr and 25.39 m driven; broad building/facade items stay open.
+
+- [x] Disable hash-selected generic shopfront/cornice and roof-clutter placement, retaining all source assets for final audit. Inspected `chi-sourced-details-route-00800m-day.png` and `route-07600m-day.png`: the floating trim/props are absent. Replacement sourced ground-floor detailing remains open; this does not accept generic facade shaders.

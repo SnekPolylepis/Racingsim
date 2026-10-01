@@ -200,3 +200,11 @@ masses; generic facades and unsourced/floating cornices/roof props remain.
 The 8,160.75 m course survey exited 0, empty stderr, 25.39 m drive. A bounded
 headless clearance check passed nearby-preservation, enclosing-footprint and
 edge-clearance cases. No whole-city facade acceptance follows from this pass.
+
+Random Downtown MegaKit shopfront/cornice assignments and roof clutter are now
+disabled in the city builder: their hash selection had no building provenance,
+and roof placement used maximum building height above lower measured wings.
+No asset files were deleted. Inspected sourced-details 800/7,600 m daylight
+captures; unsourced floating additions disappear. The remaining facade and
+real ground-floor geometry tasks are still open. Capture exited 0, stderr
+empty, 23.45 m drive; day/night captures exist for both selected stations.

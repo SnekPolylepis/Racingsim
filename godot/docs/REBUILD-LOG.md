@@ -2952,3 +2952,13 @@ survey exited 0, empty stderr, 25.39 m drive. Inspected both 41-view atlases and
 800/4,200/7,600 m individuals; restored museum/Wacker masses are visible. Generic
 facades and floating hash-selected details remain open. Heavy gates skipped;
 Monza/car/physics untouched. No full facade/massing acceptance or final export.
+
+### 2026-09-30 — Chicago unsupported building decoration
+
+Disabled generic hash-selected shopfront/cornice and random roof clutter calls
+in the city builder; removed only their now-unused temporary arrays. Source
+assets/functions are preserved pending final audit. Roof placement previously
+used maximum height over lower measured wings, causing floating architecture.
+Windowed capture exited 0, stderr empty, 23.45 m drive. Inspected 800/7,600 m
+daylight views: unsupported floating trim/props absent, generic facade shaders
+and missing sourced ground-floor details remain open. Monza/physics untouched.
