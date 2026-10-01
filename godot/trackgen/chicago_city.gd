@@ -121,7 +121,9 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		# Real OSM data: building:part base height ("m") and facade colour ("c") where tagged.
 		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
 		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
-		if b.has("L"):
+		if b.has("plan"):
+			_plan_building(facade, ring, b.plan, kind_layer(kind), tint)
+		elif b.has("L"):
 			_lidar_building(
 				facade,
 				b.L,
@@ -554,6 +556,38 @@ static func _building(
 	# Roofs share the facade surface; blue = 1 selects the flat roof colour in the shader.
 	roof.set_color(Color(0, 0, 1))
 	_flat(roof, ring, top)
+
+
+## Approved-plan parts in metres, relative to the mapped footprint centre.
+## Parts use [x, z, width, depth, bottom, top]; surfaces use local XYZ vertices.
+static func _plan_building(
+	st: SurfaceTool, footprint: PackedVector2Array, plan: Dictionary, layer: float, tint: Color
+) -> void:
+	var origin = _centroid(footprint)
+	for part in plan.parts:
+		var a = origin + Vector2(part[0], part[1])
+		var ring = PackedVector2Array(
+			[a, a + Vector2(part[2], 0), a + Vector2(part[2], part[3]), a + Vector2(0, part[3])]
+		)
+		_building(st, st, ring, part[5], 0.0, STREET_Y + part[4], layer, tint)
+	st.set_color(Color(0, 0, 1))
+	for surface in plan.surfaces:
+		var vertices = PackedVector3Array()
+		var outline = PackedVector2Array()
+		for p in surface:
+			vertices.append(Vector3(origin.x + p[0], STREET_Y + p[1], origin.y + p[2]))
+			outline.append(Vector2(p[0], p[2]))
+		var indices = Geometry2D.triangulate_polygon(outline)
+		# Both sides: the balcony deck is also the covered breezeway's ceiling.
+		for side in [false, true]:
+			for j in range(0, indices.size(), 3):
+				var triangle = [vertices[indices[j]], vertices[indices[j + 1]], vertices[indices[j + 2]]]
+				if side:
+					triangle.reverse()
+				st.set_normal((triangle[1] - triangle[0]).cross(triangle[2] - triangle[0]).normalized())
+				for vertex in triangle:
+					st.set_uv(Vector2(vertex.x, vertex.z))
+					st.add_vertex(vertex)
 
 
 ## A building from its measured USGS LiDAR roof: [x0, z0, w, h, cell, base64 u16 decimetres], row-major

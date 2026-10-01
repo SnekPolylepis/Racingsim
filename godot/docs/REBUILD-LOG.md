@@ -3168,3 +3168,33 @@ South capture exposes lawn on pier; both expose generic docks/supports. Added
 those findings to checklist instead of accepting the marina. One edited script
 matches formatter; diff check clean. Heavy gates skipped, checks unchanged.
 Monza, car/physics, primary workspace and combined playtest executable unchanged.
+
+### 2026-09-30 — Marina approved-plan wings and breezeway
+
+Previous turn made a combined playtest build (progress). Chicago source goal
+continues in chicago-facades/rb/monaco-formula-cars; primary Gemini workspace
+and the new combined executable remain untouched. Re-read plan, queue, log and
+CHICAGO-DONE. Re-inspected PD527 sheets A-2/A-3/A-4 and their container keys.
+
+Replaced w1417040524 single extrusion with twelve approved-plan containers,
+upper deck and west canopy. Container-key dimensions are 8-foot widths,
+20/40-foot lengths and 12.5-foot breezeway; feet converted to metres. Heights
+are A-4 elevation proportions scaled against A-1 21.97-foot total: ground
+2.8379 m, upper deck 2.9375 m, flat upper roof 5.9746 m. These are drawing
+traces, not exact labelled as-built elevations. Canopy uses A-3 2:12 pitch
+and traced levels. Centred on mapped OSM footprint, map-derived registration.
+Existing native building renderer reused; concave deck uses native polygon
+triangulation, and both deck sides render so the breezeway has a ceiling.
+Generator propagates cited plan metadata. City semantic diff confirms only
+w1417040524 plan added, all other 3965 building records/data unchanged.
+
+Initial windowed capture: exit 0, empty stderr, 23.90 m displacement at
+18.30 m/s. Final capture after source pitch refinement/camera correction:
+exit 0, empty stderr, 24.21 m displacement at 18.50 m/s. Inspected final
+breezeway day, aerial day and north night. Clear opening and separate upper
+and lower massing are visible. Default stone/window facade remains wrong,
+no stairs/rails/support details yet, pier has lawn and generic docks/masts;
+full marina acceptance stays open. Source provenance uses existing
+THIRD-PARTY PD527 entry; drawings are not redistributed. Import exit 0
+with empty stderr; two scripts match formatter, semantic data check and
+diff check pass. Heavy gates skipped, check logic unchanged. No export.

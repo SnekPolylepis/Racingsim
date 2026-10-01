@@ -79,6 +79,8 @@ func run():
 		"page-lake": [Vector3(-265, 22, -118), Vector3(-265, 22, -94)],
 		"marina-boathouse": [Vector3(1499, 12, -880), Vector3(1499, 11, -844)],
 		"marina-boathouse-south": [Vector3(1499, 12, -815), Vector3(1499, 11, -844)],
+		"marina-plan-air": [Vector3(1481, 24, -824), Vector3(1499, 12, -844)],
+		"marina-breezeway": [Vector3(1500, 9.4, -831), Vector3(1498.5, 9.4, -844)],
 		"uc-ground": [Vector3(0, 9.4, 422), Vector3(-21, 12, 422)],
 		"uc-full": [Vector3(20, 27, 422), Vector3(-21, 30, 422)],
 		"caa-full": [Vector3(30, 26, 346), Vector3(-22, 30, 346)],

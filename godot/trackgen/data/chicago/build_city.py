@@ -473,6 +473,8 @@ def main():
             b["cr"] = m["crown"]
         if "photo" in m:
             b["ph"] = m["photo"]
+        if "plan" in m:
+            b["plan"] = m["plan"]
         if m.get("glass"):
             b["gl"] = 1
         if m.get("pk"):
