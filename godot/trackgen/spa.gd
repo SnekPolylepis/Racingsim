@@ -21,7 +21,7 @@ const TrackLights = preload("res://scripts/track/track_lights.gd")
 const SpaLandmarks = preload("res://trackgen/spa_landmarks.gd")
 const DATA = "res://trackgen/data/spa/"
 const OUTPUT = "res://tracks3d/spa/spa.scn"
-const CACHE_REVISION = 6
+const CACHE_REVISION = 7
 const REFERENCE_LENGTH = 7004.0
 
 
@@ -963,7 +963,10 @@ static func build_asset() -> Node3D:
 		.5
 	)
 	for corner in corners:
-		if corner[0] in ["La Source", "Eau Rouge", "Blanchimont", "Bus Stop"]:
+		if (
+			corner[0]
+			in ["La Source", "Eau Rouge", "Blanchimont", "Bus Stop", "Les Combes", "Pouhon", "Bruxelles"]
+		):
 			var side = WallPath.Side.LEFT if corner[4] > 0 else WallPath.Side.RIGHT
 			add_wall(
 				asset,
