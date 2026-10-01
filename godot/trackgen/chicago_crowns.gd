@@ -95,7 +95,9 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 					light.visible = false
 					light.set_meta("chicago_night", true)
 					node.add_child(light)
-					light.look_at_from_position(light.position, Vector3(edge.x, top * 0.6, edge.y), Vector3.UP)
+					light.look_at_from_position(
+						light.position, Vector3(edge.x, top * 0.6, edge.y), Vector3.UP
+					)
 			"photo":
 				node = photo_facade(ring, top, float(cr.h), cr.ph)
 		if node == null:
@@ -111,6 +113,37 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 ## A rectified reference photo on the footprint wall that best faces `face` (outward), covering the top
 ## `frac` of the building's height, 0.2 m proud of the wall.
 static func photo_facade(ring: PackedVector2Array, top: float, h: float, ph: Dictionary) -> MeshInstance3D:
+	var wall = photo_wall(ring, ph)
+	var wa: Vector2 = wall[0]
+	var wb: Vector2 = wall[1]
+	var wn: Vector2 = wall[2]
+	var y0 = top - h * float(ph.get("frac", 1.0))
+	var off = Vector3(wn.x, 0, wn.y) * 0.2
+	var p = [
+		Vector3(wa.x, y0, wa.y) + off,
+		Vector3(wb.x, y0, wb.y) + off,
+		Vector3(wb.x, top, wb.y) + off,
+		Vector3(wa.x, top, wa.y) + off
+	]
+	var uv = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for idx in [0, 1, 2, 0, 2, 3]:
+		st.set_normal(Vector3(wn.x, 0, wn.y))
+		st.set_uv(uv[idx])
+		st.add_vertex(p[idx])
+	var mat = StandardMaterial3D.new()
+	mat.albedo_texture = load("res://assets/chicago/facade-photos/" + str(ph.file))
+	mat.roughness = 0.85
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var node = MeshInstance3D.new()
+	node.mesh = st.commit()
+	node.material_override = mat
+	return node
+
+
+## Shared exterior edge and left-to-right orientation for photo placement and roof sampling.
+static func photo_wall(ring: PackedVector2Array, ph: Dictionary) -> Array:
 	var want = Vector2(ph.face[0], ph.face[1]).normalized()
 	var c = centroid(ring)
 	var best = -INF
@@ -130,31 +163,11 @@ static func photo_facade(ring: PackedVector2Array, top: float, h: float, ph: Dic
 			wb = b
 			wn = n
 	# Left-to-right as seen from outside.
-	if (wb - wa).cross(wn) > 0:
+	if (wb - wa).cross(wn) < 0:
 		var t = wa
 		wa = wb
 		wb = t
-	var y0 = top - h * float(ph.get("frac", 1.0))
-	var off = Vector3(wn.x, 0, wn.y) * 0.2
-	var p = [
-		Vector3(wa.x, y0, wa.y) + off, Vector3(wb.x, y0, wb.y) + off,
-		Vector3(wb.x, top, wb.y) + off, Vector3(wa.x, top, wa.y) + off
-	]
-	var uv = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for idx in [0, 1, 2, 0, 2, 3]:
-		st.set_normal(Vector3(wn.x, 0, wn.y))
-		st.set_uv(uv[idx])
-		st.add_vertex(p[idx])
-	var mat = StandardMaterial3D.new()
-	mat.albedo_texture = load("res://assets/chicago/facade-photos/" + str(ph.file))
-	mat.roughness = 0.85
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	var node = MeshInstance3D.new()
-	node.mesh = st.commit()
-	node.material_override = mat
-	return node
+	return [wa, wb, wn]
 
 
 static func centroid(ring: PackedVector2Array) -> Vector2:
@@ -293,8 +306,12 @@ static func slant(ring: PackedVector2Array, top: float, h: float, mat: Material)
 		var a = ring[i]
 		var b = ring[(i + 1) % ring.size()]
 		for v in [
-			Vector3(a.x, top, a.y), Vector3(b.x, top, b.y), Vector3(b.x, y.call(b), b.y),
-			Vector3(a.x, top, a.y), Vector3(b.x, y.call(b), b.y), Vector3(a.x, y.call(a), a.y)
+			Vector3(a.x, top, a.y),
+			Vector3(b.x, top, b.y),
+			Vector3(b.x, y.call(b), b.y),
+			Vector3(a.x, top, a.y),
+			Vector3(b.x, y.call(b), b.y),
+			Vector3(a.x, y.call(a), a.y)
 		]:
 			st.add_vertex(v)
 	for idx in Geometry2D.triangulate_polygon(ring):
