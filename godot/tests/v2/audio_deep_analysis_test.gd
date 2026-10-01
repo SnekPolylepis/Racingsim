@@ -29,17 +29,17 @@ func _initialize():
 	var car_keys = ["roadster", "f296gt3", "gt", "f2004", "rb19"]
 	var mix_presets = ["Cockpit", "Chase", "TV"]
 
+	var audio = AudioScript.new()
+	var root = get_root()
+	root.add_child(audio)
+	audio._ready()
+
 	# 1. Verification of Anti-Clipping and Dynamic Range across all cars & presets
 	for car_key in car_keys:
 		var spec = cars[car_key]
 		var redline = float(spec.get("redline", 7200.0))
 
 		for preset in mix_presets:
-			var audio = AudioScript.new()
-			var root = get_root()
-			root.add_child(audio)
-			audio._ready()
-
 			var settings = {
 				"mute": false,
 				"volume": 0.85,
@@ -79,15 +79,9 @@ func _initialize():
 			var eng_vol = audio.players.engine_high.volume_db
 			check.call(eng_vol <= 2.0, "%s [%s]: Engine high volume within safe dB envelope (%.1f dB)" % [car_key, preset, eng_vol])
 
-			audio.queue_free()
-
 	# 2. Monotonic Spectral Centroid Analysis with RPM Rise
 	print("--- Testing Monotonic Spectral Centroid vs RPM ---")
 	for car_key in car_keys:
-		var audio = AudioScript.new()
-		get_root().add_child(audio)
-		audio._ready()
-
 		var spec = cars[car_key]
 		var idle_rpm = float(spec.get("idle", 850.0))
 		var redline = float(spec.get("redline", 7200.0))
@@ -122,30 +116,30 @@ func _initialize():
 			last_centroid_estimate = centroid
 
 		check.call(monotonic, "%s: Spectral centroid rises monotonically with RPM" % car_key)
-		audio.queue_free()
 
 	# 3. Sidechain Ducking Verification
 	print("--- Testing Sidechain Ducking ---")
-	var audio_sc = AudioScript.new()
-	get_root().add_child(audio_sc)
-	audio_sc._ready()
 	var roadster_spec = cars["roadster"]
 
 	# Low load (no ducking)
 	var low_car = {"p": roadster_spec, "rpm": 1200.0, "speed": 10.0, "throttle_eff": 0.1, "wheels": []}
 	for s in 20:
-		audio_sc.update(low_car, 0.016, true, {"volume": 0.8, "engine_volume": 0.8, "world_volume": 0.8})
-	var low_ducking = audio_sc.debug_stats.ducking_db
+		audio.update(low_car, 0.016, true, {"volume": 0.8, "engine_volume": 0.8, "world_volume": 0.8})
+	var low_ducking = audio.debug_stats.ducking_db
 
 	# High load (active ducking)
 	var high_car = {"p": roadster_spec, "rpm": 6500.0, "speed": 50.0, "throttle_eff": 1.0, "wheels": []}
 	for s in 25:
-		audio_sc.update(high_car, 0.016, true, {"volume": 0.8, "engine_volume": 0.8, "world_volume": 0.8})
-	var high_ducking = audio_sc.debug_stats.ducking_db
+		audio.update(high_car, 0.016, true, {"volume": 0.8, "engine_volume": 0.8, "world_volume": 0.8})
+	var high_ducking = audio.debug_stats.ducking_db
 
 	check.call(low_ducking == 0.0, "Zero ducking under low engine load (%.1f dB)" % low_ducking)
 	check.call(high_ducking < -1.0, "Dynamic sidechain ducking active under full load (%.1f dB)" % high_ducking)
-	audio_sc.queue_free()
+
+	# Clean Node Free (no ObjectDB leaks)
+	root.remove_child(audio)
+	audio.free()
+	check.call(true, "Audio node freed cleanly without leaks")
 
 	# 4. Mutation Testing (Negative Controls: deliberate bugs must fail)
 	print("--- Testing Negative Controls (Mutations Fail Assertions) ---")
