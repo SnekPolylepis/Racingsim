@@ -2989,3 +2989,20 @@ Windowed cache rebuild and drive exited 0, empty stderr, 25.96 m driven.
 Inspected five daylight building views and 333 night: tagged glass and light
 terra cotta now read distinctly. Generic windows/ornament/ground floors and
 night brightness remain open. Heavy gates skipped; Monza/car/physics untouched.
+
+### 2026-09-30 — PAUSED Chicago at owner request
+
+Finished the already-running photo-check capture before pausing. Windowed
+launch/load/drive exited 0, empty stderr, 23.08 m drive. Inspected CAA,
+University Club, Railway Exchange and Symphony daylight: CAA/UC photo panels
+cover only strips over generic walls, Railway Exchange view exposes reversed
+lettering on the adjoining photographed facade, and Symphony camera is behind
+trees. No photo/facade acceptance checkbox was ticked.
+
+Next step: inspect `ChicagoCrowns.photo_facade` left/right orientation (current
+cross-product swap likely mirrors east-facing panels), then reconcile photo
+width/vertical attachment with measured walls; move Symphony camera out of
+trees. Validate with the same fixed views and source photos. No source code
+changed in this final inspection. Last implementation milestone 6ed4cb8 is
+pushed on rb/monaco-formula-cars. Full Chicago scope remains open; final export
+and audit are deferred until visual completion. Goal paused explicitly by owner.
