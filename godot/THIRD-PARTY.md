@@ -169,3 +169,12 @@ textures reduced.
 | Red Bull RB19 model ("RB19_Verstappen") | dondifur, Sketchfab fa39f15a0cbe4386a305596a021789e8 | CC BY 4.0 | godot/assets/cars/rb19/ |
 | Autodromo Nazionale Monza Circuit 2020 layout | Tyler_Dave (Dave Love), Sketchfab 25ed955115094de382935aa6d1a1e9c6 | CC BY 4.0 | godot/assets/tracks/monza/ |
 | Monza GP centreline | OpenStreetMap contributors | ODbL 1.0 | godot/trackgen/data/monza/ |
+
+### Chicago Grant Park relation supplement
+
+OpenStreetMap contributors, [Grant Park relation 19511979](https://www.openstreetmap.org/relation/19511979),
+[OSM API full geometry](https://api.openstreetmap.org/api/0.6/relation/19511979/full.json),
+fetched 2026-09-30. ODbL 1.0. Staged as
+`godot/assets/cc0-source/chicago/roadmap/downtown-park-relations.json`; eighteen
+clipped outer rings included in city.json. Source node/member coordinates
+assembled without inventing boundaries. Existing Chicago OSM attribution applies.

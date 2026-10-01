@@ -47,6 +47,18 @@ def ring(geom):
     return pts
 
 
+def pier_of(e):
+    tags = e.get("tags", {})
+    pts = [xz(g["lat"], g["lon"]) for g in e["geometry"]]
+    p = {"p": pts, "w": number(tags.get("width")) or (6.0 if tags["man_made"] == "breakwater" else 3.0), "o": "w" + str(e["id"])}
+    if len(pts) > 3 and pts[0] == pts[-1] and tags.get("area") != "no":
+        p["area"] = 1
+    for key in ("surface", "floating"):
+        if key in tags:
+            p[key] = tags[key]
+    return p
+
+
 def area(pts):
     a = 0.0
     for i in range(len(pts)):
@@ -565,7 +577,7 @@ def main():
         roads.append({"p": simplify([xz(g["lat"], g["lon"]) for g in e["geometry"]], 0.3), "w": round(w, 1), "c": cls, "b": 1 if tags.get("bridge") not in (None, "no") else 0})
 
     water, parks = [], []
-    for e in load("downtown-water-leisure.json"):
+    for e in load("downtown-water-leisure.json") + load("downtown-park-relations.json"):
         tags = e.get("tags", {})
         is_water = tags.get("natural") == "water" or tags.get("waterway") == "riverbank"
         is_park = tags.get("leisure") in ("park", "garden") or tags.get("landuse") == "grass"
@@ -679,7 +691,7 @@ def main():
         if e["type"] == "node" and (t.get("mooring") or "mooring" in t.get("seamark:type", "")):
             moorings.append(xz(e["lat"], e["lon"]))
         elif e["type"] == "way" and t.get("man_made") in ("pier", "breakwater") and "geometry" in e:
-            piers.append({"p": [xz(g["lat"], g["lon"]) for g in e["geometry"]], "w": 6.0 if t["man_made"] == "breakwater" else 3.0})
+            piers.append(pier_of(e))
     print("moorings %d, piers/breakwaters %d" % (len(moorings), len(piers)))
 
     # The real elevated 'L' (OSM railway=subway on bridges): one polyline per track.

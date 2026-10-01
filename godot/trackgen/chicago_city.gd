@@ -31,8 +31,8 @@ const LAKE_Y = 6.5
 ## CDOT section: 13 in slab + 2 in overlay above 13 ft 9 in clear space, upper road at y 8.
 const LOW_ROAD_Y = 3.4288
 const LOW_FLOOR_Y = LOW_ROAD_Y - .08
-## Open ground this close to the lake is lakefront lawn (the Lakefront Trail strip OSM leaves unmapped).
-const LAKEFRONT_M = 150.0
+## Candidate tiles for exact shoreline clipping; this does not assign a land cover.
+const SHORE_CLIP_M = 150.0
 const CHUNK = 600.0
 ## The route's half width plus verge: streets and buildings keep this far (plus their own margin) from it.
 const ROUTE_CLEAR = 9.5
@@ -181,7 +181,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			lo = lo.min(Vector2(p[0], p[1]))
 			hi = hi.max(Vector2(p[0], p[1]))
 	var tile = 20.0
-	var shore = _lakefront_cells(water_polys, tile, LAKEFRONT_M)
+	var shore = _lakefront_cells(water_polys, tile, SHORE_CLIP_M)
 	var water_cells = {}
 	var low_cells = {}
 	var x = floorf(lo.x / tile) * tile
@@ -195,9 +195,30 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			elif _near_low_route(route, c, 26.0):
 				low_cells[cell] = true
 			else:
-				var lawn = shore.has(cell) or _in_water(crossed_parks, c)
+				var lawn = _in_water(crossed_parks, c)
 				var kind = "park" if lawn else "ground"
-				_quad_flat(_st(flat_chunks, c, kind), Vector2(x, z), tile, STREET_Y - 0.04)
+				var ground = _st(flat_chunks, c, kind)
+				if shore.has(cell):
+					# A centre outside water does not make the whole 20 m tile land.
+					var pieces = [
+						PackedVector2Array(
+							[
+								Vector2(x, z),
+								Vector2(x + tile, z),
+								Vector2(x + tile, z + tile),
+								Vector2(x, z + tile)
+							]
+						)
+					]
+					for water in water_polys:
+						var remaining = []
+						for piece in pieces:
+							remaining.append_array(Geometry2D.clip_polygons(piece, water))
+						pieces = remaining
+					for piece in pieces:
+						_flat(ground, piece, STREET_Y - 0.04)
+				else:
+					_quad_flat(ground, Vector2(x, z), tile, STREET_Y - 0.04)
 				stats.ground_tiles += 1
 			z += tile
 		x += tile
@@ -823,6 +844,7 @@ static func _quad_flat(st: SurfaceTool, at: Vector2, size: float, y: float) -> v
 	var p = [at, at + Vector2(size, 0), at + Vector2(size, size), at + Vector2(0, size)]
 	for idx in [0, 1, 2, 0, 2, 3]:
 		st.set_normal(Vector3.UP)
+		st.set_uv(p[idx])
 		st.add_vertex(Vector3(p[idx].x, y, p[idx].y))
 
 

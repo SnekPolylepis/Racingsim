@@ -3198,3 +3198,40 @@ full marina acceptance stays open. Source provenance uses existing
 THIRD-PARTY PD527 entry; drawings are not redistributed. Import exit 0
 with empty stderr; two scripts match formatter, semantic data check and
 diff check pass. Heavy gates skipped, check logic unchanged. No export.
+
+### 2026-09-30 — Mapped marina docks and park boundaries
+
+Previous goal turn was progress: marina plan massing committed as 8b591ab.
+Re-read working docs and checklist. Current screenshots exposed lawn over the
+marina and thick dock-outline bars. Staged harbor.json has actual closed areas
+for the marina: w1349703131, w1417040518 and w1417040519, wood surface tags.
+OSM pier documentation distinguishes closed areas/open centre lines:
+https://wiki.openstreetmap.org/wiki/Tag:man_made%3Dpier
+Generator now keeps OSM IDs, area, surface and floating tags, native area decks
+use polygon triangulation, and fully covered footway centre lines are omitted.
+271 records preserved, 71 area flags, three wood tags, no source width changes.
+Vertical envelope remains the preexisting one pending freeboard/support evidence.
+
+Shore ground tiles are clipped to water polygons. Removed unsupported blanket
+lawn for all land within 150 m of a lake edge. Wider review exposed missing park
+relations from original way-only query, so imported authoritative Grant Park
+relation 19511979 via OSM API full.json, eighteen clipped rings added without
+changing existing 606 park polygons. Members reconstructed from response node/
+way coordinates, source/provenance retained. France Overpass whitelist rejection,
+Germany 406, Swiss mirror no matching elements and private.coffee timeout were
+resolved through native OSM API; no blocker. Raw supplement and generator
+consumption committed, existing extracts preserved. THIRD-PARTY updated ODbL.
+
+First capture exit 0 but stderr had pier UV-layout errors; rejected as a pass.
+Removed unused pier UV assignment. Second capture exit 1 with ground UV-layout
+errors and insufficient displacement (0.17 m); corrected shared quad UV emission
+so clipped polygons and tiles share an attribute format. Clean capture exit 0,
+empty stderr, 29.71 m/21.58 m/s. Final mapped-park capture exit 0, empty stderr,
+33.91 m/23.76 m/s. Inspected final marina aerial day/breezeway night, harbor day,
+Lake Shore Drive day and park aerial day. Deck no longer lawn; park greenery
+restored from mapped relation. Building facade, real wood texture, dock levels,
+boat collisions/placement and full waterfront acceptance remain open. Found
+park paths appended after flat batch commit; checklist adds follow-up. Semantic
+data comparison: only pier metadata and appended park rings changed. Formatter
+and diff check pass. Heavy gates skipped; checks unchanged. Primary workspace,
+Monza, physics/car code and combined playtest executable untouched; no export.
