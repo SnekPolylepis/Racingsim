@@ -95,7 +95,9 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 					light.visible = false
 					light.set_meta("chicago_night", true)
 					node.add_child(light)
-					light.look_at_from_position(light.position, Vector3(edge.x, top * 0.6, edge.y), Vector3.UP)
+					light.look_at_from_position(
+						light.position, Vector3(edge.x, top * 0.6, edge.y), Vector3.UP
+					)
 			"photo":
 				node = photo_facade(ring, top, float(cr.h), cr.ph)
 		if node == null:
@@ -130,15 +132,17 @@ static func photo_facade(ring: PackedVector2Array, top: float, h: float, ph: Dic
 			wb = b
 			wn = n
 	# Left-to-right as seen from outside.
-	if (wb - wa).cross(wn) > 0:
+	if (wb - wa).cross(wn) < 0:
 		var t = wa
 		wa = wb
 		wb = t
 	var y0 = top - h * float(ph.get("frac", 1.0))
 	var off = Vector3(wn.x, 0, wn.y) * 0.2
 	var p = [
-		Vector3(wa.x, y0, wa.y) + off, Vector3(wb.x, y0, wb.y) + off,
-		Vector3(wb.x, top, wb.y) + off, Vector3(wa.x, top, wa.y) + off
+		Vector3(wa.x, y0, wa.y) + off,
+		Vector3(wb.x, y0, wb.y) + off,
+		Vector3(wb.x, top, wb.y) + off,
+		Vector3(wa.x, top, wa.y) + off
 	]
 	var uv = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
 	var st = SurfaceTool.new()
@@ -293,8 +297,12 @@ static func slant(ring: PackedVector2Array, top: float, h: float, mat: Material)
 		var a = ring[i]
 		var b = ring[(i + 1) % ring.size()]
 		for v in [
-			Vector3(a.x, top, a.y), Vector3(b.x, top, b.y), Vector3(b.x, y.call(b), b.y),
-			Vector3(a.x, top, a.y), Vector3(b.x, y.call(b), b.y), Vector3(a.x, y.call(a), a.y)
+			Vector3(a.x, top, a.y),
+			Vector3(b.x, top, b.y),
+			Vector3(b.x, y.call(b), b.y),
+			Vector3(a.x, top, a.y),
+			Vector3(b.x, y.call(b), b.y),
+			Vector3(a.x, y.call(a), a.y)
 		]:
 			st.add_vertex(v)
 	for idx in Geometry2D.triangulate_polygon(ring):
