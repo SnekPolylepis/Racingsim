@@ -31,3 +31,7 @@
 ## 5. Driving & Telemetry Target
 - **Gear & Speed**: 4th gear downshift ($\approx 165 - 175\text{ km/h}$ in GT3, $\approx 200 - 215\text{ km/h}$ in F1).
 - **Technique**: Hard right flick over the Turn 12 kerb, settling the dampers immediately before pitching the car left across Turn 13 onto the approach to Stavelot.
+
+## 6. In-Engine Captures
+- **Fagnes Chicane (Day)**: `docs/rebuild/screenshots/spa/fagnes_day.png`
+- **Fagnes Chicane (Night)**: `docs/rebuild/screenshots/spa/fagnes_night.png`

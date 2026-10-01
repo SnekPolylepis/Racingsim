@@ -38,6 +38,7 @@
   - `PitGrandstand`: 12-row covered main grandstand ($145\text{ m}$ length) directly opposite the pit garages.
   - `LaSourceGrandstand`: 8-row covered grandstand ($60\text{ m}$ length) overlooking the hairpin entry.
   - `HotelDeLaSource`: Modern 4-storey luxury hotel and hospitality complex situated on the hillside terrace overlooking the outside of La Source.
+  - `OldFrancorchampsGantry` & `OldPodium`: Historic 24 Hours of Spa start/finish timing gantry and elevated podium structure spanning the downhill straight at $s \approx 640.0\text{ m}$, featuring vintage Francorchamps timing light clusters, starting clock displays, and winner podium steps.
   - `PaddockTeam00` to `PaddockTeam08`: Detailed race team transport trailers with 12-sided cylindrical tires, axles, team livery awnings, and paddock operations.
 - **Acoustic Environment**:
   - Spatial grandstand slap-back reflection on the main straight.
@@ -49,3 +50,9 @@
 - **Start/Finish**: Acceleration zone reaching $240 - 260\text{ km/h}$ before standing on the brakes for La Source.
 - **Hairpin Apex**: 1st gear in all cars ($\approx 65 - 75\text{ km/h}$). Tight line hugging the inside kerb is essential to maximize launch down the hill towards Eau Rouge.
 - **Downhill Launch**: Extremely long full-throttle section begins immediately at the La Source exit curb, holding full throttle all the way to Les Combes!
+
+## 6. In-Engine Captures
+- **La Source Hairpin (Day)**: `docs/rebuild/screenshots/spa/la_source_day.png`
+- **La Source Hairpin (Night)**: `docs/rebuild/screenshots/spa/la_source_night.png`
+- **Pit Straight & F1 Terrace (Day)**: `docs/rebuild/screenshots/spa/pit_straight_day.png`
+- **Pit Straight & F1 Terrace (Night)**: `docs/rebuild/screenshots/spa/pit_straight_night.png`

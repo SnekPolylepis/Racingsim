@@ -58,7 +58,8 @@ func _initialize():
 				"throttle_eff": 1.0,
 				"shift_timer": 0.0,
 				"clutch_slip": 0.0,
-				"wheels": [
+				"wheels":
+				[
 					{"slipAngle": 0.12, "slipRatio": 0.08, "surf": {"id": 0}},
 					{"slipAngle": 0.12, "slipRatio": 0.08, "surf": {"id": 0}},
 					{"slipAngle": 0.05, "slipRatio": 0.15, "surf": {"id": 0}},
@@ -72,12 +73,17 @@ func _initialize():
 
 			# Check that Master Bus peak limiter is active
 			var master_limiter = AudioServer.get_bus_effect(0, 0)
-			check.call(master_limiter is AudioEffectLimiter, "%s [%s]: Master Limiter active" % [car_key, preset])
+			check.call(
+				master_limiter is AudioEffectLimiter, "%s [%s]: Master Limiter active" % [car_key, preset]
+			)
 			check.call(audio.engine_level > 0.0, "%s [%s]: Engine level active" % [car_key, preset])
 
 			# Verify volume levels don't explode (no clipping ceiling exceeded)
 			var eng_vol = audio.players.engine_high.volume_db
-			check.call(eng_vol <= 2.0, "%s [%s]: Engine high volume within safe dB envelope (%.1f dB)" % [car_key, preset, eng_vol])
+			check.call(
+				eng_vol <= 2.0,
+				"%s [%s]: Engine high volume within safe dB envelope (%.1f dB)" % [car_key, preset, eng_vol]
+			)
 
 	# 2. Monotonic Spectral Centroid Analysis with RPM Rise
 	print("--- Testing Monotonic Spectral Centroid vs RPM ---")
@@ -134,7 +140,79 @@ func _initialize():
 	var high_ducking = audio.debug_stats.ducking_db
 
 	check.call(low_ducking == 0.0, "Zero ducking under low engine load (%.1f dB)" % low_ducking)
-	check.call(high_ducking < -1.0, "Dynamic sidechain ducking active under full load (%.1f dB)" % high_ducking)
+	check.call(
+		high_ducking < -1.0, "Dynamic sidechain ducking active under full load (%.1f dB)" % high_ducking
+	)
+
+	# 4. Loop Seam Continuity across Manifest
+	print("--- Testing Loop Seam Continuity across Manifest ---")
+	var manifest_text = FileAccess.get_file_as_string("res://assets/audio/per-car-manifest.json")
+	var manifest = JSON.parse_string(manifest_text)
+	var max_seam = 0.0
+	if manifest and manifest.has("cars"):
+		for ckey in manifest["cars"]:
+			for band in manifest["cars"][ckey]["bands"]:
+				var p_seam = float(band["power"].get("seam_step", 1.0))
+				var c_seam = float(band["coast"].get("seam_step", 1.0))
+				max_seam = maxf(max_seam, maxf(p_seam, c_seam))
+	check.call(max_seam <= 0.01, "Loop seam step <= 0.01 across all wavetables (max=%.5f)" % max_seam)
+
+	# 5. Per-Bus EQ and Inside/Outside Acoustic Filters
+	print("--- Testing Per-Bus EQ and Inside/Outside Acoustic Filters ---")
+	var eng_bus_idx = AudioServer.get_bus_index("Engine")
+	var world_bus_idx = AudioServer.get_bus_index("World")
+	var eng_has_eq = false
+	var world_has_eq = false
+	for e in AudioServer.get_bus_effect_count(eng_bus_idx):
+		if AudioServer.get_bus_effect(eng_bus_idx, e) is AudioEffectEQ6:
+			eng_has_eq = true
+	for e in AudioServer.get_bus_effect_count(world_bus_idx):
+		if AudioServer.get_bus_effect(world_bus_idx, e) is AudioEffectEQ6:
+			world_has_eq = true
+	check.call(eng_has_eq, "Engine bus has AudioEffectEQ6")
+	check.call(world_has_eq, "World bus has AudioEffectEQ6")
+
+	# Cockpit Preset Verification (cabin insulation filtering)
+	audio.update(low_car, 0.016, true, {"camera_preset": "Cockpit", "volume": 0.8})
+	var world_eq: AudioEffectEQ6 = null
+	for e in AudioServer.get_bus_effect_count(world_bus_idx):
+		if AudioServer.get_bus_effect(world_bus_idx, e) is AudioEffectEQ6:
+			world_eq = AudioServer.get_bus_effect(world_bus_idx, e)
+	check.call(
+		world_eq != null and world_eq.get_band_gain_db(5) < -8.0,
+		(
+			"Cockpit preset muffles exterior high frequencies (10 kHz gain = %.1f dB)"
+			% (world_eq.get_band_gain_db(5) if world_eq else 0.0)
+		)
+	)
+
+	# Wall Acoustic Occlusion Verification
+	var pit_wall_car = {
+		"p": roadster_spec,
+		"rpm": 4000.0,
+		"speed": 40.0,
+		"throttle_eff": 0.5,
+		"station": 6900.0,
+		"track_name": "spa",
+		"wheels": []
+	}
+	for s in 20:
+		audio.update(pit_wall_car, 0.016, true, {"camera_preset": "Chase", "volume": 0.8})
+	check.call(
+		audio.debug_stats.wall_occlusion > 0.5,
+		"Wall acoustic occlusion active near pit wall (factor = %.2f)" % audio.debug_stats.wall_occlusion
+	)
+
+	# Overrun Burst Verification
+	var lift_car = {
+		"p": roadster_spec, "rpm": 6200.0, "speed": 60.0, "gear": 3, "throttle_eff": 0.0, "wheels": []
+	}
+	audio.last_throttle = 0.85
+	audio.update(lift_car, 0.016, true, {"volume": 0.8})
+	check.call(
+		audio.overrun_timer > 1.0,
+		"Throttle lift at 6200 RPM primes sustained overrun (timer = %.2fs)" % audio.overrun_timer
+	)
 
 	# Clean Node Free (no ObjectDB leaks)
 	root.remove_child(audio)
@@ -150,7 +228,9 @@ func _initialize():
 			if vals[i] < vals[i - 1]:
 				return false
 		return true
-	check.call(not test_inverted_check.call(inverted_values), "Mutation control: Inverted pitch detected as failure")
+	check.call(
+		not test_inverted_check.call(inverted_values), "Mutation control: Inverted pitch detected as failure"
+	)
 
 	# Mutation B: Missing audio bus must be caught
 	var fake_bus_idx = AudioServer.get_bus_index("NonExistentTestBus")

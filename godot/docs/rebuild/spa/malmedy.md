@@ -28,3 +28,7 @@
 ## 5. Driving & Telemetry Target
 - **Gear & Speed**: 4th gear ($\approx 180 - 195\text{ km/h}$ in GT3, $\approx 220 - 235\text{ km/h}$ in F1).
 - **Technique**: Critical to balance the throttle while descending; front axle can push into understeer if trail-braking is held too late.
+
+## 6. In-Engine Captures
+- **Malmedy Curve (Day)**: `docs/rebuild/screenshots/spa/malmedy_day.png`
+- **Malmedy Curve (Night)**: `docs/rebuild/screenshots/spa/malmedy_night.png`

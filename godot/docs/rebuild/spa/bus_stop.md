@@ -37,3 +37,7 @@
 - **Violent Deceleration**: Hardest braking point on the circuit alongside Les Combes: from $>315\text{ km/h}$ down to $\approx 75 - 85\text{ km/h}$ in 1st/2nd gear.
 - **Apex Curbing**: Must straddle the inside kerb of Turn 18 without launching the car over the yellow sausage kerb.
 - **Traction on Exit**: Immediate straight-line acceleration onto the pit straight; wheelspin control is essential.
+
+## 6. In-Engine Captures
+- **Bus Stop Chicane (Day)**: `docs/rebuild/screenshots/spa/bus_stop_day.png`
+- **Bus Stop Chicane (Night)**: `docs/rebuild/screenshots/spa/bus_stop_night.png`

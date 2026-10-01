@@ -25,10 +25,16 @@
 
 ## 4. Built Implementation in Sim Engine
 - **Geometry**: Authored in `trackgen/spa.gd` with sections at "Stavelot" ($s = 4,600\text{ m}$) and "Paul Frere" ($s = 4,820\text{ m}$).
-- **Signage**: `SpaEventPanel05` ("STAVELOT / SPA-FRANCORCHAMPS") located at $s = 4,500\text{ m}$.
+- **Landmarks & Scenery**:
+  - `StavelotFarms`: Authentic Ardennes rural farm complex on the outside of Stavelot at $s \approx 4,700\text{ m}$, featuring traditional blue limestone farmhouse with slate gable roof, brick chimney, timber shutters, adjacent timber cattle barn, and drystone perimeter field boundary walls.
+  - `SpaEventPanel05`: Trackside event board ("STAVELOT / SPA-FRANCORCHAMPS") located at $s = 4,500\text{ m}$.
 - **Road Wear**: Heavy traction scrubbing marks along the Turn 15 exit kerb where cars apply full power for the long flat-out run to Bus Stop.
 
 ## 5. Driving & Telemetry Target
 - **Crucial Exit Speed**: Turn 15 dictates top speed down the entire 1.5 km flat-out blast through Blanchimont!
 - **Turn 14**: 3rd gear trail-brake entry ($\approx 140 - 150\text{ km/h}$).
 - **Turn 15**: Progressive throttle in 4th, shifting to 5th at apex, pinning throttle to $100\%$ on exit kerb ($\approx 215 - 230\text{ km/h}$).
+
+## 6. In-Engine Captures
+- **Campus & Stavelot (Day)**: `docs/rebuild/screenshots/spa/stavelot_day.png`
+- **Campus & Stavelot (Night)**: `docs/rebuild/screenshots/spa/stavelot_night.png`

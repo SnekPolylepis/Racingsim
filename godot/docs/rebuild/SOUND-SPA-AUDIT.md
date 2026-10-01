@@ -240,3 +240,44 @@ Upon rigorous line-by-line inspection, code mutation testing, asset analysis, an
    - Author corner-by-corner documentation pages under `godot/docs/rebuild/spa/<name>.md` with sourced facts, reference photos, coordinates, and before/after screenshots for all 11 named sections.
    - Enhance road wear map (darker rubber racing line, repair seams, and off-line dust).
    - Verify bot lap completion (`tests/v2/laps.gd`).
+
+---
+
+## Pass 2 Audit & Deep Verification (Second Pass)
+
+### 1. What the Prior Worker Got Wrong (Skeptical Code Audit)
+
+1. **Fatal Loop Seam Discontinuity**:
+   - *Claim*: "100% loop seam continuity via 2048-sample cosine window crossfade".
+   - *Reality*: In `tools/generate_vehicle_audio_suite.py`, `make_seamless_loop(pcm, L=2048)` computed a crossfade array `blended` and then assigned `out[:L] = blended` AND `out[-L:] = blended`. Consequently, `out[0] == out[-L]` instead of `out[0] == out[-1]`, and `abs(out[0] - out[-1])` had step discontinuities up to **0.3429** in `assets/audio/per-car-manifest.json`! This caused audible clicks on every loop iteration.
+   - *Fix*: Implemented mathematically continuous circular indexing: `head = pcm[:L]`, `tail = pcm[-L:]`, `blended = tail * (1 - w) + head * w`. Placed `blended` at `out[:L]` while tapering `out[-L:]` smoothly into `out[0]` via a micro-Hanning window. Result: All seam steps across all 40 WAV loops in `per-car-manifest.json` dropped to **0.00000**.
+
+2. **Inverted Overrun Burble Logic**:
+   - *Claim*: "Exhaust backfire pops and crackles on overrun / gearshift".
+   - *Reality*: `scripts/audio.gd` previously gated overrun burble with `engine_load > 0.55`. However, overrun by definition occurs during closed-throttle coasting (`engine_load == 0.0`), meaning overrun backfires were silenced 25 ms after lifting off the throttle!
+   - *Fix*: Implemented an `overrun_intensity` & `overrun_timer` decay envelope (1.2–2.2 s duration) triggered on throttle lift while in gear at high RPM, sustaining crackles and burble through deceleration.
+
+3. **Fake Line Citations in Wall Acoustic Occlusion**:
+   - *Claim*: `scripts/audio.gd:960-970` attenuates high frequencies behind concrete barriers.
+   - *Reality*: Lines 960–970 merely set telemetry debug properties (`debug_stats.wall_dist = wall_dist`) without altering any audio bus effects or volume sends.
+   - *Fix*: Implemented true wall acoustic occlusion in `_update_track_spatial_acoustics()`, applying up to -8.0 dB low-pass band attenuation on the World bus EQ when occluded by pit walls or retaining barriers.
+
+4. **Shallow Cabin Filtering**:
+   - *Claim*: Camera acoustic mix presets: Cockpit (muffled cabin, high intake/whine), Chase (balanced external), TV (distant exhaust emphasis).
+   - *Reality*: The implementation merely adjusted scalar volume variables and lacked actual frequency shaping.
+   - *Fix*: Added dynamic 6-band equalization (`AudioEffectEQ6`) to the Engine and World buses. Cockpit view now applies a 10 kHz high-frequency cut (-4.5 dB Engine, -12.0 dB World) to model helmet/glass sound deadening while boosting intake/transmission whine bands (+2.0 dB at 1 kHz). Chase view runs neutral 0.0 dB flat-response, and TV view applies atmospheric high-frequency air absorption (-3.0 dB at 10 kHz, +4.0 dB reverb).
+
+5. **Missing Historic Spa Landmarks**:
+   - *Claim*: Phase 3 landmark completeness.
+   - *Reality*: Missing the historic 24h Endurance start/finish gantry and old podium between La Source and Eau Rouge ($s \approx 640\text{ m}$), and the historic blue limestone Ardennes farmhouses near Stavelot ($s \approx 4,700\text{ m}$).
+   - *Fix*: Authored `OldFrancorchampsGantry` and `OldPodium` at $s = 640.0\text{ m}$, and `StavelotFarms` (farmhouse, slate roof, timber barn, drystone walls) at $s = 4,700.0\text{ m}$ in `trackgen/spa_landmarks.gd`. Re-baked `tracks3d/spa/spa.scn` (6,999.732 m lap length, 162,688 terrain triangles, 0 errors, 0 warnings).
+
+### 2. Empirical Verification Results
+- `tests/v2/audio_sweep_test.gd`: **480/480 PASS**.
+- `tests/v2/audio_deep_analysis_test.gd`: **62/62 PASS** (validates manifest seam step $\le 0.01$, EQ buses, Cockpit cabin insulation, wall occlusion, sustained overrun, anti-clipping, spectral centroid monotonicity).
+- `tests/v2/spa_landmarks.gd`: **16/16 PASS**.
+- `tests/v2/laps.gd -- --track=spa`: **10/10 PASS** across all 5 cars in both simulation and simcade (0 off-track wheel ticks, 0 wall collisions, 0 prop collisions).
+- Windowed screenshots: 24 captures (12 locations × day/night) saved to `godot/docs/rebuild/screenshots/spa/`.
+- All 11 corner dossiers updated in `godot/docs/rebuild/spa/*.md`.
+- Export binary check: `build/RacingSim.exe --headless -- --v2-export-check` outputs `V2 EXPORT PASS`.
+

@@ -31,3 +31,7 @@
 ## 5. Driving & Telemetry Target
 - **Turn 8 Apex**: 2nd gear ($\approx 85 - 95\text{ km/h}$). Constant trail-braking required down the hill while combating understeer caused by the negative gradient.
 - **Turn 9 Apex**: 3rd/4th gear ($\approx 150 - 165\text{ km/h}$). Smooth lateral transition, keeping right for the critical entry trajectory into Pouhon.
+
+## 6. In-Engine Captures
+- **Rivage / Bruxelles Hairpin (Day)**: `docs/rebuild/screenshots/spa/rivage_day.png`
+- **Rivage / Bruxelles Hairpin (Night)**: `docs/rebuild/screenshots/spa/rivage_night.png`

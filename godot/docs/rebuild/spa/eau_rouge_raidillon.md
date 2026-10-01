@@ -44,3 +44,7 @@
 - **F1 / High Downforce (F2004 / RB19)**: Flat out in 7th/8th gear ($\approx 295 - 315\text{ km/h}$). Peak vertical G-force in compression: $+3.5\text{ G}$, crest lateral snap: $-1.2\text{ G}$ unweighting.
 - **GT3 (Ferrari 296 GT3)**: 5th gear, slight lift or trace brake depending on fuel load ($\approx 235 - 250\text{ km/h}$).
 - **Roadster (MX-5)**: Full throttle in 4th/5th gear ($\approx 160\text{ km/h}$), momentum critical for Kemmel straight climb.
+
+## 6. In-Engine Captures
+- **Eau Rouge & Raidillon (Day)**: `docs/rebuild/screenshots/spa/eau_rouge_raidillon_day.png`
+- **Eau Rouge & Raidillon (Night)**: `docs/rebuild/screenshots/spa/eau_rouge_raidillon_night.png`
