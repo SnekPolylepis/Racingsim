@@ -2916,3 +2916,24 @@ pylon close-up: distinct lower lattice replaces the floating dense canopy.
 Metre-scale bends, stray returns, occluded connections, variable column covers,
 actual member diameters and headdress ribbons remain unfinished. Checklist
 records this narrow improvement without marking full pavilion acceptance.
+
+### 2026-09-30 — Chicago fine trellis and river review camera
+
+Regridded the same focused survey at 0.25 m (566 × 1,008 cells), separately from
+one-metre building grids. Closed one-cell sampling gaps; trimmed measured leaf
+paths without a mapped pylon/stage anchor; omitted unanchored components and
+fitted longer chains to nearby measured samples. Current trellis: 8,759 nodes /
+8,672 links. The initial short-chain averaging collapsed 17 links; fitting now
+requires a chain longer than its window, and the offline check rejects any zero
+length edge. Source material remains an explicit 12-inch member proxy.
+
+Moved river-air onto mapped river water, outside building footprints; added a
+pavilion joint camera. Windowed supported-pipes capture exited 0, stderr empty,
+26.04 m drive. Inspected pavilion overview/joint day and river-air day/night.
+The main arches are smoother, many hanging fragments disappear, and the river
+view now shows its water/skyline clearly. Short hooks, possible tree returns at
+supports, cover gaps, real member diameters and complete pavilion geometry
+remain open; generic river facades/ground-floor blocks are still visible.
+Offline crossing/support-pruning/local-frame/zero-edge check passed; heavy gates
+skipped as directed. Monza and car/physics untouched. Final export/audit await
+whole-city visual completion.

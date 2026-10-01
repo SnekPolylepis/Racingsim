@@ -129,16 +129,27 @@ position; earlier frozen-camera images did not demonstrate local pooled lighting
   Median ground over the measured Great Lawn patch is 186.860 m in the survey
   datum. Using the full-city 180.750 m median previously raised the steel about
   6.11 m above the flattened game lawn. Pavilion steel now uses its local datum.
-  Thinning the measured surface inside the mapped pylon perimeter gives 2,574
-  centreline nodes and 2,527 links; native cylinders replace the dense neighbour
-  lattice. The one-metre resolution still produces bends, disconnected returns,
-  missed/occluded connections and uncertainty over individual diameters.
+  The initial one-metre pass gave 2,574 centreline nodes and 2,527 links;
+  native cylinders replaced the dense neighbour lattice. Its close-up exposed
+  severe raster bends and disconnected returns.
   The diagnostic classes-1/6/17 surface excludes some actual trellis returns;
   therefore the centreline uses the full DSM with published height bounds,
   rather than assuming those survey classes distinguish steel from vegetation.
   Architect gallery drawing access required an account; no access restriction
   was bypassed. Signed-in Sketchfab downloadable search for `pritzker pavilion`
   returned no model. Broad pavilion acceptance remains open.
+  A second pass uses the same points at quarter-metre resolution:
+  `python trackgen/data/chicago/fetch_lidar.py pavilion-fine 41.88165 41.88391 -87.62272 -87.62102 .25`
+  The 566 × 1,008 grid supplies the trellis separately; building roofs retain
+  their one-metre grid indexing. One-cell gaps are closed, unsupported leaf
+  paths/components are omitted, and sufficiently long chains are fitted to a
+  one-metre window of measured samples. The current result has 8,759 nodes and
+  8,672 links. Inspected `chi-supported-pipes-pritzker-day.png` and the joint
+  close-up: main arches are smoother and many hanging fragments disappear.
+  Support proximity and the existing stage boundary are inference limits;
+  tree returns near supports, short hooks, cover gaps, actual diameters and
+  occluded member/joint geometry remain unresolved. This is not a surveyed
+  fabrication model or proof that every remaining segment is structural steel.
 
 ## Wrigley clock faces
 

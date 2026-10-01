@@ -21,6 +21,7 @@ import os
 import re
 import base64
 import glob
+from collections import deque
 
 import numpy as np
 
@@ -235,11 +236,63 @@ def thin_pipes(mask):
             return image[1:-1, 1:-1]
 
 
+def supported_pipes(nodes, edges, pylons, cell):
+    """Keep measured paths anchored at mapped supports/stage; suppress sampling stair steps."""
+    xyz = np.asarray(nodes, dtype=float)
+    anchors = {i for i, p in enumerate(xyz) if p[2] <= 182 or
+               any(math.hypot(p[0]-x, p[2]-z) <= .9144 + cell*math.sqrt(2) for x, z, _ in pylons)}
+    adjacent = [set() for _ in nodes]
+    for a, b in edges:
+        adjacent[a].add(b)
+        adjacent[b].add(a)
+    leaves = deque(i for i, links in enumerate(adjacent) if len(links) == 1 and i not in anchors)
+    while leaves:
+        i = leaves.popleft()
+        if i in anchors or len(adjacent[i]) != 1:
+            continue
+        j = adjacent[i].pop()
+        adjacent[j].remove(i)
+        if len(adjacent[j]) == 1 and j not in anchors:
+            leaves.append(j)
+    keep, queue = set(anchors), list(anchors)
+    while queue:
+        for j in adjacent[queue.pop()]:
+            if j not in keep:
+                keep.add(j)
+                queue.append(j)
+    fitted = xyz.copy()
+    seen = set()
+    radius = max(1, round(1 / cell))  # one-metre fit window, not a new architectural curve
+    for start in sorted(keep):
+        if len(adjacent[start]) == 2 and start not in anchors:
+            continue
+        for nxt in sorted(adjacent[start]):
+            if (start, nxt) in seen:
+                continue
+            chain = [start, nxt]
+            seen.update(((start, nxt), (nxt, start)))
+            while len(adjacent[chain[-1]]) == 2 and chain[-1] not in anchors:
+                nxt = next(j for j in adjacent[chain[-1]] if j != chain[-2])
+                if (chain[-1], nxt) in seen:
+                    break
+                seen.update(((chain[-1], nxt), (nxt, chain[-1])))
+                chain.append(nxt)
+            if len(chain) < radius*2 + 3:
+                continue  # short junction paths cannot support this fit window
+            for k in range(1, len(chain)-1):
+                fitted[chain[k]] = xyz[chain[max(0,k-radius):k+radius+1]].mean(axis=0)
+    ordered = sorted(i for i in keep if adjacent[i])
+    remap = {old: new for new, old in enumerate(ordered)}
+    return fitted[ordered].round(3).tolist(), [[remap[i], remap[j]] for i in ordered for j in sorted(adjacent[i]) if i < j]
+
+
 def lidar_grids():
     """USGS 3DEP surface grids from fetch_lidar.py: [(dsm - ground, x0, z0)]."""
     out = []
     for f in sorted(glob.glob(os.path.join(RAW, "..", "lidar", "lidar-*.npz"))):
         d = np.load(f)
+        if float(d.get("cell", 1.0)) != 1.0:
+            continue  # Fine structural grids are consumed separately, not as metre-scale building roofs.
         out.append((d["dsm"] - np.nanmedian(d["dtm"]), float(d["x0"]), float(d["z0"])))
     return out
 
@@ -576,17 +629,32 @@ def main():
     assert len(pylons) == len({p[2] for p in pylons}) == 24, "Pritzker pillar extract changed"
     pavilion = {"pylons": pylons, "diameter": 1.8288, "height": 4.572,
                 "source": "https://www.pbcchicago.com/projects/jay-pritzker-pavilion/"}
+    fine = np.load(os.path.join(RAW, "..", "lidar", "lidar-pavilion-fine.npz"))
+    cell = float(fine["cell"])
+    sx, sz = float(fine["x0"]), float(fine["z0"])
+    heights = fine["dsm"] - ground
     boundary = sorted([p[:2] for p in pylons], key=lambda p: math.atan2(p[1]-240, p[0]-210))
     mask = (heights >= 3.6576) & (heights <= 18.288)  # Zahner minimum cover / PBC maximum trellis height
     for j, i in zip(*np.where(mask)):
-        if not inside((sx+i+.5, sz+j+.5), boundary):
+        if not inside((sx+(i+.5)*cell, sz+(j+.5)*cell), boundary):
             mask[j, i] = False
-    skeleton = thin_pipes(mask)
-    # ponytail: metre-scale centreline inference; surveyed member curves must replace it for final joints.
+    # Close only one-cell sampling holes before thinning; heights still come from actual nearby returns.
+    padded = np.pad(mask, 1)
+    dilated = np.logical_or.reduce([padded[j:j+mask.shape[0], i:i+mask.shape[1]] for j in range(3) for i in range(3)])
+    padded = np.pad(dilated, 1)
+    closed = np.logical_and.reduce([padded[j:j+mask.shape[0], i:i+mask.shape[1]] for j in range(3) for i in range(3)])
+    skeleton = thin_pipes(closed)
+    # ponytail: raster centreline inference; surveyed member curves must replace it for final joints.
     nodes, indices = [], {}
     for j, i in zip(*np.where(skeleton)):
         indices[(int(j), int(i))] = len(nodes)
-        nodes.append([sx+int(i)+.5, round(float(heights[j, i]), 2), sz+int(j)+.5])
+        local = heights[max(0,j-1):j+2, max(0,i-1):i+2]
+        valid = mask[max(0,j-1):j+2, max(0,i-1):i+2]
+        height = float(np.median(local[valid])) if valid.any() else float(heights[j, i])
+        if not np.isfinite(height):
+            indices.pop((int(j), int(i)))
+            continue
+        nodes.append([sx+(int(i)+.5)*cell, round(height, 2), sz+(int(j)+.5)*cell])
     edges = []
     for (j, i), index in indices.items():
         for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
@@ -596,8 +664,9 @@ def main():
             if dj and di and ((j+dj, i) in indices or (j, i+di) in indices):
                 continue  # no triangle of duplicate links at a raster corner
             edges.append([index, other])
-    pavilion["trellis"] = {"nodes": nodes, "edges": edges, "ground": round(ground, 3),
-                          "diameter": .3048, "source": "USGS Cook 2017 LiDAR; 1 m raster centreline",
+    nodes, edges = supported_pipes(nodes, edges, pylons, cell)
+    pavilion["trellis"] = {"nodes": nodes, "edges": edges, "ground": round(ground, 3), "cell": cell,
+                          "diameter": .3048, "source": "USGS Cook 2017 LiDAR; quarter-metre raster centreline",
                           "note": "12-inch pipe proxy; per-member diameters and occluded connections unresolved"}
     print("Pritzker measured centreline: %d nodes, %d links; lawn datum %.3f m" % (len(nodes), len(edges), ground))
 

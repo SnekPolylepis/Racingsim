@@ -3,7 +3,8 @@
 
 Walks the Entwine Point Tile tree on the public usgs-lidar-public bucket, downloads only the tiles over the
 requested lat/lon box, and writes lidar-<name>.npz: dsm (max first-surface height), dtm (ground), both in
-metres, cells 1 m, origin at the game-frame (x0, z0) of the box's NW corner. Game frame is chicago.gd
+metres, cells 1 m by default (optional final argument sets cell size), origin at the game-frame
+(x0, z0) of the box's NW corner. Game frame is chicago.gd
 world(): x = (lon + 87.6244) * 82860, z = (41.8848 - lat) * 111320.
 
   python fetch_lidar.py michigan 41.8775 41.8890 -87.6275 -87.6225
@@ -31,6 +32,9 @@ def get(url):
 
 def main():
     name, s, n, w, e = sys.argv[1], *map(float, sys.argv[2:6])
+    cell = float(sys.argv[6]) if len(sys.argv) > 6 else 1.0
+    if not 0 < cell <= 1:
+        raise ValueError("Cell size must be greater than zero and at most one metre")
     to_merc = Transformer.from_crs(4326, 3857, always_xy=True)
     to_ll = Transformer.from_crs(3857, 4326, always_xy=True)
     mx0, my0 = to_merc.transform(w, s)
@@ -85,16 +89,16 @@ def main():
     keep = (c != 7) & (c != 18)  # drop noise
     x, z, y, c = x[keep], z[keep], y[keep], c[keep]
     x0, z0 = np.floor(x.min()), np.floor(z.min())
-    nx, nz = int(np.ceil(x.max() - x0)) + 1, int(np.ceil(z.max() - z0)) + 1
-    ix = (x - x0).astype(int)
-    iz = (z - z0).astype(int)
+    nx, nz = int(np.ceil((x.max() - x0) / cell)) + 1, int(np.ceil((z.max() - z0) / cell)) + 1
+    ix = ((x - x0) / cell).astype(int)
+    iz = ((z - z0) / cell).astype(int)
     dsm = np.full((nz, nx), np.nan, np.float32)
     np.fmax.at(dsm, (iz, ix), y.astype(np.float32))
     g = c == 2
     dtm = np.full((nz, nx), np.nan, np.float32)
     np.fmin.at(dtm, (iz[g], ix[g]), y[g].astype(np.float32))
     out = os.path.join(CACHE, "lidar-%s.npz" % name)
-    np.savez_compressed(out, dsm=dsm, dtm=dtm, x0=x0, z0=z0)
+    np.savez_compressed(out, dsm=dsm, dtm=dtm, x0=x0, z0=z0, cell=cell)
     print("class counts", dict(zip(*[a.tolist() for a in np.unique(c, return_counts=True)])), flush=True)
     print("points %d, grid %dx%d, ground median %.1f, top %.1f -> %s" % (len(x), nx, nz, np.nanmedian(dtm), np.nanmax(dsm), out))
 
