@@ -525,7 +525,27 @@ func open_settings() -> void:
 	check(a, "Mute all sound", s.mute, func(v): setting("mute", v))
 	number(a, "Master volume", s.volume, 0, 1, .05, func(v): setting("volume", v))
 	number(a, "Engine volume", s.engine_volume, 0, 1, .05, func(v): setting("engine_volume", v))
-	number(a, "Tires / road / impacts", s.effects_volume, 0, 1, .05, func(v): setting("effects_volume", v))
+	number(
+		a,
+		"Tyres volume",
+		s.get("tyres_volume", s.effects_volume),
+		0,
+		1,
+		.05,
+		func(v): setting("tyres_volume", v)
+	)
+	number(
+		a,
+		"World / Ambience",
+		s.get("world_volume", s.effects_volume),
+		0,
+		1,
+		.05,
+		func(v): setting("world_volume", v)
+	)
+	number(a, "UI volume", s.get("ui_volume", 0.8), 0, 1, .05, func(v): setting("ui_volume", v))
+	number(a, "Music volume", s.get("music_volume", 0.7), 0, 1, .05, func(v): setting("music_volume", v))
+	check(a, "Audio debug overlay", s.get("audio_debug", false), func(v): setting("audio_debug", v))
 
 
 func update_mapping_labels() -> void:

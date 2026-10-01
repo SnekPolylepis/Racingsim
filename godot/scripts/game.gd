@@ -73,9 +73,14 @@ const DEFAULT_SETTINGS = {
 	"steer_grip_pad": true,
 	"steer_assist_pad": .35,
 	"mute": false,
-	"volume": .55,
-	"engine_volume": .8,
-	"effects_volume": .65,
+	"volume": .7,
+	"engine_volume": .85,
+	"tyres_volume": .8,
+	"world_volume": .75,
+	"ui_volume": .8,
+	"music_volume": .7,
+	"effects_volume": .75,
+	"audio_debug": false,
 	"ffb_enabled": true,
 	"ffb_gain": 1.0,
 	"ffb_damper": 0.25,
@@ -627,6 +632,8 @@ func start_v2_drive() -> void:
 		v2_props.reset()
 	begin_session()
 	controls.clear()
+	if sound and sound.has_method("start_engine"):
+		sound.start_engine()
 	if frontend:
 		frontend.show_page("drive")
 
@@ -636,6 +643,8 @@ func return_v2_menu() -> void:
 	in_menu = true
 	paused = false
 	controls.clear()
+	if sound and sound.has_method("stop_engine"):
+		sound.stop_engine()
 	if ffb:
 		ffb.stop()
 	if record_writer:
@@ -881,7 +890,10 @@ func physics_v2(dt):
 		v2_props.step(dt, [car])
 	var impact = old_velocity.distance_to(car.vel)
 	if impact > .15 and sound:
-		sound.impact(impact)
+		var kind = "concrete"
+		if "wall_hits" in car and not car.wall_hits.is_empty():
+			kind = str(car.wall_hits[0].get("kind", "concrete"))
+		sound.impact(impact, kind)
 	if ffb:
 		var pad_id = controls.get_device_id() if controls.has_method("get_device_id") else 0
 		ffb.update(
@@ -1159,6 +1171,9 @@ func _unhandled_input(event):
 				save_settings()
 			KEY_B:
 				settings.debug = not settings.debug
+				save_settings()
+			KEY_U:
+				settings.audio_debug = not settings.get("audio_debug", false)
 				save_settings()
 
 

@@ -193,6 +193,8 @@ func _draw():
 		draw_telemetry()
 	if app.settings.debug:
 		draw_debug()
+	if app.settings.get("audio_debug", false):
+		draw_audio_debug()
 
 
 func draw_console():
@@ -281,12 +283,14 @@ func draw_console():
 		var hot = (.65 * w.temp + .35 * w.core - car.setup.tempOpt) / car.setup.tempWindow
 		draw_rect(Rect2(pos, Vector2(40, 28)), Color("669c72") if hot < .6 else Color("b66346"))
 		text(pos + Vector2(4, 21), "%.0f" % w.temp, 16)
-	if app.settings.debug or app.settings.telemetry:
+	if app.settings.debug or app.settings.telemetry or app.settings.get("audio_debug", false):
 		draw_set_transform(Vector2.ZERO)
 		if app.settings.debug:
 			draw_debug()
 		if app.settings.telemetry:
 			draw_telemetry()
+		if app.settings.get("audio_debug", false):
+			draw_audio_debug()
 
 
 const SECTOR_COLORS = {
@@ -453,3 +457,68 @@ func draw_debug():
 				2,
 				true
 			)
+
+
+func draw_audio_debug():
+	if app == null or app.sound == null:
+		return
+	var stats = app.sound.debug_stats
+	var x = 280.0
+	var y = 20.0
+	var w = minf(630, size.x - 470)
+	var h = 152.0
+	box(Rect2(x, y, w, h))
+	text(Vector2(x + 14, y + 20), "AUDIO ENGINE TELEMETRY", 13, GOLD)
+	text(
+		Vector2(x + 14, y + 42),
+		(
+			"Voice: %s   RPM: %.0f / %.0f %s"
+			% [
+				stats.get("car_voice", "N/A"),
+				stats.get("audible_rpm", 0.0),
+				stats.get("redline", 7200.0),
+				"[LIMITER]" if stats.get("limiting", false) else ""
+			]
+		),
+		14
+	)
+	text(
+		Vector2(x + 14, y + 64),
+		(
+			"Throttle Load: %.0f%%   Boost: %.2f bar   Reverb: %s"
+			% [
+				stats.get("load", 0.0) * 100.0,
+				stats.get("boost", 0.0) * 1.8,
+				stats.get("reverb_zone", "Open Air")
+			]
+		),
+		14
+	)
+	var weights = stats.get("layer_weights", [0.0, 0.0, 0.0, 0.0])
+	text(
+		Vector2(x + 14, y + 86),
+		(
+			"RPM Layers: Idle %.2f | Low %.2f | Mid %.2f | High %.2f"
+			% [weights[0], weights[1], weights[2], weights[3]]
+		),
+		13,
+		MUTED
+	)
+	var surf_names = ["Tarmac", "Kerb", "Grass", "Gravel", "Runoff"]
+	var s_id = clampi(int(stats.get("surface_id", 0)), 0, 4)
+	text(
+		Vector2(x + 14, y + 108),
+		(
+			"Tyre Slip: Lat %.0f%% | Long %.0f%%   Surface: %s"
+			% [stats.get("tire_lat", 0.0) * 100.0, stats.get("tire_long", 0.0) * 100.0, surf_names[s_id]]
+		),
+		13,
+		MUTED
+	)
+	var bus_text = "Buses: "
+	for b in ["Master", "Engine", "Tyres", "World", "UI"]:
+		var idx = AudioServer.get_bus_index(b)
+		if idx != -1:
+			var db = AudioServer.get_bus_volume_db(idx)
+			bus_text += "%s %.0fdB  " % [b, db]
+	text(Vector2(x + 14, y + 130), bus_text, 12, MUTED)

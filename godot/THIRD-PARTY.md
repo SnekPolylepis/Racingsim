@@ -40,6 +40,15 @@ Both recordings below are offered under **CC0 1.0** on their author pages. Publi
 
 Edits: mono conversion, removal of DC/wind rumble, selected excerpts, pitch stabilization, seamless overlap, level matching and filtered off-throttle variants. `assets/audio/bank-manifest.json` records exact excerpts, tuned RPM anchors, output hashes and PCM measurements. These are sound-designed game voices, not authenticated recordings of the 296 GT3 or each selectable car. No endorsement by the recordists or manufacturer is implied. Only eight edited WAV loops ship; raw MP3 sources stay in the build workspace. Godot 4.6.2 decodes them and the already-present NumPy 2.3.5 runtime builds the loops; no codec/package was downloaded.
 
+## Procedural sim sound synthesis & mixing architecture (2026-09-30)
+
+Authored entirely in-engine in `scripts/audio.gd` (MIT License) without external binary audio blobs. Generates 22,050 Hz 16-bit PCM procedural streams for:
+- Turbo compressor spool whistle, blow-off valve flutter, and hybrid electric MGU-K motor whine;
+- Separated lateral scrub and longitudinal tyre screech across five surface types (tarmac, kerb, grass, gravel, runoff);
+- Surface interactions: kerb rumble strip thrum, gravel trap roar, grass rustle, and chassis skid-block bottoming;
+- Impact acoustics categorized by barrier material (Armco steel, tyre barrier, concrete wall, and knock-over props);
+- Dynamic multi-bus routing (`Master`, `Engine`, `Tyres`, `World`, `UI`, `Music`) with `AudioEffectLimiter` on Master, `AudioEffectCompressor` on Engine/Tyres, and spatial `AudioEffectReverb` zones for open air, grandstand slap-back, and underpass/tunnel reverb.
+
 ## Circuit geometry and elevation data
 
 - **Spa-Francorchamps & Nürburgring Nordschleife**:
