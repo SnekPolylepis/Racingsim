@@ -67,6 +67,9 @@ Models: **Claude** (Opus 5.5: physics, numerics, reviews), **Sol** (GPT-6 Sol: a
 | CI | GitHub Actions: headless tools/run_gates.ps1 equivalent on Linux on every push (suites, not features) | Gemini | | review: Sol | rb/CI; 39/39 gates pass locally, .github/workflows/gates.yml |
 | K-01 | Kerb reference data for Spa-Francorchamps and Nordschleife section 1 | Gemini | | done (coarse draft, PR #38) | rb/K-01-kerbs |
 | K-01b | Retrace kerbs at apex scale (crops centred on each apex, 40 m wide), one entry per physical kerb with type; Spa and Nordschleife S1. K-01 data is too coarse to place kerbs from | GPT Luna or Sonnet | K-01 | review: Claude | rb/K-01b-kerbs |
+| K-03 | Full-lap Nordschleife kerb trace: 99 verified segments across 44 corners, real profiles, tyre footprint contact (16 mm rib), re-baked 3D scene | Gemini | K-01b | done | `codex/gemini-audio-kerbs-preview10`; 99 entries reviewed, CACHE_REVISION 11, nordschleife 7/7, footprint 10/10, laps 30/30 |
+| AUDIO-02 | Audio overhaul: FIR lowpass on procedural valve noise, Helmholtz body resonance, F2004 crossfade sync, bus gain un-doubling, warm Chase EQ | Gemini | AUDIO-01 | done | `codex/gemini-audio-kerbs-preview10`; 40+ WAVs regenerated, audio 64/64, sweep 480/480, deep analysis 62/62 |
+
 
 
 ## Decisions and later

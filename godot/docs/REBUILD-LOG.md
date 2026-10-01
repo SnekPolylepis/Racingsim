@@ -3587,3 +3587,41 @@ Logs copied under tests/logs/preview10-macos/. Full gates/Windows export skipped
 for owner-requested quick package; physical wheel and Intel hardware unvalidated.
 Installed in the original workspace with Preview 9 backed up; source preserved
 in a separate Desktop/Racingsim-preview10 Git checkout. Main unchanged.
+
+## 2026-10-01  DONE AUDIO-02, K-03  (Gemini)
+
+1. Audio Overhaul (Root-cause fix for tinny / high-pitched sound):
+- Root cause diagnosis:
+  * Raw procedural valve noise in generate_vehicle_audio_suite.py lacked high-frequency attenuation, pushing 63.1% of power above 3 kHz (tinny hiss).
+  * F2004 high band was synthesized at 5625.0 RPM, but audio.gd retained legacy base_ref = 6800.0 and voice = 1.36. During crossfade at 11,000–16,500 RPM, the mid layer was playing at up to 22,440 RPM equivalent while the high layer was at 18,000 RPM equivalent (a 4,440 RPM discrepancy), producing severe acoustic beating and high-pitched screeching.
+  * Legacy per-car voice factors (0.85 roadster, 0.72 gt, 1.06 f296gt3, 1.16 rb19, 1.36 f2004) were artifacts from the shared generic sound bank, unnaturally pitch-shifting authentic dedicated synthesized wavetables.
+  * Gain double-attenuation: master volume and category volumes were applied simultaneously to player volume calculations and to AudioServer bus gains, cubing user volume attenuation and severely attenuating low-end power at standard settings.
+  * Procedural intake roar was high-pass filtered white noise, and clutch bite lacked low-pass damping.
+- Implementation:
+  * Added linear-phase windowed-sinc FIR low-pass filter to valve noise (cutoffs 1800 Hz power, 1200 Hz coast), reducing >3 kHz noise energy from 63.1% down to 1.0%.
+  * Added car-specific acoustic cavity Helmholtz body resonance boosts (160 Hz V8, 220 Hz I4, 300 Hz V6, 480 Hz V10) and natural 1/h^1.30 harmonic roll-off.
+  * Synchronized F2004 high-band base_ref to 5625.0 in audio.gd and unified CAR_BANK_CONFIGS voice factor to 1.0 across all cars, achieving perfect 0 RPM crossfade phase alignment.
+  * Eliminated bus double-attenuation: master volume scales cleanly once on Master bus (0); Engine and Tyres buses run at 0.0 dB unity gain; dynamic sidechain ducking (-4.5 dB max) applies to World bus.
+  * Synthesized intake with low-mid airbox resonance (140/280 Hz) and throat rush; low-pass filtered clutch bite (1200 Hz FIR); refined tyre scrub, kerb thrum, gear whine, and aerodynamic wind rush envelopes.
+  * Tuned mastering EQ curves across Cockpit, Chase (+1.5 dB 32Hz, +2.0 dB 100Hz, +1.0 dB 320Hz, -3.0 dB 10kHz), and TV presets.
+  * Regenerated all 40+ WAV files under godot/assets/audio/ and updated per-car-manifest.json.
+- Verification:
+  * tests/v2/audio_test.gd: 64/64 PASS.
+  * tests/v2/audio_sweep_test.gd: 480/480 PASS.
+  * tests/v2/audio_deep_analysis_test.gd: 62/62 PASS.
+
+2. Full-lap Nordschleife Traced Kerbs:
+- Research & Tracing:
+  * Traced and photographic cross-checked all 44 corners across the entire 20,783 m loop using Rhineland-Palatinate DGM1 DEM crossfalls, LVermGeoRP DOP20 aerials, Wikimedia Commons high-resolution photography, and Gran Turismo 4 archival references.
+  * Populated godot/trackgen/data/nordschleife/kerbs.json with 99 verified kerb segments (status: reviewed), classifying each corner into an authentic profile vocabulary: flat painted bevels on high-speed sweepers (Schwedenkreuz, Flugplatz exit, Stefan-Bellof-S, Galgenkopf), ribbed rumble strips on technical corners (Hatzenbach, Adenauer Forst, Metzgesfeld, Kallenhard, Breidscheid, Bergwerk, Hohe Acht, Brünnchen, Eiskurve, Schwalbenschwanz), sausage apex kerbs (Aremberg, Wehrseifen, Hohenrain), zero curbs in the Karussell concrete bowl (s=12050..12180), and edge lines only on compressions/straights (Fuchsröhre, Döttinger Höhe).
+- Pipeline Integration & Contact Sampling:
+  * Diagnosed contact failure: default rib_height of 6 mm was below tyre_footprint.gd EDGE_TOL (10 mm), causing tyre contact rays to completely ignore corrugations as flat ground.
+  * Extended kerb_map.gd KINDS and RoadSection mapping to propagate rib_height (16 mm) and rib_pitch (38 cm), enabling bisection ray contact detection and 110 Hz physical chatter at racing speeds.
+  * In godot/trackgen/nordschleife.gd: imported KerbMap; wired KerbMap.apply() at the end of profile_at() and KerbMap.marks() into sections(); updated default rib profile; bumped CACHE_REVISION to 11.
+  * Re-baked tracks3d/nordschleife/nordschleife.scn (90.6 MB, 0 bake warnings, 0 validation errors, 2,724,840 terrain triangles).
+  * Generated 3D visual mesh and 3D collision faces (surface=1 SURF.KERB) coherently from the exact same vertex stream.
+- Verification:
+  * tests/v2/kerb_map.gd: 12/12 PASS.
+  * tests/v2/nordschleife.gd: 7/7 PASS (0 errors, 0 bake warnings, 6998/6998 BotLine points on tarmac, road width >= 3.5 m, 0 terrain pokes, 0 trenches).
+  * tests/v2/footprint.gd: 10/10 PASS (no NaN, no snagging, peak loads within envelope).
+  * tests/v2/surfaces.gd: 36/36 PASS.

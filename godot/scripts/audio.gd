@@ -69,7 +69,7 @@ const CAR_BANK_CONFIGS = {
 				"res://assets/audio/roadster_high_coast.wav"
 			]
 		],
-		"voice": 0.85,
+		"voice": 1.0,
 		"max_pitch": 2.4,
 		"is_turbo": false,
 		"is_hybrid": false,
@@ -107,7 +107,7 @@ const CAR_BANK_CONFIGS = {
 				"res://assets/audio/f296gt3_high_coast.wav"
 			]
 		],
-		"voice": 1.06,
+		"voice": 1.0,
 		"max_pitch": 2.5,
 		"is_turbo": true,
 		"is_hybrid": false,
@@ -125,7 +125,7 @@ const CAR_BANK_CONFIGS = {
 			["mid", 3600.0, "res://assets/audio/gt_mid_power.wav", "res://assets/audio/gt_mid_coast.wav"],
 			["high", 6200.0, "res://assets/audio/gt_high_power.wav", "res://assets/audio/gt_high_coast.wav"]
 		],
-		"voice": 0.72,
+		"voice": 1.0,
 		"max_pitch": 2.2,
 		"is_turbo": false,
 		"is_hybrid": false,
@@ -163,7 +163,7 @@ const CAR_BANK_CONFIGS = {
 				"res://assets/audio/f2004_high_coast.wav"
 			]
 		],
-		"voice": 1.36,
+		"voice": 1.0,
 		"max_pitch": 3.2,
 		"is_turbo": false,
 		"is_hybrid": false,
@@ -196,7 +196,7 @@ const CAR_BANK_CONFIGS = {
 				"res://assets/audio/rb19_high_coast.wav"
 			]
 		],
-		"voice": 1.16,
+		"voice": 1.0,
 		"max_pitch": 2.7,
 		"is_turbo": true,
 		"is_hybrid": true,
@@ -327,10 +327,10 @@ static func setup_audio_buses() -> void:
 				eng_has_eq = true
 		if not eng_has_comp:
 			var comp = AudioEffectCompressor.new()
-			comp.threshold = -14.0
-			comp.ratio = 3.5
-			comp.attack_us = 15000.0
-			comp.release_ms = 120.0
+			comp.threshold = -9.0
+			comp.ratio = 2.2
+			comp.attack_us = 25000.0
+			comp.release_ms = 140.0
 			comp.gain = 1.0
 			AudioServer.add_bus_effect(eng_idx, comp)
 		if not eng_has_eq:
@@ -559,7 +559,9 @@ func make_sound(kind: String) -> AudioStreamWAV:
 
 		match kind:
 			"intake":
-				value = (noise - filtered) * 0.16
+				var roar = sin(TAU * 140.0 * t) * 0.35 + sin(TAU * 280.0 * t) * 0.20
+				var throat = filtered * 0.30 + (noise - filtered) * 0.05
+				value = (roar + throat) * 0.50
 			"turbo":
 				var whistle = sin(TAU * 2600.0 * t + sin(TAU * 42.0 * t) * 0.8) * 0.32
 				var hiss = (noise - filtered) * 0.15
@@ -574,33 +576,35 @@ func make_sound(kind: String) -> AudioStreamWAV:
 					sin(TAU * 1100.0 * t) * 0.32 + sin(TAU * 2200.0 * t) * 0.18 + sin(TAU * 3300.0 * t) * 0.08
 				)
 			"tires", "tires_lat":
-				var scrub = filtered * 0.22 + (noise - filtered) * 0.12
+				var scrub = filtered * 0.32 + (noise - filtered) * 0.08
 				var screech = (
-					sin(TAU * 880.0 * t + sin(TAU * 21.0 * t) * 1.1) * 0.24 + sin(TAU * 1320.0 * t) * 0.14
+					sin(TAU * 240.0 * t + sin(TAU * 18.0 * t) * 1.2) * 0.30
+					+ sin(TAU * 480.0 * t) * 0.16
+					+ sin(TAU * 65.0 * t) * 0.22
 				)
 				value = scrub + screech
 			"tires_long":
-				var tear = filtered * 0.38 + noise * 0.12
+				var tear = filtered * 0.42 + (noise - filtered) * 0.08
 				var groan = (
-					sin(TAU * 540.0 * t + sin(TAU * 16.0 * t) * 1.4) * 0.28 + sin(TAU * 810.0 * t) * 0.12
+					sin(TAU * 180.0 * t + sin(TAU * 14.0 * t) * 1.4) * 0.32 + sin(TAU * 360.0 * t) * 0.18
 				)
 				value = tear + groan
 			"road":
-				value = filtered * 0.55 + (noise - filtered) * 0.08
+				value = filtered * 0.60 + (noise - filtered) * 0.06
 			"wind":
-				value = (filtered * 0.42 + (noise - filtered) * 0.10 + sin(TAU * 48.0 * t) * 0.15) * 0.75
+				value = (filtered * 0.52 + (noise - filtered) * 0.06 + sin(TAU * 38.0 * t) * 0.20 + sin(TAU * 76.0 * t) * 0.12) * 0.70
 			"whine":
 				value = (
-					sin(TAU * 480.0 * t) * 0.32
-					+ sin(TAU * 960.0 * t) * 0.20
-					+ sin(TAU * 1440.0 * t) * 0.08
-					+ (noise - filtered) * 0.06
+					sin(TAU * 440.0 * t) * 0.24
+					+ sin(TAU * 880.0 * t) * 0.14
+					+ sin(TAU * 1320.0 * t) * 0.06
+					+ filtered * 0.04
 				)
 			"clutch_bite":
-				value = (sin(TAU * (320.0 - 140.0 * t) * t) * 0.55 + noise * 0.28) * exp(-t * 12.0)
+				value = (sin(TAU * (320.0 - 140.0 * t) * t) * 0.55 + filtered * 0.20) * exp(-t * 12.0)
 			"kerb":
-				var rib_pulse = sin(TAU * 160.0 * t) * 0.40 + sin(TAU * 320.0 * t) * 0.18
-				var edge_snap = (noise * 0.25) * pow(maxf(0.0, sin(TAU * 80.0 * t)), 4.0)
+				var rib_pulse = sin(TAU * 58.0 * t) * 0.45 + sin(TAU * 116.0 * t) * 0.28 + sin(TAU * 232.0 * t) * 0.14
+				var edge_snap = (filtered * 0.25) * pow(maxf(0.0, sin(TAU * 58.0 * t)), 3.0)
 				value = rib_pulse + edge_snap
 			"gravel":
 				var gravel_roar = filtered * 0.45
@@ -787,10 +791,10 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 
 	# Driving simulation levels (fade to 0 when not active / in menu)
 	var active_mult = 1.0 if (active and not is_muted) else 0.0
-	engine_level = lerpf(engine_level, active_mult * user_master * eng_setting, 1.0 - exp(-dt * 14.0))
-	effects_level = lerpf(effects_level, active_mult * user_master * eff_setting, 1.0 - exp(-dt * 14.0))
-	tyres_level = lerpf(tyres_level, active_mult * user_master * tyres_setting, 1.0 - exp(-dt * 14.0))
-	world_level = lerpf(world_level, active_mult * user_master * world_setting, 1.0 - exp(-dt * 14.0))
+	engine_level = lerpf(engine_level, active_mult * eng_setting, 1.0 - exp(-dt * 14.0))
+	effects_level = lerpf(effects_level, active_mult * eff_setting, 1.0 - exp(-dt * 14.0))
+	tyres_level = lerpf(tyres_level, active_mult * tyres_setting, 1.0 - exp(-dt * 14.0))
+	world_level = lerpf(world_level, active_mult * world_setting, 1.0 - exp(-dt * 14.0))
 
 	var car_rpm = float(car.rpm) if "rpm" in car else 1250.0
 	var car_speed = float(car.speed) if "speed" in car else 0.0
@@ -881,7 +885,8 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	for i in bands.size():
 		var band = bands[i]
 		var weight = sqrt(1.0 - blend) if i == lower else (sqrt(blend) if i == upper else 0.0)
-		var base_ref = 6800.0 if ("f2004" in current_car_key and band[0] == "high") else band[1]
+		debug_stats.layer_weights[i] = (1.0 - blend) if i == lower else (blend if i == upper else 0.0)
+		var base_ref = 5625.0 if ("f2004" in current_car_key and band[0] == "high") else band[1]
 		var pitch = clampf(audible_rpm / base_ref * engine_voice, 0.35, engine_max_pitch)
 		var power = players["engine_" + band[0]]
 		var coast = players["coast_" + band[0]]
@@ -984,16 +989,16 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	elif current_surface_id == 3:  # Gravel
 		surface_tyre_mult = 0.25
 
-	players.tires.volume_db = linear_to_db(maxf(0.00001, tyres_level * tire_level * 0.28 * surface_tyre_mult))
-	players.tires.pitch_scale = clampf(0.85 + car_speed / 45.0 + max_slip * 0.4, 0.7, 1.8)
+	players.tires.volume_db = linear_to_db(maxf(0.00001, tyres_level * tire_level * 0.16 * surface_tyre_mult))
+	players.tires.pitch_scale = clampf(0.85 + car_speed / 50.0 + max_slip * 0.35, 0.7, 1.55)
 
 	players.tires_lat.volume_db = linear_to_db(
-		maxf(0.00001, tyres_level * tire_lat_level * 0.26 * surface_tyre_mult)
+		maxf(0.00001, tyres_level * tire_lat_level * 0.12 * surface_tyre_mult)
 	)
-	players.tires_lat.pitch_scale = clampf(0.9 + car_speed / 42.0, 0.8, 1.9)
+	players.tires_lat.pitch_scale = clampf(0.85 + car_speed / 48.0, 0.75, 1.6)
 
 	players.tires_long.volume_db = linear_to_db(
-		maxf(0.00001, tyres_level * tire_long_level * 0.24 * surface_tyre_mult)
+		maxf(0.00001, tyres_level * tire_long_level * 0.18 * surface_tyre_mult)
 	)
 	players.tires_long.pitch_scale = clampf(0.75 + car_speed / 50.0, 0.65, 1.6)
 
@@ -1008,9 +1013,9 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	var on_kerb = current_surface_id == 1
 	var kerb_target = 0.45 if on_kerb else 0.0
 	players.kerb.volume_db = linear_to_db(
-		maxf(0.00001, tyres_level * kerb_target * clampf(car_speed / 28.0, 0.2, 1.2))
+		maxf(0.00001, tyres_level * kerb_target * clampf(car_speed / 28.0, 0.2, 1.2) * 0.40)
 	)
-	players.kerb.pitch_scale = clampf(0.7 + car_speed / 25.0, 0.6, 2.2)
+	players.kerb.pitch_scale = clampf(0.65 + car_speed / 38.0, 0.6, 1.6)
 
 	# Gravel trap spray & roar
 	var on_gravel = current_surface_id == 3
@@ -1043,10 +1048,10 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	players.whine.volume_db = linear_to_db(
 		maxf(
 			0.00001,
-			engine_level * clampf(car_speed / 65.0, 0.0, 1.0) * (0.14 if is_race_car else 0.04) * whine_boost
+			engine_level * clampf(car_speed / 65.0, 0.0, 1.0) * (0.045 if is_race_car else 0.015) * whine_boost
 		)
 	)
-	players.whine.pitch_scale = clampf(0.5 + car_speed / 32.0, 0.4, 2.5)
+	players.whine.pitch_scale = clampf(0.5 + car_speed / 36.0, 0.4, 2.1)
 
 	# Aerodynamic wind rush (Cockpit gets windshield rush, TV gets lower)
 	var wind_factor = clampf(car_speed / 72.0, 0.0, 1.6)
@@ -1054,7 +1059,7 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 		wind_factor *= 1.25  # Cabin wind rush on windshield
 	elif active_mix_preset == "TV":
 		wind_factor *= 0.65
-	players.wind.volume_db = linear_to_db(maxf(0.00001, world_level * wind_factor * 0.15))
+	players.wind.volume_db = linear_to_db(maxf(0.00001, world_level * wind_factor * 0.08))
 	players.wind.pitch_scale = clampf(0.8 + car_speed / 65.0, 0.7, 1.8)
 
 	# Ghost Car / passing car Doppler effect
@@ -1094,7 +1099,7 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 func _update_track_spatial_acoustics(car, dt: float) -> void:
 	var station = float(car.station if "station" in car else 0.0)
 	var track_name = str(car.get("track_name") if "track_name" in car else "").to_lower()
-	var is_spa = "spa" in track_name or track_name.is_empty()
+	var is_spa = "spa" in track_name and not track_name.is_empty()
 
 	if players.has("spa_ambience"):
 		var amb_vol = world_level * 0.12 if is_spa else 0.0
@@ -1169,7 +1174,7 @@ func _update_track_spatial_acoustics(car, dt: float) -> void:
 
 			# Spa PA circuit announcer swell around paddock and spectator banks
 			if players.has("spa_pa"):
-				if near_spectators or (station > 6850.0 or station < 150.0):
+				if is_spa and (near_spectators or (station > 6850.0 or station < 150.0)):
 					players.spa_pa.volume_db = linear_to_db(maxf(0.00001, world_level * 0.20))
 				else:
 					players.spa_pa.volume_db = -80.0
@@ -1198,44 +1203,43 @@ func _update_bus_volumes(settings: Dictionary, master_gain: float, ducking_db: f
 	AudioServer.set_bus_volume_db(0, linear_to_db(maxf(0.0001, master_gain)))
 
 	if eng_idx != -1:
-		AudioServer.set_bus_volume_db(
-			eng_idx, linear_to_db(maxf(0.0001, float(settings.get("engine_volume", 0.85))))
-		)
+		AudioServer.set_bus_volume_db(eng_idx, 0.0)
 		# Configure Engine EQ for Cockpit vs Chase vs TV presets
 		for e in AudioServer.get_bus_effect_count(eng_idx):
 			var eff_obj = AudioServer.get_bus_effect(eng_idx, e)
 			if eff_obj is AudioEffectEQ6:
 				if active_mix_preset == "Cockpit":
 					# Cockpit: boost low cabin rumble, intake (320 Hz) and whine (1 kHz), cut exterior rasp at 10 kHz
-					eff_obj.set_band_gain_db(0, 1.2)
-					eff_obj.set_band_gain_db(1, 1.8)
+					eff_obj.set_band_gain_db(0, 1.5)
+					eff_obj.set_band_gain_db(1, 2.0)
 					eff_obj.set_band_gain_db(2, 2.5)
 					eff_obj.set_band_gain_db(3, 1.5)
-					eff_obj.set_band_gain_db(4, -1.5)
-					eff_obj.set_band_gain_db(5, -4.5)
+					eff_obj.set_band_gain_db(4, -2.0)
+					eff_obj.set_band_gain_db(5, -5.0)
 				elif active_mix_preset == "TV":
-					# TV: broadcast camera distance roll-off
-					eff_obj.set_band_gain_db(0, -3.0)
-					eff_obj.set_band_gain_db(1, -1.5)
-					eff_obj.set_band_gain_db(2, 0.5)
-					eff_obj.set_band_gain_db(3, 2.0)
-					eff_obj.set_band_gain_db(4, 1.0)
+					# TV: broadcast camera with punchy low-end presence
+					eff_obj.set_band_gain_db(0, 1.0)
+					eff_obj.set_band_gain_db(1, 1.5)
+					eff_obj.set_band_gain_db(2, 1.0)
+					eff_obj.set_band_gain_db(3, 1.5)
+					eff_obj.set_band_gain_db(4, 0.5)
 					eff_obj.set_band_gain_db(5, -2.0)
 				else:
-					# Chase: neutral full-spectrum
-					for b in 6:
-						eff_obj.set_band_gain_db(b, 0.0)
+					# Chase: warm body curve eliminating digital glare
+					eff_obj.set_band_gain_db(0, 1.5)
+					eff_obj.set_band_gain_db(1, 2.0)
+					eff_obj.set_band_gain_db(2, 1.0)
+					eff_obj.set_band_gain_db(3, 0.0)
+					eff_obj.set_band_gain_db(4, -1.0)
+					eff_obj.set_band_gain_db(5, -3.0)
 				break
 
 	if tyres_idx != -1:
-		AudioServer.set_bus_volume_db(
-			tyres_idx, linear_to_db(maxf(0.0001, float(settings.get("tyres_volume", eff))))
-		)
+		AudioServer.set_bus_volume_db(tyres_idx, 0.0)
 
 	if world_idx != -1:
 		# Ducking applied to World bus
-		var base_world_db = linear_to_db(maxf(0.0001, float(settings.get("world_volume", eff))))
-		AudioServer.set_bus_volume_db(world_idx, base_world_db + ducking_db)
+		AudioServer.set_bus_volume_db(world_idx, ducking_db)
 
 		# Configure World EQ for cabin isolation (Cockpit) and wall acoustic occlusion
 		for e in AudioServer.get_bus_effect_count(world_idx):

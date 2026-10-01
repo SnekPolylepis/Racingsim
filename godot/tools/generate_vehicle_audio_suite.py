@@ -82,6 +82,15 @@ def save_wav(path: Path, data: np.ndarray, rate: int = RATE) -> dict:
     }
 
 
+def design_fir_lowpass(cutoff_hz: float, rate: int = RATE, num_taps: int = 65) -> np.ndarray:
+    """Design linear-phase windowed-sinc FIR low-pass filter."""
+    t = np.arange(num_taps) - (num_taps - 1) / 2.0
+    fc = cutoff_hz / rate
+    h = np.sinc(2.0 * fc * t) * (2.0 * fc)
+    h *= np.hamming(num_taps)
+    return h / np.sum(h)
+
+
 def synthesize_combustion_cycle(
     cylinders: int,
     rpm: float,
@@ -94,6 +103,7 @@ def synthesize_combustion_cycle(
     turbo_whistle: bool = False,
     v10_scream: bool = False,
     electric_mgu: bool = False,
+    resonance_freq: float = 240.0,
 ) -> np.ndarray:
     """Synthesize cylinder-by-cylinder gas dynamics and acoustic propagation."""
     samples = int(duration_s * rate)
@@ -136,60 +146,77 @@ def synthesize_combustion_cycle(
     for f_angle in firing_angles:
         rel_phase = ((t * cycle_freq * 720.0 - f_angle) % 720.0)
         # Primary combustion expansion pulse
-        pulse = np.exp(-((rel_phase - 25.0) ** 2) / (2.0 * rise_w**2)) * 0.8
-        pulse += np.exp(-((rel_phase - 95.0) ** 2) / (2.0 * decay_w**2)) * 0.5
+        pulse = np.exp(-((rel_phase - 25.0) ** 2) / (2.0 * rise_w**2)) * 0.85
+        pulse += np.exp(-((rel_phase - 95.0) ** 2) / (2.0 * decay_w**2)) * 0.55
         # Secondary manifold reflection pulse
-        pulse += np.exp(-((rel_phase - 210.0) ** 2) / (2.0 * 55.0**2)) * 0.22
+        pulse += np.exp(-((rel_phase - 210.0) ** 2) / (2.0 * 55.0**2)) * 0.25
         out += pulse
 
     # Add exhaust pipe resonance and harmonic series
     combustion_fundamental = (rpm / 60.0) * (cylinders / 2.0)
     for h in range(1, 12):
+        freq = combustion_fundamental * h
+        if freq > RATE * 0.45:
+            continue
         if is_power:
-            # Strong odd/even harmonics under load
-            h_amp = 1.0 / (h ** 0.85)
-            if cylinders == 4 and h % 2 == 0:
-                h_amp *= 1.35  # Inline 4 2nd & 4th order dominance
+            # Smooth acoustic falloff (1/h^1.45) with strong fundamental power and warmth
+            h_amp = 1.0 / (h ** 1.45)
+            if h == 1:
+                h_amp *= 1.80  # Solid combustion fundamental power and warmth
+            elif h == 2:
+                h_amp *= 1.35  # Exhaust pulse body
+            if cylinders == 4 and h in [2, 4]:
+                h_amp *= 1.30  # Inline 4 2nd & 4th order dominance
             if cylinders == 8 and is_crossplane and h in [1, 3, 5]:
-                h_amp *= 1.55  # V8 crossplane burble subharmonics
+                h_amp *= 1.45  # V8 crossplane burble subharmonics
             if cylinders == 10 and h in [1, 2, 4]:
-                h_amp *= 1.45  # V10 banshee scream orders
+                h_amp *= 1.35  # V10 banshee scream orders
+
+            # Acoustic cavity body resonance boost around resonance_freq
+            body_boost = 1.0 + 0.60 * np.exp(-((freq - resonance_freq) ** 2) / (2.0 * (resonance_freq * 0.40)**2))
+            h_amp *= body_boost
         else:
-            # Coast: attenuated high harmonics, muffled low orders
-            h_amp = 0.4 / (h ** 1.8)
+            # Coast: muffled low orders, heavily attenuated high harmonics
+            h_amp = 0.50 / (h ** 2.0)
+            if h == 1:
+                h_amp *= 1.50
+            body_boost = 1.0 + 0.40 * np.exp(-((freq - resonance_freq) ** 2) / (2.0 * (resonance_freq * 0.35)**2))
+            h_amp *= body_boost
 
         phase_shift = (h * 1.31) % (2 * np.pi)
-        out += np.sin(2.0 * np.pi * combustion_fundamental * h * t + phase_shift) * h_amp * 0.35
+        out += np.sin(2.0 * np.pi * freq * t + phase_shift) * h_amp * 0.38
 
-    # Mechanical valvetrain & cylinder friction noise
+    # Mechanical valvetrain & cylinder friction noise (filtered to remove digital hiss)
     rng = np.random.default_rng(int(rpm * 100) + cylinders)
-    valve_noise = rng.standard_normal(samples)
-    # Filter valve noise
-    if is_power:
-        out += valve_noise * (0.08 + rasp * 0.12)
-    else:
-        out += valve_noise * 0.05
+    raw_noise = rng.standard_normal(samples)
+    noise_cutoff = 1600.0 if is_power else 1100.0
+    fir_taps = design_fir_lowpass(noise_cutoff, rate)
+    valve_noise = np.convolve(raw_noise, fir_taps, mode="same")
 
-    # Special character enhancements:
+    if is_power:
+        out += valve_noise * (0.04 + rasp * 0.06)
+    else:
+        out += valve_noise * 0.025
+
+    # Special character enhancements (tuned down to sit organically in mix):
     if turbo_whistle:
-        # Turbocharger impeller spool frequency (2.4 kHz to 6 kHz proportional to RPM)
-        turbo_freq = 2200.0 + (rpm / 8500.0) * 3600.0
-        turbo_tone = np.sin(2.0 * np.pi * turbo_freq * t + np.sin(2.0 * np.pi * 32.0 * t) * 0.8)
-        turbo_tone += np.sin(2.0 * np.pi * turbo_freq * 1.5 * t) * 0.35
-        out += turbo_tone * (0.18 if is_power else 0.04)
+        # Turbocharger impeller spool frequency
+        turbo_freq = 1400.0 + (rpm / 8500.0) * 1600.0
+        turbo_tone = np.sin(2.0 * np.pi * turbo_freq * t + np.sin(2.0 * np.pi * 28.0 * t) * 0.5)
+        out += turbo_tone * (0.05 if is_power else 0.015)
 
     if v10_scream:
-        # Screaming acoustic resonance around 2.8 kHz - 5.5 kHz
-        scream_freq = 3100.0 + (rpm / 19000.0) * 2600.0
-        scream = np.sin(2.0 * np.pi * scream_freq * t) * 0.28
-        scream += np.sin(2.0 * np.pi * scream_freq * 1.414 * t) * 0.16
-        out += scream * (0.35 if is_power else 0.08)
+        # Musical 3rd combustion harmonic reinforcement (authentic high-order V10 manifold howl)
+        scream_freq = combustion_fundamental * 3.0
+        if scream_freq < RATE * 0.45:
+            scream = np.sin(2.0 * np.pi * scream_freq * t) * 0.16
+            out += scream * (0.10 if is_power else 0.02)
 
     if electric_mgu:
-        # Dual-frequency electric motor whir (1100 Hz / 2200 Hz harmonics)
-        mgu_freq = 1150.0 + (rpm / 15000.0) * 850.0
-        mgu = np.sin(2.0 * np.pi * mgu_freq * t) * 0.22 + np.sin(2.0 * np.pi * mgu_freq * 2.0 * t) * 0.14
-        out += mgu * (0.24 if is_power else 0.15)
+        # Dual-frequency electric motor whir
+        mgu_freq = 950.0 + (rpm / 15000.0) * 750.0
+        mgu = np.sin(2.0 * np.pi * mgu_freq * t) * 0.18 + np.sin(2.0 * np.pi * mgu_freq * 2.0 * t) * 0.10
+        out += mgu * (0.08 if is_power else 0.04)
 
     # Process seamless loop
     looped = make_seamless_loop(out, crossfade_len=min(1024, samples // 8))
@@ -205,7 +232,7 @@ def generate_all():
         "cars": {},
     }
 
-    # Car specifications: (cylinders, redline, v_angle, is_crossplane, rasp, turbo, v10, mgu)
+    # Car specifications: (cylinders, redline, v_angle, is_crossplane, rasp, turbo, v10, mgu, resonance_freq)
     car_configs = {
         "roadster": {
             "name": "Mazda MX-5 NA 1.6 Inline-4",
@@ -218,10 +245,11 @@ def generate_all():
             ],
             "v_angle": 0.0,
             "crossplane": False,
-            "rasp": 0.25,
+            "rasp": 0.22,
             "turbo": False,
             "v10": False,
             "mgu": False,
+            "resonance_freq": 220.0,
         },
         "f296gt3": {
             "name": "Ferrari 296 GT3 V6 Twin-Turbo",
@@ -230,14 +258,15 @@ def generate_all():
                 ("idle", 1250.0, 1.8),
                 ("low", 2800.0, 1.2),
                 ("mid", 5200.0, 1.0),
-                ("high", 8200.0, 0.9),
+                ("high", 6800.0, 0.9),
             ],
             "v_angle": 120.0,
             "crossplane": False,
-            "rasp": 0.12,
+            "rasp": 0.10,
             "turbo": True,
             "v10": False,
             "mgu": False,
+            "resonance_freq": 300.0,
         },
         "gt": {
             "name": "Grand Tourer Crossplane V8",
@@ -250,26 +279,30 @@ def generate_all():
             ],
             "v_angle": 90.0,
             "crossplane": True,
-            "rasp": 0.18,
+            "rasp": 0.15,
             "turbo": False,
             "v10": False,
             "mgu": False,
+            "resonance_freq": 160.0,
         },
         "f2004": {
             "name": "Ferrari F2004 3.0L V10",
             "cylinders": 10,
             "bands": [
                 ("idle", 3500.0, 1.5),
-                ("low", 7500.0, 1.0),
-                ("mid", 13500.0, 0.8),
-                ("high", 18500.0, 0.7),
+                ("low", 6500.0, 1.0),
+                ("mid", 11000.0, 0.8),
+                # Synthesize high band at 5625 RPM so when Godot pitches it by 3.2 at redline (18,000 RPM),
+                # the combustion fundamental lands authentically at 1,500 Hz (18,000 RPM V10)!
+                ("high", 5625.0, 0.7),
             ],
             "v_angle": 90.0,
             "crossplane": False,
-            "rasp": 0.08,
+            "rasp": 0.06,
             "turbo": False,
             "v10": True,
             "mgu": False,
+            "resonance_freq": 480.0,
         },
         "rb19": {
             "name": "Red Bull RB19 1.6L V6 Turbo Hybrid",
@@ -277,15 +310,16 @@ def generate_all():
             "bands": [
                 ("idle", 4000.0, 1.5),
                 ("low", 7000.0, 1.0),
-                ("mid", 11000.0, 0.8),
-                ("high", 14500.0, 0.7),
+                ("mid", 10500.0, 0.8),
+                ("high", 14000.0, 0.7),
             ],
             "v_angle": 90.0,
             "crossplane": False,
-            "rasp": 0.14,
+            "rasp": 0.12,
             "turbo": True,
             "v10": False,
             "mgu": True,
+            "resonance_freq": 360.0,
         },
     }
 
@@ -306,6 +340,7 @@ def generate_all():
                 turbo_whistle=cfg["turbo"],
                 v10_scream=cfg["v10"],
                 electric_mgu=cfg["mgu"],
+                resonance_freq=cfg.get("resonance_freq", 240.0),
             )
             coast_sig = synthesize_combustion_cycle(
                 cylinders=cfg["cylinders"],
@@ -319,6 +354,7 @@ def generate_all():
                 turbo_whistle=cfg["turbo"],
                 v10_scream=cfg["v10"],
                 electric_mgu=cfg["mgu"],
+                resonance_freq=cfg.get("resonance_freq", 240.0),
             )
 
             p_path = OUT_DIR / f"{car_key}_{band_name}_power.wav"
@@ -344,61 +380,71 @@ def generate_all():
 
     # Environmental & Mechanical Audio Assets
     print("Generating environmental and mechanical assets...")
-    # 1. Tyre lateral scrub
+    # 1. Tyre lateral scrub (grounded rubber friction with sub-bass chassis body, not harsh whistle)
     t_lat = np.linspace(0, 1.5, int(1.5 * RATE), endpoint=False)
     rng = np.random.default_rng(999)
     noise_lat = rng.standard_normal(len(t_lat))
-    # Friction scrub modulation
+    filt_noise_lat = np.convolve(noise_lat, design_fir_lowpass(1100.0, RATE), mode="same")
     scrub_lat = (
-        np.sin(2.0 * np.pi * 920.0 * t_lat + np.sin(2.0 * np.pi * 24.0 * t_lat) * 1.5) * 0.35
-        + np.sin(2.0 * np.pi * 1380.0 * t_lat) * 0.22
-        + np.sin(2.0 * np.pi * 460.0 * t_lat) * 0.18
-        + noise_lat * 0.25
+        np.sin(2.0 * np.pi * 240.0 * t_lat + np.sin(2.0 * np.pi * 18.0 * t_lat) * 1.2) * 0.40
+        + np.sin(2.0 * np.pi * 480.0 * t_lat) * 0.25
+        + np.sin(2.0 * np.pi * 65.0 * t_lat) * 0.30
+        + filt_noise_lat * 0.25
     )
     scrub_lat = normalize_audio(make_seamless_loop(scrub_lat), target_rms=0.20)
     save_wav(OUT_DIR / "tyre_scrub_lat.wav", scrub_lat)
 
-    # 2. Tyre longitudinal spin / lock
+    # 2. Tyre longitudinal spin / lock (deep tearing groan and low friction rumble)
     noise_long = rng.standard_normal(len(t_lat))
+    filt_noise_long = np.convolve(noise_long, design_fir_lowpass(1200.0, RATE), mode="same")
     scrub_long = (
-        np.sin(2.0 * np.pi * 520.0 * t_lat + np.sin(2.0 * np.pi * 18.0 * t_lat) * 1.8) * 0.42
-        + np.sin(2.0 * np.pi * 780.0 * t_lat) * 0.26
-        + noise_long * 0.32
+        np.sin(2.0 * np.pi * 180.0 * t_lat + np.sin(2.0 * np.pi * 14.0 * t_lat) * 1.4) * 0.45
+        + np.sin(2.0 * np.pi * 360.0 * t_lat) * 0.28
+        + np.sin(2.0 * np.pi * 720.0 * t_lat) * 0.12
+        + filt_noise_long * 0.28
     )
     scrub_long = normalize_audio(make_seamless_loop(scrub_long), target_rms=0.22)
     save_wav(OUT_DIR / "tyre_spin_long.wav", scrub_long)
 
-    # 3. Kerb thrum
+    # 3. Kerb thrum (deep chassis resonance and physical bump impact)
     t_kerb = np.linspace(0, 1.0, int(1.0 * RATE), endpoint=False)
+    filt_noise_kerb = np.convolve(rng.standard_normal(len(t_kerb)), design_fir_lowpass(1400.0, RATE), mode="same")
     kerb_thrum = (
-        np.sin(2.0 * np.pi * 140.0 * t_kerb) * 0.55
-        + np.sin(2.0 * np.pi * 280.0 * t_kerb) * 0.28
-        + (rng.standard_normal(len(t_kerb)) * 0.25) * np.maximum(0.0, np.sin(2.0 * np.pi * 70.0 * t_kerb))**3
+        np.sin(2.0 * np.pi * 58.0 * t_kerb) * 0.52
+        + np.sin(2.0 * np.pi * 116.0 * t_kerb) * 0.35
+        + np.sin(2.0 * np.pi * 232.0 * t_kerb) * 0.20
+        + (filt_noise_kerb * 0.22) * np.maximum(0.0, np.sin(2.0 * np.pi * 58.0 * t_kerb))**3
     )
-    kerb_thrum = normalize_audio(make_seamless_loop(kerb_thrum), target_rms=0.20)
+    kerb_thrum = normalize_audio(make_seamless_loop(kerb_thrum), target_rms=0.21)
     save_wav(OUT_DIR / "kerb_thrum.wav", kerb_thrum)
 
-    # 4. Gravel spray
+    # 4. Gravel spray (sub-bass hull rumble and distinct pebble impacts)
     t_gravel = np.linspace(0, 1.5, int(1.5 * RATE), endpoint=False)
     g_noise = rng.standard_normal(len(t_gravel))
+    filt_g_noise = np.convolve(g_noise, design_fir_lowpass(1600.0, RATE), mode="same")
     pebbles = (rng.uniform(0, 1, len(t_gravel)) > 0.985).astype(float) * rng.uniform(0.5, 1.0, len(t_gravel))
-    gravel_sig = g_noise * 0.45 + pebbles * 0.65
+    gravel_sig = filt_g_noise * 0.40 + pebbles * 0.65 + np.sin(2.0 * np.pi * 55.0 * t_gravel) * 0.15
     gravel_sig = normalize_audio(make_seamless_loop(gravel_sig), target_rms=0.22)
     save_wav(OUT_DIR / "gravel_spray.wav", gravel_sig)
 
-    # 5. Wind rush
+    # 5. Wind rush (low-passed aerodynamic roar with pressure buffeting)
     t_wind = np.linspace(0, 1.5, int(1.5 * RATE), endpoint=False)
     w_noise = rng.standard_normal(len(t_wind))
-    # Pinkish turbulent noise
-    wind_sig = w_noise * 0.45 + np.sin(2.0 * np.pi * 42.0 * t_wind) * 0.20 + np.sin(2.0 * np.pi * 88.0 * t_wind) * 0.12
+    filt_w_noise = np.convolve(w_noise, design_fir_lowpass(850.0, RATE), mode="same")
+    wind_sig = (
+        filt_w_noise * 0.50
+        + np.sin(2.0 * np.pi * 38.0 * t_wind) * 0.28
+        + np.sin(2.0 * np.pi * 76.0 * t_wind) * 0.16
+    )
     wind_sig = normalize_audio(make_seamless_loop(wind_sig), target_rms=0.18)
     save_wav(OUT_DIR / "wind_rush.wav", wind_sig)
 
-    # 6. Crowd ambience
+    # 6. Crowd ambience (distant spectator presence)
     t_crowd = np.linspace(0, 2.0, int(2.0 * RATE), endpoint=False)
     c_noise = rng.standard_normal(len(t_crowd))
+    filt_c_noise = np.convolve(c_noise, design_fir_lowpass(1200.0, RATE), mode="same")
     crowd_sig = (
-        c_noise * 0.35
+        filt_c_noise * 0.35
         + np.sin(2.0 * np.pi * 2.2 * t_crowd) * 0.15
         + np.sin(2.0 * np.pi * 4.5 * t_crowd) * 0.10
     )
@@ -406,39 +452,40 @@ def generate_all():
     save_wav(OUT_DIR / "crowd_ambience.wav", crowd_sig)
 
     # 7. Spa Circuit PA Loudspeaker Announcement
-    # Authentic French/English circuit PA voice announcement with megaphone bandpass (350 Hz - 3200 Hz)
+    # Authentic French/English circuit PA voice announcement with megaphone bandpass (350 Hz - 2200 Hz)
     t_pa = np.linspace(0, 3.0, int(3.0 * RATE), endpoint=False)
     pa_voice = (
-        np.sin(2.0 * np.pi * 440.0 * t_pa + np.sin(2.0 * np.pi * 4.0 * t_pa) * 1.2) * 0.30
-        + np.sin(2.0 * np.pi * 880.0 * t_pa) * 0.22
-        + np.sin(2.0 * np.pi * 1320.0 * t_pa) * 0.15
-        + (rng.standard_normal(len(t_pa)) * 0.15)
+        np.sin(2.0 * np.pi * 380.0 * t_pa + np.sin(2.0 * np.pi * 4.0 * t_pa) * 1.2) * 0.35
+        + np.sin(2.0 * np.pi * 760.0 * t_pa) * 0.25
+        + np.sin(2.0 * np.pi * 1140.0 * t_pa) * 0.12
     )
-    # Amplitude modulation to simulate speech cadences
     cadence = (
         np.maximum(0.0, np.sin(2.0 * np.pi * 1.8 * t_pa))
         * (0.6 + 0.4 * np.sin(2.0 * np.pi * 0.6 * t_pa))
     )
-    pa_sig = pa_voice * cadence
+    pa_noise = np.convolve(rng.standard_normal(len(t_pa)), design_fir_lowpass(1800.0, RATE), mode="same")
+    pa_sig = pa_voice * cadence + pa_noise * 0.04
     pa_sig = normalize_audio(make_seamless_loop(pa_sig), target_rms=0.14)
     save_wav(OUT_DIR / "spa_pa_announcement.wav", pa_sig)
 
-    # 8. Straight-cut gearbox whine
+    # 8. Straight-cut gearbox whine (controlled harmonic blend)
     t_whine = np.linspace(0, 1.0, int(1.0 * RATE), endpoint=False)
+    filt_noise_gear = np.convolve(rng.standard_normal(len(t_whine)), design_fir_lowpass(1600.0, RATE), mode="same")
     gear_sig = (
-        np.sin(2.0 * np.pi * 540.0 * t_whine) * 0.45
-        + np.sin(2.0 * np.pi * 1080.0 * t_whine) * 0.28
-        + np.sin(2.0 * np.pi * 1620.0 * t_whine) * 0.12
-        + (rng.standard_normal(len(t_whine)) * 0.06)
+        np.sin(2.0 * np.pi * 440.0 * t_whine) * 0.32
+        + np.sin(2.0 * np.pi * 880.0 * t_whine) * 0.18
+        + np.sin(2.0 * np.pi * 1320.0 * t_whine) * 0.08
+        + filt_noise_gear * 0.05
     )
     gear_sig = normalize_audio(make_seamless_loop(gear_sig), target_rms=0.18)
     save_wav(OUT_DIR / "gear_whine.wav", gear_sig)
 
-    # 9. Clutch bite chirp
+    # 9. Clutch bite chirp (low-pass filtered metallic friction)
     t_clutch = np.linspace(0, 0.35, int(0.35 * RATE), endpoint=False)
+    filt_clutch_noise = np.convolve(rng.standard_normal(len(t_clutch)), design_fir_lowpass(1200.0, RATE), mode="same")
     clutch_sig = (
         np.sin(2.0 * np.pi * (320.0 - 140.0 * t_clutch) * t_clutch) * 0.55
-        + rng.standard_normal(len(t_clutch)) * 0.28
+        + filt_clutch_noise * 0.20
     ) * np.exp(-t_clutch * 12.0)
     save_wav(OUT_DIR / "clutch_bite.wav", clutch_sig)
 

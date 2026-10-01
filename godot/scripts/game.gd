@@ -543,6 +543,7 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem_full.raw")
+		and FileAccess.file_exists("res://trackgen/data/nordschleife/kerbs.json")
 		and ResourceLoader.exists("res://assets/chicago/downtown-kit/meshes/Metal_FirstFloor_Window.res")
 		and ResourceLoader.exists("res://assets/chicago/downtown-kit/textures/trim.jpg")
 		and ResourceLoader.exists("res://assets/chicago/facade-array/albedo.png")

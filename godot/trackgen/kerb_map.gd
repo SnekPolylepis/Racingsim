@@ -8,12 +8,12 @@ extends RefCounted
 ## unsure a RAMP. Section kerb types step at keys (RoadBuilder.section_at), so a generator adds marks()
 ## as section keys and each kerb starts and ends where its paint does.
 const RoadSection = preload("res://scripts/track/road_section.gd")
-## [RoadSection.Kerb, kerb_height m] per traced type.
+## [RoadSection.Kerb, kerb_height m, rib_height m, rib_pitch m] per traced type.
 const KINDS = {
-	"flat": [RoadSection.Kerb.RAMP, 0.02],
-	"ribbed": [RoadSection.Kerb.RIBBED, 0.045],
-	"sausage": [RoadSection.Kerb.SAUSAGE, 0.075],
-	"unsure": [RoadSection.Kerb.RAMP, 0.03],
+	"flat": [RoadSection.Kerb.RAMP, 0.022, 0.0, 0.5],
+	"ribbed": [RoadSection.Kerb.RIBBED, 0.048, 0.016, 0.38],
+	"sausage": [RoadSection.Kerb.SAUSAGE, 0.080, 0.0, 0.5],
+	"unsure": [RoadSection.Kerb.RAMP, 0.025, 0.0, 0.5],
 }
 ## Tests set a map here (track id -> map) to exercise a generator without reviewed data on disk.
 static var forced = {}
@@ -38,7 +38,7 @@ static func load_reviewed(path: String) -> Dictionary:
 	return from_entries(doc.get("kerbs", []))
 
 
-## {"left": [entry...], "right": [...]} from kerbs.json entries; entry = {s0, s1, kind, width, height}.
+## {"left": [entry...], "right": [...]} from kerbs.json entries; entry = {s0, s1, kind, width, height, rib_height, rib_pitch}.
 static func from_entries(entries: Array) -> Dictionary:
 	var map = {"left": [], "right": []}
 	for e in entries:
@@ -56,6 +56,8 @@ static func from_entries(entries: Array) -> Dictionary:
 					"s1": float(e.s_end),
 					"kind": kind[0],
 					"height": kind[1],
+					"rib_height": float(e.get("rib_height_m", kind[2])),
+					"rib_pitch": float(e.get("rib_pitch_m", kind[3])),
 					"width": clampf(float(e.get("width_m", 0.9)), 0.4, 2.0),
 				}
 			)
@@ -93,6 +95,8 @@ static func apply(map: Dictionary, values: Dictionary, s: float, length: float) 
 		return false
 	var width = 0.0
 	var height = 0.0
+	var rib_height = 0.0
+	var rib_pitch = 0.0
 	for side in ["left", "right"]:
 		var e = at(map, side, s, length)
 		if e.is_empty():
@@ -101,7 +105,13 @@ static func apply(map: Dictionary, values: Dictionary, s: float, length: float) 
 			values["kerb_" + side] = e.kind
 			width = maxf(width, e.width)
 			height = maxf(height, e.height)
+			if e.kind == RoadSection.Kerb.RIBBED:
+				rib_height = maxf(rib_height, e.rib_height)
+				rib_pitch = e.rib_pitch if rib_pitch == 0.0 else minf(rib_pitch, e.rib_pitch)
 	if width > 0.0:
 		values.kerb_width = width
 		values.kerb_height = height
+	if rib_height > 0.0:
+		values.rib_height = rib_height
+		values.rib_pitch = rib_pitch
 	return true

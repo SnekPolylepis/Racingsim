@@ -17,10 +17,11 @@ const Billboards = preload("res://scripts/track/billboards.gd")
 const PitBuilding = preload("res://scripts/track/pit_building.gd")
 const MarshalPost = preload("res://scripts/track/marshal_post.gd")
 const SceneryBuilder = preload("res://scripts/track/scenery_builder.gd")
+const KerbMap = preload("res://trackgen/kerb_map.gd")
 
 const DATA = "res://trackgen/data/nordschleife/"
 const OUTPUT = "res://tracks3d/nordschleife/nordschleife.scn"
-const CACHE_REVISION = 9
+const CACHE_REVISION = 11
 ## Caracciola-Karussell apex station (source metres): the concrete bowl on the inside of the right-hander.
 const KARUSSELL_S = 12115.0
 ## The bowl's reach either side of the apex (source metres); no kerbs anywhere in it.
@@ -153,8 +154,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 		"kerb_right": RoadSection.Kerb.NONE,
 		"kerb_width": 0.9,
 		"kerb_height": 0.045,
-		"rib_height": 0.006,
-		"rib_pitch": 0.75,
+		"rib_height": 0.016,
+		"rib_pitch": 0.38,
 		# Narrow roadside enclosure: 0.5 m grass shoulder, 0.8 m verge, armco 0.2 m beyond (~2.4 m from the
 		# edge line, as in GT4 and on the real track; it was ~3.2 m)
 		"runoff_left": 4.0 if paddock else 0.5,
@@ -223,6 +224,8 @@ static func profile_at(s: float, length: float, corners: Array) -> Dictionary:
 			values["kerb_" + outside] = RoadSection.Kerb.RIBBED
 
 	values.bank_deg = total_bank / maxf(total_bank_weight, 1.0)
+	# Traced kerbs (K-03) replace the rules above once the kerbs.json is reviewed.
+	KerbMap.apply(KerbMap.for_track("nordschleife", DATA + "kerbs.json"), values, s, length)
 	# The Karussell has no kerbs: the bowl is the inside edge.
 	if absf(kar_delta) <= KARUSSELL_REACH:
 		values.kerb_left = RoadSection.Kerb.NONE
@@ -243,6 +246,7 @@ static func sections(data: Dictionary, measured: float, corners: Array) -> Array
 	# Karussell transition keys
 	for offset in [-KARUSSELL_REACH, -55.0, -40.0, -20.0, 0.0, 20.0, 40.0, 55.0, KARUSSELL_REACH]:
 		marks.append(fposmod(KARUSSELL_S + offset, length))
+	marks.append_array(KerbMap.marks(KerbMap.for_track("nordschleife", DATA + "kerbs.json"), length))
 	marks.sort()
 	var keys: Array[RoadSection] = []
 	var previous = -1.0
