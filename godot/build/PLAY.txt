@@ -1,4 +1,4 @@
-RACING SIM - REBUILD PREVIEW 9 (2026-09-30)
+RACING SIM - COMBINED LATEST PLAYTEST (2026-09-30)
 
 A preliminary build of the rebuilt game: a full 3-D car on hand-built 3-D circuits. It is a
 preview for testing, not a finished release. No installation, browser or Godot editor needed.

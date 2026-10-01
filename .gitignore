@@ -58,3 +58,7 @@ godot/trackgen/data/tools/__pycache__/
 
 godot/visual-review/
 godot/assets/cc0-source/chicago/lidar/*.npz
+
+# Godot translation imports generated from the developer building inventory.
+godot/trackgen/data/chicago/route-inventory.csv.import
+godot/trackgen/data/chicago/route-inventory.*.translation

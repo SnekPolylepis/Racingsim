@@ -3220,3 +3220,16 @@ Owner requested another pass after the delivered branch. Continuing in the same 
 
 - Owner requested swapping the pedals after playtest. Swapped the complete throttle/brake mappings in saved v2 settings (preserving endpoint calibration), with a before-pedal-swap backup. Defaults/fallbacks and Controls label now use throttle axis 3, brake axis 4; updated current contract and native notes. Earlier physical axis movement evidence remains historical, but its initial action assignment was corrected by the owner.
 - Wheel 18 checks and parse gate PASS, logs tests/logs/gates/20260930-174400. Windows executable rebuilt with clean stderr and export exit 0.
+
+### 2026-09-30 — Combined latest owner playtest
+
+Created codex/latest-playtest-20260930 from the paused latest Chicago branch;
+merged codex/fanatec-moza-controls, including Preview 9 and all contributing
+Chicago/Spa/Monaco/optimisation work. Preserved newer Chicago conflict hunks
+while retaining other branch improvements. All today's committed work across
+available refs is in the combined history. Exported Windows exe, exit 0,
+empty stderr; exported Chicago drive/menu playback exit 0, empty stderr,
+72 built-in presentation probes passed. Screenshot shows actual 134 km/h drive.
+No heavy gates or additional test logic changes. Normal launcher uses rebuilt
+godot/build/RacingSim.exe. See PLAYTEST-2026-09-30.md for hash and scope.
+Chicago finishing goal remains paused; this is a playable interim build.
