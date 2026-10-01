@@ -182,7 +182,13 @@ static func photo_wall(ring: PackedVector2Array, ph: Dictionary) -> Array:
 	var wa = Vector2.ZERO
 	var wb = Vector2.ZERO
 	var wn = Vector2.ZERO
+	# A concave footprint can have a longer inward-facing recess than its street wall.
+	# Use the explicitly referenced mapped edge when the photo identifies one.
+	if ph.has("edge"):
+		assert(int(ph.edge) >= 0 and int(ph.edge) < ring.size())
 	for i in ring.size():
+		if ph.has("edge") and i != int(ph.edge):
+			continue
 		var a = ring[i]
 		var b = ring[(i + 1) % ring.size()]
 		var n = Vector2(b.y - a.y, a.x - b.x).normalized()

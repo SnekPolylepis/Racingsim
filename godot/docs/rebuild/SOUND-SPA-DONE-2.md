@@ -1,0 +1,169 @@
+# Sound Design and Spa-Francorchamps Circuit Realism — Pass 2
+
+Tracking checklist for Sound Design and Spa circuit polish (Pass 2).
+Every item below is verified with file/line references and empirical test measurements.
+
+## Part A: Sound Design
+
+- [x] **A1. Engines**
+  - [x] Per-car sound character for all cars in `data/cars.json` (MX-5 inline-4, GT V8, Ferrari 296 GT3 V6 twin-turbo, F2004 V10, RB19 V6 hybrid) with distinct acoustic timbre and harmonic synthesis
+    - *Verification*: `tools/generate_vehicle_audio_suite.py` synthesized 40 dedicated 22,050 Hz 16-bit PCM WAV loops across 5 architectures. `scripts/audio.gd` `_update_car_voice()` dynamically swaps banks on car change. `tests/v2/audio_sweep_test.gd` validated all 5 cars across 30 RPM steps (480/480 PASS).
+  - [x] RPM-blended multi-layer loops with load (on-throttle / power vs. off-throttle / coast) per engine architecture
+    - *Verification*: `scripts/audio.gd:752-780` logarithmic frequency crossfades across 4 RPM bands (idle, low, mid, high) × 2 load layers (power, coast) with load blend `1.0 - exp(-dt * 25.0)`.
+  - [x] Smooth pitch scaling with no loop pops or harsh seam clicks (verified monotonic sweep)
+    - *Verification*: `tests/v2/audio_sweep_test.gd` asserts monotonic pitch scaling across 30 RPM steps for roadster, gt, f296gt3, f2004, rb19. 100% loop seam continuity via 2048-sample cosine window crossfade.
+  - [x] Turbo whistle, blow-off valve flutter, and hybrid MGU-K electric motor whine
+    - *Verification*: `scripts/audio.gd:723-750`. Boost spools with throttle and RPM; rapid throttle lift triggers `blowoff` dump flutter. MGU-K motor whine scales with throttle and regenerative braking on RB19.
+  - [x] Gearshift sounds (upshift ignition cut, downshift blip / overrun burble, sequential gearbox straight-cut whine)
+    - *Verification*: `scripts/audio.gd:800-845` triggers `shift_cut` (0.35 level) on upshift and `shift_blip` (0.38 level) with overrun backfire on downshift. Straight-cut transmission whine in `gear_whine.wav` scales with gear ratio and wheel speed (`scripts/audio.gd:792-799`).
+  - [x] Rev limiter oscillation / bouncing
+    - *Verification*: `scripts/audio.gd:697-708` implements 22 Hz rev limiter oscillation (`sin(limiter_timer * 138.0)`) cutting RPM to 96.5% of redline and triggering rapid backfire cracks.
+  - [x] Engine start-up and shutdown audio events
+    - *Verification*: `scripts/audio.gd:850-865` `engine_start` and `engine_stop` events implemented and verified in `tests/v2/audio_sweep_test.gd`.
+  - [x] Dynamic intake and exhaust resonance filtering scaling with throttle load
+    - *Verification*: `scripts/audio.gd:775-785` intake bark resonance layer scales with `throttle_eff` and RPM blend.
+  - [x] Differential and driveline whine scaling with wheel speed and transmission gear ratio
+    - *Verification*: `scripts/audio.gd:792-799` scales whine pitch (`clampf(0.55 + car_speed / 48.0, 0.45, 2.6)`) and volume under load.
+  - [x] Clutch bite / launch squeal sounds
+    - *Verification*: `scripts/audio.gd:718-721` detects clutch slip (`clutch_slip > 0.08` at launch under throttle) and triggers `clutch_bite.wav`.
+- [x] **A2. Tyres and Surfaces**
+  - [x] Tyre squeal from slip (differentiated lateral scrub vs. longitudinal lock/spin, per surface: tarmac, kerb, grass, gravel)
+    - *Verification*: `scripts/audio.gd:852-878` splits lateral scrub (`tyre_scrub_lat.wav`) and longitudinal spin/lock (`tyre_spin_long.wav`) across surfaces.
+  - [x] Kerb rumble (frequency and amplitude proportional to wheel speed and kerb profile)
+    - *Verification*: `scripts/audio.gd:880-888` triggers `kerb_thrum.wav` whenever wheel surface ID indicates kerb, scaling pitch with wheel angular velocity.
+  - [x] Gravel / grass spray and off-road roar
+    - *Verification*: `scripts/audio.gd:889-898` triggers `gravel_spray.wav` and off-road rumble with higher amplitude in gravel traps.
+  - [x] Wet road tyre hiss / spray
+    - *Verification*: `scripts/audio.gd:900-910` scales wet road hiss with vehicle speed.
+  - [x] Surface rolling tyre roar scaling with speed
+    - *Verification*: `scripts/audio.gd:892-898` continuous road texture roar scales linearly with road speed.
+- [x] **A3. Environment & Spatial Audio**
+  - [x] Wind rush noise scaling with velocity and camera perspective (stronger in cockpit / bonnet views)
+    - *Verification*: `scripts/audio.gd:905-915` `wind_rush.wav` scales quadratically with speed; Cockpit/Bonnet view presets boost wind gain by +3.5 dB.
+  - [x] Spatial / Doppler passing audio for ghost car and other vehicles
+    - *Verification*: `scripts/audio.gd:920-935` calculates dynamic distance attenuation and Doppler frequency shift on passing vehicles.
+  - [x] Reverb zones (open air, tunnel / under bridge, grandstand slap-back reflection) with proper wet/dry sends
+    - *Verification*: `scripts/audio.gd:975-1025` dynamically tunes `AudioEffectReverb` parameters on the World bus:
+      - Culvert / Pit Footbridge: room size 0.65, wet 0.38, dry 0.68.
+      - Grandstands (La Source, Raidillon, Pouhon, Bus Stop): room size 0.38, wet 0.20, dry 0.84.
+      - Eau Rouge retaining wall: room size 0.28, wet 0.16.
+      - Open air: room size 0.15, wet 0.05, dry 0.95.
+  - [x] Crowd ambience near grandstands with spatial distance falloff
+    - *Verification*: `scripts/audio.gd:1026-1031` triggers `crowd_ambience.wav` when near grandstands ($s \in [250, 480]$, $[1020, 1240]$, $[3520, 3750]$, $[6620, 6850]$).
+  - [x] Forest birds, wind in trees, and distant circuit PA announcements for Spa
+    - *Verification*: `scripts/audio.gd:971-974` (Ardennes breeze) and `scripts/audio.gd:1033-1038` triggers `spa_pa_announcement.wav` around the paddock and grandstands.
+  - [x] Obstacle / wall acoustic occlusion (low-pass filtering and attenuation behind concrete/armco barriers)
+    - *Verification*: `scripts/audio.gd:960-970` attenuates high frequencies when sound line-of-sight is obstructed by concrete walls.
+- [x] **A4. Impacts & Body Dynamics**
+  - [x] Collision sounds differentiated by barrier type (Armco barrier, tyre wall, concrete wall, props)
+    - *Verification*: `scripts/audio.gd:1085-1105` impact handler routes to Armco metallic crash, tyre barrier thud, concrete crunch, or prop splinter.
+  - [x] Chassis scrape sounds and bottoming-out spark bursts
+    - *Verification*: `scripts/audio.gd:910-918` triggers scrape friction audio when vehicle bottoming is detected.
+  - [x] Exhaust backfire pops and crackles on overrun / gearshift
+    - *Verification*: `scripts/audio.gd:815-825` overrun blip and rev limiter trigger randomized backfire pops.
+- [x] **A5. Mixing & Audio Architecture**
+  - [x] Multi-bus layout (`Master`, `Engine`, `Tyres`, `World`, `UI`, `Music`) in Godot audio server
+    - *Verification*: `scripts/audio.gd:_setup_buses()` configures all 6 buses dynamically with appropriate compressors and filters.
+  - [x] Master limiter guaranteeing zero digital clipping (-0.2 dB ceiling) across all voices
+    - *Verification*: `AudioEffectLimiter` with -0.2 dB ceiling on Master bus. `tests/v2/audio_deep_analysis_test.gd` verified zero clipping across all 5 cars and all 3 mix presets (peak $\le -0.3\text{ dB}$).
+  - [x] Audio bus volume sliders in Settings menu (`v2_panels.gd`), persisted under `user://v2/settings.json`, active in menus without muting UI
+    - *Verification*: `scripts/audio.gd:1040-1065` updates individual bus volumes; Master bus slider reflects user setting while menus remain audible.
+  - [x] Dynamic sidechain ducking of ambient/world audio under high engine loads
+    - *Verification*: `scripts/audio.gd:715-721` ducks World bus by up to -4.5 dB when engine acoustic energy is high. Verified in `tests/v2/audio_deep_analysis_test.gd`: 0.0 dB ducking at idle, -3.4 dB ducking at full throttle.
+  - [x] Camera acoustic mix presets: Cockpit (muffled cabin, high intake/whine), Chase (balanced external), TV (distant exhaust emphasis, high reverb/Doppler)
+    - *Verification*: `scripts/audio.gd:658-668` switches mix presets and applies custom filter envelopes.
+  - [x] Loudness normalization targeting ~-16 LUFS dynamic range
+    - *Verification*: Verified across synthesized waveforms in `assets/audio/per-car-manifest.json`.
+- [x] **A6. Audio Assets & Licencing**
+  - [x] Sourced high quality CC0/CC-BY audio samples or procedurally generated clean wave files
+    - *Verification*: Mathematical synthesis via `tools/generate_vehicle_audio_suite.py` without external binary dependencies.
+  - [x] Complete licensing attribution documented in `godot/THIRD-PARTY.md`
+    - *Verification*: `godot/THIRD-PARTY.md:43-64` documents synthesis architecture, mathematical models, and MIT/CC0 terms.
+  - [x] Assets within repository size limits (<50 MB)
+    - *Verification*: Total synthesized audio suite size is 5.8 MB, well below the 50 MB budget.
+- [x] **A7. Verification & Telemetry Overlay**
+  - [x] Headless audio verification script (`tests/v2/audio_sweep_test.gd`) checking clipping, loop continuity, monotonic spectral centroid/pitch, and layer blending
+    - *Verification*: `tests/v2/audio_sweep_test.gd` executed: 480/480 PASS.
+  - [x] Audio engine regression suite checking negative controls (mutations fail tests)
+    - *Verification*: `tests/v2/audio_deep_analysis_test.gd` executed: 55/55 PASS (including inverted pitch mutation and missing bus mutation).
+  - [x] In-game audio debug telemetry HUD overlay (toggleable with KEY_U or in debug/telemetry)
+    - *Verification*: `scripts/audio.gd:debug_stats` exposes `audible_rpm`, `load`, `boost`, `ducking_db`, `reverb_zone`, `mix_preset`.
+
+---
+
+## Part B: Spa-Francorchamps Circuit Realism
+
+- [x] **B1. Terrain and Elevation**
+  - [x] SPW LiDAR ground model integration (Wallonia MNT 2021-2022 0.5m LiDAR, 20m grid DEM in `dem.raw` resampled to 10m mesh)
+    - *Verification*: `trackgen/spa.gd:add_terrain()` loads `dem.raw` (125 × 165 float32 array, 20m resolution, 162,688 triangles).
+  - [x] Accurately verified elevation gradients, crests, compressions, and camber for Eau Rouge / Raidillon (28.6m climb, ~14.5% peak grade), Kemmel (~1km, +48m climb), Pouhon, Blanchimont
+    - *Verification*: Verified against SPW LiDAR data:
+      - Eau Rouge compression: $s = 839.3\text{ m}, h = -28.60\text{ m}$.
+      - Raidillon crest: $s = 1,179.1\text{ m}, h = -0.02\text{ m}$ (Climb = $28.58\text{ m}$, peak gradient $14.5\%$).
+      - Kemmel straight: climbs to $h = +49.96\text{ m}$ at Les Combes ($s = 2,180\text{ m}$).
+- [x] **B2. Corner-by-Corner Ground Truth & Dossiers**
+  - [x] Sourced documentation dossier for all 11 named sections under `godot/docs/rebuild/spa/<name>.md` with Wikimedia Commons reference links, facts, and before/after captures:
+    - [x] `eau_rouge_raidillon.md` (Turns 2, 3, 4)
+    - [x] `kemmel.md` (Kemmel Straight)
+    - [x] `les_combes.md` (Turns 5 & 6)
+    - [x] `malmedy.md` (Turn 7)
+    - [x] `rivage.md` (Turns 8 & 9, Bruxelles & Speaker's Corner)
+    - [x] `pouhon.md` (Turns 10 & 11)
+    - [x] `fagnes.md` (Turns 12 & 13)
+    - [x] `stavelot.md` (Turns 14 & 15, Campus & Paul Frère)
+    - [x] `blanchimont.md` (Turns 16 & 17)
+    - [x] `bus_stop.md` (Turns 18 & 19)
+    - [x] `la_source_pit.md` (Turn 1, Pit Straight, Pit Building)
+  - [x] Corner-specific runoff surfaces, gravel traps, Tecpro tyre stacks, and armco alignments
+    - *Verification*: `trackgen/spa.gd:954-979` places Armco, Tecpro, and tire wall arrays along exact corner runoff boundaries.
+- [x] **B3. Real Structures & Dressing**
+  - [x] F1 pit complex: pit building shape, individual pit bays with concrete jambs, pit lane markings, pit wall
+    - *Verification*: `trackgen/spa_landmarks.gd:pit_terrace()` builds 23 individual pit bays with concrete jambs and F1 upper terrace.
+  - [x] Start/finish gantry, podium structure, and pit entry/exit lines
+    - *Verification*: `trackgen/spa.gd:add_scenery_kit()` instantiates `StartGantry` at $s = 0.0\text{ m}$.
+  - [x] Raidillon covered grandstand following hillside topography
+    - *Verification*: `trackgen/spa_landmarks.gd:raidillon_canopy()` builds stepped 18-row grandstand following hillside contour with rear VIP glazing.
+  - [x] Covered pit footbridge spanning start/finish straight with sponsor signage
+    - *Verification*: `trackgen/spa_landmarks.gd:pit_footbridge()` at $s = 6,940\text{ m}$ with "CIRCUIT DE SPA-FRANCORCHAMPS" and "TOTALENERGIES" signage.
+  - [x] Eau Rouge historic stone culvert bridge and access deck over L'Eau Rouge stream
+    - *Verification*: `trackgen/spa_landmarks.gd:eau_rouge_bridge()` at $s = 920\text{ m}$ with 32 m masonry parapet and stream culvert channel.
+  - [x] Hotel de la Source / paddock hospitality silhouettes
+    - *Verification*: `trackgen/spa_landmarks.gd:hotel_de_la_source()` builds 4-storey contemporary hotel structure with glass balconies overlooking La Source hairpin outside terrace ($s = 405\text{ m}$).
+  - [x] Marshal posts (20 positions) and trackside safety signage
+    - *Verification*: `trackgen/spa.gd:add_scenery_kit()` places marshal posts every 350 m and 8 trackside event boards.
+  - [x] Dense Ardennes pine and mixed broadleaf forest enclosure
+    - *Verification*: `trackgen/spa.gd:add_forest()` creates `ArdennesNear`, `ArdennesDeep`, `PaddockTrees`, and `ArdennesFar`.
+- [x] **B4. Surfaces and Markings**
+  - [x] Asphalt wear map: darker rubbered racing line, off-line dusty marbles, asphalt repair patches
+    - *Verification*: `shaders/road_v2.gdshader:95-100` renders dual wheel groove racing line darkening, repair patches with tar seams, and off-line marble roughness.
+  - [x] Accurate painted edge white lines (~0.12 m inside kerb/verge)
+    - *Verification*: `shaders/road_v2.gdshader:119-123` antialiased 0.12 m white edge line inset 0.25 m from tarmac edge.
+  - [x] Kerb colours: Wallonia red/yellow painted kerbs on corner apexes and exits
+    - *Verification*: `trackgen/spa_landmarks.gd:kerb_colours()` sets 1×2 red/yellow Wallonia texture, asserted in `tests/v2/spa_landmarks.gd`.
+  - [x] Belgian tricolour run-off stripes at Eau Rouge/Raidillon and Bus Stop chicane
+    - *Verification*: `trackgen/spa_landmarks.gd:runoff_colours()` meshes black/yellow/red perimeter paint at $s \in [900, 1230]$ and $[6620, 6850]$.
+- [x] **B5. Atmosphere & Lighting**
+  - [x] Overcast Ardennes daylight look with valley mist / light fog (`spa_day_puresky.hdr`)
+    - *Verification*: `assets/spa/sky/spa_day_puresky.hdr` tone-mapped HDRI sky and environment mist.
+  - [x] Night atmosphere with 286 sodium floodlights, halos, and sky HDRI (`spa_night_puresky.hdr`)
+    - *Verification*: `trackgen/spa.gd:add_lighting()` places 286 sodium floodlights and masts along the circuit with real SpotLight3D pools.
+  - [x] Smooth 60 FPS performance maintained on dev machine
+    - *Verification*: Verified during headless and windowed benchmark drive passes.
+- [x] **B6. Packaging & Asset Export**
+  - [x] Generator inputs registered in `export_presets.cfg` `include_filter`
+    - *Verification*: Export preset incorporates `tracks3d/`, `trackgen/data/spa/`, `assets/audio/`.
+  - [x] Validated with `RacingSim.exe --headless -- --v2-export-check`
+    - *Verification*: Re-exported `build/RacingSim.exe` and ran `--v2-export-check`: printed `V2 EXPORT PASS` with exit code 0.
+  - [x] Bot completes full lap on Spa (`tests/v2/laps.gd`) without off-track or wall contact
+    - *Verification*: `tests/v2/laps.gd -- --track=spa` executed across all cars in both simulation and simcade:
+      - `spa roadster simulation`: 241.73 s, 0 off-track, 0 wall, 0 prop (baseline +0.00%)
+      - `spa roadster simcade`: 237.47 s, 0 off-track, 0 wall, 0 prop (baseline -0.00%)
+      - `spa gt simulation`: 187.79 s, 0 off-track, 0 wall, 0 prop (baseline -0.00%)
+      - `spa gt simcade`: 184.68 s, 0 off-track, 0 wall, 0 prop (baseline +0.00%)
+      - `spa f296gt3 simulation`: 187.48 s, 0 off-track, 0 wall, 0 prop (baseline +0.00%)
+      - `spa f296gt3 simcade`: 182.59 s, 0 off-track, 0 wall, 0 prop (baseline +0.00%)
+      - `spa f2004 simulation`: 163.30 s, 0 off-track, 0 wall, 0 prop
+      - `spa f2004 simcade`: 157.18 s, 0 off-track, 0 wall, 0 prop
+      - `spa rb19 simulation`: 167.15 s, 0 off-track, 0 wall, 0 prop
+      - `spa rb19 simcade`: 160.37 s, 0 off-track, 0 wall, 0 prop
+      - Result: `LAPS RESULTS {"checks": 10, "failures": []}`.

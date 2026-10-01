@@ -1,4 +1,4 @@
-﻿shader_type spatial;
+shader_type spatial;
 // TrackAsset asphalt (Look-8, ART-DIRECTION.md "Road"): a 2K photographic asphalt set tiled in metres in
 // both directions, a procedural non-repeating macro layer (broad shading, repair patches with tar seams,
 // a rubbered line), white edge lines, and after-hours amber lamp streaks. RoadBuilder UVs are metres
@@ -94,9 +94,13 @@ void fragment() {
 	// Irregular dark stains (oil, old tar, damp), as on GT4's Nordschleife: thresholded noise over 3-15 m.
 	float blot = vnoise(UV * vec2(0.28, 0.09) + vec2(17.0, 3.0)) * 0.65 + vnoise(UV * vec2(0.9, 0.3)) * 0.35;
 	shade *= 1.0 - macro * 0.48 * smoothstep(0.5, 0.72, blot);
-	// Rubbered line: a soft darker band down the middle, where cars run.
-	float line = exp(-pow(abs(lat * 1.6), 2.0));
-	shade *= 1.0 - rubber * 0.3 * line;
+	// Rubbered racing line: dual tyre track grooves with central dark band and off-line tyre marble grit.
+	float groove_l = exp(-pow(abs((lat - 0.28) * 3.4), 2.0));
+	float groove_r = exp(-pow(abs((lat + 0.28) * 3.4), 2.0));
+	float center_line = exp(-pow(abs(lat * 1.5), 2.0));
+	float rubber_wear = max(center_line * 0.65, max(groove_l, groove_r) * 0.88);
+	shade *= 1.0 - rubber * 0.32 * rubber_wear;
+	wear = mix(wear, wear * 1.12, smoothstep(0.65, 0.95, abs(lat)));
 	// Day: near-neutral grey (ART-DIRECTION: saturation <= 0.20); night: darker, slightly cool.
 	// LOOK-NIGHT-01: night asphalt stays dark (GT4/NFSU nights): at 0.95 it lit to a cream sheet.
 	vec3 col = afterhours ? base * 0.6 * shade + vec3(.003, .004, .006) : base * 1.55 * shade;

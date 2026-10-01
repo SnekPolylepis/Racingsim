@@ -50,6 +50,7 @@
     {"name": "nordschleife", "script": "tests/v2/nordschleife.gd", "groups": ["track"], "deps": ["trackgen/nordschleife.gd", "trackgen/data/nordschleife/"]},
     {"name": "audio", "script": "tests/v2/audio_test.gd", "groups": ["game"], "deps": ["scripts/audio.gd", "data/cars.json"]},
     {"name": "audio_sweep", "script": "tests/v2/audio_sweep_test.gd", "groups": ["game"], "deps": ["scripts/audio.gd", "data/cars.json"]},
+    {"name": "audio_deep", "script": "tests/v2/audio_deep_analysis_test.gd", "groups": ["game"], "deps": ["scripts/audio.gd", "data/cars.json"]},
     {"name": "ffb", "script": "tests/v2/ffb_test.gd", "groups": ["game", "vehicle"], "deps": ["scripts/ffb.gd", "scripts/controls.gd"]},
     {"name": "wheel", "script": "tests/v2/wheel.gd", "deps": ["scripts/wheel_bridge.gd", "native/"]},
     {"name": "parse check", "kind": "parse", "script": "scripts/game.gd", "groups": ["game"]},

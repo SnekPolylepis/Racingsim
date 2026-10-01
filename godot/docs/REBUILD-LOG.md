@@ -3232,3 +3232,164 @@ empty stderr; exported Chicago drive/menu playback exit 0, empty stderr,
 No heavy gates or additional test logic changes. Normal launcher uses rebuilt
 godot/build/RacingSim.exe. See PLAYTEST-2026-09-30.md for hash and scope.
 Chicago finishing goal remains paused; this is a playable interim build.
+
+### 2026-09-30 — Chicago photographed wall geometry (da60baf)
+
+Chicago continues in the isolated chicago-facades worktree on
+rb/monaco-formula-cars, preserving Gemini's shared checkout and the latest
+combined playtest executable. Fixed exterior photo ordering; the shared edge
+selection now also samples measured street-facing roof cells. Photos attach to
+that median height instead of the highest return anywhere over the building.
+The five photographed buildings' LiDAR cells are clipped to mapped footprints,
+retaining measured roof steps without projecting raster walls through photos.
+Other buildings retain existing raster geometry pending broader verification.
+
+Bounded assert check PASS: four facade directions/both windings, clipped mesh
+bounds, retained rear roof step, and correct front height despite that step.
+Exit 0, empty stderr. Windowed photo-footprint capture exited 0, empty stderr,
+24.21 m drive and final speed 18.50 m/s. Inspected Symphony, CAA, UC and Railway
+Exchange daylight plus Symphony night. Full Symphony/CAA details now visible;
+UC/RX source crops still leave generic lower-floor coverage. Historical source
+banners, baked-in people/vehicles, crop/aspect and nighttime treatment remain
+open. Checklist records only the narrow screenshot-verified fixes.
+
+Heavy gates skipped; car/physics/Monza and exported playtest executable untouched.
+Generated UID sidecars for the older two Chicago checks match the combined
+playtest branch. New photo check UID committed with its script. Generated
+inventory imports are preserved, unstaged, for the final audit.
+
+
+### 2026-09-30 — University Club entrance photo coverage
+
+The preceding goal turn made concrete progress (da60baf/2f9904c): mapped wall
+clipping and measured photo height. This milestone uses David Brossard's
+16 May 2018 full reference, CC BY-SA 2.0:
+https://commons.wikimedia.org/wiki/File:University_Club_of_Chicago_(44385995292).jpg
+Source bitmap copied unchanged (SHA-256
+4d06b18820c621d6e0d5aca330663b4bf47c95a037a1c46677e0d3463b493903),
+1,898,344 bytes; previous crop preserved pending final audit.
+
+Photo corners are annotated normalized source UVs; a 16x16 mesh projects them
+with a homography. No invented/generated image detail or bitmap retouching.
+The main-wall cornice height samples the two measured front ends, avoiding the
+central gable ridge; this is a LiDAR-derived attachment, not a guessed height.
+Only w126982632's photo metadata changed in city.json and landmarks.json;
+all other generated building records, geometry and heights are unchanged.
+The source gable and lower-right foliage remain unresolved in final facade
+acceptance. Original bitmap stays full size; native import uses BC7/ASTC,
+mipmaps and 4096 maximum dimension (14,927,716-byte compressed mip payload).
+
+Bounded geometry check passes four directions/two windings, projective corner
+mapping/straight lines, clipped mesh bounds, retained rear roof step and gable
+eave sampling. Import and test exit 0, stderr empty. First windowed capture:
+exit 0, empty stderr, 27.37 m drive, speed 20.37 m/s. After mipmap import,
+second capture: exit 0, empty stderr, 14.02 m drive, speed 7.38 m/s.
+Inspected UC ground/full, CAA full and Symphony daylight, then final UC ground
+day/night. UC entrance/low windows now visible; CAA cornice fully framed.
+Historic tenants, photographed foliage and nighttime material fidelity remain
+open. Night images also expose arbitrary generated sign colours/heights;
+recorded that finding, without declaring mapped businesses to be invented.
+Amorino's official address is 38 S Michigan:
+https://www.amorino.com/en/stores/chicago
+
+Heavy gates skipped. Monza, car/physics, shared Gemini checkout, user assets,
+saves and the combined playable executable are unchanged.
+
+### 2026-09-30 — Chicago Theatre source coverage and unsupported neon
+
+The preceding turn produced a combined playable export; Chicago continues in
+the isolated chicago-facades worktree without replacing that executable.
+Disabled the category-colour/random-height neon generator. OSM business
+records and old helpers/assets are retained for the final audit. UC night
+capture confirms unsupported labels/bars absent; actual sign coverage remains
+open. This changes appearance, not the mapped business locations.
+
+Chicago Theatre w124873919 now has licensed full architectural coverage from
+Daniel Schwen, 17 April 2009, CC BY-SA 4.0:
+https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg
+Unchanged original 4710775 bytes, SHA-256 a04075c81275c75057541638d78f4fde205fbedc0e8ba5dc5c6fd47d86250a2a.
+Native import uses BC7/ASTC with mipmaps and 4096 maximum dimension.
+The referenced concave footprint edge 2 is the State Street wall; longest-wall
+selection otherwise selects the recessed auditorium edge. Only this building
+changes k/ph in generated city data; measured heights/grid remain unchanged.
+No inferred colour override added. Projective UV annotations reuse the existing
+mesh path. Credits identify the photo derivative and share-alike licence.
+
+Initial capture exit 0, empty stderr, 24.06 m driven, 18.40 m/s. Inspected
+theatre daylight/night and UC night. Full view initially intersected opposite
+footprint w145208573; corrected to mapped open street x=-310. Corrected capture
+exit 0, empty stderr, 22.78 m driven, 17.59 m/s. Inspected full theatre day/night.
+Arch/ornament/entrance coverage visible; projecting marquee lettering clips
+and historical listings/scaffolding/people remain in photo. Blade, marquee
+depth, faithful night illumination, roof returns and adjacent Page Brothers
+architecture remain open. Broad facade/sign acceptance is not claimed.
+Existing bounded photo geometry check passes, exit 0 and empty stderr; check
+logic unchanged. Three edited scripts already match formatter. Heavy gates
+skipped; car/physics/Monza, saves/Desktop assets and playtest exe unchanged.
+
+### 2026-09-30 — Page Brothers State Street coverage
+
+Previous goal turn made source and screenshot progress (19fcc82). Added a
+cited Page Brothers record for OSM w124873930. City landmark record distinguishes
+the 1902 brick State Street wall from the surviving iron Lake Street front:
+https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?lanId=1393
+Only ph changes in generated city data: same building count, all measured
+heights/grid and original material defaults retained. West photo coverage uses
+its own annotated source quadrilateral and mapped edge 2, reusing the existing
+Daniel Schwen 2009 theatre source. Credit now names both facade derivatives.
+No new texture or renderer code; existing footprint clipping/projective UV path.
+
+Attempted Marc Realty Commons source and its 1280 preview: both CMYK JPEG,
+Godot import failed with stderr despite exit 0. Rejected as runtime assets.
+Downloaded references are preserved in TEMP; the temporary attempted asset and
+import metadata were moved out of godot to codex-page-brothers-unused-cmyk.jpg
+and its .import in TEMP. No Desktop assets, saves or preexisting assets deleted.
+Smallbones 2010 and Teemu008 2012 references reviewed; ground coverage is cropped
+or bus-occluded. Neither added as a game texture.
+
+Initial runtime exit 0, empty stderr, 33.81 m driven at final 23.71 m/s. Inspected
+State Street whole/ground daylight and theatre night. Original Lake camera was
+inside w144846553; corrected to mapped clear street z=-118. Second capture exit
+0, empty stderr, 21.99 m, 17.06 m/s. Final source capture after preserving original
+material default: exit 0, empty stderr, 24.83 m, 18.88 m/s. Inspected final
+chi-page-final-page-state-{day,night}.png and page-lake-day.png. West bays, cornice
+and ground openings now follow the source. Lake Street remains generic and
+unaccepted; photographed car/people/lamps, historic storefront content, theatre
+sign overlap, wall depth, roof returns and night fidelity remain open.
+
+The low-return inventory was also rechecked: first two are small mapped shelter/
+roof footprints with measured 102.5/145 m returns; 400 Lake Shore already excludes
+2017 survey; Navy Pier boat house still has 0.5 m old-survey height and needs its
+post-acquisition source/model. No changes or completion claim for these records.
+One edited script matches formatter; diff check clean. Heavy gates skipped.
+Monza, car/physics, primary workspace and combined playtest executable unchanged.
+
+### 2026-09-30 — Navy Pier marina stale-survey height
+
+Previous goal turn added verified Page Brothers west coverage (7d59e4d).
+Rechecked low-return records and traced the marina boat house w1417040524: its
+0.5 m generated height came from 2017 pier/water returns. Builder confirms the
+new two-storey container amenities facility was installed in May 2025:
+https://sicontainerbuilds.squarespace.com/blog/for-immediate-release-s-i-container-builds-modular-shipping-container-marina-building-installed
+
+Downloaded City PD527 public planning record, January 7, 2025 approval:
+https://gisapps.chicago.gov/gisimages/zoning_pds/PD527.pdf
+500-page PDF retained in TEMP/navy-pier-pd527.pdf (not a game asset). Web fetch
+returned 403, native download succeeded. Read with pypdf and visually rendered
+PDF pages 3–7 with bundled Poppler; sheets A-1/A-2/A-3/A-4 inspected. A-1 signed
+12/12/24 lists actual height 21.97 feet (6.696456 m), two stories, 1280 square
+feet per floor. The 30-foot figure is a maximum allowance, not actual height.
+Current source override uses 6.6965 m and an explicit lidar_exclude reason.
+Only w1417040524 changes h/lr/L/lc; all other building records unchanged.
+Existing generator exclusion early return prevents old survey reapplication.
+No inferred new material, colour or floor-height estimate added.
+
+Windowed capture exit 0, empty stderr, 24.44 m driven at final 18.64 m/s.
+Inspected chi-marina-height-marina-boathouse-{day,night}.png and south daylight.
+Building no longer flat; architectural acceptance remains open: it is still a
+generic extrusion. Plans provide container footprints, breezeway/decks/stairs
+and sloped roof. Installed references must reconcile plan versus built details.
+South capture exposes lawn on pier; both expose generic docks/supports. Added
+those findings to checklist instead of accepting the marina. One edited script
+matches formatter; diff check clean. Heavy gates skipped, checks unchanged.
+Monza, car/physics, primary workspace and combined playtest executable unchanged.

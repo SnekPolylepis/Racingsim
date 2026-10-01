@@ -202,6 +202,7 @@ static func eau_rouge_bridge(asset: Node3D, road: Node3D, station: float) -> voi
 static func build(asset: Node3D, road: Node3D, corners: Dictionary, length: float) -> void:
 	pit_terrace(asset, road, length)
 	pit_footbridge(asset, road, length - 60.0)
+	hotel_de_la_source(asset, road, corners["La Source"] + 55.0)
 	eau_rouge_bridge(asset, road, corners["Eau Rouge"] - 30.0)
 	raidillon_canopy(asset, road, corners["Raidillon"] + 40)
 	paddock_detail(asset, road, length)
@@ -210,6 +211,28 @@ static func build(asset: Node3D, road: Node3D, corners: Dictionary, length: floa
 	event_boards(asset, road, corners, length)
 	runoff_colours(asset, road, corners["Eau Rouge"] - 50, corners["Raidillon"] + 130)
 	runoff_colours(asset, road, corners["Bus Stop"] - 100, corners["Bus Stop"] + 130)
+
+
+static func hotel_de_la_source(asset: Node3D, road: Node3D, station: float) -> void:
+	var xf = frame(road, station, -1, 30.0)
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# Main 4-storey hotel structure overlooking La Source
+	Builder.add_box(st, Vector3(0, 7.0, 10.0), Vector3(46.0, 14.0, 20.0), Color("d2d5cd"))
+	# Lower terrace & reception podium
+	Builder.add_box(st, Vector3(0, 2.5, 0.0), Vector3(44.0, 5.0, 8.0), Color("3d4b4f"))
+	# Glazed balconies & window ribbons
+	for floor_idx in [5.8, 9.2, 12.6]:
+		Builder.add_box(st, Vector3(0, floor_idx, 0.5), Vector3(45.0, 1.8, 0.35), Color("2f4049"))
+		Builder.add_box(st, Vector3(0, floor_idx - 0.95, 0.2), Vector3(45.5, 0.2, 1.1), Color("c5cac3"))
+	# Vertical mullions
+	for x in range(-18, 19, 6):
+		Builder.add_box(st, Vector3(x, 8.5, 0.5), Vector3(0.18, 9.5, 0.2), Color("b0b8b2"))
+	# Roof coping and elevator penthouse
+	Builder.add_box(st, Vector3(0, 14.2, 10.0), Vector3(47.0, 0.4, 21.0), Color("8a9490"))
+	Builder.add_box(st, Vector3(-8.0, 16.0, 12.0), Vector3(10.0, 3.2, 8.0), Color("5a6460"))
+	finish(asset, "HotelDeLaSource", st, xf)
+	signboard(asset, "HotelDeLaSourceSign", "HOTEL DE LA SOURCE  ****  SPA", xf, Vector3(0, 13.8, 0.2), 48)
 
 
 static func kerb_colours(asset: Node3D) -> void:
@@ -275,6 +298,7 @@ static func clear_building_trees(asset: Node3D, road: Node3D, corners: Dictionar
 		[frame(road, length - 120, -1, 8), Vector2(92, 30)],
 		[frame(road, length - 60, 1, 0), Vector2(30, 36)],
 		[frame(road, corners["La Source"] + 20, -1, 9), Vector2(42, 22)],
+		[frame(road, corners["La Source"] + 55, -1, 30), Vector2(50, 32)],
 		[frame(road, (corners["La Source"] + corners["Eau Rouge"]) * .5, -1, 12), Vector2(95, 30)],
 		[frame(road, corners["Eau Rouge"] - 40, 1, 8), Vector2(40, 23)],
 		[frame(road, corners["Eau Rouge"] - 30, 1, 0), Vector2(32, 28)],

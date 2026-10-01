@@ -6,7 +6,7 @@
       "src": "https://www.related.com/press-releases/2026-07-21/related-midwest-completes-crown-installation-400-lake-shore-drive: exterior and crown complete July 2026, 857 ft total height, 72 stories, glass curtain wall and tiered setbacks",
       "h": 261.2,
       "k": "glass",
-      "lidar_exclude": "USGS 2017 acquisition predates this tower's 2024\u00e2\u20ac\u201c2026 construction; roof/crown geometry still needs a newer measured or model source."
+      "lidar_exclude": "USGS 2017 acquisition predates this tower's 2024â€“2026 construction; roof/crown geometry still needs a newer measured or model source."
     },
     "w148544831": {
       "name": "Carbide & Carbon Building (230 N Michigan)",
@@ -333,6 +333,79 @@
       "name": "Monadnock Building",
       "k": "brick",
       "src": "https://www.architecture.org/online-resources/buildings-of-chicago/monadnock-building: brick construction; https://sah-archipedia.org/buildings/IL-01-031-0059: brick piers and southern extension matching brick colour. No new colour sample or ornament inferred."
+    },
+    "w124873919": {
+      "name": "Chicago Theatre (175 N State Street)",
+      "src": "https://en.wikipedia.org/wiki/Chicago_Theatre#Architecture: off-white architectural terra cotta; OSM way 124873919 and https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg identify the photographed building. Roof heights remain measured USGS data.",
+      "k": "terracotta",
+      "photo": {
+        "file": "theatre_2009_full.jpg",
+        "face": [
+          -1,
+          0
+        ],
+        "edge": 2,
+        "frac": 1.0,
+        "quad": [
+          [
+            0.423,
+            0.282
+          ],
+          [
+            0.705,
+            0.137
+          ],
+          [
+            0.705,
+            0.919
+          ],
+          [
+            0.418,
+            0.92
+          ]
+        ],
+        "credit": "Daniel Schwen, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg",
+        "attachment": "Mapped State Street wall edge 2, not the longer recessed auditorium edge. Projected source rectangle is the cornice-to-pavement wall; projecting blade/marquee and scaffolding occlude part of the photograph and need separate geometry. Source was taken 17 April 2009; event listings are historical."
+      }
+    },
+    "w124873930": {
+      "name": "Page Brothers Building (177–191 N State Street)",
+      "src": "https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?lanId=1393: the 1902 State Street west facade is brick; Lake Street north facade is cast iron and remains a separate unresolved face. OSM way 124873930 is identified by https://commons.wikimedia.org/wiki/Category:Page_Brothers_Building. Roof data remains USGS measured.",
+      "photo": {
+        "file": "theatre_2009_full.jpg",
+        "face": [
+          -1,
+          0
+        ],
+        "edge": 2,
+        "frac": 1.0,
+        "quad": [
+          [
+            0.099,
+            0.475
+          ],
+          [
+            0.389,
+            0.292
+          ],
+          [
+            0.389,
+            0.928
+          ],
+          [
+            0.0899,
+            0.928
+          ]
+        ],
+        "credit": "Daniel Schwen, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg",
+        "attachment": "State Street west wall, mapped footprint edge 2. Annotated cornice-to-pavement quadrilateral in the already imported 17 April 2009 theatre reference. Theatre blade/marquee occlude its southern edge; lamps, people, cars and historic shop content remain unresolved source artifacts. Lake Street iron facade requires separate coverage."
+      }
+    },
+    "w1417040524": {
+      "name": "Navy Pier Marina boater amenities building",
+      "h": 6.6965,
+      "src": "https://gisapps.chicago.gov/gisimages/zoning_pds/PD527.pdf: 7 January 2025 approval, PDF page 3 sheet A-1 (signed 12/12/24), actual building height 21.97 feet = 6.696456 m, two storeys. Pages 4–6 sheets A-2/A-3/A-4 show shipping-container floor plans, breezeway, decks and sloped roof; their geometry remains open. https://sicontainerbuilds.squarespace.com/blog/for-immediate-release-s-i-container-builds-modular-shipping-container-marina-building-installed: installed May 2025. OSM way 1417040524 supplies location/footprint. Maximum planning allowance of 30 feet is not its actual height.",
+      "lidar_exclude": "USGS 2017 returns predate the May 2025 amenities-building installation. They measured the old pier/water surface, not this roof. Use the approved 21.97-foot actual height; complete source-plan massing remains open."
     }
   }
 }

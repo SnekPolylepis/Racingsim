@@ -50,13 +50,17 @@ func run():
 	keys.sort_custom(func(a, b): return a.at < b.at)
 	var spline = RoadBuilder.elevation_spline(road.elevation_keys, length, road.closed)
 
-	# 8 required corner views
+	# 11 required corner and section views
 	var corner_stations = {
 		"la_source": 320.0,
 		"eau_rouge_raidillon": 890.0,
 		"kemmel": 1580.0,
 		"les_combes": 2180.0,
+		"malmedy": 2470.0,
+		"rivage": 2840.0,
 		"pouhon": 3530.0,
+		"fagnes": 4100.0,
+		"stavelot": 4650.0,
 		"blanchimont": 5680.0,
 		"bus_stop": 6660.0,
 		"pit_straight": 6870.0,
@@ -87,9 +91,21 @@ func run():
 			"les_combes":
 				cam_pos = pos - fwd * 22.0 + right * 3.5 + Vector3.UP * 3.0
 				look_target = pos + fwd * 45.0 + Vector3.UP * 1.2
+			"malmedy":
+				cam_pos = pos - fwd * 18.0 - right * 3.0 + Vector3.UP * 2.5
+				look_target = pos + fwd * 60.0 - Vector3.UP * 1.5
+			"rivage":
+				cam_pos = pos - fwd * 16.0 - right * 4.0 + Vector3.UP * 3.2
+				look_target = pos + fwd * 50.0 - Vector3.UP * 2.0
 			"pouhon":
 				cam_pos = pos - fwd * 15.0 + right * 6.0 + Vector3.UP * 4.0
 				look_target = pos + fwd * 60.0 - Vector3.UP * 0.5
+			"fagnes":
+				cam_pos = pos - fwd * 18.0 + right * 3.0 + Vector3.UP * 2.6
+				look_target = pos + fwd * 55.0 + Vector3.UP * 0.8
+			"stavelot":
+				cam_pos = pos - fwd * 20.0 - right * 3.5 + Vector3.UP * 2.5
+				look_target = pos + fwd * 65.0 + Vector3.UP * 1.0
 			"blanchimont":
 				cam_pos = pos - fwd * 20.0 - right * 2.5 + Vector3.UP * 2.2
 				look_target = pos + fwd * 75.0 + Vector3.UP * 1.2
