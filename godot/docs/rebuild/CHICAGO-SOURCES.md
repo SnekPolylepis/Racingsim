@@ -109,7 +109,11 @@ position; earlier frozen-camera images did not demonstrate local pooled lighting
   Documents 24 column covers, six feet in diameter, heights ranging from
   twelve to over twenty-four feet, heavy-gauge stainless steel. This supports
   column material and diameter, but does not establish individual coordinates.
-  Locate columns from map/photographic evidence before placing them.
+  The retained `downtown-buildings.json` contains all 24 pillar footprints,
+  ways 1278678874–1278678897. Their ring centres now locate the concrete cores.
+  PBC records six-foot diameter and fifteen-foot concrete height (1.8288 m
+  and 4.572 m). These are core dimensions, not the variable stainless cover
+  heights. Covers and real pipe-to-column connections remain unfinished.
   Reference photographs are copyrighted; viewing them does not grant an asset licence.
 - Public Building Commission:
   https://www.pbcchicago.com/projects/jay-pritzker-pavilion/

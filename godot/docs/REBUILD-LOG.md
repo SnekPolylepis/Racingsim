@@ -2883,3 +2883,17 @@ References: Commons "Circuit de Monaco - Virage de la Piscine", "- Sortie du vir
 - **Ad panel designs (MON-06):** `shaders/ad_panel.gdshader` gives each barrier panel one of four generic layouts (block wordmark, diagonal stripe, round logo + wordmark, two-tone split) from abstract bars, no real text or brands; layout and seed per instance (custom data). BoxMesh UVs are a 3x2 face atlas, remapped per face.
 - **Garden trees:** ~30 % of the hillside garden cells get a tree card (shared tree atlas), so the gardens are no longer open lawn. Gates 38/38.
 - **Lap survey (every 250 m):** grandstand roofs cantilevered out over the track at the start and pool (Grandstand's roof spans past its front at 3 m offset); Monaco's temporary stands are open, so no roofs (the STANDS roof column is gone). Ad panels now pitch with the road (they stepped up the Beau Rivage climb). Gates 38/38.
+
+### 2026-09-30 — Chicago Pritzker concrete cores
+
+Added 24 concrete cores at retained OSM pillar footprint centres (ways
+1278678874–1278678897), using PBC's published six-foot diameter and fifteen-foot
+height. Generation asserts 24 unique way IDs. Reused native CylinderMesh and
+MultiMesh; no asset downloads or physics changes. Overlapping LiDAR steel shell
+surveys now select the first covering grid, reducing four duplicate shells to two.
+
+Windowed chi_shot capture exited 0; Chicago loaded and drove 24.13 m. Inspected
+chi-pylon-cores-pritzker-day.png and the pylon close-up. Cores are visible at mapped
+positions; the dense trellis still floats above them. Variable stainless covers
+and actual pipe connections remain open in CHICAGO-DONE.md. No full-completion
+claim, final export or cleanup audit yet.

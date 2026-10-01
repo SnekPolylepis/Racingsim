@@ -544,7 +544,22 @@ def main():
             hgt = np.nan_to_num(np.round(hgt * 2) / 2)
             dm = np.clip(np.round(hgt * 10), 0, 65535).astype("<u2")
             shells.append([float(x0s), float(z0s), dm.shape[1], dm.shape[0], 1.0, base64.b64encode(dm.tobytes()).decode(), thick])
+            break  # First covering grid, as for building roofs; overlapping surveys are alternatives.
     print("steel shells %d" % len(shells))
+
+    # PBC's 24 concrete trellis cores, located by retained OSM pillar footprints.
+    pylons = []
+    for e in load("downtown-buildings.json"):
+        if e.get("tags", {}).get("man_made") != "pillar":
+            continue
+        for ring in outer_rings(e):
+            x = sum(p[0] for p in ring) / len(ring)
+            z = sum(p[1] for p in ring) / len(ring)
+            if 150 < x < 270 and 130 < z < 345:
+                pylons.append([round(x, 2), round(z, 2), "w" + str(e["id"])])
+    assert len(pylons) == len({p[2] for p in pylons}) == 24, "Pritzker pillar extract changed"
+    pavilion = {"pylons": pylons, "diameter": 1.8288, "height": 4.572,
+                "source": "https://www.pbcchicago.com/projects/jay-pritzker-pavilion/"}
 
     # Harbours: real OSM mooring points (a moored boat on each), piers and breakwaters.
     moorings, piers = [], []
@@ -599,6 +614,7 @@ def main():
         "trees": trees,
         "moorings": moorings,
         "shells": shells,
+        "pavilion": pavilion,
         "piers": piers,
         "paths": paths,
         "source": "OpenStreetMap contributors (ODbL 1.0), Overpass extracts fetched 2026-09-25; see assets/cc0-source/chicago/roadmap/README.md",

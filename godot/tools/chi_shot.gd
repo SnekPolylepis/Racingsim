@@ -75,6 +75,7 @@ func run():
 		"l-wabash": [Vector3(-141, 10, 60), Vector3(-141, 15, -80)],
 		"lake-oblique": [Vector3(700, 45, 170), Vector3(1100, 0, 120)],
 		"pritzker": [Vector3(210, 20, 360), Vector3(210, 20, 150)],
+		"pritzker-pylons": [Vector3(145, 10, 300), Vector3(166, 10, 276)],
 		"harbor": [Vector3(760, 30, 250), Vector3(1100, 5, 60)],
 		"sym": [Vector3(40, 12, 680), Vector3(-50, 18, 668)],
 		"wrigley": [Vector3(10, 12, -350), Vector3(23, 100, -409)],
