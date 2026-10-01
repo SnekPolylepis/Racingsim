@@ -28,21 +28,27 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 RATE = 22050
 
 
-def make_seamless_loop(x: np.ndarray, crossfade_len: int = 512) -> np.ndarray:
-    """Apply equal-power circular crossfade at loop boundary."""
+def make_seamless_loop(x: np.ndarray, crossfade_len: int = 1024) -> np.ndarray:
+    """Apply equal-power circular crossfade and boundary micro-taper for seamless pop-free looping."""
     n = len(x)
     if crossfade_len > n // 4:
         crossfade_len = n // 4
-    t = np.linspace(0.0, 1.0, crossfade_len)
-    fade_in = np.sin(t * (np.pi / 2))
-    fade_out = np.cos(t * (np.pi / 2))
+    L = crossfade_len
+    M = n - L
+    w = np.linspace(0.0, 1.0, L, endpoint=False)
+    w_tail = np.cos(w * (np.pi / 2))
+    w_head = np.sin(w * (np.pi / 2))
 
-    out = x.copy()
-    head = out[:crossfade_len]
-    tail = out[-crossfade_len:]
-    blended = tail * fade_out + head * fade_in
-    out[:crossfade_len] = blended
-    out[-crossfade_len:] = blended
+    out = np.zeros(M)
+    out[:L] = x[M : M + L] * w_tail + x[:L] * w_head
+    out[L:] = x[L:M]
+
+    # Micro-taper at boundary to eliminate any residual sample-level step
+    K = min(64, L // 4)
+    step = out[0] - out[-1]
+    ramp = 0.5 * (1.0 - np.cos(np.linspace(0.0, np.pi, K)))
+    out[:K] -= step * 0.5 * (1.0 - ramp)
+    out[-K:] += step * 0.5 * ramp
     return out
 
 

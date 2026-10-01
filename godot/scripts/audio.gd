@@ -38,14 +38,36 @@ const DEFAULT_ENGINE_BANDS = [
 
 # Per-car physical engine bank configurations
 const CAR_BANK_CONFIGS = {
-	"roadster": {
+	"roadster":
+	{
 		"name": "Mazda MX-5 NA Inline-4",
 		"idle_rpm": 850.0,
-		"bands": [
-			["idle", 850.0, "res://assets/audio/roadster_idle_power.wav", "res://assets/audio/roadster_idle_coast.wav"],
-			["low", 2200.0, "res://assets/audio/roadster_low_power.wav", "res://assets/audio/roadster_low_coast.wav"],
-			["mid", 4200.0, "res://assets/audio/roadster_mid_power.wav", "res://assets/audio/roadster_mid_coast.wav"],
-			["high", 6800.0, "res://assets/audio/roadster_high_power.wav", "res://assets/audio/roadster_high_coast.wav"]
+		"bands":
+		[
+			[
+				"idle",
+				850.0,
+				"res://assets/audio/roadster_idle_power.wav",
+				"res://assets/audio/roadster_idle_coast.wav"
+			],
+			[
+				"low",
+				2200.0,
+				"res://assets/audio/roadster_low_power.wav",
+				"res://assets/audio/roadster_low_coast.wav"
+			],
+			[
+				"mid",
+				4200.0,
+				"res://assets/audio/roadster_mid_power.wav",
+				"res://assets/audio/roadster_mid_coast.wav"
+			],
+			[
+				"high",
+				6800.0,
+				"res://assets/audio/roadster_high_power.wav",
+				"res://assets/audio/roadster_high_coast.wav"
+			]
 		],
 		"voice": 0.85,
 		"max_pitch": 2.4,
@@ -54,14 +76,36 @@ const CAR_BANK_CONFIGS = {
 		"is_race": false,
 		"resonance_freq": 240.0
 	},
-	"f296gt3": {
+	"f296gt3":
+	{
 		"name": "Ferrari 296 GT3 V6 Twin-Turbo",
 		"idle_rpm": 1250.0,
-		"bands": [
-			["idle", 1250.0, "res://assets/audio/f296gt3_idle_power.wav", "res://assets/audio/f296gt3_idle_coast.wav"],
-			["low", 2800.0, "res://assets/audio/f296gt3_low_power.wav", "res://assets/audio/f296gt3_low_coast.wav"],
-			["mid", 5200.0, "res://assets/audio/f296gt3_mid_power.wav", "res://assets/audio/f296gt3_mid_coast.wav"],
-			["high", 6800.0, "res://assets/audio/f296gt3_high_power.wav", "res://assets/audio/f296gt3_high_coast.wav"]
+		"bands":
+		[
+			[
+				"idle",
+				1250.0,
+				"res://assets/audio/f296gt3_idle_power.wav",
+				"res://assets/audio/f296gt3_idle_coast.wav"
+			],
+			[
+				"low",
+				2800.0,
+				"res://assets/audio/f296gt3_low_power.wav",
+				"res://assets/audio/f296gt3_low_coast.wav"
+			],
+			[
+				"mid",
+				5200.0,
+				"res://assets/audio/f296gt3_mid_power.wav",
+				"res://assets/audio/f296gt3_mid_coast.wav"
+			],
+			[
+				"high",
+				6800.0,
+				"res://assets/audio/f296gt3_high_power.wav",
+				"res://assets/audio/f296gt3_high_coast.wav"
+			]
 		],
 		"voice": 1.06,
 		"max_pitch": 2.5,
@@ -70,10 +114,12 @@ const CAR_BANK_CONFIGS = {
 		"is_race": true,
 		"resonance_freq": 380.0
 	},
-	"gt": {
+	"gt":
+	{
 		"name": "Grand Tourer Crossplane V8",
 		"idle_rpm": 750.0,
-		"bands": [
+		"bands":
+		[
 			["idle", 750.0, "res://assets/audio/gt_idle_power.wav", "res://assets/audio/gt_idle_coast.wav"],
 			["low", 1800.0, "res://assets/audio/gt_low_power.wav", "res://assets/audio/gt_low_coast.wav"],
 			["mid", 3600.0, "res://assets/audio/gt_mid_power.wav", "res://assets/audio/gt_mid_coast.wav"],
@@ -86,14 +132,36 @@ const CAR_BANK_CONFIGS = {
 		"is_race": false,
 		"resonance_freq": 160.0
 	},
-	"f2004": {
+	"f2004":
+	{
 		"name": "Ferrari F2004 3.0L V10",
 		"idle_rpm": 3500.0,
-		"bands": [
-			["idle", 3500.0, "res://assets/audio/f2004_idle_power.wav", "res://assets/audio/f2004_idle_coast.wav"],
-			["low", 6500.0, "res://assets/audio/f2004_low_power.wav", "res://assets/audio/f2004_low_coast.wav"],
-			["mid", 11000.0, "res://assets/audio/f2004_mid_power.wav", "res://assets/audio/f2004_mid_coast.wav"],
-			["high", 16500.0, "res://assets/audio/f2004_high_power.wav", "res://assets/audio/f2004_high_coast.wav"]
+		"bands":
+		[
+			[
+				"idle",
+				3500.0,
+				"res://assets/audio/f2004_idle_power.wav",
+				"res://assets/audio/f2004_idle_coast.wav"
+			],
+			[
+				"low",
+				6500.0,
+				"res://assets/audio/f2004_low_power.wav",
+				"res://assets/audio/f2004_low_coast.wav"
+			],
+			[
+				"mid",
+				11000.0,
+				"res://assets/audio/f2004_mid_power.wav",
+				"res://assets/audio/f2004_mid_coast.wav"
+			],
+			[
+				"high",
+				16500.0,
+				"res://assets/audio/f2004_high_power.wav",
+				"res://assets/audio/f2004_high_coast.wav"
+			]
 		],
 		"voice": 1.36,
 		"max_pitch": 3.2,
@@ -102,14 +170,31 @@ const CAR_BANK_CONFIGS = {
 		"is_race": true,
 		"resonance_freq": 650.0
 	},
-	"rb19": {
+	"rb19":
+	{
 		"name": "Red Bull RB19 1.6L V6 Turbo Hybrid",
 		"idle_rpm": 4000.0,
-		"bands": [
-			["idle", 4000.0, "res://assets/audio/rb19_idle_power.wav", "res://assets/audio/rb19_idle_coast.wav"],
+		"bands":
+		[
+			[
+				"idle",
+				4000.0,
+				"res://assets/audio/rb19_idle_power.wav",
+				"res://assets/audio/rb19_idle_coast.wav"
+			],
 			["low", 7000.0, "res://assets/audio/rb19_low_power.wav", "res://assets/audio/rb19_low_coast.wav"],
-			["mid", 10500.0, "res://assets/audio/rb19_mid_power.wav", "res://assets/audio/rb19_mid_coast.wav"],
-			["high", 14000.0, "res://assets/audio/rb19_high_power.wav", "res://assets/audio/rb19_high_coast.wav"]
+			[
+				"mid",
+				10500.0,
+				"res://assets/audio/rb19_mid_power.wav",
+				"res://assets/audio/rb19_mid_coast.wav"
+			],
+			[
+				"high",
+				14000.0,
+				"res://assets/audio/rb19_high_power.wav",
+				"res://assets/audio/rb19_high_coast.wav"
+			]
 		],
 		"voice": 1.16,
 		"max_pitch": 2.7,
@@ -145,6 +230,14 @@ var is_limiting = false
 
 # Overrun backfire simulation
 var backfire_cooldown = 0.0
+var overrun_timer = 0.0
+var overrun_intensity = 0.0
+
+# Wall acoustic occlusion
+var wall_occlusion_factor = 0.0
+
+# Trackside marshal post timer
+var marshal_pass_cooldown = 0.0
 
 # Bottoming / chassis scrape
 var scrape_level = 0.0
@@ -176,6 +269,7 @@ var debug_stats = {
 	"reverb_zone": "Open Air",
 	"mix_preset": "Chase",
 	"ducking_db": 0.0,
+	"wall_occlusion": 0.0,
 	"bus_levels": {}
 }
 
@@ -224,10 +318,13 @@ static func setup_audio_buses() -> void:
 	var eng_idx = AudioServer.get_bus_index("Engine")
 	if eng_idx != -1:
 		var eng_has_comp = false
+		var eng_has_eq = false
 		for e in AudioServer.get_bus_effect_count(eng_idx):
-			if AudioServer.get_bus_effect(eng_idx, e) is AudioEffectCompressor:
+			var eff = AudioServer.get_bus_effect(eng_idx, e)
+			if eff is AudioEffectCompressor:
 				eng_has_comp = true
-				break
+			elif eff is AudioEffectEQ6:
+				eng_has_eq = true
 		if not eng_has_comp:
 			var comp = AudioEffectCompressor.new()
 			comp.threshold = -14.0
@@ -236,6 +333,11 @@ static func setup_audio_buses() -> void:
 			comp.release_ms = 120.0
 			comp.gain = 1.0
 			AudioServer.add_bus_effect(eng_idx, comp)
+		if not eng_has_eq:
+			var eq = AudioEffectEQ6.new()
+			for b in 6:
+				eq.set_band_gain_db(b, 0.0)
+			AudioServer.add_bus_effect(eng_idx, eq)
 
 	# Tyres bus compressor
 	var tyres_idx = AudioServer.get_bus_index("Tyres")
@@ -253,14 +355,17 @@ static func setup_audio_buses() -> void:
 			comp.release_ms = 80.0
 			AudioServer.add_bus_effect(tyres_idx, comp)
 
-	# World bus reverb zone
+	# World bus reverb zone & EQ for distance, wall occlusion, and cabin isolation
 	var world_idx = AudioServer.get_bus_index("World")
 	if world_idx != -1:
 		var world_has_reverb = false
+		var world_has_eq = false
 		for e in AudioServer.get_bus_effect_count(world_idx):
-			if AudioServer.get_bus_effect(world_idx, e) is AudioEffectReverb:
+			var eff = AudioServer.get_bus_effect(world_idx, e)
+			if eff is AudioEffectReverb:
 				world_has_reverb = true
-				break
+			elif eff is AudioEffectEQ6:
+				world_has_eq = true
 		if not world_has_reverb:
 			var reverb = AudioEffectReverb.new()
 			reverb.room_size = 0.2
@@ -269,6 +374,11 @@ static func setup_audio_buses() -> void:
 			reverb.wet = 0.06
 			reverb.dry = 0.95
 			AudioServer.add_bus_effect(world_idx, reverb)
+		if not world_has_eq:
+			var eq = AudioEffectEQ6.new()
+			for b in 6:
+				eq.set_band_gain_db(b, 0.0)
+			AudioServer.add_bus_effect(world_idx, eq)
 
 
 func _init_engine_players():
@@ -570,7 +680,9 @@ func make_sound(kind: String) -> AudioStreamWAV:
 					bird = sin(TAU * 2800.0 * t + sin(TAU * 45.0 * t) * 2.5) * 0.14
 				value = trees + bird
 			"spa_pa":
-				var voice = sin(TAU * 440.0 * t + sin(TAU * 4.0 * t) * 1.2) * 0.30 + sin(TAU * 880.0 * t) * 0.22
+				var voice = (
+					sin(TAU * 440.0 * t + sin(TAU * 4.0 * t) * 1.2) * 0.30 + sin(TAU * 880.0 * t) * 0.22
+				)
 				var speech = voice * maxf(0.0, sin(TAU * 1.8 * t))
 				value = speech + filtered * 0.12
 
@@ -757,16 +869,13 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 			lower = i
 	var upper = mini(lower + 1, bands.size() - 1)
 	var blend = clampf(
-		(
-			log(maxf(audible_rpm, bands[lower][1]) / bands[lower][1])
-			/ log(bands[upper][1] / bands[lower][1])
-		),
+		log(maxf(audible_rpm, bands[lower][1]) / bands[lower][1]) / log(bands[upper][1] / bands[lower][1]),
 		0.0,
 		1.0
 	)
 
 	# Camera preset multipliers
-	var cockpit_filter = (active_mix_preset == "Cockpit")
+	var cockpit_filter = active_mix_preset == "Cockpit"
 	var engine_gain_preset = 0.95 if cockpit_filter else (1.10 if active_mix_preset == "TV" else 1.0)
 
 	for i in bands.size():
@@ -783,7 +892,10 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 		var resonance_boost = 1.0 + (0.25 * engine_load if audible_rpm < band[1] * 1.3 else 0.0)
 
 		power.volume_db = linear_to_db(
-			maxf(0.00001, engine_level * engine_gain_preset * weight * sqrt(engine_load) * 0.92 * resonance_boost)
+			maxf(
+				0.00001,
+				engine_level * engine_gain_preset * weight * sqrt(engine_load) * 0.92 * resonance_boost
+			)
 		)
 		coast.volume_db = linear_to_db(
 			maxf(
@@ -796,15 +908,29 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	players.intake.volume_db = linear_to_db(maxf(0.00001, engine_level * engine_load * 0.075))
 	players.intake.pitch_scale = clampf(0.5 + audible_rpm / (redline * 0.8), 0.5, 2.2)
 
-	# Overrun backfire crackles on throttle lift
-	if backfire_cooldown > 0.0:
+	# Overrun simulation: detect throttle lift at elevated RPM in gear
+	var current_gear = int(car.gear if "gear" in car else 1)
+	var in_gear = current_gear >= 1
+	if raw_throttle < 0.08 and audible_rpm > redline * 0.40 and in_gear:
+		if last_throttle >= 0.15:
+			# Sudden lift: prime overrun burst
+			overrun_intensity = clampf((audible_rpm - redline * 0.40) / (redline * 0.50), 0.35, 1.0)
+			overrun_timer = randf_range(1.2, 2.2)
+	elif raw_throttle > 0.15:
+		overrun_timer = 0.0
+		overrun_intensity = 0.0
+
+	if overrun_timer > 0.0:
+		overrun_timer -= dt
+		overrun_intensity = maxf(0.0, overrun_intensity - dt * 0.40)
+		if backfire_cooldown <= 0.0 and audible_rpm > redline * 0.35:
+			var pop_vol = engine_level * overrun_intensity * randf_range(0.35, 0.70)
+			trigger("backfire", pop_vol)
+			backfire_cooldown = randf_range(0.12, 0.30)
+	elif backfire_cooldown > 0.0:
 		backfire_cooldown -= dt
-	elif raw_throttle < 0.08 and audible_rpm > redline * 0.50 and engine_load > 0.55:
-		trigger("backfire", engine_level * randf_range(0.35, 0.75))
-		backfire_cooldown = randf_range(0.12, 0.28)
 
 	# Gearshift events
-	var current_gear = int(car.gear if "gear" in car else 1)
 	if current_gear != last_gear:
 		if current_gear > last_gear:
 			# Upshift ignition cut pop
@@ -858,9 +984,7 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	elif current_surface_id == 3:  # Gravel
 		surface_tyre_mult = 0.25
 
-	players.tires.volume_db = linear_to_db(
-		maxf(0.00001, tyres_level * tire_level * 0.28 * surface_tyre_mult)
-	)
+	players.tires.volume_db = linear_to_db(maxf(0.00001, tyres_level * tire_level * 0.28 * surface_tyre_mult))
 	players.tires.pitch_scale = clampf(0.85 + car_speed / 45.0 + max_slip * 0.4, 0.7, 1.8)
 
 	players.tires_lat.volume_db = linear_to_db(
@@ -881,7 +1005,7 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	players.road.pitch_scale = clampf(0.7 + car_speed / 60.0, 0.5, 1.6)
 
 	# Kerb vibration thrum
-	var on_kerb = (current_surface_id == 1)
+	var on_kerb = current_surface_id == 1
 	var kerb_target = 0.45 if on_kerb else 0.0
 	players.kerb.volume_db = linear_to_db(
 		maxf(0.00001, tyres_level * kerb_target * clampf(car_speed / 28.0, 0.2, 1.2))
@@ -889,7 +1013,7 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	players.kerb.pitch_scale = clampf(0.7 + car_speed / 25.0, 0.6, 2.2)
 
 	# Gravel trap spray & roar
-	var on_gravel = (current_surface_id == 3)
+	var on_gravel = current_surface_id == 3
 	var gravel_target = 0.55 if on_gravel else 0.0
 	if players.has("gravel"):
 		players.gravel.volume_db = linear_to_db(
@@ -898,7 +1022,7 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 		players.gravel.pitch_scale = clampf(0.8 + car_speed / 35.0, 0.7, 1.6)
 
 	# Grass rustle
-	var on_grass = (current_surface_id == 2)
+	var on_grass = current_surface_id == 2
 	var grass_target = 0.38 if on_grass else 0.0
 	if players.has("grass"):
 		players.grass.volume_db = linear_to_db(
@@ -917,7 +1041,10 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	# Transmission gear whine (boosted in cockpit view)
 	var whine_boost = 1.4 if cockpit_filter else (0.8 if active_mix_preset == "TV" else 1.0)
 	players.whine.volume_db = linear_to_db(
-		maxf(0.00001, engine_level * clampf(car_speed / 65.0, 0.0, 1.0) * (0.14 if is_race_car else 0.04) * whine_boost)
+		maxf(
+			0.00001,
+			engine_level * clampf(car_speed / 65.0, 0.0, 1.0) * (0.14 if is_race_car else 0.04) * whine_boost
+		)
 	)
 	players.whine.pitch_scale = clampf(0.5 + car_speed / 32.0, 0.4, 2.5)
 
@@ -979,12 +1106,8 @@ func _update_track_spatial_acoustics(car, dt: float) -> void:
 		if effect is AudioEffectReverb:
 			# Detect Bridge / Tunnel Reverb Zones
 			var under_bridge = (
-				is_spa
-				and (
-					(station > 6910.0 and station < 6965.0)  # Pit footbridge
-					or (station > 900.0 and station < 945.0)  # Eau Rouge stone culvert bridge
-				)
-			)
+				is_spa and ((station > 6910.0 and station < 6965.0) or (station > 900.0 and station < 945.0))
+			)  # Pit footbridge  # Eau Rouge stone culvert bridge
 			# Detect Grandstands
 			var near_grandstand = (
 				is_spa
@@ -992,11 +1115,18 @@ func _update_track_spatial_acoustics(car, dt: float) -> void:
 					(station > 250.0 and station < 480.0)  # La Source
 					or (station > 1020.0 and station < 1240.0)  # Raidillon
 					or (station > 3520.0 and station < 3750.0)  # Pouhon
-					or (station > 6620.0 and station < 6850.0)  # Bus Stop
+					or (station > 6620.0 and station < 6850.0)
 				)
-			)
+			)  # Bus Stop
 			# Detect Retaining Wall proximity (Eau Rouge left wall)
 			var near_wall = is_spa and (station > 870.0 and station < 1050.0)
+			# Detect Pit Wall dividing pit lane from racing line
+			var near_pit_wall = is_spa and (station > 6650.0 or station < 150.0)
+
+			# Wall acoustic occlusion factor (low-pass filtering behind barriers)
+			var target_occlusion = 0.85 if (near_wall or near_pit_wall) else 0.0
+			wall_occlusion_factor = lerpf(wall_occlusion_factor, target_occlusion, 1.0 - exp(-dt * 5.0))
+			debug_stats.wall_occlusion = wall_occlusion_factor
 
 			if under_bridge:
 				debug_stats.reverb_zone = "Bridge / Tunnel"
@@ -1023,19 +1153,34 @@ func _update_track_spatial_acoustics(car, dt: float) -> void:
 				effect.dry = lerpf(effect.dry, 0.95, dt * 2.0)
 				effect.damping = lerpf(effect.damping, 0.70, dt * 2.0)
 
-			# Crowd swell near grandstands
+			# Crowd swell near grandstands and spectator banks (Pouhon, Kemmel)
+			var near_spectators = (
+				near_grandstand
+				or (
+					is_spa
+					and ((station > 1200.0 and station < 1350.0) or (station > 3480.0 and station < 3780.0))
+				)
+			)
 			if players.has("crowd"):
-				if near_grandstand:
+				if near_spectators:
 					players.crowd.volume_db = linear_to_db(maxf(0.00001, world_level * 0.25))
 				else:
 					players.crowd.volume_db = -80.0
 
-			# Spa PA circuit announcer swell
+			# Spa PA circuit announcer swell around paddock and spectator banks
 			if players.has("spa_pa"):
-				if near_grandstand or (station > 6850.0 or station < 150.0):
+				if near_spectators or (station > 6850.0 or station < 150.0):
 					players.spa_pa.volume_db = linear_to_db(maxf(0.00001, world_level * 0.20))
 				else:
 					players.spa_pa.volume_db = -80.0
+
+			# Trackside marshal posts (every 350 m in spa.gd)
+			if is_spa:
+				var dist_marshal = fposmod(station + 18.0, 350.0)
+				if dist_marshal < 36.0:
+					marshal_pass_cooldown = maxf(marshal_pass_cooldown, 0.6)
+			if marshal_pass_cooldown > 0.0:
+				marshal_pass_cooldown -= dt
 
 
 func _update_bus_volumes(settings: Dictionary, master_gain: float, ducking_db: float = 0.0) -> void:
@@ -1056,14 +1201,72 @@ func _update_bus_volumes(settings: Dictionary, master_gain: float, ducking_db: f
 		AudioServer.set_bus_volume_db(
 			eng_idx, linear_to_db(maxf(0.0001, float(settings.get("engine_volume", 0.85))))
 		)
+		# Configure Engine EQ for Cockpit vs Chase vs TV presets
+		for e in AudioServer.get_bus_effect_count(eng_idx):
+			var eff_obj = AudioServer.get_bus_effect(eng_idx, e)
+			if eff_obj is AudioEffectEQ6:
+				if active_mix_preset == "Cockpit":
+					# Cockpit: boost low cabin rumble, intake (320 Hz) and whine (1 kHz), cut exterior rasp at 10 kHz
+					eff_obj.set_band_gain_db(0, 1.2)
+					eff_obj.set_band_gain_db(1, 1.8)
+					eff_obj.set_band_gain_db(2, 2.5)
+					eff_obj.set_band_gain_db(3, 1.5)
+					eff_obj.set_band_gain_db(4, -1.5)
+					eff_obj.set_band_gain_db(5, -4.5)
+				elif active_mix_preset == "TV":
+					# TV: broadcast camera distance roll-off
+					eff_obj.set_band_gain_db(0, -3.0)
+					eff_obj.set_band_gain_db(1, -1.5)
+					eff_obj.set_band_gain_db(2, 0.5)
+					eff_obj.set_band_gain_db(3, 2.0)
+					eff_obj.set_band_gain_db(4, 1.0)
+					eff_obj.set_band_gain_db(5, -2.0)
+				else:
+					# Chase: neutral full-spectrum
+					for b in 6:
+						eff_obj.set_band_gain_db(b, 0.0)
+				break
+
 	if tyres_idx != -1:
 		AudioServer.set_bus_volume_db(
 			tyres_idx, linear_to_db(maxf(0.0001, float(settings.get("tyres_volume", eff))))
 		)
+
 	if world_idx != -1:
 		# Ducking applied to World bus
 		var base_world_db = linear_to_db(maxf(0.0001, float(settings.get("world_volume", eff))))
 		AudioServer.set_bus_volume_db(world_idx, base_world_db + ducking_db)
+
+		# Configure World EQ for cabin isolation (Cockpit) and wall acoustic occlusion
+		for e in AudioServer.get_bus_effect_count(world_idx):
+			var eff_obj = AudioServer.get_bus_effect(world_idx, e)
+			if eff_obj is AudioEffectEQ6:
+				if active_mix_preset == "Cockpit":
+					# Cabin muffling on exterior sound
+					eff_obj.set_band_gain_db(0, 0.0)
+					eff_obj.set_band_gain_db(1, -1.0)
+					eff_obj.set_band_gain_db(2, -3.0)
+					eff_obj.set_band_gain_db(3, -5.5)
+					eff_obj.set_band_gain_db(4, -8.0)
+					eff_obj.set_band_gain_db(5, -12.0)
+				elif active_mix_preset == "TV":
+					eff_obj.set_band_gain_db(0, -2.0)
+					eff_obj.set_band_gain_db(1, -1.0)
+					eff_obj.set_band_gain_db(2, 1.0)
+					eff_obj.set_band_gain_db(3, 1.5)
+					eff_obj.set_band_gain_db(4, 0.5)
+					eff_obj.set_band_gain_db(5, -2.5)
+				else:
+					# Chase: apply wall occlusion low-pass attenuation if behind barrier/wall
+					var occ = -8.0 * wall_occlusion_factor
+					eff_obj.set_band_gain_db(0, 0.0)
+					eff_obj.set_band_gain_db(1, 0.0)
+					eff_obj.set_band_gain_db(2, occ * 0.25)
+					eff_obj.set_band_gain_db(3, occ * 0.50)
+					eff_obj.set_band_gain_db(4, occ * 0.75)
+					eff_obj.set_band_gain_db(5, occ)
+				break
+
 	if ui_idx != -1:
 		AudioServer.set_bus_volume_db(
 			ui_idx, linear_to_db(maxf(0.0001, float(settings.get("ui_volume", 0.8))))

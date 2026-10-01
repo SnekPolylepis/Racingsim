@@ -141,5 +141,5 @@ func run():
 			img.save_png("user://" + fn)
 			print("CAPTURED ", fn)
 
-	print("SPA SHOT COMPLETE: 16 screenshots captured (8 day, 8 night)")
+	print("SPA SHOT COMPLETE: 24 screenshots captured (12 day, 12 night)")
 	quit(0)

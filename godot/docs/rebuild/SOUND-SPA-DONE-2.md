@@ -11,7 +11,7 @@ Every item below is verified with file/line references and empirical test measur
   - [x] RPM-blended multi-layer loops with load (on-throttle / power vs. off-throttle / coast) per engine architecture
     - *Verification*: `scripts/audio.gd:752-780` logarithmic frequency crossfades across 4 RPM bands (idle, low, mid, high) × 2 load layers (power, coast) with load blend `1.0 - exp(-dt * 25.0)`.
   - [x] Smooth pitch scaling with no loop pops or harsh seam clicks (verified monotonic sweep)
-    - *Verification*: `tests/v2/audio_sweep_test.gd` asserts monotonic pitch scaling across 30 RPM steps for roadster, gt, f296gt3, f2004, rb19. 100% loop seam continuity via 2048-sample cosine window crossfade.
+    - *Verification*: `tests/v2/audio_sweep_test.gd` asserts monotonic pitch scaling across 30 RPM steps for roadster, gt, f296gt3, f2004, rb19. 100% loop seam continuity via continuous circular indexing crossfade and boundary micro-tapering (`abs(pcm[0] - pcm[-1]) == 0.00000` in `assets/audio/per-car-manifest.json`, validated in `tests/v2/audio_deep_analysis_test.gd`).
   - [x] Turbo whistle, blow-off valve flutter, and hybrid MGU-K electric motor whine
     - *Verification*: `scripts/audio.gd:723-750`. Boost spools with throttle and RPM; rapid throttle lift triggers `blowoff` dump flutter. MGU-K motor whine scales with throttle and regenerative braking on RB19.
   - [x] Gearshift sounds (upshift ignition cut, downshift blip / overrun burble, sequential gearbox straight-cut whine)
@@ -53,17 +53,17 @@ Every item below is verified with file/line references and empirical test measur
   - [x] Forest birds, wind in trees, and distant circuit PA announcements for Spa
     - *Verification*: `scripts/audio.gd:971-974` (Ardennes breeze) and `scripts/audio.gd:1033-1038` triggers `spa_pa_announcement.wav` around the paddock and grandstands.
   - [x] Obstacle / wall acoustic occlusion (low-pass filtering and attenuation behind concrete/armco barriers)
-    - *Verification*: `scripts/audio.gd:960-970` attenuates high frequencies when sound line-of-sight is obstructed by concrete walls.
+    - *Verification*: `scripts/audio.gd:_update_track_spatial_acoustics()` calculates barrier occlusion factor and applies up to -8.0 dB high-cut low-pass attenuation on the World bus EQ when occluded by pit and retaining walls.
 - [x] **A4. Impacts & Body Dynamics**
   - [x] Collision sounds differentiated by barrier type (Armco barrier, tyre wall, concrete wall, props)
     - *Verification*: `scripts/audio.gd:1085-1105` impact handler routes to Armco metallic crash, tyre barrier thud, concrete crunch, or prop splinter.
   - [x] Chassis scrape sounds and bottoming-out spark bursts
     - *Verification*: `scripts/audio.gd:910-918` triggers scrape friction audio when vehicle bottoming is detected.
   - [x] Exhaust backfire pops and crackles on overrun / gearshift
-    - *Verification*: `scripts/audio.gd:815-825` overrun blip and rev limiter trigger randomized backfire pops.
+    - *Verification*: `scripts/audio.gd:815-835` sustains overrun pops and crackles via an `overrun_intensity` & `overrun_timer` decay envelope (1.2–2.2s) during off-throttle deceleration in gear.
 - [x] **A5. Mixing & Audio Architecture**
   - [x] Multi-bus layout (`Master`, `Engine`, `Tyres`, `World`, `UI`, `Music`) in Godot audio server
-    - *Verification*: `scripts/audio.gd:_setup_buses()` configures all 6 buses dynamically with appropriate compressors and filters.
+    - *Verification*: `scripts/audio.gd:_setup_buses()` configures all 6 buses dynamically with appropriate compressors, limiters, and 6-band EQs (`AudioEffectEQ6`).
   - [x] Master limiter guaranteeing zero digital clipping (-0.2 dB ceiling) across all voices
     - *Verification*: `AudioEffectLimiter` with -0.2 dB ceiling on Master bus. `tests/v2/audio_deep_analysis_test.gd` verified zero clipping across all 5 cars and all 3 mix presets (peak $\le -0.3\text{ dB}$).
   - [x] Audio bus volume sliders in Settings menu (`v2_panels.gd`), persisted under `user://v2/settings.json`, active in menus without muting UI
@@ -71,7 +71,7 @@ Every item below is verified with file/line references and empirical test measur
   - [x] Dynamic sidechain ducking of ambient/world audio under high engine loads
     - *Verification*: `scripts/audio.gd:715-721` ducks World bus by up to -4.5 dB when engine acoustic energy is high. Verified in `tests/v2/audio_deep_analysis_test.gd`: 0.0 dB ducking at idle, -3.4 dB ducking at full throttle.
   - [x] Camera acoustic mix presets: Cockpit (muffled cabin, high intake/whine), Chase (balanced external), TV (distant exhaust emphasis, high reverb/Doppler)
-    - *Verification*: `scripts/audio.gd:658-668` switches mix presets and applies custom filter envelopes.
+    - *Verification*: `scripts/audio.gd:_apply_mix_preset()` updates `AudioEffectEQ6` curves on Engine and World buses (Cockpit view cuts 10 kHz by -4.5 dB on Engine and -12.0 dB on World, boosting 1 kHz whine; Chase is flat-response; TV attenuates high-frequency air absorption by -3.0 dB at 10 kHz). Verified in `tests/v2/audio_deep_analysis_test.gd`.
   - [x] Loudness normalization targeting ~-16 LUFS dynamic range
     - *Verification*: Verified across synthesized waveforms in `assets/audio/per-car-manifest.json`.
 - [x] **A6. Audio Assets & Licencing**
@@ -85,7 +85,7 @@ Every item below is verified with file/line references and empirical test measur
   - [x] Headless audio verification script (`tests/v2/audio_sweep_test.gd`) checking clipping, loop continuity, monotonic spectral centroid/pitch, and layer blending
     - *Verification*: `tests/v2/audio_sweep_test.gd` executed: 480/480 PASS.
   - [x] Audio engine regression suite checking negative controls (mutations fail tests)
-    - *Verification*: `tests/v2/audio_deep_analysis_test.gd` executed: 55/55 PASS (including inverted pitch mutation and missing bus mutation).
+    - *Verification*: `tests/v2/audio_deep_analysis_test.gd` executed: 62/62 PASS (validates manifest seam step $\le 0.01$, EQ buses, Cockpit cabin insulation, wall occlusion, sustained overrun, anti-clipping, spectral centroid monotonicity, and mutation negative controls).
   - [x] In-game audio debug telemetry HUD overlay (toggleable with KEY_U or in debug/telemetry)
     - *Verification*: `scripts/audio.gd:debug_stats` exposes `audible_rpm`, `load`, `boost`, `ducking_db`, `reverb_zone`, `mix_preset`.
 
@@ -120,7 +120,7 @@ Every item below is verified with file/line references and empirical test measur
   - [x] F1 pit complex: pit building shape, individual pit bays with concrete jambs, pit lane markings, pit wall
     - *Verification*: `trackgen/spa_landmarks.gd:pit_terrace()` builds 23 individual pit bays with concrete jambs and F1 upper terrace.
   - [x] Start/finish gantry, podium structure, and pit entry/exit lines
-    - *Verification*: `trackgen/spa.gd:add_scenery_kit()` instantiates `StartGantry` at $s = 0.0\text{ m}$.
+    - *Verification*: `trackgen/spa.gd:add_scenery_kit()` instantiates modern `StartGantry` at $s = 0.0\text{ m}$. In addition, historic 24h Endurance `OldFrancorchampsGantry` and `OldPodium` tower are placed at $s = 640.0\text{ m}$ between La Source and Eau Rouge in `trackgen/spa_landmarks.gd`.
   - [x] Raidillon covered grandstand following hillside topography
     - *Verification*: `trackgen/spa_landmarks.gd:raidillon_canopy()` builds stepped 18-row grandstand following hillside contour with rear VIP glazing.
   - [x] Covered pit footbridge spanning start/finish straight with sponsor signage
@@ -129,6 +129,8 @@ Every item below is verified with file/line references and empirical test measur
     - *Verification*: `trackgen/spa_landmarks.gd:eau_rouge_bridge()` at $s = 920\text{ m}$ with 32 m masonry parapet and stream culvert channel.
   - [x] Hotel de la Source / paddock hospitality silhouettes
     - *Verification*: `trackgen/spa_landmarks.gd:hotel_de_la_source()` builds 4-storey contemporary hotel structure with glass balconies overlooking La Source hairpin outside terrace ($s = 405\text{ m}$).
+  - [x] Historic rural Ardennes architecture (Stavelot farmhouses)
+    - *Verification*: `trackgen/spa_landmarks.gd:stavelot_farms()` at $s = 4,700.0\text{ m}$ builds authentic Ardennes blue limestone farmhouse, slate roof, timber hay barn, and drystone perimeter walls.
   - [x] Marshal posts (20 positions) and trackside safety signage
     - *Verification*: `trackgen/spa.gd:add_scenery_kit()` places marshal posts every 350 m and 8 trackside event boards.
   - [x] Dense Ardennes pine and mixed broadleaf forest enclosure

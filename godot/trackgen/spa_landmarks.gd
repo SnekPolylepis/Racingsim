@@ -203,9 +203,11 @@ static func build(asset: Node3D, road: Node3D, corners: Dictionary, length: floa
 	pit_terrace(asset, road, length)
 	pit_footbridge(asset, road, length - 60.0)
 	hotel_de_la_source(asset, road, corners["La Source"] + 55.0)
+	old_francorchamps_gantry_podium(asset, road, 640.0)
 	eau_rouge_bridge(asset, road, corners["Eau Rouge"] - 30.0)
 	raidillon_canopy(asset, road, corners["Raidillon"] + 40)
 	paddock_detail(asset, road, length)
+	stavelot_farms(asset, road, corners["Stavelot"] + 50.0)
 	race_control(asset, road, corners["Bus Stop"] + 135)
 	clear_building_trees(asset, road, corners, length)
 	event_boards(asset, road, corners, length)
@@ -233,6 +235,93 @@ static func hotel_de_la_source(asset: Node3D, road: Node3D, station: float) -> v
 	Builder.add_box(st, Vector3(-8.0, 16.0, 12.0), Vector3(10.0, 3.2, 8.0), Color("5a6460"))
 	finish(asset, "HotelDeLaSource", st, xf)
 	signboard(asset, "HotelDeLaSourceSign", "HOTEL DE LA SOURCE  ****  SPA", xf, Vector3(0, 13.8, 0.2), 48)
+
+
+static func old_francorchamps_gantry_podium(asset: Node3D, road: Node3D, station: float) -> void:
+	var xf = frame(road, station, 1, 0.0)
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+	# 1. Historic start/finish timing gantry spanning the downhill straight (24m span, 6.2m clearance)
+	# Main crossbeam truss
+	Builder.add_box(st, Vector3(0, 6.6, -11.0), Vector3(2.4, 0.9, 24.0), Color("6c757d"))
+	Builder.add_box(st, Vector3(0, 7.3, -11.0), Vector3(2.8, 0.4, 24.6), Color("adb5bd"))
+	# Upright support columns (right pit wall and left grass bank)
+	Builder.add_box(st, Vector3(0, 3.4, 1.2), Vector3(1.2, 6.8, 1.4), Color("495057"))
+	Builder.add_box(st, Vector3(0, 3.4, -23.2), Vector3(1.2, 6.8, 1.4), Color("495057"))
+	# Diagonal truss braces
+	for z in [-18.0, -11.0, -4.0]:
+		Builder.add_box(st, Vector3(0, 6.6, z), Vector3(0.15, 0.8, 0.15), Color("ced4da"))
+
+	# Start lights and timing display clocks
+	for z in [-14.0, -11.0, -8.0]:
+		Builder.add_box(st, Vector3(-1.25, 6.3, z), Vector3(0.2, 0.6, 1.4), Color("212529"))
+		# Red/green starting cluster
+		Builder.add_box(st, Vector3(-1.36, 6.3, z - 0.35), Vector3(0.08, 0.3, 0.3), Color("c92a2a"))
+		Builder.add_box(st, Vector3(-1.36, 6.3, z + 0.35), Vector3(0.08, 0.3, 0.3), Color("2b8a3e"))
+
+	# 2. Historic podium box & race direction control tower (right side, s = 640m)
+	# Concrete base podium deck
+	Builder.add_box(st, Vector3(0, 2.2, 6.0), Vector3(14.0, 4.4, 8.0), Color("dee2e6"))
+	# Podium steps (1st, 2nd, 3rd place blocks facing the straight)
+	Builder.add_box(st, Vector3(-1.8, 4.8, 2.8), Vector3(1.8, 0.8, 1.4), Color("fcc419"))
+	Builder.add_box(st, Vector3(-3.8, 4.6, 2.8), Vector3(1.6, 0.4, 1.4), Color("adb5bd"))
+	Builder.add_box(st, Vector3(0.2, 4.5, 2.8), Vector3(1.6, 0.2, 1.4), Color("d9480f"))
+	# Podium backdrop & roof canopy
+	Builder.add_box(st, Vector3(-1.8, 6.2, 3.8), Vector3(6.5, 2.0, 0.2), Color("1864ab"))
+	Builder.add_box(st, Vector3(-1.8, 7.3, 3.2), Vector3(7.2, 0.25, 3.2), Color("f8f9fa"))
+	# Safety railings
+	Builder.add_box(st, Vector3(-1.8, 5.0, 2.0), Vector3(8.0, 0.9, 0.1), Color("868e96"))
+	for z in [2.0, 9.8]:
+		Builder.add_box(st, Vector3(-6.8, 5.0, z), Vector3(0.1, 0.9, 3.5), Color("868e96"))
+		Builder.add_box(st, Vector3(3.2, 5.0, z), Vector3(0.1, 0.9, 3.5), Color("868e96"))
+
+	# 3. Flag poles (Belgian tricolour, European, TotalEnergies)
+	for x in [-3.8, -1.8, 0.2]:
+		Builder.add_box(st, Vector3(x, 8.6, 3.9), Vector3(0.08, 3.2, 0.08), Color("f1f3f5"))
+
+	finish(asset, "OldFrancorchampsGantry", st, xf)
+	signboard(asset, "OldGantryTitleFront", "CIRCUIT DE SPA-FRANCORCHAMPS", xf, Vector3(-1.3, 6.6, -11.0), 46)
+	signboard(asset, "OldGantryTitleRear", "ANCIEN DEPART  /  SPA 24 HOURS", xf, Vector3(1.3, 6.6, -11.0), 44)
+	signboard(
+		asset, "OldPodiumTitle", "PODIUM OFFICIEL  /  SPA-FRANCORCHAMPS", xf, Vector3(-1.8, 6.2, 3.65), 36
+	)
+
+
+static func stavelot_farms(asset: Node3D, road: Node3D, station: float) -> void:
+	var xf = frame(road, station, 1, 28.0)
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+	# 1. Main Ardennes stone farmhouse (traditional blue limestone masonry)
+	Builder.add_box(st, Vector3(0, 4.0, 0), Vector3(18.0, 8.0, 10.0), Color("6c757d"))
+	# Slate pitched roof
+	Builder.add_box(st, Vector3(0, 9.2, 0), Vector3(19.0, 2.6, 11.0), Color("343a40"))
+	# Brick chimney
+	Builder.add_box(st, Vector3(6.5, 11.5, 2.0), Vector3(1.2, 2.8, 1.2), Color("a61e4d"))
+	# Timber window frames & shutters
+	for x in [-6.0, -2.0, 2.0, 6.0]:
+		for y in [3.0, 6.2]:
+			Builder.add_box(st, Vector3(x, y, -5.1), Vector3(1.6, 1.8, 0.2), Color("f8f9fa"))
+			Builder.add_box(st, Vector3(x - 0.9, y, -5.15), Vector3(0.3, 1.8, 0.1), Color("2b8a3e"))
+			Builder.add_box(st, Vector3(x + 0.9, y, -5.15), Vector3(0.3, 1.8, 0.1), Color("2b8a3e"))
+	# Front farmhouse door
+	Builder.add_box(st, Vector3(0.0, 2.0, -5.1), Vector3(1.6, 3.8, 0.2), Color("5c3c10"))
+
+	# 2. Adjacent timber barn & cattle shed (Stavelot agriculture)
+	Builder.add_box(st, Vector3(18.0, 3.8, 2.0), Vector3(14.0, 7.6, 12.0), Color("493829"))
+	Builder.add_box(st, Vector3(18.0, 8.6, 2.0), Vector3(14.8, 2.2, 13.0), Color("212529"))
+	# Large barn sliding door
+	Builder.add_box(st, Vector3(18.0, 2.6, -4.1), Vector3(4.5, 5.2, 0.25), Color("38291e"))
+
+	# 3. Drystone boundary walls along pasture edge
+	for z_step in range(-12, 16, 4):
+		Builder.add_box(st, Vector3(-12.0, 0.6, z_step), Vector3(0.8, 1.2, 3.8), Color("5c5f58"))
+	for x_step in range(-12, 26, 4):
+		Builder.add_box(st, Vector3(x_step, 0.6, -10.0), Vector3(3.8, 1.2, 0.8), Color("5c5f58"))
+
+	finish(asset, "StavelotFarms", st, xf)
+	signboard(asset, "StavelotFarmSign", "FERME DU VAL DE STAVELOT", xf, Vector3(0, 5.5, -5.2), 34)
 
 
 static func kerb_colours(asset: Node3D) -> void:
@@ -304,7 +393,9 @@ static func clear_building_trees(asset: Node3D, road: Node3D, corners: Dictionar
 		[frame(road, corners["Eau Rouge"] - 30, 1, 0), Vector2(32, 28)],
 		[frame(road, corners["Raidillon"] + 40, -1, 12), Vector2(83, 30)],
 		[frame(road, corners["Bus Stop"] - 30, 1, 8), Vector2(50, 24)],
-		[frame(road, corners["Bus Stop"] + 135, 1, 18), Vector2(42, 38)]
+		[frame(road, corners["Bus Stop"] + 135, 1, 18), Vector2(42, 38)],
+		[frame(road, 640.0, 1, 6), Vector2(30, 24)],
+		[frame(road, corners["Stavelot"] + 50.0, 1, 28), Vector2(55, 35)]
 	]
 	for scatter in asset.get_children():
 		if not scatter is Scatter or scatter.last_bake.is_empty():

@@ -14,9 +14,11 @@ func _initialize() -> void:
 		"F1Terrace22",
 		"PitFootbridge",
 		"HotelDeLaSource",
+		"OldFrancorchampsGantry",
 		"EauRougeBridge",
 		"RaidillonCanopy",
 		"EnduranceGrandstand",
+		"StavelotFarms",
 		"PaddockTeam08",
 		"SpaRaceControl"
 	]:

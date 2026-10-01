@@ -33,3 +33,7 @@
 - **Primary Overtaking Zone**: Heavy braking from $>300\text{ km/h}$ down to $\approx 135 - 145\text{ km/h}$ in 3rd gear (F1/GT3).
 - **Turn 5 Apex**: Attack inside kerb firmly without bottoming the floor pan.
 - **Turn 6 Transition**: Rapid lateral weight transfer across the car's roll axis; throttle application must be progressive to avoid exit snap oversteer.
+
+## 6. In-Engine Captures
+- **Les Combes Chicane (Day)**: `docs/rebuild/screenshots/spa/les_combes_day.png`
+- **Les Combes Chicane (Night)**: `docs/rebuild/screenshots/spa/les_combes_night.png`

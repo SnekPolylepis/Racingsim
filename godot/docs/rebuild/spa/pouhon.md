@@ -33,3 +33,7 @@
 - **F1 (F2004 / RB19)**: Taken flat or with a tiny confidence brush in 6th/7th gear ($\approx 275 - 290\text{ km/h}$). Lateral G-load peaks at $-4.2\text{ G}$ sustained across both apexes.
 - **GT3 (Ferrari 296 GT3)**: 5th gear, decisive turn-in with trail-brake down to $\approx 205 - 215\text{ km/h}$, commitment to the second apex curbing.
 - **Roadster (MX-5)**: Full throttle in 4th gear ($\approx 145 - 150\text{ km/h}$), testing chassis balance and suspension rebound damping.
+
+## 6. In-Engine Captures
+- **Pouhon Double-Left (Day)**: `docs/rebuild/screenshots/spa/pouhon_day.png`
+- **Pouhon Double-Left (Night)**: `docs/rebuild/screenshots/spa/pouhon_night.png`

@@ -34,3 +34,7 @@
 - **F1 (F2004 / RB19)**: Flat out in top gear ($\approx 310 - 325\text{ km/h}$). Peak lateral acceleration: $-3.8\text{ G}$ to $-4.1\text{ G}$.
 - **GT3 (Ferrari 296 GT3)**: 5th/6th gear, flat out or tiny throttle balance tap ($\approx 250 - 262\text{ km/h}$).
 - **Roadster (MX-5)**: Full throttle in top gear without hesitation ($\approx 180\text{ km/h}$).
+
+## 6. In-Engine Captures
+- **Blanchimont Sweep (Day)**: `docs/rebuild/screenshots/spa/blanchimont_day.png`
+- **Blanchimont Sweep (Night)**: `docs/rebuild/screenshots/spa/blanchimont_night.png`

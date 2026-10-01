@@ -37,3 +37,7 @@
 - **F1 (F2004 / RB19)**: Top speed reaches $335 - 345\text{ km/h}$ in 8th gear before heavy braking into Les Combes.
 - **GT3 (Ferrari 296 GT3)**: Top speed reaches $265 - 272\text{ km/h}$ in 6th gear.
 - **Roadster (MX-5)**: Uphill climb limits top speed to $\approx 185 - 192\text{ km/h}$ in 5th gear.
+
+## 6. In-Engine Captures
+- **Kemmel Straight (Day)**: `docs/rebuild/screenshots/spa/kemmel_day.png`
+- **Kemmel Straight (Night)**: `docs/rebuild/screenshots/spa/kemmel_night.png`
