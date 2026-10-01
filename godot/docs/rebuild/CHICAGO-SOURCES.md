@@ -119,6 +119,26 @@ position; earlier frozen-camera images did not demonstrate local pooled lighting
   https://www.pbcchicago.com/projects/jay-pritzker-pavilion/
 - Steel fabrication reference:
   https://www.cmrp.com/uploads/millennium_tour_brochure_lores.pdf
+  Viewed the fabrication brochure's pavilion spread: round pipes in 12–20-inch
+  sizes, curved arches with changing radii at joints. No reference-photo pixels
+  are distributed. The current pipe mesh uses a published 12-inch diameter as
+  an explicitly recorded proxy, not a claim that every member has that size.
+- Focused USGS Cook 2017 survey, generated 2026-09-30:
+  `python trackgen/data/chicago/fetch_lidar.py pavilion 41.88165 41.88391 -87.62272 -87.62102`
+  Acquired 75 tiles / 1,554,915 non-noise points, 143 × 253 one-metre grid.
+  Median ground over the measured Great Lawn patch is 186.860 m in the survey
+  datum. Using the full-city 180.750 m median previously raised the steel about
+  6.11 m above the flattened game lawn. Pavilion steel now uses its local datum.
+  Thinning the measured surface inside the mapped pylon perimeter gives 2,574
+  centreline nodes and 2,527 links; native cylinders replace the dense neighbour
+  lattice. The one-metre resolution still produces bends, disconnected returns,
+  missed/occluded connections and uncertainty over individual diameters.
+  The diagnostic classes-1/6/17 surface excludes some actual trellis returns;
+  therefore the centreline uses the full DSM with published height bounds,
+  rather than assuming those survey classes distinguish steel from vegetation.
+  Architect gallery drawing access required an account; no access restriction
+  was bypassed. Signed-in Sketchfab downloadable search for `pritzker pavilion`
+  returned no model. Broad pavilion acceptance remains open.
 
 ## Wrigley clock faces
 

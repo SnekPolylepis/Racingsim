@@ -124,25 +124,7 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 				if y <= 0.0:
 					continue
 				var p = Vector3(x0 + (i + .5) * c, STREET_Y + y - thick * .5, z0 + (j + .5) * c)
-				if thick >= 1.0:
-					box.call(steel, p, Vector3(c, thick, c), Basis.IDENTITY)
-				else:
-					# Trellis: a thin pipe node per measured cell, linked to measured neighbours (incl. diagonals),
-					# so the lattice reads as pipes instead of a solid canopy.
-					box.call(steel, p, Vector3(thick, thick, thick), Basis.IDENTITY)
-					for n in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1)]:
-						var ny = at.call(i + n.x, j + n.y)
-						if ny <= 0.0 or absf(ny - y) > 1.5:
-							continue
-						var q = Vector3(
-							x0 + (i + n.x + .5) * c, STREET_Y + ny - thick * .5, z0 + (j + n.y + .5) * c
-						)
-						box.call(
-							steel,
-							(p + q) * .5,
-							Vector3(thick * .6, thick * .6, p.distance_to(q)),
-							Basis.looking_at(q - p, Vector3.UP)
-						)
+				box.call(steel, p, Vector3(c, thick, c), Basis.IDENTITY)
 				cells += 1
 	steel.generate_normals()
 	var steel_node = MeshInstance3D.new()
@@ -151,6 +133,31 @@ static func build(asset: Node3D, parent: Node, doc: Dictionary) -> Dictionary:
 	steel_node.material_override = _mat(Color("c7cbcf"), 0.9, 0.22)
 	parent.add_child(steel_node)
 	steel_node.owner = asset
+	var trellis: Dictionary = pavilion.get("trellis", {})
+	if not trellis.is_empty():
+		var pipe = CylinderMesh.new()
+		pipe.height = 1.0
+		pipe.top_radius = float(trellis.diameter) * .5
+		pipe.bottom_radius = pipe.top_radius
+		pipe.radial_segments = 8
+		pipe.cap_top = false
+		pipe.cap_bottom = false
+		var tubes = SurfaceTool.new()
+		tubes.begin(Mesh.PRIMITIVE_TRIANGLES)
+		for edge in trellis.edges:
+			var pa: Array = trellis.nodes[edge[0]]
+			var pb: Array = trellis.nodes[edge[1]]
+			var a = Vector3(pa[0], STREET_Y + pa[1], pa[2])
+			var b = Vector3(pb[0], STREET_Y + pb[1], pb[2])
+			var basis = Basis.looking_at(b - a, Vector3.UP) * Basis(Vector3.RIGHT, PI * .5)
+			basis *= Basis.from_scale(Vector3(1, a.distance_to(b), 1))
+			tubes.append_from(pipe, 0, Transform3D(basis, (a + b) * .5))
+		var network = MeshInstance3D.new()
+		network.name = "PritzkerMeasuredPipes"
+		network.mesh = tubes.commit()
+		network.material_override = steel_node.material_override
+		parent.add_child(network)
+		network.owner = asset
 	return {"boats": moorings.size(), "steel_cells": cells, "pavilion_pylons": pylons.size()}
 
 

@@ -2897,3 +2897,22 @@ chi-pylon-cores-pritzker-day.png and the pylon close-up. Cores are visible at ma
 positions; the dense trellis still floats above them. Variable stainless covers
 and actual pipe connections remain open in CHICAGO-DONE.md. No full-completion
 claim, final export or cleanup audit yet.
+
+### 2026-09-30 — Chicago measured Pritzker trellis pass
+
+Fetched the focused Cook 2017 USGS survey (75 tiles, 1,554,915 non-noise points).
+The Great Lawn's measured median elevation is 186.860 m versus the full-city
+180.750 m ground datum used before: pavilion steel was raised about 6.11 m.
+Both headdress and trellis now use the local lawn datum. Replaced the dense
+raster-neighbour lattice with a thinned measured network (2,574 nodes / 2,527
+links) rendered as native round cylinders. No new dependencies, Monza or physics
+changes. The diagnostic classification filter removed real thin pipes, so the
+full DSM is retained; published height limits and mapped perimeter bound the
+inference. Member diameter remains an explicit 12-inch proxy.
+
+Offline massing and pavilion topology/frame checks passed. Windowed capture
+exited 0, drove 23.22 m, stderr empty. Inspected measured-pipes pavilion day and
+pylon close-up: distinct lower lattice replaces the floating dense canopy.
+Metre-scale bends, stray returns, occluded connections, variable column covers,
+actual member diameters and headdress ribbons remain unfinished. Checklist
+records this narrow improvement without marking full pavilion acceptance.

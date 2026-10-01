@@ -95,6 +95,7 @@ def main():
     np.fmin.at(dtm, (iz[g], ix[g]), y[g].astype(np.float32))
     out = os.path.join(CACHE, "lidar-%s.npz" % name)
     np.savez_compressed(out, dsm=dsm, dtm=dtm, x0=x0, z0=z0)
+    print("class counts", dict(zip(*[a.tolist() for a in np.unique(c, return_counts=True)])), flush=True)
     print("points %d, grid %dx%d, ground median %.1f, top %.1f -> %s" % (len(x), nx, nz, np.nanmedian(dtm), np.nanmax(dsm), out))
 
 

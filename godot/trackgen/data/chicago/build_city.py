@@ -216,6 +216,25 @@ LIDAR_CELL = 2
 LIDAR_REPLACES = {"spire", "pyramid", "slant", "cupola", "twin_domes", "gable"}
 
 
+def thin_pipes(mask):
+    """Zhang–Suen thinning: retain measured line connectivity, not every raster neighbour."""
+    image = np.pad(mask.astype(bool), 1)
+    while True:
+        changed = False
+        for second in (False, True):
+            p = [image[:-2, 1:-1], image[:-2, 2:], image[1:-1, 2:], image[2:, 2:],
+                 image[2:, 1:-1], image[2:, :-2], image[1:-1, :-2], image[:-2, :-2]]
+            count = sum(v.astype(np.uint8) for v in p)
+            transitions = sum((~p[i] & p[(i + 1) % 8]).astype(np.uint8) for i in range(8))
+            a, b = (p[0] & p[2] & p[6], p[0] & p[4] & p[6]) if second else (p[0] & p[2] & p[4], p[2] & p[4] & p[6])
+            remove = image[1:-1, 1:-1] & (count >= 2) & (count <= 6) & (transitions == 1) & ~a & ~b
+            if remove.any():
+                image[1:-1, 1:-1][remove] = False
+                changed = True
+        if not changed:
+            return image[1:-1, 1:-1]
+
+
 def lidar_grids():
     """USGS 3DEP surface grids from fetch_lidar.py: [(dsm - ground, x0, z0)]."""
     out = []
@@ -532,20 +551,17 @@ def main():
             b["pk"] = 1
     print("trees %d (%d with LiDAR height), park paths %d, park structures %d" % (len(trees), sum(1 for t in trees if t[2]), len(paths), sum(1 for b in buildings if b.get("pk"))))
 
-    # Sculptural steel measured by LiDAR (Pritzker Pavilion headdress and the Great Lawn trellis): the surface
-    # itself as a thin shell raster [x0, z0, w, h, 1 m, base64 u16 dm, shell thickness m].
-    shells = []
-    for x0s, z0s, x1s, z1s, lo, hi, thick in ((158, 118, 264, 182, 14.0, 60.0, 1.5), (170, 182, 252, 346, 12.0, 32.0, 0.35)):
-        for dsm, gx0, gz0 in grids:
-            if x0s < gx0 or z0s < gz0 or x1s > gx0 + dsm.shape[1] or z1s > gz0 + dsm.shape[0]:
-                continue
-            win = dsm[int(z0s - gz0):int(z1s - gz0), int(x0s - gx0):int(x1s - gx0)]
-            hgt = np.where((win > lo) & (win < hi), win, 0)
-            hgt = np.nan_to_num(np.round(hgt * 2) / 2)
-            dm = np.clip(np.round(hgt * 10), 0, 65535).astype("<u2")
-            shells.append([float(x0s), float(z0s), dm.shape[1], dm.shape[0], 1.0, base64.b64encode(dm.tobytes()).decode(), thick])
-            break  # First covering grid, as for building roofs; overlapping surveys are alternatives.
-    print("steel shells %d" % len(shells))
+    survey = np.load(os.path.join(RAW, "..", "lidar", "lidar-pavilion.npz"))
+    sx, sz = float(survey["x0"]), float(survey["z0"])
+    # The raised lawn is the pavilion's local datum; a city-wide ground median adds ~6 m.
+    ground = float(np.nanmedian(survey["dtm"][int(240-sz):int(300-sz), int(185-sx):int(235-sx)]))
+    heights = survey["dsm"] - ground
+    # Headdress remains a measured shell raster [x0, z0, w, h, cell, u16 dm, thickness].
+    win = heights[int(118-sz):int(182-sz), int(158-sx):int(264-sx)]
+    assert win.shape == (64, 106), "Pavilion survey does not cover the headdress"
+    hgt = np.nan_to_num(np.round(np.where((win > 14) & (win < 60), win, 0) * 2) / 2)
+    dm = np.clip(np.round(hgt * 10), 0, 65535).astype("<u2")
+    shells = [[158.0, 118.0, 106, 64, 1.0, base64.b64encode(dm.tobytes()).decode(), 1.5]]
 
     # PBC's 24 concrete trellis cores, located by retained OSM pillar footprints.
     pylons = []
@@ -560,6 +576,30 @@ def main():
     assert len(pylons) == len({p[2] for p in pylons}) == 24, "Pritzker pillar extract changed"
     pavilion = {"pylons": pylons, "diameter": 1.8288, "height": 4.572,
                 "source": "https://www.pbcchicago.com/projects/jay-pritzker-pavilion/"}
+    boundary = sorted([p[:2] for p in pylons], key=lambda p: math.atan2(p[1]-240, p[0]-210))
+    mask = (heights >= 3.6576) & (heights <= 18.288)  # Zahner minimum cover / PBC maximum trellis height
+    for j, i in zip(*np.where(mask)):
+        if not inside((sx+i+.5, sz+j+.5), boundary):
+            mask[j, i] = False
+    skeleton = thin_pipes(mask)
+    # ponytail: metre-scale centreline inference; surveyed member curves must replace it for final joints.
+    nodes, indices = [], {}
+    for j, i in zip(*np.where(skeleton)):
+        indices[(int(j), int(i))] = len(nodes)
+        nodes.append([sx+int(i)+.5, round(float(heights[j, i]), 2), sz+int(j)+.5])
+    edges = []
+    for (j, i), index in indices.items():
+        for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
+            other = indices.get((j+dj, i+di))
+            if other is None or abs(nodes[index][1]-nodes[other][1]) > 1.5:
+                continue
+            if dj and di and ((j+dj, i) in indices or (j, i+di) in indices):
+                continue  # no triangle of duplicate links at a raster corner
+            edges.append([index, other])
+    pavilion["trellis"] = {"nodes": nodes, "edges": edges, "ground": round(ground, 3),
+                          "diameter": .3048, "source": "USGS Cook 2017 LiDAR; 1 m raster centreline",
+                          "note": "12-inch pipe proxy; per-member diameters and occluded connections unresolved"}
+    print("Pritzker measured centreline: %d nodes, %d links; lawn datum %.3f m" % (len(nodes), len(edges), ground))
 
     # Harbours: real OSM mooring points (a moored boat on each), piers and breakwaters.
     moorings, piers = [], []
