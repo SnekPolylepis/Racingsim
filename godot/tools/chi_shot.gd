@@ -55,6 +55,7 @@ func run():
 	app.instruments.visible = false
 	var lower_eye = float(app.track.get_meta("wacker_floor_y", 0.0)) + 1.4
 	var views = {
+		"400-lake-shore": [Vector3(1040, 30, -330), Vector3(760, 145, -566)],
 		"mich-north": [Vector3(0, 11, 250), Vector3(-5, 40, -380)],
 		"mich-south": [Vector3(0, 11, -120), Vector3(-5, 30, 700)],
 		"caa": [Vector3(40, 14, 330), Vector3(-49, 30, 346)],

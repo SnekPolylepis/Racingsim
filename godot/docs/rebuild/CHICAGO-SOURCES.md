@@ -28,6 +28,15 @@ and rejection of a completely unmeasured footprint; passed on 2026-09-30.
 
 ## Lower Wacker
 
+Additional primary reference: Brad Bacilek / CDOT presentation hosted by MWRD,
+22 February 2013:
+https://mwrd.org/sites/default/files/documents/seminar_series-02-22-2013_Wacker_Drive_Presentation.pdf
+Pages 11–12 were rendered and inspected. They show Road E / Congress interchange
+ramps with a 16 ft lane and unequal shoulders, including jet fans; these drawings
+must not be applied to every two-lane Wacker bay. Retained OSM way 253716333 and
+its continuation ways locate the southbound carriageway west of the old authored
+midpoint. Full geographic section alignment remains open.
+
 - Benesch / Chicago DOT engineers, *Wacker Drive*, ASPIRE Fall 2012:
   https://www.aspirebridge.com/magazine/2012Fall/WackerDrive.pdf
   Use the cross-sections and construction photographs to validate deck,
@@ -70,6 +79,26 @@ remain authored and require reference matching.
   appears there. Chicago omits those two racing decorations on the north–south
   lower section; fixture shape and the photographed Randolph exit sign remain
   open items. Photo consulted as reference only, not redistributed as a texture.
+
+- bradhoc, *Pillar on Lower Wacker*, 4 January 2012, CC BY 2.0:
+  https://commons.wikimedia.org/wiki/File:Pillar_on_Lower_Wacker_(6639142183).jpg
+  Original inspected in browser. Its east-end camera location (41.887901,
+  -87.618613) and visible steel column/girder work need a separate structural
+  source pass; do not infer the whole drive uses that photographed section.
+
+## Buildings newer than the roof survey
+
+- Related Midwest, exterior/crown completion announcement, 21 July 2026:
+  https://www.related.com/press-releases/2026-07-21/related-midwest-completes-crown-installation-400-lake-shore-drive
+  400 Lake Shore North Tower's exterior/crown is complete, 857 ft (261.2 m),
+  72 stories, glass curtain wall and tiered setbacks. OSM footprint w1361811949
+  therefore explicitly excludes the 2017 roof survey. `lr` records that reason
+  in generated data; no old-surface `L` or `lc` measurement is claimed there.
+  The current footprint extrusion preserves cited height/material only; tiered
+  geometry and crown remain open, not invented from the announcement.
+- Navy Pier's marina description confirms a two-storey amenity building:
+  https://navypier.org/navy-pier-marina/
+  Its 2025 opening postdates the survey; source geometry/height is still needed.
 The fixed-view capture tool now updates the normal light pool at each camera
 position; earlier frozen-camera images did not demonstrate local pooled lighting.
 

@@ -1,6 +1,13 @@
 {
   "note": "Per-building overrides keyed by OSM element (w=way, r=relation). Only what the cited source states; anything unsourced stays on OSM data. h = roof height above street (m). bands = [from_m, to_m, kind, colour] facade bands. crown = extra geometry on the roof. Sources fetched 2026-09-28.",
   "buildings": {
+    "w1361811949": {
+      "name": "400 Lake Shore Drive North Tower",
+      "src": "https://www.related.com/press-releases/2026-07-21/related-midwest-completes-crown-installation-400-lake-shore-drive: exterior and crown complete July 2026, 857 ft total height, 72 stories, glass curtain wall and tiered setbacks",
+      "h": 261.2,
+      "k": "glass",
+      "lidar_exclude": "USGS 2017 acquisition predates this tower's 2024–2026 construction; roof/crown geometry still needs a newer measured or model source."
+    },
     "w148544831": {
       "name": "Carbide & Carbon Building (230 N Michigan)",
       "src": "en.wikipedia.org/wiki/Carbide_&_Carbon_Building: 37 storeys, 153 m, clad in black granite, green and gold terra cotta, gold leaf",

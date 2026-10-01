@@ -12,6 +12,7 @@ shape, height, coverage = lidar_massing(ring, [(roof, 0, 0)])
 cells = np.frombuffer(base64.b64decode(shape[5]), dtype="<u2").reshape(4, 4)
 assert np.all(cells[:, :2] == 100) and np.all(cells[:, 2:] == 200)
 assert height == 20.0 and coverage == 1.0
+assert lidar_massing(ring, [(roof, 0, 0)], "2017 acquisition predates the cited 2026 roof") is None
 roof[:2, :2] = np.nan
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", RuntimeWarning)

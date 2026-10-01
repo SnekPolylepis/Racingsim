@@ -225,8 +225,10 @@ def lidar_grids():
     return out
 
 
-def lidar_massing(ring, grids):
+def lidar_massing(ring, grids, excluded=None):
     """The building's measured roof as a raster over its footprint: [x0, z0, w, h, cell, base64 u16 dm]."""
+    if excluded:
+        return None  # A cited newer building/roof must not be flattened by an older acquisition.
     from PIL import Image, ImageDraw
     xs = [p[0] for p in ring]
     zs = [p[1] for p in ring]
@@ -390,6 +392,8 @@ def main():
             continue
         used.add(m["name"])
         b.pop("u", None)
+        if m.get("lidar_exclude"):
+            b["lr"] = m["lidar_exclude"]
         for key in ("h", "k", "c"):
             if key in m:
                 b[key] = m[key]
@@ -414,6 +418,8 @@ def main():
             continue
         used.add(m["name"])
         for b in mine:
+            if m.get("lidar_exclude"):
+                b["lr"] = m["lidar_exclude"]
             for key in ("k", "c"):
                 if key in m:
                     b[key] = m[key]
@@ -434,12 +440,12 @@ def main():
     # not needed: the measured surface already holds each setback, so parents come back and parts go.
     grids = lidar_grids()
     if grids:
-        def covered(f):
-            return lidar_massing(f, grids) is not None
+        def covered(b):
+            return lidar_massing(b["f"], grids, b.get("lr")) is not None
         n0 = len(buildings)
-        buildings = [b for b in buildings if not (b in parts and covered(b["f"]))]
+        buildings = [b for b in buildings if not (b in parts and covered(b))]
         for parent in replaced:
-            if covered(parent["f"]):
+            if not marks.get(parent.get("o", ""), {}).get("lidar_exclude") and covered(parent):
                 m = marks.get(parent.get("o", ""), {})
                 for key in ("k", "c"):
                     if key in m:
@@ -455,7 +461,7 @@ def main():
         for b in buildings:
             if b.get("band"):
                 continue
-            got = lidar_massing(b["f"], grids)
+            got = lidar_massing(b["f"], grids, b.get("lr"))
             if got is None:
                 continue
             b["L"], b["h"] = got[0], round(got[1], 1)
@@ -466,7 +472,7 @@ def main():
                 b.pop("cr")
             lidar += 1
         # Facade bands follow the measured roof; drop those that sit on replaced parts.
-        buildings = [b for b in buildings if not (b.get("band") and covered(b["f"]) and b.get("m", 0) > 0)]
+        buildings = [b for b in buildings if not (b.get("band") and covered(b) and b.get("m", 0) > 0)]
         print("lidar massing: %d buildings (%d -> %d entries)" % (lidar, n0, len(buildings)))
     print("landmark overrides applied: %d/%d %s" % (len(used), len(marks), sorted(set(m["name"] for m in marks.values()) - used)))
 
