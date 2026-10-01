@@ -3306,3 +3306,15 @@ removed; buoy-field proxy vessels still visible. Full boats remain open:
 occupancy, hulls, waterline, dimensions and offset not yet sourced/accepted.
 Formatter/diff clean. Heavy gates skipped. Monza, physics/car, primary source
 and latest playable export unchanged. No final audit/export.
+
+### 2026-10-01 — Reject unsuitable boat replacements
+
+Previous turn d852795 removed 266 boats on dock fixtures, verified in-game.
+Continued source workflow through signed-in Sketchfab browser. Downloaded
+Kenepin CC BY sailboat GLB (376324 bytes) to Downloads, inspected material/node
+data and orbited viewer. Raised sails, stylized hull/portholes, no physical
+dimensions: rejected as real harbor replacement. No asset imported into game.
+Named Ecume de Mer candidate lacks download control/reuse licence; unavailable.
+Recorded evidence, links, hash and next acceptance criteria in CHICAGO-BOATS.md
+to avoid repeating these unsuitable candidates. No game/code/check/export change;
+full boats and Chicago acceptance remain open.
