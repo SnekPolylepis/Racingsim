@@ -3032,3 +3032,40 @@ Heavy gates skipped; car/physics/Monza and exported playtest executable untouche
 Generated UID sidecars for the older two Chicago checks match the combined
 playtest branch. New photo check UID committed with its script. Generated
 inventory imports are preserved, unstaged, for the final audit.
+
+
+### 2026-09-30 — University Club entrance photo coverage
+
+The preceding goal turn made concrete progress (da60baf/2f9904c): mapped wall
+clipping and measured photo height. This milestone uses David Brossard's
+16 May 2018 full reference, CC BY-SA 2.0:
+https://commons.wikimedia.org/wiki/File:University_Club_of_Chicago_(44385995292).jpg
+Source bitmap copied unchanged (SHA-256
+4d06b18820c621d6e0d5aca330663b4bf47c95a037a1c46677e0d3463b493903),
+1,898,344 bytes; previous crop preserved pending final audit.
+
+Photo corners are annotated normalized source UVs; a 16x16 mesh projects them
+with a homography. No invented/generated image detail or bitmap retouching.
+The main-wall cornice height samples the two measured front ends, avoiding the
+central gable ridge; this is a LiDAR-derived attachment, not a guessed height.
+Only w126982632's photo metadata changed in city.json and landmarks.json;
+all other generated building records, geometry and heights are unchanged.
+The source gable and lower-right foliage remain unresolved in final facade
+acceptance. Original bitmap stays full size; native import uses BC7/ASTC,
+mipmaps and 4096 maximum dimension (14,927,716-byte compressed mip payload).
+
+Bounded geometry check passes four directions/two windings, projective corner
+mapping/straight lines, clipped mesh bounds, retained rear roof step and gable
+eave sampling. Import and test exit 0, stderr empty. First windowed capture:
+exit 0, empty stderr, 27.37 m drive, speed 20.37 m/s. After mipmap import,
+second capture: exit 0, empty stderr, 14.02 m drive, speed 7.38 m/s.
+Inspected UC ground/full, CAA full and Symphony daylight, then final UC ground
+day/night. UC entrance/low windows now visible; CAA cornice fully framed.
+Historic tenants, photographed foliage and nighttime material fidelity remain
+open. Night images also expose arbitrary generated sign colours/heights;
+recorded that finding, without declaring mapped businesses to be invented.
+Amorino's official address is 38 S Michigan:
+https://www.amorino.com/en/stores/chicago
+
+Heavy gates skipped. Monza, car/physics, shared Gemini checkout, user assets,
+saves and the combined playable executable are unchanged.

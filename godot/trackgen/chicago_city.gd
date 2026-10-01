@@ -701,8 +701,12 @@ static func _photo_height(ring: PackedVector2Array, ph: Dictionary, grid: Array)
 	var raw = Marshalls.base64_to_raw(str(grid[5]))
 	var samples = PackedFloat32Array()
 	var count = maxi(1, ceili(a.distance_to(b) / cell))
-	for i in count:
-		var p = a.lerp(b, (i + .5) / count) - normal * cell * .5
+	var positions: Array = ph.get("roof_samples", [])
+	if positions.is_empty():
+		for i in count:
+			positions.append((i + .5) / count)
+	for position in positions:
+		var p = a.lerp(b, float(position)) - normal * cell * .5
 		var x = floori((p.x - float(grid[0])) / cell)
 		var z = floori((p.y - float(grid[1])) / cell)
 		if x >= 0 and z >= 0 and x < int(grid[2]) and z < int(grid[3]):

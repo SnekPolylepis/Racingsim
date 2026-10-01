@@ -22,6 +22,20 @@ func _initialize():
 			assert(vertices[0].y < vertices[2].y and uv[0].y > uv[2].y)
 			panel.free()
 		ring.reverse()
+	var quad = [[.2, .1], [.8, .2], [.9, .9], [.1, .8]]
+	var projection = crowns.photo_projection(quad)
+	var corners = [Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
+	for i in 4:
+		var mapped = projection * Vector3(corners[i].x, corners[i].y, 1)
+		assert((Vector2(mapped.x, mapped.y) / mapped.z).distance_to(Vector2(quad[i][0], quad[i][1])) < .00001)
+	# A photographed straight cornice stays straight across tessellation edges.
+	var first = projection * Vector3(0, .3, 1)
+	var last = projection * Vector3(1, .3, 1)
+	var mid = projection * Vector3(.5, .3, 1)
+	var start_uv = Vector2(first.x, first.y) / first.z
+	var end_uv = Vector2(last.x, last.y) / last.z
+	var mid_uv = Vector2(mid.x, mid.y) / mid.z
+	assert(absf((end_uv - start_uv).cross(mid_uv - start_uv)) < .00001)
 	var city = preload("res://trackgen/chicago_city.gd")
 	var footprint = PackedVector2Array([Vector2(1, 1), Vector2(7, 1), Vector2(7, 7), Vector2(1, 7)])
 	var raw = PackedByteArray()
@@ -40,6 +54,13 @@ func _initialize():
 		assert(vertex.z >= .999 and vertex.z <= 7.001)
 		measured_top = maxf(measured_top, vertex.y)
 	assert(measured_top > 99.0, "Clipping discarded a measured rear roof step")
+	# A photographed gable has a higher centre than the main-wall eaves.
+	raw.encode_u16((1 * 4 + 3) * 2, 300)
+	raw.encode_u16((2 * 4 + 3) * 2, 300)
+	grid[5] = Marshalls.raw_to_base64(raw)
+	assert(city._photo_height(footprint, {"face": [1, 0]}, grid) == 30.0)
+	assert(city._photo_height(footprint, {"face": [1, 0], "roof_samples": [.05, .95]}, grid) == 20.0)
+	print("Projective photo corners, straight lines and gable eave sampling: PASS")
 	print("Photo wall clipping and measured frontage height: PASS")
 	print("Chicago photo orientation: four sides, both footprint windings read left-to-right")
 	quit(0)
