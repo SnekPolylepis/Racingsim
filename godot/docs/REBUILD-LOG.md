@@ -3516,3 +3516,15 @@ and diff check pass. Full parks, terrain, paths/tree overlaps and all broad
 Chicago requirements remain open. Heavy gates/check logic untouched. No new
 assets/dependencies; Monza, car/physics, primary workspace and playtest EXE
 unchanged. No final audit/export yet.
+
+### 2026-10-01 — Combined latest owner playtest
+
+Owner requested one latest playable build, leaving checks alone. Combined
+Gemini f8e8279 audio/Spa work and Chicago 55fd551 marina, mapped paths and
+park boundaries into codex/latest-playtest-20260930 (d412577), retaining
+existing path course-clearance and Bean tree exclusion during conflict resolution.
+Import/export exit 0, empty stderr. Exported Chicago --v2-look driving and
+menu/presentation run: 72 existing checks, zero failures, exit 0, empty stderr.
+Heavy gates skipped; check logic unchanged by integration. Copied export to
+primary godot/build/RacingSim.exe, used by Play Racing Sim.cmd. Main untouched.
+Chicago broader visual acceptance remains open.
