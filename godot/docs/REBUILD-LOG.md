@@ -3571,3 +3571,19 @@ Formatter/diff clean. Heavy gates unchanged/skipped. Source/screenshots/handoff
 pushed, latest branches consolidated for pickup. Owner requested stopping point;
 CHICAGO-HANDOFF.md records scope and next steps. Full Chicago unfinished, final
 audit deferred. Existing playable export predates fixture/wood milestones.
+
+
+### 2026-10-01 — DONE Preview 10 local macOS package
+
+Owner requested a quick Preview 10 from all latest changes. Branched rb/release-preview10
+from codex/latest-playtest-20260930 d0620a3; confirmed latest rb/monaco-formula-cars,
+gemini/sound-and-spa and codex/fanatec-moza-controls tips are ancestors. No merge needed.
+Changed project version and Mac play notice. Godot 4.6.2 import/export exited 0,
+with no build errors. Universal arm64/x86_64, codesign --verify --deep --strict
+and ZIP CRC verification passed. Exported --v2-export-check exited 0, V2 EXPORT PASS
+on all five tracks; one DummyShader RID leaked at headless exit (same as Preview 9).
+Exported Chicago --v2-look on Apple M4 / Metal passed 72 checks, 0 failures, no errors.
+Logs copied under tests/logs/preview10-macos/. Full gates/Windows export skipped
+for owner-requested quick package; physical wheel and Intel hardware unvalidated.
+Installed in the original workspace with Preview 9 backed up; source preserved
+in a separate Desktop/Racingsim-preview10 Git checkout. Main unchanged.

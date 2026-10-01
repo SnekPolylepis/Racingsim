@@ -1,5 +1,12 @@
 # Native changelog
 
+## 2026-10-01 — Rebuild Preview 10 (local macOS)
+
+- Packages the latest combined playtest source d0620a3, including the current Chicago, Gemini Spa/audio and Fanatec/Moza branches; 55 commits after Preview 9, including integration and evidence commits.
+- Includes final Chicago mapped dock wood and mooring-category fixes beyond the previous playable export.
+- Universal macOS build on Apple M4: signature and ZIP integrity passed; all five tracks passed the export contract; Chicago rendered driving/presentation passed 72 checks with no errors.
+- Headless shutdown reports one DummyShader RID leak, also seen in Preview 9. Full gates, Windows export, Intel hardware and physical wheel validation were not rerun for this quick package.
+
 ## 2026-09-30 — Rebuild Preview 9
 
 - Combines the latest Monaco, Chicago and Spa art work with Gemini's seven follow-up commits.

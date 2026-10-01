@@ -1,5 +1,13 @@
 # macOS build and validation
 
+## Preview 10 local build — 2026-10-01
+
+Universal app built with Godot 4.6.2 on Apple M4 from d0620a3 plus release
+version/notice changes. macOS signature and ZIP integrity passed. Packaged
+export contract loaded all five tracks; headless exit reported one DummyShader
+RID leak. Chicago rendered driving/presentation passed 72 checks with no errors
+on Metal. Full gates, Intel hardware and physical wheel validation not rerun.
+
 ## Preview 9 cross-export — 2026-09-30
 
 Preview 9 combines the latest Chicago/Spa/Monaco work with Gemini's Miata light,

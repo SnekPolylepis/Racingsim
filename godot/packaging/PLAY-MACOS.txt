@@ -1,4 +1,4 @@
-Racing Sim - Rebuild Preview 9 for macOS (2026-09-30)
+Racing Sim - Rebuild Preview 10 for macOS (2026-10-01)
 
 Open Racing Sim.app. From the source workspace, Play Racing Sim.command opens
 the same app. No Godot editor or network connection is needed to play.
@@ -11,11 +11,9 @@ the function keys. Menus also expose these actions.
 Default saves: ~/Library/Application Support/Godot/app_userdata/Racing Sim/
 See in-game Help for complete controls and file workflows.
 
-This universal app contains Apple Silicon and Intel code. Preview 9 was
-cross-exported on Windows; this exact release was not run on Mac hardware.
-Prior Mac validation applies to earlier revisions. See MACOS.md for details.
+This universal app contains Apple Silicon and Intel code. Preview 10 was
+built on Apple Silicon. Intel hardware has not been validated.
+See MACOS.md for recorded checks and remaining limits.
 The app is ad-hoc signed, not notarized; downloaded copies may need
 System Settings > Privacy & Security > Open Anyway.
-The app is ad-hoc signed, not notarized for public distribution. A downloaded
-copy may require approval in System Settings > Privacy & Security > Open Anyway.
 Keep the accompanying engine and asset license notices with the package.
