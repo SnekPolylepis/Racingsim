@@ -12,6 +12,8 @@ func _initialize() -> void:
 	for title in [
 		"F1Terrace00",
 		"F1Terrace22",
+		"PitFootbridge",
+		"EauRougeBridge",
 		"RaidillonCanopy",
 		"EnduranceGrandstand",
 		"PaddockTeam08",
@@ -48,6 +50,6 @@ func _initialize() -> void:
 		bounded and round_rim and absf(axle_max - axle_min - .34) < .0001,
 		"Transporter wheel must have a circular XY rim and a 0.34 m Z axle"
 	)
-	print("SPA LANDMARKS RESULTS ", JSON.stringify({"checks": 14, "failures": []}))
+	print("SPA LANDMARKS RESULTS ", JSON.stringify({"checks": 16, "failures": []}))
 	asset.free()
 	quit()

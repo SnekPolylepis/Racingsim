@@ -538,6 +538,8 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")
 		and FileAccess.file_exists("res://trackgen/data/spa/road-profile.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/kerbs.json")
+		and ResourceLoader.exists("res://assets/spa/sky/spa_day_puresky.hdr")
+		and ResourceLoader.exists("res://assets/spa/sky/spa_night_puresky.hdr")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/centreline_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/terrain_full.json")
 		and FileAccess.file_exists("res://trackgen/data/nordschleife/dem_full.raw")
@@ -1274,8 +1276,7 @@ func apply_time_of_day():
 		var sky = Sky.new()
 		var paint = PanoramaSkyMaterial.new()
 		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(night, horizon)
-		# Chicago: sky-only HDRIs (Poly Haven, CC0) so the lake horizon stays open: no painted hills by day and
-		# no foreign skyline at night. Night is an overcast sky lit from below by city light.
+		# Chicago & Spa: sky-only HDRIs (Poly Haven, CC0) so the lake/mountain horizon stays open.
 		if v2_track_id == "chicago":
 			paint.panorama = load(
 				(
@@ -1284,6 +1285,11 @@ func apply_time_of_day():
 				)
 			)
 			paint.energy_multiplier = 0.6 if night else 0.9
+		elif v2_track_id == "spa":
+			paint.panorama = load(
+				"res://assets/spa/sky/%s.hdr" % ("spa_night_puresky" if night else "spa_day_puresky")
+			)
+			paint.energy_multiplier = 0.55 if night else 0.85
 		sky.sky_material = paint
 		environment.sky = sky
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient
@@ -1323,6 +1329,17 @@ func apply_time_of_day():
 			environment.fog_depth_begin = 180 if night else 350
 			environment.fog_depth_end = 1900 if night else 2800
 			camera.far = 3200
+		elif v2_track_id == "spa":
+			# Overcast Ardennes daylight look with valley mist / light fog and Belgian sun direction
+			sun.rotation_degrees = Vector3(-35, -42, 0)
+			sun.light_color = Color("a4b6df") if night else Color("ffeed2")
+			sun.light_energy = 0.35 if night else 1.35
+			environment.ambient_light_color = Color("68728d") if night else Color("9ab0c4")
+			environment.ambient_light_energy = 0.40 if night else 0.46
+			environment.fog_light_color = Color("2a2636") if night else Color("788e99")
+			environment.fog_depth_begin = 90 if night else 120
+			environment.fog_depth_end = 650 if night else 1450
+			camera.far = 1600
 		# NFSU night haze: lamps and neon scatter in a thin volumetric fog; filmic keeps the highlights.
 		var nfs_night = night and v2_track_id == "chicago"
 		environment.volumetric_fog_enabled = nfs_night

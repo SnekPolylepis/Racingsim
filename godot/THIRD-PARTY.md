@@ -188,3 +188,11 @@ OpenGL normal maps, in `assets/textures_hd/`. Source download URLs and SHA-256 h
 are in `assets/textures_hd/ground-sources.json`; each download's MD5 was checked against
 the Poly Haven API. These replace the small palette ground maps at runtime.
 [Poly Haven licence](https://polyhaven.com/license); the existing CC0 legal text applies.
+
+### Spa pure-sky HDRI panoramas (2026-09-30)
+
+Poly Haven CC0 1.0 pure-sky HDRIs in `assets/spa/sky/`:
+- `spa_day_puresky.hdr`: [Kloofendal 48d partly cloudy pure sky](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky) by Greg Zaal (photography), Jarod Guest (sky edits). Overcast Ardennes daylight sky with realistic cloud cover.
+- `spa_night_puresky.hdr`: [Kloppenheim 07 pure sky](https://polyhaven.com/a/kloppenheim_07_puresky) by Sergej Majboroda. Clean night sky with soft cloud layers for endurance night racing.
+Both are licensed under CC0 1.0 (Public Domain).
+

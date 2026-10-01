@@ -154,8 +154,55 @@ static func wheel(st: SurfaceTool, center: Vector3, radius: float, width: float,
 		st.add_vertex(center + turn * arrays[Mesh.ARRAY_VERTEX][index])
 
 
+static func pit_footbridge(asset: Node3D, road: Node3D, station: float) -> void:
+	var xf = frame(road, station, 1, 0.0)
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# Floor slab crossing over the start/finish straight
+	Builder.add_box(st, Vector3(0, 6.2, -12.0), Vector3(3.8, 0.35, 30.0), Color("8a918e"))
+	# Enclosed side walls (dark glass/metal)
+	Builder.add_box(st, Vector3(-1.8, 7.6, -12.0), Vector3(0.2, 2.4, 29.6), Color("303f46"))
+	Builder.add_box(st, Vector3(1.8, 7.6, -12.0), Vector3(0.2, 2.4, 29.6), Color("303f46"))
+	# Mullions / upright pillars
+	for z in range(-24, 1, 4):
+		Builder.add_box(st, Vector3(-1.85, 7.6, z), Vector3(0.12, 2.4, 0.15), Color("c1c7c4"))
+		Builder.add_box(st, Vector3(1.85, 7.6, z), Vector3(0.12, 2.4, 0.15), Color("c1c7c4"))
+	# Roof canopy
+	Builder.add_box(st, Vector3(0, 8.95, -12.0), Vector3(4.2, 0.35, 30.4), Color("d0d4cd"))
+	# Support towers (right and left verges)
+	Builder.add_box(st, Vector3(0, 4.4, 2.0), Vector3(3.6, 8.8, 3.2), Color("b0b7b3"))
+	Builder.add_box(st, Vector3(0, 4.4, -26.0), Vector3(3.6, 8.8, 3.2), Color("b0b7b3"))
+	finish(asset, "PitFootbridge", st, xf)
+	signboard(asset, "PitBridgeSignFront", "CIRCUIT DE SPA-FRANCORCHAMPS", xf, Vector3(-1.95, 7.6, -12.0), 52)
+	signboard(asset, "PitBridgeSignRear", "TOTALENERGIES  /  SPA 24 HOURS", xf, Vector3(1.95, 7.6, -12.0), 48)
+
+
+static func eau_rouge_bridge(asset: Node3D, road: Node3D, station: float) -> void:
+	var xf = frame(road, station, 1, 0.0)
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# Historic Ardennes stone parapet along the right track edge
+	Builder.add_box(st, Vector3(0, 0.7, 4.0), Vector3(32.0, 1.4, 0.8), Color("686257"))
+	# Stone masonry base & embankment support
+	Builder.add_box(st, Vector3(0, -1.1, 4.0), Vector3(34.0, 2.2, 1.6), Color("544f47"))
+	# Culvert channel under the track for L'Eau Rouge stream
+	Builder.add_box(st, Vector3(0, -1.6, -4.0), Vector3(10.0, 1.8, 22.0), Color("1e2522"))
+	# Reddish-brown stream bed / water
+	Builder.add_box(st, Vector3(0, -2.4, 4.0), Vector3(12.0, 0.25, 12.0), Color("3d2c20"))
+	# Historic access bridge road deck
+	Builder.add_box(st, Vector3(0, 0.15, 8.5), Vector3(28.0, 0.35, 8.0), Color("404845"))
+	# Outer safety railing
+	Builder.add_box(st, Vector3(0, 0.8, 12.4), Vector3(28.0, 0.9, 0.15), Color("8c9492"))
+	# Left stream culvert headwall across the track
+	Builder.add_box(st, Vector3(0, -1.1, -22.0), Vector3(26.0, 2.4, 1.8), Color("544f47"))
+	finish(asset, "EauRougeBridge", st, xf)
+	signboard(asset, "EauRougeBridgeSign", "L'EAU ROUGE", xf, Vector3(0, 0.8, 3.5), 44)
+
+
 static func build(asset: Node3D, road: Node3D, corners: Dictionary, length: float) -> void:
 	pit_terrace(asset, road, length)
+	pit_footbridge(asset, road, length - 60.0)
+	eau_rouge_bridge(asset, road, corners["Eau Rouge"] - 30.0)
 	raidillon_canopy(asset, road, corners["Raidillon"] + 40)
 	paddock_detail(asset, road, length)
 	race_control(asset, road, corners["Bus Stop"] + 135)
@@ -226,9 +273,11 @@ static func clear_building_trees(asset: Node3D, road: Node3D, corners: Dictionar
 	var reservations = [
 		[frame(road, length - 160, 1, 12), Vector2(148, 42)],
 		[frame(road, length - 120, -1, 8), Vector2(92, 30)],
+		[frame(road, length - 60, 1, 0), Vector2(30, 36)],
 		[frame(road, corners["La Source"] + 20, -1, 9), Vector2(42, 22)],
 		[frame(road, (corners["La Source"] + corners["Eau Rouge"]) * .5, -1, 12), Vector2(95, 30)],
 		[frame(road, corners["Eau Rouge"] - 40, 1, 8), Vector2(40, 23)],
+		[frame(road, corners["Eau Rouge"] - 30, 1, 0), Vector2(32, 28)],
 		[frame(road, corners["Raidillon"] + 40, -1, 12), Vector2(83, 30)],
 		[frame(road, corners["Bus Stop"] - 30, 1, 8), Vector2(50, 24)],
 		[frame(road, corners["Bus Stop"] + 135, 1, 18), Vector2(42, 38)]

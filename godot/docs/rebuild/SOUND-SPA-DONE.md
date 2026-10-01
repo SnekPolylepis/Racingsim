@@ -42,32 +42,33 @@ Tracking checklist for Sound Design and Spa circuit polish.
 
 ## Part B: Spa-Francorchamps Circuit Realism
 
-- [ ] **B1. Terrain and Elevation**
-  - [ ] Real 1 m LiDAR DEM integration (Wallonia MNT 1 m, CC BY 4.0)
-  - [ ] Accurate elevation gradients, crests, compressions, and camber for Eau Rouge / Raidillon, Kemmel, Pouhon, Blanchimont
-- [ ] **B2. Real Structures & Track Geometry**
-  - [ ] La Source hairpin and runoff
-  - [ ] F1 pit building, pit wall, and start/finish straight
-  - [ ] Eau Rouge / Raidillon retaining walls and crest
-  - [ ] Kemmel straight, Les Combes chicane, Rivage / Bruxelles hairpin
-  - [ ] Pouhon double-apex, Fagnes chicane, Campus / Stavelot, Blanchimont sweepers
-  - [ ] Bus Stop chicane and pit entry
-  - [ ] Sourced barrier types (Armco, Tecpro / tyre stacks, concrete) and real kerb profiles (Wallonia red/yellow, red/white)
-- [ ] **B3. Scenery & Dressing**
-  - [ ] Dense Ardennes pine / mixed forest canopy and scatter
-  - [ ] Accurate grandstands (Raidillon covered grandstand, Endurance, La Source descent)
-  - [ ] Marshal posts and safety barriers
-  - [ ] Sourced sponsor billboards and trackside signage
-  - [ ] Bridges (Pit lane footbridge, Eau Rouge access bridge)
-  - [ ] Paddock buildings, service roads, and fences
-- [ ] **B4. Surfaces and Markings**
-  - [ ] Real asphalt wear, rubbered racing line, and tar repair seams
-  - [ ] Painted kerbs, run-off tarmac, gravel traps, and edge white lines
-  - [ ] High-resolution 2K PBR textures (Poly Haven / ambientCG CC0)
-- [ ] **B5. Atmosphere & Lighting**
-  - [ ] Overcast Ardennes daylight look with valley mist / light fog
-  - [ ] Night atmosphere with floodlights and realistic sky HDRI
-  - [ ] Smooth 60 FPS performance maintained
-- [ ] **B6. Packaging & Asset Export**
-  - [ ] Generator inputs registered in `export_presets.cfg` `include_filter`
-  - [ ] Validated with `check_exported_v2_assets()`
+- [x] **B1. Terrain and Elevation**
+  - [x] Real 1 m LiDAR DEM integration (Wallonia MNT 1 m, CC BY 4.0)
+  - [x] Accurate elevation gradients, crests, compressions, and camber for Eau Rouge / Raidillon, Kemmel, Pouhon, Blanchimont
+- [x] **B2. Real Structures & Track Geometry**
+  - [x] La Source hairpin and runoff
+  - [x] F1 pit building, pit wall, and start/finish straight
+  - [x] Eau Rouge / Raidillon retaining walls and crest
+  - [x] Kemmel straight, Les Combes chicane, Rivage / Bruxelles hairpin
+  - [x] Pouhon double-apex, Fagnes chicane, Campus / Stavelot, Blanchimont sweepers
+  - [x] Bus Stop chicane and pit entry
+  - [x] Sourced barrier types (Armco, Tecpro / tyre stacks, concrete) and real kerb profiles (Wallonia red/yellow, red/white)
+- [x] **B3. Scenery & Dressing**
+  - [x] Dense Ardennes pine / mixed forest canopy and scatter
+  - [x] Accurate grandstands (Raidillon covered grandstand, Endurance, La Source descent)
+  - [x] Marshal posts and safety barriers
+  - [x] Sourced sponsor billboards and trackside signage
+  - [x] Bridges (Pit lane footbridge, Eau Rouge access bridge)
+  - [x] Paddock buildings, service roads, and fences
+- [x] **B4. Surfaces and Markings**
+  - [x] Real asphalt wear, rubbered racing line, and tar repair seams
+  - [x] Painted kerbs, run-off tarmac, gravel traps, and edge white lines
+  - [x] High-resolution 2K PBR textures (Poly Haven / ambientCG CC0)
+- [x] **B5. Atmosphere & Lighting**
+  - [x] Overcast Ardennes daylight look with valley mist / light fog
+  - [x] Night atmosphere with floodlights and realistic sky HDRI
+  - [x] Smooth 60 FPS performance maintained
+- [x] **B6. Packaging & Asset Export**
+  - [x] Generator inputs registered in `export_presets.cfg` `include_filter`
+  - [x] Validated with `check_exported_v2_assets()`
+
