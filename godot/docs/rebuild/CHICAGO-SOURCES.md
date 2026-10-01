@@ -49,6 +49,16 @@ Ceiling/ribs reuse the existing CC0 Poly Haven damaged concrete maps, with
 world-space three-metre triplanar tiling. Day/night `chi-lower-columns` captures
 were inspected from 1.4 m driver-eye camera positions.
 
+Lighting follow-up: `TrackLights.place` rejects masts beside another section of
+road, which includes the overlapping upper/lower decks. Covered-road ceiling
+placements now have a separate walk, with one shared list for fixture geometry,
+halos, road streaks and actual pooled light positions. Generic street-lamp masts
+are omitted for these placements. `chi-lower-lights2` south/west night images
+were inspected; amber light reaches the concrete and wet road. Fixture height
+still follows the existing authored deck pending the cross-section correction.
+The fixed-view capture tool now updates the normal light pool at each camera
+position; earlier frozen-camera images did not demonstrate local pooled lighting.
+
 ## Pritzker Pavilion
 
 - Fabricator Zahner:

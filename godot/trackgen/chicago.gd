@@ -248,7 +248,6 @@ static func build_asset() -> Node3D:
 	add_river_bridges(asset, scenery)
 	add_lower_deck(asset, scenery, road)
 	add_road_details(asset, scenery, road)
-	add_night_details(asset, scenery, road)
 	# CHI-LOOK-01: signals, crosswalks and stop lines at the cross streets.
 	ChicagoFurniture.build(asset, scenery, road.last_bake.stations, facade_box, night_material, attach)
 	ChicagoKit.sidewalk_props(asset, scenery, road.last_bake.stations)
@@ -262,12 +261,23 @@ static func build_asset() -> Node3D:
 	add_parked_cars(asset, scenery, road)
 	# Headless and windowed scenes have distinct caches (TrackDrive). No runtime downloads.
 	var lamps = TrackLights.place(road, 42.0, lower_level_zones(road), 1.2)
-	# Lower Wacker's fixtures hang below the deck; no 10 m poles through the upper roadway.
-	for lamp in lamps:
-		if lamp.base.y < 3.0:
-			lamp.head.y -= lamp.height - 4.8
-			lamp.height = 4.8
+	var lamp_frame = road_frame(road)
+	var lamp_curve: Curve3D = lamp_frame[0]
+	# Mast clearance rejects stacked roads correctly; ceiling fixtures need their own covered-road walk.
+	lamps = lamps.filter(func(lamp): return lamp.base.y > .1)
+	var lamp_s = 0.0
+	while lamp_s < lamp_curve.get_baked_length():
+		var at = RoadBuilder.station_at(lamp_curve, road.closed, lamp_curve.get_baked_length(), lamp_frame[2], lamp_s)
+		if at.pos.y <= .1 and at.pos.z <= 720.0:
+			var basis = Basis.looking_at(at.tangent, Vector3.UP)
+			for side in [-1, 1]:
+				var base = at.pos + basis.x * side * 4.0 + Vector3(0, 6.05, 0)
+				lamps.append({"s": lamp_s, "side": side, "base": base, "basis": basis,
+					"head": base - Vector3.UP * .06, "height": 0.0, "kind": "ceiling",
+					"glow": true, "strength": .4, "step": 16.0})
+		lamp_s += 16.0
 	TrackLights.build(asset, road, lamps)
+	add_night_details(asset, scenery, road, lamps)
 	var gantry = Gantry.new()
 	gantry.follow_road = NodePath("../Main")
 	gantry.clearance_height = 6.0
@@ -930,7 +940,7 @@ static func night_material(color: Color, energy: float) -> StandardMaterial3D:
 	return mat
 
 
-static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> void:
+static func add_night_details(asset: Node3D, parent: Node, road: RoadPath, lamps: Array) -> void:
 	var warm = night_material(Color("ffd19a"), 1.7)
 	var cool = night_material(Color("a6d6ef"), 1.5)
 	# High-pressure sodium orange for Lower Wacker's ceiling fixtures (lower-wacker-drive.jpg).
@@ -938,19 +948,10 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath) -> vo
 	var fixtures = SurfaceTool.new()
 	fixtures.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# Batched ceiling luminaires stay above the unchanged driving clearance.
-	for i in range(0, road.last_bake.stations.size(), 16):
-		var at = road.last_bake.stations[i]
-		if at.pos.y > .1 or at.pos.z > 720:
+	for lamp in lamps:
+		if lamp.kind != "ceiling":
 			continue
-		var basis = Basis.looking_at(at.tangent, Vector3.UP)
-		for side in [-1, 1]:
-			facade_box(
-				fixtures,
-				at.pos + basis.x * side * 4 + Vector3(0, 6.05, 0),
-				Vector3(.45, .12, 3.6),
-				Color.WHITE,
-				basis
-			)
+		facade_box(fixtures, lamp.base, Vector3(.45, .12, 3.6), Color.WHITE, lamp.basis)
 	fixtures.generate_normals()
 	var mesh = fixtures.commit()
 	mesh.surface_set_material(0, sodium)

@@ -83,6 +83,7 @@ func run():
 			if rain:
 				rain.visible = rain.emitting and app.camera.position.y > 3.0
 			app.camera.look_at(views[key][1], Vector3.UP)
+			app.TrackLights.update_pool(app.lamp_pool, app.track, app.camera.global_position, bool(night))
 			app.camera.fov = 60
 			for i in 30:
 				await process_frame

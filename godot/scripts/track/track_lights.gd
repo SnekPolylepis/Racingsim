@@ -40,6 +40,7 @@ const POOL_RANGE = 34.0
 ## float) drops the pole base onto terrain. Lamps that would stand on another part of the road are
 ## dropped. Returns lamps {s, side (-1 left, +1 right), base, basis, head, height, kind, glow (lights the
 ## road), strength (share of the road glow; lower in dense zones, whose streaks overlap), step}.
+## build also accepts kind "ceiling": its housing is supplied by tunnel geometry, with halo/pool here.
 static func place(
 	road: Node, spacing: float, zones: Array = [], extra = 5.5, height_at = Callable()
 ) -> Array:
@@ -278,6 +279,10 @@ static func build(asset: Node3D, road: Node, lamps: Array, streaks = true) -> No
 		var halos = []
 		for lamp in chunks[key]:
 			var kind = lamp.get("kind", "sodium_mast")
+			# Ceiling housing is supplied by the tunnel; retain its halo and pooled light, without a mast.
+			if kind == "ceiling":
+				halos.append(Transform3D(Basis.IDENTITY, lamp.head - Vector3.UP * .12))
+				continue
 			var height = float(lamp.get("height", HEIGHT))
 			var style = "%s_%d" % [kind, roundi(height * 10.0)]
 			if not fixtures.has(style):
