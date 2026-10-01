@@ -3138,3 +3138,33 @@ roof footprints with measured 102.5/145 m returns; 400 Lake Shore already exclud
 post-acquisition source/model. No changes or completion claim for these records.
 One edited script matches formatter; diff check clean. Heavy gates skipped.
 Monza, car/physics, primary workspace and combined playtest executable unchanged.
+
+### 2026-09-30 — Navy Pier marina stale-survey height
+
+Previous goal turn added verified Page Brothers west coverage (7d59e4d).
+Rechecked low-return records and traced the marina boat house w1417040524: its
+0.5 m generated height came from 2017 pier/water returns. Builder confirms the
+new two-storey container amenities facility was installed in May 2025:
+https://sicontainerbuilds.squarespace.com/blog/for-immediate-release-s-i-container-builds-modular-shipping-container-marina-building-installed
+
+Downloaded City PD527 public planning record, January 7, 2025 approval:
+https://gisapps.chicago.gov/gisimages/zoning_pds/PD527.pdf
+500-page PDF retained in TEMP/navy-pier-pd527.pdf (not a game asset). Web fetch
+returned 403, native download succeeded. Read with pypdf and visually rendered
+PDF pages 3–7 with bundled Poppler; sheets A-1/A-2/A-3/A-4 inspected. A-1 signed
+12/12/24 lists actual height 21.97 feet (6.696456 m), two stories, 1280 square
+feet per floor. The 30-foot figure is a maximum allowance, not actual height.
+Current source override uses 6.6965 m and an explicit lidar_exclude reason.
+Only w1417040524 changes h/lr/L/lc; all other building records unchanged.
+Existing generator exclusion early return prevents old survey reapplication.
+No inferred new material, colour or floor-height estimate added.
+
+Windowed capture exit 0, empty stderr, 24.44 m driven at final 18.64 m/s.
+Inspected chi-marina-height-marina-boathouse-{day,night}.png and south daylight.
+Building no longer flat; architectural acceptance remains open: it is still a
+generic extrusion. Plans provide container footprints, breezeway/decks/stairs
+and sloped roof. Installed references must reconcile plan versus built details.
+South capture exposes lawn on pier; both expose generic docks/supports. Added
+those findings to checklist instead of accepting the marina. One edited script
+matches formatter; diff check clean. Heavy gates skipped, checks unchanged.
+Monza, car/physics, primary workspace and combined playtest executable unchanged.

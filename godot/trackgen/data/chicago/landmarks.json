@@ -400,6 +400,12 @@
         "credit": "Daniel Schwen, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Chicago_Theatre_blend.jpg",
         "attachment": "State Street west wall, mapped footprint edge 2. Annotated cornice-to-pavement quadrilateral in the already imported 17 April 2009 theatre reference. Theatre blade/marquee occlude its southern edge; lamps, people, cars and historic shop content remain unresolved source artifacts. Lake Street iron facade requires separate coverage."
       }
+    },
+    "w1417040524": {
+      "name": "Navy Pier Marina boater amenities building",
+      "h": 6.6965,
+      "src": "https://gisapps.chicago.gov/gisimages/zoning_pds/PD527.pdf: 7 January 2025 approval, PDF page 3 sheet A-1 (signed 12/12/24), actual building height 21.97 feet = 6.696456 m, two storeys. Pages 4–6 sheets A-2/A-3/A-4 show shipping-container floor plans, breezeway, decks and sloped roof; their geometry remains open. https://sicontainerbuilds.squarespace.com/blog/for-immediate-release-s-i-container-builds-modular-shipping-container-marina-building-installed: installed May 2025. OSM way 1417040524 supplies location/footprint. Maximum planning allowance of 30 feet is not its actual height.",
+      "lidar_exclude": "USGS 2017 returns predate the May 2025 amenities-building installation. They measured the old pier/water surface, not this roof. Use the approved 21.97-foot actual height; complete source-plan massing remains open."
     }
   }
 }

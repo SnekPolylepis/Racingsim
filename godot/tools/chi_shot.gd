@@ -77,6 +77,8 @@ func run():
 		"page-state": [Vector3(-310, 22, -77), Vector3(-275, 22, -77)],
 		"page-ground": [Vector3(-305, 9.4, -77), Vector3(-275, 12, -77)],
 		"page-lake": [Vector3(-265, 22, -118), Vector3(-265, 22, -94)],
+		"marina-boathouse": [Vector3(1499, 12, -880), Vector3(1499, 11, -844)],
+		"marina-boathouse-south": [Vector3(1499, 12, -815), Vector3(1499, 11, -844)],
 		"uc-ground": [Vector3(0, 9.4, 422), Vector3(-21, 12, 422)],
 		"uc-full": [Vector3(20, 27, 422), Vector3(-21, 30, 422)],
 		"caa-full": [Vector3(30, 26, 346), Vector3(-22, 30, 346)],
