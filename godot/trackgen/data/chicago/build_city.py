@@ -692,12 +692,14 @@ def main():
                           "note": "12-inch pipe proxy; per-member diameters and occluded connections unresolved"}
     print("Pritzker measured centreline: %d nodes, %d links; lawn datum %.3f m" % (len(nodes), len(edges), ground))
 
-    # Harbours: real OSM mooring points (a moored boat on each), piers and breakwaters.
+    # Harbours: mapped mooring fixtures are not vessel centres. Preserve their categories.
     moorings, piers = [], []
     for e in load("harbor.json"):
         t = e.get("tags", {})
         if e["type"] == "node" and (t.get("mooring") or "mooring" in t.get("seamark:type", "")):
-            moorings.append(xz(e["lat"], e["lon"]))
+            moorings.append({"p": xz(e["lat"], e["lon"]), "o": "n%d" % e["id"],
+                             "category": t.get("seamark:mooring:category", ""),
+                             "operator": t.get("operator", "")})
         elif e["type"] == "way" and t.get("man_made") in ("pier", "breakwater") and "geometry" in e:
             piers.append(pier_of(e))
     print("moorings %d, piers/breakwaters %d" % (len(moorings), len(piers)))

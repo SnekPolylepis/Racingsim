@@ -1,0 +1,26 @@
+{
+  "maps": {
+    "nor_gl": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor_deck/wood_floor_deck_nor_gl_1k.jpg",
+      "md5": "dddabd549ede92e370d5268b0d895179",
+      "sha256": "2fa427b9196099c0ff72d1a1ab472e2a79ca2a76906a5c46d134f8a86e086d23"
+    },
+    "rough": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor_deck/wood_floor_deck_rough_1k.jpg",
+      "md5": "ff891ac48e0a9db02a665d2ae9bba36a",
+      "sha256": "5754d2c2a91a288bb257e0fa8c697d97b48472c9fb77c4c7f0ffcc302f3f60a2"
+    },
+    "Diffuse": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor_deck/wood_floor_deck_diff_1k.jpg",
+      "md5": "186a695239216a4b9dc970a87d6dbb15",
+      "sha256": "1f2c623e87b0ee905f6f4ec8664dd19b4b135207c96e86198ff2919770b47166"
+    }
+  },
+  "author": "Dimitrios Savva",
+  "source": "https://polyhaven.com/a/wood_floor_deck",
+  "dimensions_mm": [
+    1799.9999523162842,
+    1799.9999523162842
+  ],
+  "license": "CC0-1.0"
+}

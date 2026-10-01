@@ -3528,3 +3528,46 @@ menu/presentation run: 72 existing checks, zero failures, exit 0, empty stderr.
 Heavy gates skipped; check logic unchanged by integration. Copied export to
 primary godot/build/RacingSim.exe, used by Play Racing Sim.cmd. Main untouched.
 Chicago broader visual acceptance remains open.
+
+### 2026-10-01 — Mooring fixtures mistaken for vessels
+
+Previous turn combined/exported latest owner playtest; authoritative progress.
+Staged harbor.json identifies 383 buoys, 180 bollards, 83 piles and 3 posts.
+Old generator discarded categories/IDs and put a box sailboat on all 649 points,
+causing land/dock mast overlaps. Preserve positions, node IDs, category and
+operator in generated mooring records; renderer now selects only buoys.
+All other city fields equal pre-edit values; all 649 coordinates unchanged.
+Windowed Chicago capture exit 0, empty stderr, 26.70 m displacement, 19.99 m/s.
+Inspected marina aerial day, breezeway night and harbor day: fixture boats
+removed; buoy-field proxy vessels still visible. Full boats remain open:
+occupancy, hulls, waterline, dimensions and offset not yet sourced/accepted.
+Formatter/diff clean. Heavy gates skipped. Monza, physics/car, primary source
+and latest playable export unchanged. No final audit/export.
+
+### 2026-10-01 — Reject unsuitable boat replacements
+
+Previous turn d852795 removed 266 boats on dock fixtures, verified in-game.
+Continued source workflow through signed-in Sketchfab browser. Downloaded
+Kenepin CC BY sailboat GLB (376324 bytes) to Downloads, inspected material/node
+data and orbited viewer. Raised sails, stylized hull/portholes, no physical
+dimensions: rejected as real harbor replacement. No asset imported into game.
+Named Ecume de Mer candidate lacks download control/reuse licence; unavailable.
+Recorded evidence, links, hash and next acceptance criteria in CHICAGO-BOATS.md
+to avoid repeating these unsuitable candidates. No game/code/check/export change;
+full boats and Chicago acceptance remain open.
+
+### 2026-10-01 — PAUSED Chicago at owner request
+
+Wood material applied only to three OSM surface=wood pier areas; existing
+geometry/levels/sides untouched. Poly Haven Wood Floor Deck 1K CC0 by
+Dimitrios Savva, source API dimensions 1800 mm, original maps with verified
+API MD5 and recorded SHA-256/URLs. Local filename search found no suitable
+wood texture; generic material illustrates mapped category, not actual finish.
+Initial capture rejected: nonexistent SurfaceTool.get_vertex_count call.
+Replaced with explicit wooden-area count. Final windowed capture exit 0, empty
+stderr, 27.12 m driven at 20.23 m/s. Inspected marina aerial day/breezeway night;
+wood tops distinct, distant texture aliasing and installed finish remain open.
+Formatter/diff clean. Heavy gates unchanged/skipped. Source/screenshots/handoff
+pushed, latest branches consolidated for pickup. Owner requested stopping point;
+CHICAGO-HANDOFF.md records scope and next steps. Full Chicago unfinished, final
+audit deferred. Existing playable export predates fixture/wood milestones.
