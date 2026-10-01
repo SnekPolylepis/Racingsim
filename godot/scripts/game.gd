@@ -1,4 +1,4 @@
-﻿extends Node3D
+extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
 ## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
@@ -102,7 +102,11 @@ var applied_time = -1
 var applied_horizon = ""
 ## Which wooded-hill silhouette each circuit's sky carries (RetroAssets.HILLS).
 const HORIZON_STYLES = {
-	"chicago": "flat", "monaco": "flat", "proving_ground": "generic", "spa": "ardennes", "nordschleife": "eifel"
+	"chicago": "flat",
+	"monaco": "flat",
+	"proving_ground": "generic",
+	"spa": "ardennes",
+	"nordschleife": "eifel"
 }
 var ui
 var instruments
@@ -1015,10 +1019,14 @@ func update_camera(dt, snap = false):
 		camera.position = pos + Vector3.UP * 120
 		camera.look_at(pos, Vector3(0, 0, -1) if settings.camera == 3 else forward)
 		return
-	# No rain under Lower Wacker's deck (the route's only covered stretch, below 3 m).
+	# Use the projected road deck, rather than assuming a lower-road world height of zero.
 	var rain = camera.get_node_or_null("Rain")
 	if rain:
-		rain.visible = rain.emitting and pos.y > 3.0
+		var covered = pos.y <= 3.0
+		if v2_track_id == "chicago" and race.asset_hint >= 0 and race.asset_hint < track.line.size():
+			var road_pos: Vector3 = track.line[race.asset_hint]
+			covered = road_pos.y <= float(track.get_meta("wacker_floor_y", 0.0)) + .1 and road_pos.z <= 720.0
+		rain.visible = rain.emitting and not covered
 	if settings.camera == 0:
 		chase_camera(dt, snap, pos, forward)
 		return
@@ -1184,8 +1192,10 @@ func apply_time_of_day():
 		# no foreign skyline at night. Night is an overcast sky lit from below by city light.
 		if v2_track_id == "chicago":
 			paint.panorama = load(
-				"res://assets/chicago/sky/%s.hdr"
-				% ("kloppenheim_07_puresky" if night else "kloofendal_48d_partly_cloudy_puresky")
+				(
+					"res://assets/chicago/sky/%s.hdr"
+					% ("kloppenheim_07_puresky" if night else "kloofendal_48d_partly_cloudy_puresky")
+				)
 			)
 			paint.energy_multiplier = 0.6 if night else 0.9
 		sky.sky_material = paint

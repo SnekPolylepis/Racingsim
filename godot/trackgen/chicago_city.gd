@@ -3,13 +3,13 @@ extends RefCounted
 ## (trackgen/data/chicago/city.json, written by build_city.py). Presentation only: nothing here collides or
 ## is driven on. The circuit's barriers keep the car on the route, so every other street is visible
 ## but not drivable.
-##   Buildings  each footprint extruded from the lower level (y 0) to street level (y 8) plus its height,
-##              in the photo facade of its class (chicago_facade.gdshader: windows lit at night), flat roofs
+##   Buildings  measured LiDAR roof cells and OSM footprints/parts, plus sourced landmark overrides;
+##              class facade shaders light windows at night
 ##   Streets    every road as an asphalt carriageway on a concrete sidewalk ribbon, cut back where it meets
 ##              or runs along the circuit so the circuit's own surface shows
 ##   Ground     street-level concrete everywhere else, left open over water and over the circuit's lower
 ##              (Lower Wacker) and ramp sections
-##   Water      the river and lake at y -2.8 in the circuit's water shader, with concrete river walls
+##   Water      separate measured river and authored lakefront levels, with concrete river walls
 ##   Parks      parks, gardens and lawns in grass
 ## Geometry is batched per 600 m chunk and material, so the whole city is a few hundred draw calls at most.
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
@@ -28,8 +28,9 @@ const WATER_Y = 2.1
 ## the river). At the river's WATER_Y, 10.8 m under the street, the lake was hidden in a pit and Lake
 ## Shore Drive looked out over a bare concrete plain.
 const LAKE_Y = 6.5
-## Floor of the lower-level cut round Lower Wacker, just under the lower road (y 0).
-const LOW_FLOOR_Y = -0.08
+## CDOT section: 13 in slab + 2 in overlay above 13 ft 9 in clear space, upper road at y 8.
+const LOW_ROAD_Y = 3.4288
+const LOW_FLOOR_Y = LOW_ROAD_Y - .08
 ## Open ground this close to the lake is lakefront lawn (the Lakefront Trail strip OSM leaves unmapped).
 const LAKEFRONT_M = 150.0
 const CHUNK = 600.0
@@ -106,14 +107,20 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks
-		var facade = _st(target, _centroid(ring), "glassblock" if b.has("gl") else ("pavilion" if b.has("pk") else "facade"))
+		var facade = _st(
+			target,
+			_centroid(ring),
+			"glassblock" if b.has("gl") else ("pavilion" if b.has("pk") else "facade")
+		)
 		# Real OSM data: building:part base height ("m") and facade colour ("c") where tagged.
 		var bottom = STREET_Y + float(b.m) if b.has("m") else 0.0
 		var tint = Color(str(b.c)) if b.has("c") else Color(0, 0, 0, 0)
 		if b.has("L"):
 			_lidar_building(facade, b.L, fmod(i * 0.6180339, 1.0), kind_layer(kind), tint)
 		else:
-			_building(facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint)
+			_building(
+				facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint
+			)
 		if b.has("cr"):
 			crowns.append([ring, STREET_Y + float(b.h), b.cr])
 		if b.has("ph"):
@@ -546,7 +553,8 @@ static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: fl
 	hgt.resize(w * h)
 	for k in w * h:
 		hgt[k] = raw.decode_u16(k * 2) * 0.1
-	var at = func(i: int, j: int) -> float: return hgt[j * w + i] if i >= 0 and j >= 0 and i < w and j < h else 0.0
+	var at = func(i: int, j: int) -> float:
+		return hgt[j * w + i] if i >= 0 and j >= 0 and i < w and j < h else 0.0
 	var code = 0.0
 	if tint.a > 0.0:
 		code = (roundi(tint.r * 5) * 36 + roundi(tint.g * 5) * 6 + roundi(tint.b * 5) + 1) / 255.0
@@ -567,7 +575,14 @@ static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: fl
 			var az = z0 + j * c
 			var bz = az + c
 			st.set_color(Color(0, 0, 1))
-			for v in [Vector3(ax, top, az), Vector3(bx, top, az), Vector3(bx, top, bz), Vector3(ax, top, az), Vector3(bx, top, bz), Vector3(ax, top, bz)]:
+			for v in [
+				Vector3(ax, top, az),
+				Vector3(bx, top, az),
+				Vector3(bx, top, bz),
+				Vector3(ax, top, az),
+				Vector3(bx, top, bz),
+				Vector3(ax, top, bz)
+			]:
 				st.set_normal(Vector3.UP)
 				st.set_uv(Vector2(v.x, v.z))
 				st.add_vertex(v)
@@ -575,12 +590,30 @@ static func _lidar_building(st: SurfaceTool, grid: Array, seed: float, layer: fl
 			for k in range(i, run + 1):
 				var cx = x0 + k * c
 				# North (-z) and south (+z) faces per cell; west/east only at the run ends.
-				_lidar_wall(st, Vector3(cx + c, 0, az), Vector3(cx, 0, az), Vector3(0, 0, -1), at.call(k, j - 1), y)
-				_lidar_wall(st, Vector3(cx, 0, bz), Vector3(cx + c, 0, bz), Vector3(0, 0, 1), at.call(k, j + 1), y)
+				_lidar_wall(
+					st, Vector3(cx + c, 0, az), Vector3(cx, 0, az), Vector3(0, 0, -1), at.call(k, j - 1), y
+				)
+				_lidar_wall(
+					st, Vector3(cx, 0, bz), Vector3(cx + c, 0, bz), Vector3(0, 0, 1), at.call(k, j + 1), y
+				)
 				if k == i or absf(at.call(k - 1, j) - y) >= 0.05:
-					_lidar_wall(st, Vector3(cx, 0, az), Vector3(cx, 0, bz), Vector3(-1, 0, 0), at.call(k - 1, j), at.call(k, j))
+					_lidar_wall(
+						st,
+						Vector3(cx, 0, az),
+						Vector3(cx, 0, bz),
+						Vector3(-1, 0, 0),
+						at.call(k - 1, j),
+						at.call(k, j)
+					)
 				if k == run or absf(at.call(k + 1, j) - y) >= 0.05:
-					_lidar_wall(st, Vector3(cx + c, 0, bz), Vector3(cx + c, 0, az), Vector3(1, 0, 0), at.call(k + 1, j), at.call(k, j))
+					_lidar_wall(
+						st,
+						Vector3(cx + c, 0, bz),
+						Vector3(cx + c, 0, az),
+						Vector3(1, 0, 0),
+						at.call(k + 1, j),
+						at.call(k, j)
+					)
 			i = run + 1
 
 

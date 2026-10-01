@@ -75,7 +75,10 @@ landmarks still bypass measured geometry, and the entire route is not inspected.
 
 - [ ] Resolve low-return LiDAR footprints `w1175801212`, `w1175801219`, `w1361811949`, `w1417040524`; use `lc` in the generated data to distinguish measured cells from gap filling.
 - [ ] Relocate the river aerial camera now occluded by newly restored building geometry.
-- [ ] Rebuild Lower Wacker's full cross-section: the primary drawing shows 4.191 m clearance, six column lines and service lanes; current deck height, two-row lateral layout and authored road width differ.
+- [x] Rebuild the published north–south typical structural section: 4.191 m lane-centre clearance, six column/rib axes, 42.672 m slab/side-bay width and 7.9248 m racing bay. Inspected `chi-wacker-section3-lower-south-day.png` and driving night capture; the bounded geometry check measured 404 ceiling rays with zero clearance error. This proves the modelled typical section, not every intersection or service-lane detail.
+- [x] Remove the north–south lower road's red/white racing kerbs and covered-road catch fences, and put the two-lane divider inside the narrowed road. Inspected `chi-wacker-section3-lower-south-day.png` against AlphaBeta135's 2024 Randolph exit photo; service bays are visible.
+- [ ] Match east–west variable sections and intersection-specific column/deck layout; replace authored fixture dimensions and source the side-bay lanes/loading docks.
+- [ ] Add the photographed Randolph exit sign at its verified position and inspect it in-game.
 - [x] Align the actual Lower Wacker pooled light positions with ceiling fixtures; inspected `chi-lower-lights2-lower-{south,west}-night.png`. Housing, halos and pool positions share one covered-road placement list; no shortened mast is drawn beneath the deck. Final real-world fixture dimensions/clearance remain part of the open section verification.
 
 - [x] Replace the Wrigley clock's blank square with sourced-diameter circular faces, numerals and hands on all four sides. Inspected `chi-clock-pass2-wrigley-clock-day.png`, `chi-clock-sides-wrigley-clock-{west,east,north}-day.png`, and the initial day/night dial views. Subsequent pass corrected stretched hands. Tower massing, clock surround, final placement and reference-faithful ornament remain under the open Wrigley verification item.

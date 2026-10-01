@@ -1,4 +1,4 @@
-﻿extends SceneTree
+extends SceneTree
 ## CHI-01. Authored race route on Chicago's geographic scaffold, with explicit game-only connectors.
 ## Source/provenance: trackgen/data/chicago/README.md. Heights and corner easing are authored.
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
@@ -49,6 +49,11 @@ const CORNERS = [
 	[36, "Michigan Turn"]
 ]
 const HALF_WIDTH = 8.0
+const WACKER_SOFFIT_Y = 7.6198
+const WACKER_RIB_BOTTOM_Y = 7.3396
+# Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
+# Positive is east in that drawing; the southbound driver's right is west.
+const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
 const CACHE_REVISION = 132
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
@@ -68,6 +73,10 @@ static func points() -> Array[Vector3]:
 	for row in data().points:
 		out.append(world(row))
 	return out
+
+
+static func covered_wacker(p: Vector3) -> bool:
+	return p.y <= ChicagoCity.LOW_ROAD_Y + .1 and p.z <= 720.0
 
 
 static func route_curve() -> Curve3D:
@@ -169,7 +178,8 @@ static func build_asset() -> Node3D:
 	asset.name = "Chicago"
 	asset.id = "chicago"
 	asset.display_name = "Chicago â€” River & Lake"
-	asset.version = 2
+	asset.version = 3
+	asset.set_meta("wacker_floor_y", ChicagoCity.LOW_ROAD_Y)
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
 	road.name = "Main"
@@ -197,6 +207,26 @@ static func build_asset() -> Node3D:
 			}
 		)
 	)
+	# The N–S section's through-lane bay is 26 ft wide (CDOT 2012 section).
+	var narrow_from = road.curve.get_closest_offset(world(data().points[19]))
+	var narrow_to = road.curve.get_closest_offset(Vector3(-1035.75, ChicagoCity.LOW_ROAD_Y, 720))
+	for key in [
+		[narrow_from - 40.0, HALF_WIDTH],
+		[narrow_from, 3.9624],
+		[narrow_to, 3.9624],
+		[narrow_to + 50.0, HALF_WIDTH]
+	]:
+		var section = road.sections[0].duplicate()
+		section.at = key[0]
+		section.width_left = key[1]
+		section.width_right = key[1]
+		if key[1] < 4.5:
+			section.kerb_left = RoadSection.Kerb.NONE
+			section.kerb_right = RoadSection.Kerb.NONE
+			section.kerb_width = 0.0
+			section.verge_left = 0.0
+			section.verge_right = 0.0
+		road.sections.append(section)
 	attach(asset, asset, road, "Main")
 	road.bake()
 	var corners = {}
@@ -214,7 +244,7 @@ static func build_asset() -> Node3D:
 		wall.side = side
 		wall.kind = 2
 		wall.height = .65
-		wall.offset = .4
+		wall.offset = .1
 		wall.step_m = 3.0
 		attach(asset, asset, wall, "LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier")
 		wall.bake()
@@ -226,18 +256,37 @@ static func build_asset() -> Node3D:
 	# create its own, renaming the city's node (and losing Scenery/CentennialWheel etc.).
 	# Along Upper Wacker's riverfront the river is on the left: no debris fence there, so the river shows.
 	var river = river_span(road)
-	for piece in [["LeftBarrier", 0.0, river.x], ["LeftBarrier", river.y, -1.0], ["RightBarrier", 0.0, -1.0]]:
+	# Commons Randolph exit driver photo: concrete divider with an open service bay, no catch fence.
+	var lower_from = INF
+	var lower_to = 0.0
+	for station in road.last_bake.stations:
+		if covered_wacker(station.pos):
+			lower_from = minf(lower_from, station.s)
+			lower_to = maxf(lower_to, station.s)
+	var fence_pieces = []
+	for piece in [
+		["LeftBarrier", 0.0, river.x],
+		["LeftBarrier", river.y, road.last_bake.length],
+		["RightBarrier", 0.0, road.last_bake.length]
+	]:
+		for open_span in [[0.0, lower_from], [lower_to, road.last_bake.length]]:
+			var begin = maxf(piece[1], open_span[0])
+			var end = minf(piece[2], open_span[1])
+			if end > begin:
+				fence_pieces.append([piece[0], begin, end])
+	for piece in fence_pieces:
 		var barrier = piece[0]
 		var fence = CatchFence.new()
-		fence.follow_wall = NodePath("../" + barrier)
+		# CatchFence's wall-following path ignores from/to; use the existing road-range path.
+		fence.follow_road = NodePath("../Main")
 		fence.side = WallPath.Side.LEFT if barrier == "LeftBarrier" else WallPath.Side.RIGHT
-		fence.offset = 0.0
+		fence.offset = asset.get_node(barrier).offset + asset.get_node(barrier).dimensions().y
 		fence.post_spacing = 4.0
-		fence.fence_height = 3.2
+		fence.fence_height = 3.85
 		fence.solid = false
 		fence.from_m = piece[1]
 		fence.to_m = piece[2]
-		attach(asset, asset, fence, barrier + "Fence" + ("B" if piece[1] > 0.0 else ""))
+		attach(asset, asset, fence, barrier + "Fence" + str(int(piece[1])))
 		fence.bake()
 	add_water_and_parks(asset, scenery)
 	# CHI-02: the real downtown from OpenStreetMap (buildings, every street, water, parks) replaces the
@@ -264,17 +313,31 @@ static func build_asset() -> Node3D:
 	var lamp_frame = road_frame(road)
 	var lamp_curve: Curve3D = lamp_frame[0]
 	# Mast clearance rejects stacked roads correctly; ceiling fixtures need their own covered-road walk.
-	lamps = lamps.filter(func(lamp): return lamp.base.y > .1)
+	lamps = lamps.filter(func(lamp): return not covered_wacker(lamp.base))
 	var lamp_s = 0.0
 	while lamp_s < lamp_curve.get_baked_length():
-		var at = RoadBuilder.station_at(lamp_curve, road.closed, lamp_curve.get_baked_length(), lamp_frame[2], lamp_s)
-		if at.pos.y <= .1 and at.pos.z <= 720.0:
+		var at = RoadBuilder.station_at(
+			lamp_curve, road.closed, lamp_curve.get_baked_length(), lamp_frame[2], lamp_s
+		)
+		if covered_wacker(at.pos):
 			var basis = Basis.looking_at(at.tangent, Vector3.UP)
 			for side in [-1, 1]:
-				var base = at.pos + basis.x * side * 4.0 + Vector3(0, 6.05, 0)
-				lamps.append({"s": lamp_s, "side": side, "base": base, "basis": basis,
-					"head": base - Vector3.UP * .06, "height": 0.0, "kind": "ceiling",
-					"glow": true, "strength": .4, "step": 16.0})
+				var base = at.pos + basis.x * side * 3.2
+				base.y = WACKER_SOFFIT_Y + .06
+				lamps.append(
+					{
+						"s": lamp_s,
+						"side": side,
+						"base": base,
+						"basis": basis,
+						"head": base - Vector3.UP * .06,
+						"height": 0.0,
+						"kind": "ceiling",
+						"glow": true,
+						"strength": .4,
+						"step": 16.0
+					}
+				)
 		lamp_s += 16.0
 	TrackLights.build(asset, road, lamps)
 	add_night_details(asset, scenery, road, lamps)
@@ -694,8 +757,13 @@ static func add_wrigley_clocks(asset: Node3D, parent: Node, center: Vector3) -> 
 		# Static 10:10 display; no claim to reproduce a historical photographed time.
 		for hand in [[-PI / 3.0, 1.6], [PI / 3.0, 2.2]]:
 			var direction = Vector3(sin(hand[0]), cos(hand[0]), 0)
-			hands.append([origin + basis * (direction * hand[1] * .5 + Vector3(0, 0, .13)),
-				Vector3(.13, hand[1], .06), basis * Basis(Vector3.FORWARD, hand[0])])
+			hands.append(
+				[
+					origin + basis * (direction * hand[1] * .5 + Vector3(0, 0, .13)),
+					Vector3(.13, hand[1], .06),
+					basis * Basis(Vector3.FORWARD, hand[0])
+				]
+			)
 	multimesh_boxes(asset, parent, "WrigleyClockHands", material(Color("292e2a")), hands)
 
 
@@ -706,36 +774,39 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	concrete.uv1_scale = Vector3.ONE / 3.0
 	var st = road.last_bake.stations
 	var count = 0
+	var column_height = WACKER_RIB_BOTTOM_Y - ChicagoCity.LOW_ROAD_Y
 	var deck_tool = SurfaceTool.new()
 	deck_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# CHI-LOOK-01: exposed steel beams and girders under the deck (visual only, no collision), as in real
-	# Lower Wacker. They stay above the 6.05 m luminaires' clearance line.
+	# Post-tensioned concrete: 13 in slab, 2 in overlay, 4 ft wide / 2 ft deep longitudinal ribs.
 	var beam_tool = SurfaceTool.new()
 	beam_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in range(0, st.size(), 8):
 		var at = st[i]
 		# Only the lower Wacker road, not the exposed game-only connector at the south end.
-		if at.pos.y > .1 or at.pos.z > 720:
+		if not covered_wacker(at.pos):
 			continue
 		var tangent = at.tangent
 		var basis = Basis.looking_at(tangent, Vector3.UP)
-		var p = at.pos + Vector3(0, 6.7, 0)
-		facade_box(deck_tool, p, Vector3(23, 1.1, 13), Color.WHITE, basis)
-		facade_box(beam_tool, at.pos + Vector3(0, 5.85, 0), Vector3(22.6, 0.6, 0.55), Color.WHITE, basis)
-		for side in [-1, 1]:
-			var girder = at.pos + basis.x * side * 5.0 + Vector3(0, 5.75, 0)
-			facade_box(beam_tool, girder, Vector3(0.45, 0.8, 12.6), Color.WHITE, basis)
-		solid_box(asset, "Ceiling%d" % count, Transform3D(basis, p), Vector3(23, 1.1, 13))
-		if count % 2 == 0 and at.pos.x > -900.0:
-			for side in [-1, 1]:
-				var post_p = at.pos + basis.x * side * 10.5 + Vector3(0, 3, 0)
-				facade_box(deck_tool, post_p, Vector3(1.1, 6, 1.1), Color.WHITE)
-				solid_box(
-					asset,
-					"Column%d_%d" % [count, side],
-					Transform3D(Basis.IDENTITY, post_p),
-					Vector3(1.1, 6, 1.1)
-				)
+		var north_south = at.pos.x <= -900.0
+		var width = 42.672 if north_south else 23.0
+		var deck_at = at.pos - basis.x * (5.18 if north_south else 0.0)
+		var p = Vector3(deck_at.x, WACKER_SOFFIT_Y + .1651, deck_at.z)
+		facade_box(deck_tool, p, Vector3(width, .3302, 13), Color.WHITE, basis)
+		solid_box(asset, "Ceiling%d" % count, Transform3D(basis, p), Vector3(width, .3302, 13))
+		# Side/service bays occupy the whole section beside the single racing through lane.
+		if north_south:
+			facade_box(
+				deck_tool,
+				Vector3(deck_at.x, ChicagoCity.LOW_ROAD_Y - .045, deck_at.z),
+				Vector3(width, .03, 13),
+				Color.WHITE,
+				basis
+			)
+		var ribs = WACKER_NS_COLUMNS if north_south else [-5.0, 5.0]
+		for offset in ribs:
+			var girder = at.pos - basis.x * offset
+			girder.y = WACKER_RIB_BOTTOM_Y + .3048
+			facade_box(beam_tool, girder, Vector3(1.2192, .6096, 13), Color.WHITE, basis)
 		count += 1
 	deck_tool.generate_normals()
 	var deck_mesh = deck_tool.commit()
@@ -746,7 +817,7 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	beam_mesh.surface_set_material(0, concrete)
 	mesh_node(asset, parent, "WackerBeams", beam_mesh, Vector3.ZERO)
 	# CDOT / Benesch, ASPIRE Fall 2012: N–S viaduct's 3 ft round columns, roughly 32 ft centres.
-	# Keep the existing lateral/vertical race-route offsets pending the complete section/alignment pass.
+	# N–S axes follow the published section; E–W retains its map corridor pending its variable sections.
 	var frame = road_frame(road)
 	var curve: Curve3D = frame[0]
 	var length = curve.get_baked_length()
@@ -754,15 +825,18 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 	var s = 0.0
 	while s < length:
 		var at = RoadBuilder.station_at(curve, road.closed, length, frame[2], s)
-		if at.pos.y <= .1 and at.pos.x <= -900.0 and at.pos.z <= 720.0:
+		if covered_wacker(at.pos):
 			var basis = Basis.looking_at(at.tangent, Vector3.UP)
-			for side in [-1, 1]:
-				positions.append(at.pos + basis.x * side * 10.5 + Vector3(0, 3, 0))
+			var offsets = WACKER_NS_COLUMNS if at.pos.x <= -900.0 else [-10.5, 10.5]
+			for offset in offsets:
+				var p = at.pos - basis.x * offset
+				p.y = ChicagoCity.LOW_ROAD_Y + column_height * .5
+				positions.append(p)
 		s += 9.7536
 	var column = CylinderMesh.new()
 	column.top_radius = .4572
 	column.bottom_radius = .4572
-	column.height = 6.0
+	column.height = column_height
 	column.radial_segments = 16
 	column.material = concrete
 	var instances = MultiMesh.new()
@@ -779,7 +853,7 @@ static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		var shape = CollisionShape3D.new()
 		shape.shape = CylinderShape3D.new()
 		shape.shape.radius = .4572
-		shape.shape.height = 6.0
+		shape.shape.height = column_height
 		body.add_child(shape)
 		attach(asset, asset, body, "WackerRoundColumn%d" % i)
 		shape.owner = asset
@@ -798,8 +872,10 @@ static func add_road_details(asset: Node3D, parent: Node, road: RoadPath) -> voi
 	for i in range(0, st.size(), 10):
 		var at = st[i]
 		var right = at.tangent.cross(Vector3.UP).normalized()
-		for side in [-1, 1]:
-			var pos = at.pos + right * side * 4 + Vector3(0, .012, 0)
+		var section = RoadBuilder.section_at(road.sections, at.s, road.last_bake.length, road.closed)
+		var dividers = [0.0] if section.width_left < 4.5 else [-4.0, 4.0]
+		for offset in dividers:
+			var pos = at.pos + right * offset + Vector3(0, .012, 0)
 			var a = at.tangent * 2.5
 			var b = right * .07
 			tool.set_color(Color("d3ceb3"))
@@ -889,7 +965,7 @@ static func lower_level_zones(road: RoadPath) -> Array:
 	var start = -1.0
 	var s = 0.0
 	while s < length:
-		var low = RoadBuilder.station_at(c, road.closed, length, f[2], s).pos.y < 3.0
+		var low = covered_wacker(RoadBuilder.station_at(c, road.closed, length, f[2], s).pos)
 		if low and start < 0.0:
 			start = s
 		elif not low and start >= 0.0:
@@ -1009,8 +1085,21 @@ const SIGN_FONT = preload("res://assets/fonts/Rajdhani-Bold.ttf")
 const SIGNS = "res://trackgen/data/chicago/signs.json"
 ## Category -> colour index: bars/clubs magenta, food red/amber, cafes green, hotels violet, shops cyan.
 const SIGN_COLOR = {
-	"bar": 0, "pub": 0, "nightclub": 0, "casino": 0, "shop": 1, "pharmacy": 1, "bank": 1,
-	"cafe": 2, "ice_cream": 2, "restaurant": 3, "fast_food": 5, "hotel": 4, "cinema": 4, "theatre": 4, "museum": 4
+	"bar": 0,
+	"pub": 0,
+	"nightclub": 0,
+	"casino": 0,
+	"shop": 1,
+	"pharmacy": 1,
+	"bank": 1,
+	"cafe": 2,
+	"ice_cream": 2,
+	"restaurant": 3,
+	"fast_food": 5,
+	"hotel": 4,
+	"cinema": 4,
+	"theatre": 4,
+	"museum": 4
 }
 
 
@@ -1091,7 +1180,13 @@ static func add_neon(asset: Node3D, parent: Node, road: RoadPath) -> void:
 		sign.set_meta("chicago_night", true)
 		attach(asset, parent, sign, "Sign%d" % placed.size())
 		var basis = Basis.looking_at(along, Vector3.UP)
-		facade_box(tools[k], base + Vector3(0, y, 0), Vector3(.1, .08, 3.0 + sign.text.length() * .35), Color.WHITE, basis)
+		facade_box(
+			tools[k],
+			base + Vector3(0, y, 0),
+			Vector3(.1, .08, 3.0 + sign.text.length() * .35),
+			Color.WHITE,
+			basis
+		)
 		if lights < 120 and placed.size() % 2 == 0:
 			lights += 1
 			var light = OmniLight3D.new()

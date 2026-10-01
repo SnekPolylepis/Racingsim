@@ -3,6 +3,7 @@ extends SceneTree
 ## ceiling clearance, slope, grid and landmark anchors. Driving is gated by laps.gd.
 const Generator = preload("res://trackgen/chicago.gd")
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
+const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 var asset
 var frames = 0
 var checks = 0
@@ -37,11 +38,14 @@ func _physics_process(_delta):
 	var max_error = 0.0
 	var max_grade = 0.0
 	var intrusions = 0
+	var ceiling_checks = 0
+	var ceiling_error = 0.0
 	var space = asset.get_world_3d().direct_space_state
 	for st in road.last_bake.stations:
 		max_grade = maxf(max_grade, absf(st.tangent.y) / Vector2(st.tangent.x, st.tangent.z).length())
 		var right = st.tangent.cross(Vector3.UP).normalized()
-		for lat in [-7.0, 0.0, 7.0]:
+		var section = RoadBuilder.section_at(road.sections, st.s, road.last_bake.length, road.closed)
+		for lat in [-section.width_left + .2, 0.0, section.width_right - .2]:
 			var p = st.pos + right * lat + st.tangent * .35
 			var hit = surf.contact(p + Vector3.UP * .5, Vector3.DOWN, 1.0, 0)
 			if hit.get("surface", -1) != 0:
@@ -53,24 +57,36 @@ func _physics_process(_delta):
 		var q = PhysicsRayQueryParameters3D.create(st.pos + Vector3.UP * .15, st.pos + Vector3.UP * 3.0, 2)
 		if not space.intersect_ray(q).is_empty():
 			intrusions += 1
-	check(misses == 0, "Full lap tarmac width ±7 m: %d misses" % misses)
+		if Generator.covered_wacker(st.pos) and st.pos.x < -1000 and st.pos.z > 0 and st.pos.z < 600:
+			var ceiling = space.intersect_ray(
+				PhysicsRayQueryParameters3D.create(st.pos + Vector3.UP * .15, st.pos + Vector3.UP * 6.0, 2)
+			)
+			ceiling_checks += 1
+			ceiling_error = maxf(
+				ceiling_error, absf(ceiling.position.y - st.pos.y - 4.191) if not ceiling.is_empty() else INF
+			)
+	check(misses == 0, "Full lap authored tarmac widths: %d misses" % misses)
 	check(max_error < .08, "Surface/line height error %.4f m" % max_error)
 	check(max_grade < .10, "Maximum grade %.2f%%" % (max_grade * 100))
 	check(intrusions == 0, "3 m headroom throughout lap: %d intrusions" % intrusions)
-	for height in [0.0, 8.0]:
+	check(
+		ceiling_checks > 0 and ceiling_error < .03,
+		"N–S 13 ft 9 in ceiling clearance: %d probes, error %.4f m" % [ceiling_checks, ceiling_error]
+	)
+	for height in [Generator.ChicagoCity.LOW_ROAD_Y, 8.0]:
 		var p = Generator.world([41.883, -87.6369, height])
 		var hit = surf.contact(p + Vector3.UP * .5, Vector3.DOWN, 1.0, 0)
 		check(
 			hit.get("surface", -1) == 0 and absf(hit.get("point", Vector3.INF).y - height) < .05,
-			"Wacker deck at %.0f m" % height
+			"Wacker deck at %.4f m" % height
 		)
 		var projection = asset.project(p, -1)
-		check(absf(projection.vertical) < .1, "Projection selects %.0f m deck" % height)
+		check(absf(projection.vertical) < .1, "Projection selects %.4f m deck" % height)
 	var gates = asset.gates()
 	var wrong_deck_triggers = 0
 	for gate in gates:
-		if gate.origin.y < .1:
-			var p = gate.origin + Vector3.UP * 8
+		if gate.origin.y < Generator.ChicagoCity.LOW_ROAD_Y + .1:
+			var p = gate.origin + Vector3.UP * (8 - Generator.ChicagoCity.LOW_ROAD_Y)
 			if TrackAsset.crossed(gate, p - gate.normal * 2, p + gate.normal * 2):
 				wrong_deck_triggers += 1
 	check(wrong_deck_triggers == 0, "Upper road cannot trigger lower timing gates")

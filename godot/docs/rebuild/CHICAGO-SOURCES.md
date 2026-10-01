@@ -31,8 +31,7 @@ and rejection of a completely unmeasured footprint; passed on 2026-09-30.
 - Benesch / Chicago DOT engineers, *Wacker Drive*, ASPIRE Fall 2012:
   https://www.aspirebridge.com/magazine/2012Fall/WackerDrive.pdf
   Use the cross-sections and construction photographs to validate deck,
-  clearance, girder and column layout. Current generated tunnel dimensions
-  have not yet been checked against these drawings.
+  clearance, girder and column layout.
 - Existing race-route connectors are authored circuit geometry, as stated in
   `trackgen/data/chicago/route.json`; they must not be described as a survey.
 
@@ -40,11 +39,15 @@ Inspected the engineering PDF's first-page cross-section rendered with Poppler.
 It shows 13 ft 9 in clearance (4.191 m), a 140 ft total viaduct width (42.672 m),
 26 ft through-lane bays, and six column lines. The article specifies three-foot
 round columns at approximately 32-foot longitudinal centres and concrete ribs.
-The north–south model now uses 0.9144 m diameter cylindrical columns sampled at
-9.7536 m along the route; existing lateral offsets and six-metre column height
-remain authored and unverified. The wider service lanes, full transverse column
-layout and deck-height relationship still require reconstruction. Do not treat
-this partial support correction as completion of the cross-section requirement.
+The north–south model uses 0.9144 m diameter columns sampled at 9.7536 m along
+the route. Six transverse axes were digitized from that drawing relative to the
+southbound through-lane centre; this is a typical section, not a survey of every
+column's geographic position. The 13-inch slab and two-inch overlay place the
+lower road at world y=3.4288 beneath the upper road at y=8, giving 4.191 m clear
+space at the lane centre. Four-foot-wide ribs have two-foot total depth; the
+42.672 m side-bay floor follows the full section. The racing through bay is
+7.9248 m wide. East–west variable bay widths, service-lane markings, docks and
+intersection-specific layout still require source matching.
 Ceiling/ribs reuse the existing CC0 Poly Haven damaged concrete maps, with
 world-space three-metre triplanar tiling. Day/night `chi-lower-columns` captures
 were inspected from 1.4 m driver-eye camera positions.
@@ -55,7 +58,18 @@ placements now have a separate walk, with one shared list for fixture geometry,
 halos, road streaks and actual pooled light positions. Generic street-lamp masts
 are omitted for these placements. `chi-lower-lights2` south/west night images
 were inspected; amber light reaches the concrete and wet road. Fixture height
-still follows the existing authored deck pending the cross-section correction.
+now sits against the slab soffit. Fixture dimensions and longitudinal placements
+remain authored and require reference matching.
+
+- AlphaBeta135, *Lower Wacker Dr south at Randolph St exit*, 15 August 2024,
+  CC BY 4.0:
+  https://commons.wikimedia.org/wiki/File:Lower_Wacker_Dr_south_at_Randolph_St_exit_-_Chicago,_IL_-_August_2024.jpg
+  Inspected the original photo in the browser. It shows a two-lane through road,
+  dashed centre divider, concrete separation from an open service bay, round
+  columns and compact ceiling fixtures. No catch fence or red/white racing kerb
+  appears there. Chicago omits those two racing decorations on the north–south
+  lower section; fixture shape and the photographed Randolph exit sign remain
+  open items. Photo consulted as reference only, not redistributed as a texture.
 The fixed-view capture tool now updates the normal light pool at each camera
 position; earlier frozen-camera images did not demonstrate local pooled lighting.
 

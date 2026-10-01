@@ -20,6 +20,16 @@ func run():
 	await process_frame
 	app.load_v2_track("chicago")
 	app.start_v2_drive()
+	if "--drive-lower" in OS.get_cmdline_user_args():
+		var point = Vector3(-1035.75, float(app.track.get_meta("wacker_floor_y")), 0)
+		var forward = Vector3.BACK
+		app.car.place(point, PI / 2, point.y)
+		app.car.rot = Basis(forward, Vector3.UP, forward.cross(Vector3.UP)).get_rotation_quaternion()
+		app.car.pos = point + Vector3.UP * app.car.setup.cgHeight
+		app.car.sync_legacy()
+		app.race.reset()
+		app.prev_pose = app.snapshot_v2()
+		app.settings.camera = 2
 	print("NEON SIGNS ", app.track.get_meta("neon_signs", -1))
 	app.controls.poll_hardware = false
 	app.controls.held_keys[int(app.controls.keys.throttle[0])] = true
@@ -43,6 +53,7 @@ func run():
 	app.set_process(false)
 	app.set_physics_process(false)
 	app.instruments.visible = false
+	var lower_eye = float(app.track.get_meta("wacker_floor_y", 0.0)) + 1.4
 	var views = {
 		"mich-north": [Vector3(0, 11, 250), Vector3(-5, 40, -380)],
 		"mich-south": [Vector3(0, 11, -120), Vector3(-5, 30, 700)],
@@ -50,9 +61,9 @@ func run():
 		"uc": [Vector3(40, 14, 410), Vector3(-46, 30, 423)],
 		"rx": [Vector3(60, 20, 690), Vector3(-35, 45, 701)],
 		"river": [Vector3(-470, 11, -225), Vector3(-150, 4, -262)],
-		"lower-west": [Vector3(-600, 1.4, -234), Vector3(-950, 1.4, -234)],
-		"lower-south": [Vector3(-1035, 1.4, 0), Vector3(-1035, 1.4, 500)],
-		"lower-portal": [Vector3(530, 1.4, -317), Vector3(200, 1.4, -340)],
+		"lower-west": [Vector3(-600, lower_eye, -234), Vector3(-950, lower_eye, -234)],
+		"lower-south": [Vector3(-1035, lower_eye, 0), Vector3(-1035, lower_eye, 500)],
+		"lower-portal": [Vector3(530, lower_eye, -317), Vector3(200, lower_eye, -340)],
 		"river-air": [Vector3(-300, 90, -120), Vector3(-450, 0, -300)],
 		"park-air": [Vector3(60, 70, 120), Vector3(170, 0, 280)],
 		"lake-lsd": [Vector3(737, 14, 156), Vector3(1600, 6, 100)],
@@ -81,7 +92,7 @@ func run():
 			app.camera.position = views[key][0]
 			var rain = app.camera.get_node_or_null("Rain")
 			if rain:
-				rain.visible = rain.emitting and app.camera.position.y > 3.0
+				rain.visible = rain.emitting and not key.begins_with("lower-")
 			app.camera.look_at(views[key][1], Vector3.UP)
 			app.TrackLights.update_pool(app.lamp_pool, app.track, app.camera.global_position, bool(night))
 			app.camera.fov = 60

@@ -43,17 +43,21 @@ The source repository supplies the editable geographic data alongside the produc
 Context reference for Wacker's two levels and the riverwalk:
 https://www.transportation.gov/buildamerica/projects/riverwalk-expansion . No article images or map
 tiles are copied into the game. All city/landmark geometry is original procedural low-poly artwork.
-Landmark locations are approximate geographic anchors. The Bean is a stylized metallic arch;
-Willis Tower uses a stepped tube silhouette and antennae; Navy Pier includes a pier and wheel.
+Landmark locations are approximate geographic anchors. The Bean uses John Helman's model;
+Willis Tower uses BoldlyBuilding's model and textures; Navy Pier includes a pier and wheel.
 The next authored landmark set adds original low-poly silhouettes for the Wrigley Building, Tribune
 Tower, Board of Trade and the Michigan Avenue, State Street and LaSalle Street lift bridges. The two
 riverfront runs now use added control points derived from the retained Upper/Lower Wacker OSM ways.
 Four CC0 photo-based 1K PBR texture sets bring brick and riverwalk/sidewalk detail to selected
 buildings and paths (`assets/textures/chicago/`). Water animates with a restrained world-space
-procedural ripple shader; it changes presentation only. Geometry and record identity are version 2;
+procedural ripple shader; it changes presentation only. Geometry and record identity are version 3;
 the six Chicago lap measurements in `docs/rebuild/laps-v2-baseline.json` were freshly recorded for
 version 2 on 2026-09-25 after the new Wacker bends were added. Earlier values in the dated rebuild
 log describe the version 1 route.
+Version 3 (2026-09-30) raises the lower road to the sourced 4.191 m clearance
+beneath Upper Wacker and narrows the north–south racing bay to the published
+26 ft section. Version 2 lap baselines are historical measurements; version 3
+full laps have not been recorded during the owner's screenshot-focused work.
 
 ## Acceptance and reproduction
 
@@ -75,8 +79,9 @@ roof grids; remaining placeholders and unsourced procedural landmarks are tracke
 
 Only this circuit extends the fog/view distance to retain lake and skyline views; other circuits'
 render settings are unchanged. Flat painted sky replaces wooded hills for Chicago. Lamp fixtures
-under Lower Wacker are shortened beneath the deck and have collidable structural columns outside
-the barrier. The circuit has no AI traffic or pedestrians.
+under Lower Wacker mount against the slab soffit, with round structural columns
+and open side bays. Fixture dimensions, service lanes, signage and portals remain
+under source review. The circuit has no AI traffic or pedestrians.
 
 Afterhours accents are authored by `add_night_details()` and toggled by
 `scripts/track/chicago_night.gd`, including materials serialized into the track cache. The wheel,
