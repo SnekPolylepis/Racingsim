@@ -3734,3 +3734,25 @@ Next: Cultural Center (found Sketchfab model is an interior point cloud, not
 an exterior), then Railway Exchange, Athletic Association, University Club,
 Orchestra Hall, and review remaining route-facing generic building exteriors.
 The wider request is incomplete; QUEUE remains claimed and the thread goal active.
+
+### 2026-10-01 — PROGRESS CHI-3D-BUILDINGS: Cultural Center
+
+Replaced Cultural Center's full photograph/mass (r15899437) with an original
+Blender-authored exterior: 65,300 triangles, seven surfaces, recessed arched
+windows, paired sash windows, pilasters, cornices and side porticos. Mapped
+footprint and measured higher roof volumes retained. Editable source and rebuild
+script included; common Blender primitives extracted unchanged from Theatre.
+Both original models regenerate with their original triangle/surface counts.
+Architectural ornaments are approximations; no photo pixels render on this model.
+
+Day/night front/oblique runtime captures inspected at visual-review/cultural-3d.
+Godot import clean. Gates 20261001-204135: menu and actual drive 13/13; both
+windowed Mesh/MultiMesh clipping scans zero failures (100/108 expected overhead
+or flush-surface hits). Windows export and packaged multi-track/audio verifier
+PASS, engine peak 0.512848. Matching executable installed and launched:
+F22F354397D5C5C50219AAF962DB30527AC76C3FF2283675227CBD32A614F62A.
+Previous local build retained. Full gates/performance/macOS not rerun.
+
+Full objective remains active: Railway Exchange, Athletic Association,
+University Club and Orchestra Hall photo facades remain, followed by the
+remaining route-facing generic exterior review. QUEUE remains claimed.

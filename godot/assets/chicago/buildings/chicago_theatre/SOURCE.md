@@ -22,3 +22,19 @@ References:
 
 Online acquisition checked first: the Free3D Theatre asset covers only the signs
 and is paid; the Polycam scan's usable download was not verified. Neither is used.
+
+## Cultural Center
+
+Original Blender-authored exterior (`cultural_center.glb`, 65,300 triangles,
+7 surfaces), editable `tools/blender/authored/cultural_center.blend`; regenerate
+with `tools/blender/chicago_cultural_center.py`. Mapped footprint r15899437,
+28.5 m frontage cornice and measured higher roof returns retained. Recessed
+arched glazing, paired upper/ground windows, pilasters, cornices and side
+porticos replace the complete photo panel. Ornament is an approximation.
+
+References: [Chicago Architecture Center](https://www.architecture.org/online-resources/buildings-of-chicago/chicago-cultural-center),
+[Chicago Landmarks](https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?lanId=1274),
+[UIC: 65 Michigan Avenue windows](https://today.uic.edu/windows-mirror-styles-seen-across-city/),
+and the existing credited w_lemay Cultural Center east elevation photograph
+(visual reference only). The checked online scan was an interior point cloud;
+no third-party model or photo pixels are included in the exterior.
