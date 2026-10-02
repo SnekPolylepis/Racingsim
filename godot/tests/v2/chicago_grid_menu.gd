@@ -54,9 +54,16 @@ func run() -> void:
 				)
 			)
 		check(textured, "Willis night glow preserves facade textures")
-		for name in [
-			"ChicagoTheatre", "PageBrothers", "CulturalCenter", "RailwayExchange", "AthleticAssociation"
-		]:
+		var chicago_buildings = [
+			"ChicagoTheatre",
+			"PageBrothers",
+			"CulturalCenter",
+			"RailwayExchange",
+			"AthleticAssociation",
+			"UniversityClub",
+			"OrchestraHall"
+		]
+		for name in chicago_buildings:
 			var building = app.track.get_node_or_null("Scenery/City/" + name)
 			check(
 				building is MeshInstance3D and building.mesh.get_surface_count() >= 5,
@@ -87,6 +94,8 @@ func run() -> void:
 			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v3",
 			"Original Chicago remains available with its record identity"
 		)
+		for name in chicago_buildings:
+			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")
 	for player in app.find_children("*", "AudioStreamPlayer", true, false):
 		player.stop()
 		player.stream = null

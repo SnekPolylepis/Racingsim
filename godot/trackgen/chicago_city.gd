@@ -60,6 +60,8 @@ const AUTHORED_BUILDINGS = {
 	"r15899437": ["CulturalCenter", "cultural_center"],
 	"w124873931": ["RailwayExchange", "railway_exchange"],
 	"w147476152": ["AthleticAssociation", "athletic_association"],
+	"w126982632": ["UniversityClub", "university_club"],
+	"w145493030": ["OrchestraHall", "orchestra_hall"],
 }
 
 ## The Wrigley Building's offset from its route.json point (CHI-LOOK-01, CHI-SC-4): east of Michigan Avenue and
@@ -121,7 +123,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
-		elif _touches_route(route, ring, 0.0):
+		# Authored exteriors have checked overhangs; retain 1 m beyond the 8 m carriageway.
+		elif _touches_route(route, ring, -.5 if AUTHORED_BUILDINGS.has(b.get("o", "")) else 0.0):
 			exclusion = "authored route clearance"
 		elif _near_any(skip_at, _centroid(ring)):
 			exclusion = "separate landmark proximity"

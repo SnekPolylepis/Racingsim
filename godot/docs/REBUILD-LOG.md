@@ -3812,3 +3812,46 @@ Full gates/performance and macOS validation not rerun.
 Full objective stays active: University Club (official history/asset search
 checked), Orchestra Hall, then the remaining route-facing generic exterior
 review. QUEUE remains claimed, not complete.
+
+### 2026-10-01 — PROGRESS CHI-3D-BUILDINGS: University Club / Orchestra Hall
+
+All seven full-building photo facades now have original Blender replacements.
+University Club: 40,659 triangles / six surfaces, measured Gothic roof profile
+(52 m main cornice, 58 m eave, 69 m ridge), gables, pinnacles, simplified owl,
+projecting oriels, balcony balusters and curved Cathedral Hall tracery.
+Orchestra Hall: 78,075 / six surfaces, pink brick/white Georgian dressings,
+three monumental arched windows with real fanlights/archivolts, upper sashes,
+quoins, pediments, cornices, balustrades and raised lettering. Frontage 42 m;
+33.5 m annex roof follows returns away from high adjoining boundary cells.
+Mapped footprints retained. Secondary elevations/sculpture are approximations;
+interiors are not modelled. Primary official club/CSO references and existing
+credited photos guide original geometry; no reference photo pixels render.
+Editable .blend sources and reproducible authoring scripts included.
+
+First review found University Club missing: the generic 9.5 m route buffer
+excluded its footprint, whose closest sampled distance is 9.31 m against an
+8 m carriageway. Authored exteriors use a 9 m footprint buffer; generic scenery
+retains 9.5 m. Actual model meshes are verified separately by both clip scans.
+Oblique review also found reversed side-window offsets in the Athletic,
+University and Orchestra scripts; corrected outward direction and rebuilt all
+three. University side glazing now visible. Final day/night front/oblique views
+inspected at visual-review/university-3d and orchestra-3d.
+
+Evidence: gates 20261001-213413: actual menu/drive/model checks 28/28, including
+all seven models in BOTH layouts; Mesh/MultiMesh scans zero failures (100/108
+expected overhead/flush hits). Import and Windows export clean. Packaged
+multi-track/audio verifier PASS (all seven required in both layouts), Engine
+sample peak 0.512770, dedicated seven-buildings-export-verified.log. Matching
+Windows executable installed and launched; previous binary retained. SHA-256:
+211451DC50FC636CB42CDF30046D7AB51A9B4C3846434C5A9F8A065149662F7E.
+Full gates, performance sweeps and macOS validation not rerun.
+
+Full objective remains ACTIVE. Wider audit finds 3966 source building records:
+3960 LiDAR, five height extrusions, one plan; exactly seven photo entries, all
+covered by authored registry. Remaining generic walls still use tiled facade
+images and shader-drawn windows (chicago_facade.gdshader). Those are not silently
+claimed converted. Existing Quaternius CC0 window pieces have real 0.21-0.26 m
+depth, 156/160 triangles, and can be reused; ChicagoKit.build is currently not
+called, only sidewalk_props is. Next: address/review remaining route-facing
+flat facade representations. These source counts are not runtime visibility
+counts; QUEUE remains claimed and the full goal is incomplete.

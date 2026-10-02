@@ -593,11 +593,20 @@ func check_exported_v2_assets() -> void:
 	AudioServer.remove_bus_effect(engine_bus, capture_index)
 	ok = ok and load_v2_track("nordschleife") and track.id == "nordschleife" and track.length > 20000.0
 	ok = ok and load_v2_track("chicago_grid") and track.id == "chicago_grid" and track.length > 8000.0
-	for name in [
-		"ChicagoTheatre", "PageBrothers", "CulturalCenter", "RailwayExchange", "AthleticAssociation"
-	]:
+	var chicago_buildings = [
+		"ChicagoTheatre",
+		"PageBrothers",
+		"CulturalCenter",
+		"RailwayExchange",
+		"AthleticAssociation",
+		"UniversityClub",
+		"OrchestraHall"
+	]
+	for name in chicago_buildings:
 		ok = ok and track.has_node("Scenery/City/" + name)
 	ok = ok and load_v2_track("chicago") and track.id == "chicago" and track.length > 5000.0
+	for name in chicago_buildings:
+		ok = ok and track.has_node("Scenery/City/" + name)
 	ok = ok and load_v2_track("monaco") and track.id == "monaco" and track.length > 3000.0
 	print("V2 EXPORT ", "PASS" if ok else "FAIL")
 	var scene_tree = get_tree()

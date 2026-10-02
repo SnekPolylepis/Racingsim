@@ -73,3 +73,28 @@ References: [HABS IL-1226, National Park Service](https://tile.loc.gov/storage-s
 and existing Beyond My Ken CC BY-SA 4.0 caa_east.jpg (reference only, no pixels
 rendered). Online search found no usable building exterior model; the mesh is
 original Blender geometry.
+
+## University Club
+
+Original Blender Gothic exterior (university_club.glb, 40,659 triangles, six
+surfaces), editable tools/blender/authored/university_club.blend; rebuild with
+tools/blender/chicago_university_club.py. Mapped w126982632 footprint; 52 m main
+cornice, 58 m eave/top gallery and 69 m gable ridge follow the measured profile.
+Steep roof, triangular gables, pinnacles, simplified owl, oriels, balconies and
+curved Gothic windows are meshes. Sculpture and secondary elevations are
+approximations. Reference: [official club history](https://www.ucco.com/about/history)
+and existing David Brossard CC BY-SA 2.0 photo; no photo pixels render. No usable
+exterior model download was found.
+
+## Orchestra Hall
+
+Original Blender Georgian exterior (orchestra_hall.glb, 78,075 triangles, six
+surfaces), editable tools/blender/authored/orchestra_hall.blend; rebuild with
+tools/blender/chicago_orchestra_hall.py. Mapped w145493030 footprint; 42 m front
+and 33.5 m annex roof use measured returns away from adjacent boundary peaks.
+Three monumental arched windows have curved glazing, deep archivolts, radial
+fanlights, jambs and balcony balusters. Upper sashes, quoins, pediments, cornices,
+roof balustrade and lettering are meshes. Rear annexes/sculpture are approximations.
+Reference: [CSO Rosenthal Archives](https://chicagosymphony.org/about/rosenthal-archives/orchestra-hall-at-chicago-symphony-center/)
+and existing Beyond My Ken CC BY-SA 4.0 sym_east.jpg; no photo pixels render.
+The dated advertising banner is omitted. No usable building model was found.

@@ -121,7 +121,7 @@ for i in range(n):
  a,c=ring[i],ring[(i+1)%n];span=math.dist(a,c)
  if span<6: continue
  angle=math.atan2(c[1]-a[1],c[0]-a[0]);tx,ty=math.cos(angle),math.sin(angle)
- nx,ny=ty,-tx
+ nx,ny=-ty,tx
  for j in range(int(span/3.3)):
   u=(j+.5)*span/max(1,int(span/3.3))
   for f in range(11):
