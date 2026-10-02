@@ -390,7 +390,7 @@ func _init_engine_players():
 				stream = stream.duplicate()
 				stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 				stream.loop_begin = 0
-				stream.loop_end = stream.data.size() / 2
+				stream.loop_end = roundi(stream.get_length() * stream.mix_rate)
 			var p = AudioStreamPlayer.new()
 			p.stream = stream
 			p.bus = "Engine"
@@ -450,6 +450,16 @@ func _load_wav_direct(path: String, loop: bool = true) -> AudioStreamWAV:
 
 
 func _load_stream_or_synth(path: String, fallback_kind: String, loop: bool = true) -> AudioStream:
+	# Exports contain imported .sample resources, not raw RIFF files.
+	if ResourceLoader.exists(path):
+		var imported = load(path)
+		if imported is AudioStreamWAV:
+			var frames = roundi(imported.get_length() * imported.mix_rate)
+			var stream = imported.duplicate()
+			stream.loop_mode = AudioStreamWAV.LOOP_FORWARD if loop else AudioStreamWAV.LOOP_DISABLED
+			stream.loop_begin = 0
+			stream.loop_end = frames
+			return stream
 	var direct = _load_wav_direct(path, loop)
 	if direct != null:
 		return direct
@@ -592,7 +602,15 @@ func make_sound(kind: String) -> AudioStreamWAV:
 			"road":
 				value = filtered * 0.60 + (noise - filtered) * 0.06
 			"wind":
-				value = (filtered * 0.52 + (noise - filtered) * 0.06 + sin(TAU * 38.0 * t) * 0.20 + sin(TAU * 76.0 * t) * 0.12) * 0.70
+				value = (
+					(
+						filtered * 0.52
+						+ (noise - filtered) * 0.06
+						+ sin(TAU * 38.0 * t) * 0.20
+						+ sin(TAU * 76.0 * t) * 0.12
+					)
+					* 0.70
+				)
 			"whine":
 				value = (
 					sin(TAU * 440.0 * t) * 0.24
@@ -603,7 +621,9 @@ func make_sound(kind: String) -> AudioStreamWAV:
 			"clutch_bite":
 				value = (sin(TAU * (320.0 - 140.0 * t) * t) * 0.55 + filtered * 0.20) * exp(-t * 12.0)
 			"kerb":
-				var rib_pulse = sin(TAU * 58.0 * t) * 0.45 + sin(TAU * 116.0 * t) * 0.28 + sin(TAU * 232.0 * t) * 0.14
+				var rib_pulse = (
+					sin(TAU * 58.0 * t) * 0.45 + sin(TAU * 116.0 * t) * 0.28 + sin(TAU * 232.0 * t) * 0.14
+				)
 				var edge_snap = (filtered * 0.25) * pow(maxf(0.0, sin(TAU * 58.0 * t)), 3.0)
 				value = rib_pulse + edge_snap
 			"gravel":
@@ -1048,7 +1068,12 @@ func update(car, dt: float, active: bool, settings: Dictionary) -> void:
 	players.whine.volume_db = linear_to_db(
 		maxf(
 			0.00001,
-			engine_level * clampf(car_speed / 65.0, 0.0, 1.0) * (0.045 if is_race_car else 0.015) * whine_boost
+			(
+				engine_level
+				* clampf(car_speed / 65.0, 0.0, 1.0)
+				* (0.025 if is_race_car else 0.008)
+				* whine_boost
+			)
 		)
 	)
 	players.whine.pitch_scale = clampf(0.5 + car_speed / 36.0, 0.4, 2.1)

@@ -3665,3 +3665,40 @@ V2 EXPORT PASS; exported Loop Grid short drive/presentation 72/72 PASS, empty
 stderr, 18 captures. Formatter check on all 11 changed scripts and diff check
 pass. Performance gates not rerun (owner makes them advisory); macOS variant
 export and hardware playtest not performed in this Windows task.
+
+### 2026-10-01 — DONE CHI-AUDIO-PROPS-01
+
+Owner reported silent engines in the release despite audible debug playback,
+high-pitched whine, clipping, Lower Wacker light spill and an unreadable Willis
+Tower. The raw RIFF loader missed imported samples in exports and generated a
+silent engine fallback. Load Godot audio resources first; compressed samples'
+loop bounds now use sample frames, not compressed bytes. Reduced gearbox whine
+gain. Export verifier checks all 40 recorded layers against imported resources
+and measures actual Engine-bus playback (peak 0.510871).
+
+Chicago props now seat their mesh bottoms on the sidewalk, retain their full
+footprints outside nearby same-level roads, and reject over-height lower-deck
+props. Drain/manhole tops are flush; narrow-lane drains use an inset position.
+Tree crowns, not just trunks, clear the road. Chicago pooled lights cast deck
+shadows; ceiling light origins sit below the slab, and separate ceiling halos
+hide from cameras above it. Willis emission multiplies its facade texture;
+additive solid emission had washed the entire tower beige.
+
+Clip scan now includes every MultiMesh instance and actual section widths;
+headless scans explicitly reject the renderer that discards instance transforms.
+Upper street props and bridge decks are distinguished from lower-deck obstacles.
+The scanner loads the shared TrackDrive asset directly: early full-game scans
+reported clean findings but crashed at shutdown. Final windowed scan run
+`tests/logs/gates/20261001-200518` exits cleanly for both layouts, with zero
+findings. Geometry 45/45 for each layout, audio 144/144, deep 62/62, sweep 480/480
+pass in `20261001-195411`; updated menu/runtime/light/material checks 7/7 pass in
+`20261001-200210`. Full gates and performance sweeps were not rerun.
+
+Windowed night review: 162 captures, zero capture failures, contact sheet
+inspected. After the separate halo correction, targeted upper/lower/tower
+captures confirm the upper street no longer shows lower-fixture halos and the
+tower retains its dark facade detail. Windows export and six-track verifier
+pass with empty stderr (`export-verify-final.*`); mixer probe confirms audible
+recorded engine output. Installed matching SHA-256 build at build/RacingSim.exe,
+retained the previous executable, and launched it with Loop Grid selected.
+macOS export/hardware validation not performed in this Windows task.

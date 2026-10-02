@@ -841,6 +841,8 @@ static func _trees(asset: Node3D, holder: Node3D, trees: Array, route: Dictionar
 		var basis = Basis(Vector3.UP, rng.randf() * TAU) * Basis.from_scale(Vector3(w, h, w))
 		# Cloud Gate is on a paved 70 x 60 m plaza: keep crowns, not only trunks, outside it.
 		var crown = w * 0.71
+		if d < 10.0 + crown:
+			continue
 		if absf(p.x - bean.x) < 35.0 + crown and absf(p.y - bean.z) < 30.0 + crown:
 			continue
 		# Short paved west entrance from Michigan Avenue to the plaza; retain trees either side.

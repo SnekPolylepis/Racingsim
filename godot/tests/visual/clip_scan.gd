@@ -2,10 +2,12 @@ extends SceneTree
 ## Scans a track for scenery intruding into the drivable corridor: every `step` metres along the road, rays
 ## from above hit-test every visible mesh at several lateral offsets (inside the barriers). Anything other than
 ## the road, barriers, fences, kerb or car geometry above the track surface is reported with its path.
-##   tools/Godot.exe --headless --path . --script tests/visual/clip_scan.gd -- --track=chicago [--step=5]
+##   tools/Godot.exe --path . --script tests/visual/clip_scan.gd -- --track=chicago [--step=5]
+## Run windowed: the headless renderer discards MultiMesh instance transforms.
 ## Prints CLIP lines and CLIP SCAN RESULTS; fails on anything over or across the road except OVERHEAD structures.
 
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
+const TrackDrive = preload("res://scripts/proving/track_drive.gd")
 var track = "chicago"
 var step = 5.0
 ## How far above the road surface a foreign mesh counts (2 cm catches coplanar streets that z-fight the track).
@@ -30,49 +32,58 @@ func _initialize():
 			track = arg.trim_prefix("--track=")
 		elif arg.begins_with("--step="):
 			step = float(arg.trim_prefix("--step="))
+	if DisplayServer.get_name() == "headless":
+		push_error("Clip scan requires a renderer to inspect MultiMesh instance transforms")
+		quit(1)
+		return
 	call_deferred("run")
 
 
 func run():
-	var app = load("res://main.tscn").instantiate()
-	root.add_child(app)
-	await process_frame
-	if not app.load_v2_track(track):
+	var asset = TrackDrive.load_asset(track)
+	if asset == null:
 		print("CLIP ERROR load")
-		app.queue_free()
-		await process_frame
 		quit(1)
 		return
-	var asset = app.track
+	root.add_child(asset)
+	await process_frame
 	# Collect triangles of every candidate mesh once, bucketed on a 20 m grid.
 	var grid = {}
-	for mi in asset.find_children("*", "MeshInstance3D", true, false):
-		if mi.mesh == null:
+	for mi in asset.find_children("*", "GeometryInstance3D", true, false):
+		if not (mi is MeshInstance3D or mi is MultiMeshInstance3D):
+			continue
+		var mesh = mi.mesh if mi is MeshInstance3D else mi.multimesh.mesh
+		if mesh == null:
 			continue
 		var path = str(asset.get_path_to(mi))
 		var top = path.split("/")[0]
 		if top in ALLOWED:
 			continue
-		var xf = mi.global_transform
-		for si in mi.mesh.get_surface_count():
-			var arr = mi.mesh.surface_get_arrays(si)
-			var v = arr[Mesh.ARRAY_VERTEX]
-			var idx = arr[Mesh.ARRAY_INDEX]
-			var n = idx.size() if idx else v.size()
-			for t in range(0, n, 3):
-				var a = xf * v[idx[t] if idx else t]
-				var b = xf * v[idx[t + 1] if idx else t + 1]
-				var c = xf * v[idx[t + 2] if idx else t + 2]
-				var lo = Vector2(minf(a.x, minf(b.x, c.x)), minf(a.z, minf(b.z, c.z)))
-				var hi = Vector2(maxf(a.x, maxf(b.x, c.x)), maxf(a.z, maxf(b.z, c.z)))
-				if (hi - lo).length() > 400.0:
-					continue
-				for gx in range(floori(lo.x / 20.0), floori(hi.x / 20.0) + 1):
-					for gz in range(floori(lo.y / 20.0), floori(hi.y / 20.0) + 1):
-						var k = Vector2i(gx, gz)
-						if not grid.has(k):
-							grid[k] = []
-						grid[k].append([a, b, c, path, si])
+		var transforms = [mi.global_transform]
+		if mi is MultiMeshInstance3D:
+			transforms.clear()
+			for instance in mi.multimesh.instance_count:
+				transforms.append(mi.global_transform * mi.multimesh.get_instance_transform(instance))
+		for xf in transforms:
+			for si in mesh.get_surface_count():
+				var arr = mesh.surface_get_arrays(si)
+				var v = arr[Mesh.ARRAY_VERTEX]
+				var idx = arr[Mesh.ARRAY_INDEX]
+				var n = idx.size() if idx else v.size()
+				for t in range(0, n, 3):
+					var a = xf * v[idx[t] if idx else t]
+					var b = xf * v[idx[t + 1] if idx else t + 1]
+					var c = xf * v[idx[t + 2] if idx else t + 2]
+					var lo = Vector2(minf(a.x, minf(b.x, c.x)), minf(a.z, minf(b.z, c.z)))
+					var hi = Vector2(maxf(a.x, maxf(b.x, c.x)), maxf(a.z, maxf(b.z, c.z)))
+					if (hi - lo).length() > 400.0:
+						continue
+					for gx in range(floori(lo.x / 20.0), floori(hi.x / 20.0) + 1):
+						for gz in range(floori(lo.y / 20.0), floori(hi.y / 20.0) + 1):
+							var k = Vector2i(gx, gz)
+							if not grid.has(k):
+								grid[k] = []
+							grid[k].append([a, b, c, path, si])
 	var road = asset.get_node("Main")
 	var hits = 0
 	var reported = {}
@@ -99,7 +110,7 @@ func run():
 							% [s, off, tri[3], tri[4], hit.snapped(Vector3.ONE * 0.1), p.y]
 						)
 						print(line)
-						if not _overhead(tri[3]):
+						if not _overhead(tri[3], hit.y - p.y, p.y):
 							failures.append(line)
 			# Walls and columns standing on the road: a ray 1 m up, along the road to the next station.
 			var nxt = asset.station(fposmod(s + step, asset.length))
@@ -126,13 +137,19 @@ func run():
 						print(wline)
 						failures.append(wline)
 		s += step
-	app.queue_free()
+	asset.queue_free()
 	await process_frame
+	await create_timer(.25).timeout
 	print("CLIP SCAN RESULTS ", JSON.stringify({"checks": 1, "hits": hits, "failures": failures}))
-	quit(0 if failures.is_empty() else 1)
+	call_deferred("quit", 0 if failures.is_empty() else 1)
 
 
-func _overhead(path: String) -> bool:
+func _overhead(path: String, clearance: float = 0.0, road_y: float = 8.0) -> bool:
+	# Upper-street furniture is separated from Lower Wacker by the concrete deck.
+	if path.begins_with("Scenery/Prop_") and road_y < 3.6 and road_y + clearance >= 7.9:
+		return true
+	if path.begins_with("Scenery/ChicagoBridge") and clearance >= 3.0:
+		return true
 	for prefix in OVERHEAD:
 		if path.begins_with(prefix):
 			return true

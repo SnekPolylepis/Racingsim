@@ -268,6 +268,9 @@ static func build(asset: Node3D, road: Node, lamps: Array, streaks = true) -> No
 	var halo = QuadMesh.new()
 	halo.size = Vector2(6.0, 6.0)
 	halo.material = halo_material()
+	var ceiling_halo = halo.duplicate()
+	ceiling_halo.material = halo_material()
+	ceiling_halo.material.set_shader_parameter("ceiling_fixture", true)
 	var index = 0
 	for key in chunks:
 		var group = Node3D.new()
@@ -277,11 +280,12 @@ static func build(asset: Node3D, road: Node, lamps: Array, streaks = true) -> No
 		# One MultiMesh per fixture style (kind and height) in the chunk, and one for all its halos.
 		var styles = {}
 		var halos = []
+		var ceiling_halos = []
 		for lamp in chunks[key]:
 			var kind = lamp.get("kind", "sodium_mast")
 			# Ceiling housing is supplied by the tunnel; retain its halo and pooled light, without a mast.
 			if kind == "ceiling":
-				halos.append(Transform3D(Basis.IDENTITY, lamp.head - Vector3.UP * .12))
+				ceiling_halos.append(Transform3D(Basis.IDENTITY, lamp.head - Vector3.UP * .12))
 				continue
 			var height = float(lamp.get("height", HEIGHT))
 			var style = "%s_%d" % [kind, roundi(height * 10.0)]
@@ -294,6 +298,7 @@ static func build(asset: Node3D, road: Node, lamps: Array, streaks = true) -> No
 		for style in styles:
 			_multimesh(group, "Fixtures_" + style, fixtures[style], styles[style], asset)
 		_multimesh(group, "Halos", halo, halos, asset)
+		_multimesh(group, "CeilingHalos", ceiling_halo, ceiling_halos, asset)
 		index += 1
 	lights.set_meta("lamp_heads", heads)
 	lights.set_meta("lamp_count", heads.size())
@@ -453,7 +458,7 @@ static func set_night(asset: Node, night: bool) -> void:
 		lights.visible = night
 
 
-## The real-light pool: a few downward sodium spots, no shadows, parented to `parent`.
+## Real sodium lights, parented to `parent`; stacked Chicago roads enable deck shadows.
 static func make_pool(parent: Node, count = POOL) -> Array:
 	# ASSET-02: omni lights at the lamp heads, so each lamp spills onto the road and the damp tarmac shows its
 	# reflection through the lighting engine (the painted road streaks are gone).
@@ -504,5 +509,7 @@ static func update_pool(pool: Array, asset: Node, eye: Vector3, night: bool, ene
 		var d = sqrt(near[k][0])
 		var fade = clampf((cutoff - d) / 15.0, 0.0, 1.0) * (1.0 - smoothstep(90.0, 140.0, d))
 		light.visible = fade > 0.0
+		# Stacked Chicago roads need the deck to occlude light from the other level.
+		light.shadow_enabled = asset.get("id") in ["chicago", "chicago_grid"]
 		light.global_position = heads[near[k][1]]
 		light.light_energy = energy * fade

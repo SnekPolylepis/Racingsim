@@ -373,7 +373,7 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var step = int(rng.randf_range(5.0, 12.0) / 1.5)
 		i += maxi(1, step)
 		# Street level gets sidewalk furniture; Lower Wacker (y about 0) gets road-works clutter.
-		var lower = at.pos.y < 3.0
+		var lower = at.pos.y <= 3.5288
 		if not lower and (at.pos.y < 7.0 or at.pos.y > 9.0):
 			continue
 		var near_cross = false
@@ -400,6 +400,22 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		elif not scales.has(kind):
 			basis = basis.rotated(Vector3.UP, rng.randf_range(-0.5, 0.5))
 		basis = basis.scaled(Vector3.ONE * scales.get(kind, 1.0))
+		# Imported pivots vary: put the actual mesh base on the sidewalk/service bay.
+		var bounds = meshes[kind].get_aabb()
+		if lower and bounds.size.y * scales.get(kind, 1.0) > 3.7:
+			continue
+		pos.y -= bounds.position.y * scales.get(kind, 1.0)
+		var radius = Vector2(bounds.size.x, bounds.size.z).length() * .5 * scales.get(kind, 1.0)
+		var clear = true
+		for station in stations:
+			if (
+				absf(station.pos.y - at.pos.y) < 2.0
+				and Vector2(station.pos.x - pos.x, station.pos.z - pos.z).length() < 9.0 + radius
+			):
+				clear = false
+				break
+		if not clear:
+			continue
 		var cx = floori(pos.x / PROP_CHUNK)
 		var cz = floori(pos.z / PROP_CHUNK)
 		var id = "%s|%d|%d" % [kind, cx, cz]
@@ -417,8 +433,14 @@ static func sidewalk_props(asset: Node3D, parent: Node, stations: Array) -> int:
 		var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
 		var right = flat.cross(Vector3.UP)
 		var kind = "manhole" if rng.randf() < 0.6 else "storm_drain"
-		var lat = rng.randf_range(-4.5, 4.5) if kind == "manhole" else (7.4 if rng.randf() < 0.5 else -7.4)
-		var pos = at.pos + right * lat + Vector3(0, 0.015, 0)
+		var lat = (
+			rng.randf_range(-2.5, 2.5)
+			if kind == "manhole"
+			else (3.2 if at.pos.y < 7.0 else 7.4) * (-1.0 if rng.randf() < .5 else 1.0)
+		)
+		var bounds = meshes[kind].get_aabb()
+		# The casting top sits flush with the road; imported pivots are not a height reference.
+		var pos = at.pos + right * lat - Vector3.UP * (bounds.position.y + bounds.size.y - .008)
 		var id = "%s|%d|%d" % [kind, floori(pos.x / PROP_CHUNK), floori(pos.z / PROP_CHUNK)]
 		if not groups.has(id):
 			groups[id] = {

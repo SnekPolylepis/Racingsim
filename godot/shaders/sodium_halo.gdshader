@@ -8,6 +8,7 @@ uniform float near_fade = 7.0;
 uniform float fade_begin = 260.0;
 uniform float fade_end = 560.0;
 uniform float intensity = 1.0;
+uniform bool ceiling_fixture = false;
 varying float fade;
 varying float grow;
 
@@ -16,6 +17,8 @@ void vertex() {
 	float distance_to_camera = length(centre - CAMERA_POSITION_WORLD);
 	fade = smoothstep(near_fade * .4, near_fade, distance_to_camera);
 	fade *= 1. - smoothstep(fade_begin, fade_end, distance_to_camera);
+	// Billboard quads extend above their centres; hide tunnel halos from the street above.
+	if (ceiling_fixture && CAMERA_POSITION_WORLD.y > centre.y + .3) fade = 0.;
 	// Keep distant halos a few pixels wide in the 640x448 raster instead of shrinking to nothing.
 	grow = 1. + smoothstep(90., 400., distance_to_camera) * 1.6;
 	MODELVIEW_MATRIX = VIEW_MATRIX

@@ -560,6 +560,37 @@ func check_exported_v2_assets() -> void:
 		and ResourceLoader.exists("res://assets/chicago/surfaces/pavement_05/pavement_05_rough_1k.jpg")
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
+	# Engine banks must use the imported samples inside the export, including compressed loop lengths.
+	var sound_check = Sound.new()
+	for profile in Sound.CAR_BANK_CONFIGS.values():
+		for band in profile.bands:
+			for path in [band[2], band[3]]:
+				var imported = load(path)
+				var stream = sound_check._load_stream_or_synth(path, "engine_idle")
+				ok = ok and stream is AudioStreamWAV and imported is AudioStreamWAV
+				if stream is AudioStreamWAV and imported is AudioStreamWAV:
+					ok = ok and stream.data == imported.data and stream.get_length() > .1
+					ok = ok and stream.loop_end == roundi(imported.get_length() * imported.mix_rate)
+	sound_check.free()
+	var engine_bus = AudioServer.get_bus_index("Engine")
+	var capture = AudioEffectCapture.new()
+	var capture_index = AudioServer.get_bus_effect_count(engine_bus)
+	AudioServer.add_bus_effect(engine_bus, capture)
+	var probe = AudioStreamPlayer.new()
+	probe.stream = sound._load_stream_or_synth("res://assets/audio/roadster_idle_power.wav", "engine_idle")
+	probe.bus = "Engine"
+	add_child(probe)
+	probe.play()
+	await get_tree().create_timer(.3).timeout
+	var peak = 0.0
+	for frame in capture.get_buffer(capture.get_frames_available()):
+		peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
+	ok = ok and peak > .001
+	print("V2 EXPORT engine sample peak ", peak)
+	probe.stop()
+	probe.stream = null
+	probe.queue_free()
+	AudioServer.remove_bus_effect(engine_bus, capture_index)
 	ok = ok and load_v2_track("nordschleife") and track.id == "nordschleife" and track.length > 20000.0
 	ok = ok and load_v2_track("chicago_grid") and track.id == "chicago_grid" and track.length > 8000.0
 	ok = ok and load_v2_track("chicago") and track.id == "chicago" and track.length > 5000.0

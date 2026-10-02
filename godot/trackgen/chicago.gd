@@ -355,7 +355,7 @@ static func build_asset(grid: bool = false) -> Node3D:
 						"side": side,
 						"base": base,
 						"basis": basis,
-						"head": base - Vector3.UP * .06,
+						"head": base - Vector3.UP * .18,
 						"height": 0.0,
 						"kind": "ceiling",
 						"glow": true,
@@ -570,6 +570,7 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 		if mat is StandardMaterial3D:
 			mat = mat.duplicate()
 			mat.emission = Color("ffd9a0")
+			mat.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
 			mat.emission_texture = mat.albedo_texture
 			mat.emission_energy_multiplier = 0.9
 			mat.set_meta("chicago_night", true)

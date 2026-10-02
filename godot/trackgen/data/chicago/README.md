@@ -89,6 +89,12 @@ pier, plaza, crown and ceiling fixtures are original procedural geometry. The Be
 shadowless spotlights; repeated ceiling fixtures share one mesh. Chicago's facade materials use
 reduced window density and emission, while the shared shader's default preserves other tracks.
 
+Chicago's pooled lights cast shadows so the Wacker slab separates the two decks.
+Ceiling-light halo batches fade out when viewed from above the ceiling. Willis Tower's night
+emission multiplies its facade texture, preserving the dark window grid instead of adding a
+solid glow. Imported sidewalk props are seated by their mesh bounds and kept clear of nearby
+road sections on the same level; drain and manhole tops sit flush with the road.
+
 ### Park paths — 2026-09-30
 
 After adding missing Grant Park relation boundaries, city.json contains 1,367

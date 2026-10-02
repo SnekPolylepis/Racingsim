@@ -19,6 +19,17 @@ func _initialize():
 	var root = get_root()
 	root.add_child(audio)
 	audio._ready()
+	# Imported QOA samples use frame counts, not compressed byte counts, for loops.
+	for profile in AudioScript.CAR_BANK_CONFIGS.values():
+		for band in profile.bands:
+			for path in [band[2], band[3]]:
+				var imported = load(path)
+				var stream = audio._load_stream_or_synth(path, "engine_idle")
+				check.call(stream.data == imported.data, "Recorded bank loaded: " + path)
+				check.call(
+					stream.loop_end == roundi(imported.get_length() * imported.mix_rate),
+					"Full sample loop: " + path
+				)
 
 	# 1. Check all expected players exist
 	var expected_players = [

@@ -36,6 +36,24 @@ func run() -> void:
 		)
 		var identity = app.track.record_key()
 		check(identity == "chicago_grid@v1", "Variant has independent record identity")
+		var lower = app.track.station(app.track.get_meta("corners")["Lower Wacker Portal"] + 250.0)
+		app.TrackLights.update_pool(app.lamp_pool, app.track, lower.pos, true)
+		var shadowed = true
+		for light in app.lamp_pool:
+			if light.visible:
+				shadowed = shadowed and light.shadow_enabled
+		check(shadowed, "Chicago lamps cast deck shadows")
+		var tower = app.track.get_node("Scenery/WillisTower")
+		var textured = true
+		for surface in tower.mesh.get_surface_count():
+			textured = (
+				textured
+				and (
+					tower.mesh.surface_get_material(surface).emission_operator
+					== BaseMaterial3D.EMISSION_OP_MULTIPLY
+				)
+			)
+		check(textured, "Willis night glow preserves facade textures")
 		await physics_frame
 		app.v2_bot = app.BotDriver.new(app.track.get_node("BotLine"), app.car, app.v2_surface)
 		var start = app.car.pos
