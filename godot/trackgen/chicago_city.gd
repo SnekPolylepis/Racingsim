@@ -58,6 +58,7 @@ const AUTHORED_BUILDINGS = {
 	"w124873919": ["ChicagoTheatre", "chicago_theatre"],
 	"w124873930": ["PageBrothers", "page_brothers"],
 	"r15899437": ["CulturalCenter", "cultural_center"],
+	"w124873931": ["RailwayExchange", "railway_exchange"],
 }
 
 ## The Wrigley Building's offset from its route.json point (CHI-LOOK-01, CHI-SC-4): east of Michigan Avenue and

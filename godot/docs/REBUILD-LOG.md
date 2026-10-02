@@ -3756,3 +3756,31 @@ Previous local build retained. Full gates/performance/macOS not rerun.
 Full objective remains active: Railway Exchange, Athletic Association,
 University Club and Orchestra Hall photo facades remain, followed by the
 remaining route-facing generic exterior review. QUEUE remains claimed.
+
+### 2026-10-01 — PROGRESS CHI-3D-BUILDINGS: Railway Exchange
+
+Replaced w124873931's cropped full-building photograph and generic mass with
+an original Blender exterior: 169,588 triangles, five material surfaces. Four
+facades carry recessed sash glazing, raised terra-cotta reveals, circular upper
+windows, rusticated street piers and wrapping cornices. Occupied wings surround
+a central light well/glazed atrium; a small rooftop office is an approximation.
+75 m frontage roof median retained, mapped frontage orientation reused. Editable
+.blend and reproducible authoring script included. Architectural ornament and
+rear/side elevations are stylized interpretations; no photo pixels are rendered.
+CAC and the existing credited photograph are the references; no usable model
+exterior download was found. Source notes are beside the GLB.
+
+Initial scan 20261001-205046 caught the north cornice protruding into the Loop
+Grid road corridor. Reduced roof projection to 0.85 m and rebuilt. Final gates
+20261001-205707: both rendered Mesh/MultiMesh scans zero failures (100/108
+expected overhead or flush-surface hits); actual menu/drive/model checks 15/15.
+Final day/night front/oblique captures inspected in visual-review/railway-3d.
+Godot import/export clean. Final packaged track/audio verifier PASS, engine peak
+0.512746; dedicated evidence log tests/logs/railway-export-final-verified.log.
+Matching Windows build installed and launched; previous executable retained.
+SHA-256: 40F2EBC7B27394A6CB3265AB5F670376296FDE83BABA99FA5AE9A65A06FA8EB7.
+Full gates, perf sweeps and macOS validation not rerun.
+
+Full objective stays active: Athletic Association (HABS/CAC references checked),
+University Club, Orchestra Hall, then remaining route-facing generic exterior
+review. QUEUE remains claimed, not complete.

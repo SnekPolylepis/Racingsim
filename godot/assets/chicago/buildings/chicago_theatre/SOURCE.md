@@ -38,3 +38,19 @@ References: [Chicago Architecture Center](https://www.architecture.org/online-re
 and the existing credited w_lemay Cultural Center east elevation photograph
 (visual reference only). The checked online scan was an interior point cloud;
 no third-party model or photo pixels are included in the exterior.
+
+## Railway Exchange
+
+Original Blender-authored exterior (`railway_exchange.glb`, 169,588 triangles,
+5 surfaces), editable
+`tools/blender/authored/railway_exchange.blend`; regenerate with
+`tools/blender/chicago_railway_exchange.py`. Footprint w124873931 and 75 m
+measured roof median; small rooftop office is an authored approximation.
+Four facades have projecting window reveals, terra-cotta piers, sash glazing,
+round top-floor windows and cornices. Wings surround a central light well
+with a low glazed atrium roof. Ornamental details are stylized approximations.
+
+Primary reference: [Chicago Architecture Center: Railway Exchange](https://www.architecture.org/online-resources/buildings-of-chicago/railway-exchange-building).
+Existing Vincent Desjardins CC BY 2.0 rx_east.jpg used for visual reference only;
+no photo pixels are included. Online asset search found no usable building
+exterior download, so this is original Blender geometry.
