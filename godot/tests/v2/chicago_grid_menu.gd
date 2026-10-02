@@ -54,7 +54,9 @@ func run() -> void:
 				)
 			)
 		check(textured, "Willis night glow preserves facade textures")
-		for name in ["ChicagoTheatre", "PageBrothers", "CulturalCenter", "RailwayExchange"]:
+		for name in [
+			"ChicagoTheatre", "PageBrothers", "CulturalCenter", "RailwayExchange", "AthleticAssociation"
+		]:
 			var building = app.track.get_node_or_null("Scenery/City/" + name)
 			check(
 				building is MeshInstance3D and building.mesh.get_surface_count() >= 5,

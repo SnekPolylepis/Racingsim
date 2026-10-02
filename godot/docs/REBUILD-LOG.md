@@ -3784,3 +3784,31 @@ Full gates, perf sweeps and macOS validation not rerun.
 Full objective stays active: Athletic Association (HABS/CAC references checked),
 University Club, Orchestra Hall, then remaining route-facing generic exterior
 review. QUEUE remains claimed, not complete.
+
+### 2026-10-01 — PROGRESS CHI-3D-BUILDINGS: Athletic Association
+
+Replaced w147476152's full photograph and generic city mass with an original
+Blender Venetian Gothic exterior: 98,020 triangles, six material surfaces.
+Three front galleries use real curved tracery, pointed/circular stone arches,
+columns/capitals, alternating quoins, cornices, raised club lettering and a deep
+arched portal. Concave mapped body and side/rear sash detail retained. 52 m
+roof uses the measured median; isolated northern 84–92.5 m returns are treated
+as neighbouring roof contamination. Ornament and secondary elevations are
+stylized interpretations, not an architectural survey. HABS IL-1226/CAC and
+the credited photograph guide the model; no reference pixels render. Editable
+.blend and rebuild script included. Online search found no usable exterior asset.
+
+First runtime review caught limestone backing obscuring the street glazing;
+moved it behind the windows before final validation. Final front/oblique day
+and night captures inspected at visual-review/athletic-3d. Godot import/export
+clean. Gates 20261001-210922: menu/actual drive/model checks 17/17, both windowed
+Mesh/MultiMesh scans zero failures (100/108 expected overhead/flush hits).
+Dedicated packaged log tests/logs/athletic-export-verified.log reports PASS;
+actual Engine-bus sample peak 0.512732. Matching Windows binary installed and
+launched, prior executable retained. SHA-256:
+A75EBAE427BF001697D76A68C72B342E1EC84D1CA21C551E21A5F744F5D0BBA1.
+Full gates/performance and macOS validation not rerun.
+
+Full objective stays active: University Club (official history/asset search
+checked), Orchestra Hall, then the remaining route-facing generic exterior
+review. QUEUE remains claimed, not complete.

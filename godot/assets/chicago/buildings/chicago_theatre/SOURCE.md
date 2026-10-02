@@ -54,3 +54,22 @@ Primary reference: [Chicago Architecture Center: Railway Exchange](https://www.a
 Existing Vincent Desjardins CC BY 2.0 rx_east.jpg used for visual reference only;
 no photo pixels are included. Online asset search found no usable building
 exterior download, so this is original Blender geometry.
+
+## Chicago Athletic Association
+
+Original Blender-authored Venetian Gothic exterior (`athletic_association.glb`,
+98,020 triangles, six surfaces), editable source
+`tools/blender/authored/athletic_association.blend`; regenerate with
+`tools/blender/chicago_athletic_association.py`. Mapped footprint w147476152;
+52 m roof uses the building's measured median. The isolated 84–92.5 m cells
+along the north boundary are treated as neighbouring roof contamination, rather than a Gothic
+facade height. Three front galleries, real curved tracery/columns, circular and
+pointed stone arches, quoins, raised lettering and the arched entrance replace
+the full photograph. Rear elevations and tiny sculptural motifs are stylized
+approximations; the flat roof and concave annex footprint are retained.
+
+References: [HABS IL-1226, National Park Service](https://tile.loc.gov/storage-services/master/pnp/habshaer/il/il0900/il0935/data/il0935data.pdf),
+[Chicago Architecture Center](https://www.architecture.org/online-resources/buildings-of-chicago/chicago-athletic-association-hotel),
+and existing Beyond My Ken CC BY-SA 4.0 caa_east.jpg (reference only, no pixels
+rendered). Online search found no usable building exterior model; the mesh is
+original Blender geometry.
