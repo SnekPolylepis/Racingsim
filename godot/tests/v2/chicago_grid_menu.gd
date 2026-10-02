@@ -58,6 +58,16 @@ func run() -> void:
 				)
 			)
 		check(textured, "Willis night glow preserves facade textures")
+		var tribune = app.track.get_node_or_null("Scenery/TribuneTower")
+		check(
+			tribune is MeshInstance3D and tribune.mesh.get_surface_count() >= 5,
+			"Tribune Tower loads its authored limestone and open crown exterior"
+		)
+		var excluded_tribune = false
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w150407241" and entry.reason == "separate landmark proximity":
+				excluded_tribune = true
+		check(excluded_tribune, "Mapped Tribune footprint is excluded from generic city geometry")
 		var chicago_buildings = [
 			"ChicagoTheatre",
 			"PageBrothers",
@@ -98,6 +108,7 @@ func run() -> void:
 			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v3",
 			"Original Chicago remains available with its record identity"
 		)
+		check(app.track.has_node("Scenery/TribuneTower"), "Authored Tribune Tower loads in original Chicago")
 		for name in chicago_buildings:
 			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")
 		check(

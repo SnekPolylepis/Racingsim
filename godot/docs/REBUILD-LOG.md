@@ -3898,3 +3898,43 @@ Full objective remains ACTIVE. This is a route-facing generic facade pass,
 not a claim that every remaining city representation has been individually
 reviewed or surveyed. Continue the wider exterior/mapped-footprint review;
 QUEUE remains claimed.
+
+### 2026-10-01 — PROGRESS CHI-3D-BUILDINGS: Tribune Tower exterior and mapped placement
+
+Replaced the separate landmark's shader-painted rectangular shaft, coarse piers
+and triangular cap with original Blender geometry: limestone piers, inset glazing,
+bronze mullions/spandrels, entrance arches, octagonal lantern, eight outer shafts,
+open flying buttresses, parapets and pinnacles. Reuses architecture.py; editable
+tribune_tower.blend and reproducible chicago_tribune_tower.py committed. Final
+72,878 triangles / five materials, 141 m highest stone pinnacle. References and
+approximation limits in landmarks/tribune_tower-SOURCES.md. No photo pixels or
+external mesh shipped. Lower block and carving remain stylized, not surveyed.
+
+Visual review caught a shallow crown and excessive glass-grid appearance; raised
+the open crown and strengthened masonry piers. Then found the generic original
+Tribune footprint in front of the authored landmark: its old POI pin was about
+49 m east of mapped OSM way w150407241 (435 N Michigan Avenue, confirmed against
+the live OSM API). Rendering and generic-building exclusion now share the mapped
+local centre (67.1, 8, -632.6), removing the duplicate. Landmark asset changes also
+participate in the Chicago cache fingerprint.
+
+Final model/position/material checks 14/14 (gates/20261001-235136); actual menu,
+both layouts, duplicate exclusion and five-second drive 33/33
+(gates/20261001-235529). An intervening test lambda parse error was corrected to
+an ordinary loop; the failed run is not counted as a pass. Native full-city and
+isolated model renders reviewed under visual-review/tribune; street camera
+placement corrected after initial views were occluded. Source game loads and
+renders the corrected landmark. Final Windows export clean; packaged six-track
+asset checker PASS, including Tribune's five surfaces in both layouts and an
+Engine-bus peak of 0.510866 (tests/logs/tribune-package-final.out/.err).
+
+Matching build installed and launched through the existing Play Racing Sim.cmd;
+previous executable retained. SHA-256:
+F4A8B8199CBADC33194D17456D8E11DC606E2566E94C3ABCC2C11BC69825D2CB.
+Full clip scans, full gates, performance sweep and macOS validation not rerun;
+model bounds and actual driving checks recorded above do not substitute for them.
+
+Full objective remains ACTIVE. Seven full-photo replacements plus this separate
+landmark are modeled; Wrigley and Board of Trade still have flat facade blocks,
+and broader mapped-exterior review remains. Continue with those recognizable
+landmarks rather than claiming the wider city conversion complete. QUEUE claimed.

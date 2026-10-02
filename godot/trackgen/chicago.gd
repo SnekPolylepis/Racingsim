@@ -718,24 +718,16 @@ static func add_loop_landmarks(
 		mesh_node(asset, parent, "WrigleyCrown", cap, wrigley + Vector3(tower[0], tower[1] + 4, 0))
 	multimesh_boxes(asset, parent, "WrigleyTerraCottaBands", material(Color("e5ddc7")), terra_cotta_bands)
 	add_wrigley_clocks(asset, parent, wrigley + Vector3(-31, 112, 0))
-	# Tribune Tower: pale neo-Gothic vertical piers with a steep central spire.
-	var tribune = world([41.8905, -87.6230, 8])
-	var tribune_piers: Array = []
-	var tribune_spandrels: Array = []
-	facade_block(
-		asset, parent, "TribuneTower", tribune + Vector3(0, 61, 0), Vector2(42, 50), 122.0, "stone", 0.62
-	)
-	for x in [-19.0, 19.0]:
-		for z in [-23.0, 23.0]:
-			tribune_piers.append([tribune + Vector3(x, 64, z), Vector3(4, 128, 4)])
-	for floor_i in range(8, 112, 12):
-		tribune_spandrels.append([tribune + Vector3(0, floor_i, 0), Vector3(44, 2, 52)])
-	multimesh_boxes(asset, parent, "TribuneGothicPiers", material(Color("d8d3c5")), tribune_piers)
-	multimesh_boxes(asset, parent, "TribuneSpandrels", material(Color("dcd6c8")), tribune_spandrels)
-	var spire = PrismMesh.new()
-	spire.size = Vector3(27, 40, 32)
-	spire.material = dark
-	mesh_node(asset, parent, "TribuneSpire", spire, tribune + Vector3(0, 139, 0))
+	# Blender-authored limestone shaft, inset windows and open Gothic buttress crown.
+	var tribune = PropMesh.mesh("res://assets/chicago/landmarks/tribune_tower.glb").duplicate()
+	for surface in tribune.get_surface_count():
+		var mat = tribune.surface_get_material(surface)
+		if mat is StandardMaterial3D and mat.resource_name.begins_with("Night"):
+			mat = mat.duplicate()
+			mat.set_meta("chicago_night", true)
+			mat.emission_enabled = false
+			tribune.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "TribuneTower", tribune, ChicagoCity.TRIBUNE_POSITION)
 	# Board of Trade at LaSalle: symmetrical Art Deco setbacks and pyramid crown.
 	var board = world([41.8787, -87.6325, 8])
 	var tiers = [[0.0, 100.0, 84.0], [100.0, 48.0, 66.0], [148.0, 36.0, 44.0]]

@@ -52,6 +52,8 @@ const KINDS = {
 	"concrete": ["Concrete034", Color(0.92, 0.92, 0.9), 0.0, 3.5],
 }
 ## CHI-01 models these landmarks itself: OSM outlines within this distance (m) of them are left out.
+## Mapped Tribune Tower footprint w150407241 (route-inventory.csv), not the old eastward POI pin.
+const TRIBUNE_POSITION = Vector3(67.1, STREET_Y, -632.6)
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
@@ -99,6 +101,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			var p = world_of.call(landmarks[name])
 			if name == "Wrigley Building":
 				p += WRIGLEY_OFFSET
+			elif name == "Tribune Tower":
+				p = TRIBUNE_POSITION
 			skip_at.append([Vector2(p.x, p.z), OWN_LANDMARKS[name]])
 	var chunks = {}
 	# LOD (CHI-LOOK-01): low buildings and flat ground/street surfaces go to their own chunk sets with a
