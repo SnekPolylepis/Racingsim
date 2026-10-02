@@ -135,6 +135,8 @@ static func _cache_revision(id: String, generator_path: String) -> String:
 		"res://shaders",
 		"res://trackgen/data/" + ("chicago" if id == "chicago_grid" else id)
 	]
+	if id in ["chicago", "chicago_grid"]:
+		directories.append("res://assets/chicago/buildings")
 	while not directories.is_empty():
 		var directory = directories.pop_back()
 		if not DirAccess.dir_exists_absolute(directory):
@@ -147,7 +149,12 @@ static func _cache_revision(id: String, generator_path: String) -> String:
 	files.sort()
 	var signature = ""
 	for file in files:
-		signature += file + ":" + FileAccess.get_sha256(file) + "\n"
+		var resource_path = file
+		if file.ends_with(".remap"):
+			var remap = ConfigFile.new()
+			if remap.load(file) == OK:
+				resource_path = remap.get_value("remap", "path", file)
+		signature += file + ":" + FileAccess.get_sha256(resource_path) + "\n"
 	return signature.sha256_text()
 
 

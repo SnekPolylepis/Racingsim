@@ -13,6 +13,7 @@ extends RefCounted
 ##   Parks      parks, gardens and lawns in grass
 ## Geometry is batched per 600 m chunk and material, so the whole city is a few hundred draw calls at most.
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
+const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 const ChicagoCrowns = preload("res://trackgen/chicago_crowns.gd")
 const ChicagoL = preload("res://trackgen/chicago_l.gd")
 const RoadScatter = preload("res://scripts/track/road_scatter.gd")
@@ -52,6 +53,10 @@ const KINDS = {
 ## CHI-01 models these landmarks itself: OSM outlines within this distance (m) of them are left out.
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
+}
+const AUTHORED_BUILDINGS = {
+	"w124873919": ["ChicagoTheatre", "chicago_theatre"],
+	"w124873930": ["PageBrothers", "page_brothers"],
 }
 
 ## The Wrigley Building's offset from its route.json point (CHI-LOOK-01, CHI-SC-4): east of Michigan Avenue and
@@ -123,6 +128,34 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		# The authored wheel/loading plaza replaces mapped low halls across this footprint.
 		# Centroid-only landmark filtering misses long halls that extend beneath the wheel.
 		if not Geometry2D.intersect_polygons(ring, wheel_plaza).is_empty():
+			continue
+		if AUTHORED_BUILDINGS.has(b.get("o", "")):
+			var authored: Array = AUTHORED_BUILDINGS[b.o]
+			var wall = ChicagoCrowns.photo_wall(ring, b.ph)
+			var along: Vector2 = (wall[1] - wall[0]).normalized()
+			var outward: Vector2 = wall[2]
+			var theatre = MeshInstance3D.new()
+			theatre.name = authored[0]
+			theatre.mesh = (
+				PropMesh
+				. mesh("res://assets/chicago/buildings/chicago_theatre/%s.glb" % authored[1])
+				. duplicate()
+			)
+			for surface in theatre.mesh.get_surface_count():
+				var mat = theatre.mesh.surface_get_material(surface)
+				if mat is StandardMaterial3D and mat.resource_name.begins_with("Night"):
+					mat = mat.duplicate()
+					mat.set_meta("chicago_night", true)
+					mat.emission_enabled = false
+					theatre.mesh.surface_set_material(surface, mat)
+			var center: Vector2 = (wall[0] + wall[1]) * .5
+			theatre.transform = Transform3D(
+				Basis(Vector3(along.x, 0, along.y), Vector3.UP, Vector3(outward.x, 0, outward.y)),
+				Vector3(center.x, STREET_Y, center.y)
+			)
+			holder.add_child(theatre)
+			theatre.owner = asset
+			stats.buildings += 1
 			continue
 		var kind = str(b.k) if KINDS.has(str(b.k)) else "concrete"
 		var target = low_chunks if float(b.h) < LOW_BUILDING_M else chunks

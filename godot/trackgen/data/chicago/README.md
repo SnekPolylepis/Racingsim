@@ -95,6 +95,23 @@ emission multiplies its facade texture, preserving the dark window grid instead 
 solid glow. Imported sidewalk props are seated by their mesh bounds and kept clear of nearby
 road sections on the same level; drain and manhole tops sit flush with the road.
 
+### Authored 3D building replacements — 2026-10-01
+
+Chicago Theatre and Page Brothers use Blender-authored GLBs from
+`assets/chicago/buildings/chicago_theatre/`, in both Chicago layouts. The city
+generator skips their former mass/photographic facade geometry. The original
+photo-wall metadata still identifies the mapped frontage and placement frame;
+it no longer creates a rendered photo panel for these two buildings. Night sign
+materials follow the existing Chicago emission toggle. Editable Blender sources
+and their reproduction script live under `tools/blender/`; `.gdignore` prevents
+Blender source files from becoming game imports. Building model bytes participate
+in track cache identity, including remapped resources in exports.
+
+The wider conversion is in progress. Remaining photographic frontage assets:
+Railway Exchange, Cultural Center, Athletic Association, University Club and
+Orchestra Hall. Other route-facing generic building exteriors still require
+individual source/model review; this first pair does not finish the request.
+
 ### Park paths — 2026-09-30
 
 After adding missing Grant Park relation boundaries, city.json contains 1,367

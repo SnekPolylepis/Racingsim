@@ -54,6 +54,24 @@ func run() -> void:
 				)
 			)
 		check(textured, "Willis night glow preserves facade textures")
+		for name in ["ChicagoTheatre", "PageBrothers"]:
+			var building = app.track.get_node_or_null("Scenery/City/" + name)
+			check(
+				building is MeshInstance3D and building.mesh.get_surface_count() >= 5,
+				name + " loads the authored multi-material 3D exterior"
+			)
+			if building is MeshInstance3D:
+				var no_photo = true
+				for surface in building.mesh.get_surface_count():
+					var texture = building.mesh.surface_get_material(surface).albedo_texture
+					no_photo = (
+						no_photo
+						and (
+							texture == null
+							or not texture.resource_path.begins_with("res://assets/chicago/facade-photos/")
+						)
+					)
+				check(no_photo, name + " no longer renders a full-building photo panel")
 		await physics_frame
 		app.v2_bot = app.BotDriver.new(app.track.get_node("BotLine"), app.car, app.v2_surface)
 		var start = app.car.pos

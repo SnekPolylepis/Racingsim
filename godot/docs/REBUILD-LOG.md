@@ -3702,3 +3702,35 @@ pass with empty stderr (`export-verify-final.*`); mixer probe confirms audible
 recorded engine output. Installed matching SHA-256 build at build/RacingSim.exe,
 retained the previous executable, and launched it with Loop Grid selected.
 macOS export/hardware validation not performed in this Windows task.
+
+### 2026-10-01 — PROGRESS CHI-3D-BUILDINGS: Theatre / Page Brothers
+
+Full owner objective remains active: replace JPEG-on-block representations with
+real 3D exteriors, starting at Chicago Theatre, then continue. First pair now
+uses original Blender-authored models: Theatre (99,142 triangles / 11 surfaces)
+and adjacent Page Brothers (14,424 / 5). Editable .blend sources retained outside
+Godot imports; one reproducible bpy authoring script exports both GLBs. Existing
+PropMesh flattening and mapped frontage placement reused. Full photo facade and
+old city mass are skipped for these IDs in both layouts. Theatre night bulbs and
+raised sign lettering use the existing Chicago emission toggle. The Page photo
+had contained part of the Theatre's sign, so replacing it also removes that
+painted duplicate. Architectural ornament/backstage shapes are authored
+approximations; frontage roofs use the 27.5 m measured median. Source notes live
+beside the GLBs. Other buildings have not been silently marked converted.
+
+Track cache signatures include authored building model bytes and resolve export
+resource remaps before hashing. Packaged verifier requires both building nodes.
+Evidence: `tests/logs/gates/20261001-202418`: both rendered MultiMesh corridor
+scans clean, menu/actual drive and model checks 11/11 pass. Day/night front and
+oblique captures visually inspected at `visual-review/theatre-3d`; final night
+view confirms projecting signs, lit physical lettering and no adjacent photo
+duplicate. Export and six-track packaged check pass with empty stderr; actual
+engine mixer peak 0.510825 retained. Windows executable installed, SHA-256
+25D365E2A9B429CC34DB459DCACA52A52431E1BC0F9BAC596335A24F9E9135BB;
+previous executable backed up, new game launched. Full gates/performance and
+macOS export/hardware not run for this increment.
+
+Next: Cultural Center (found Sketchfab model is an interior point cloud, not
+an exterior), then Railway Exchange, Athletic Association, University Club,
+Orchestra Hall, and review remaining route-facing generic building exteriors.
+The wider request is incomplete; QUEUE remains claimed and the thread goal active.
