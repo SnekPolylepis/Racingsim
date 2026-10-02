@@ -3938,3 +3938,43 @@ Full objective remains ACTIVE. Seven full-photo replacements plus this separate
 landmark are modeled; Wrigley and Board of Trade still have flat facade blocks,
 and broader mapped-exterior review remains. Continue with those recognizable
 landmarks rather than claiming the wider city conversion complete. QUEUE claimed.
+
+### 2026-10-02 — PROGRESS CHI-3D-BUILDINGS: mapped Wrigley exterior and transform correction
+
+Replaced displaced Wrigley facade blocks/caps and runtime clock-label assembly
+with original Blender geometry for both mapped OSM r17460539 outlines, on the
+west side of Michigan Avenue. Model origin (-40, 8, -530); explicit ID exclusion
+removes both generic duplicates. South trapezoidal block, north block/pavilion,
+window sashes/lintels/sills, layered cornices/urns, enclosed plaza bridges,
+four 5.969 m clock dials with modeled Roman numerals/static 10:10 hands, upper
+storey, colonnade and cupola. Six terra-cotta shades/occupied glazing/dials retain
+night toggles. No facade photograph pixels. Sources/approximation limits in
+landmarks/wrigley_building-SOURCES.md; original script and editable .blend saved.
+Final 127,604 triangles / 12 materials / 132.1 m top. Subdivisions and carvings
+remain stylized approximations rather than surveyed elevations.
+
+Bounds check exposed a wrong rotation-origin assumption: architecture.box bakes
+positions in vertices, whereas rotated Wrigley elevation parts need centred
+object transforms. Corrected new authoring calls without changing other callers'
+helper semantics; found/corrected the same crown-face error in Tribune authoring.
+Rebuilt both GLBs/.blends. Corrected Wrigley shaft support/colonnade continuity;
+four shaft corners checked inside its mapped roof using native Blender geometry.
+Blender 5.2 tessellator returns indices; an initial validation API error corrected
+against installed documentation. Failed assertion/timeout/build attempts are not
+counted as passes. Explicit --python-exit-code 1 used for final authoring runs.
+
+Final gates/20261002-003456: Wrigley 35/35, Tribune 14/14, actual menu/both layouts,
+duplicate exclusion and five-second drive 36/36 (85 checks; zero failures).
+Source game loaded/rendered both revised landmarks. Eight isolated/whole-city
+views reviewed under visual-review/wrigley, including day/night street, clock and
+Tribune crown captures; tests/logs/wrigley-city-review.out/.err. Windows export
+clean; packaged six-track verifier PASS, both landmark surface counts present
+in both Chicago layouts, imported engine audio peak 0.510867
+(tests/logs/wrigley-package.out/.err). Installed matching build and launched it;
+previous executable retained. SHA-256:
+82BCED6D2661D368891BA9BBEB49BC611A8221F31E6FD277FA497E402E5213E7.
+Full clip scans, full gates, performance sweep and macOS validation not rerun.
+
+Full objective remains ACTIVE. Seven full-photo replacements plus Tribune and
+Wrigley now have authored exteriors; Board of Trade's facade-block approximation
+and the broader mapped city/exterior audit remain. QUEUE stays claimed.

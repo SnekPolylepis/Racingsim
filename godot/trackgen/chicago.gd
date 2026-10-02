@@ -703,21 +703,16 @@ static func facade_block(
 static func add_loop_landmarks(
 	asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material
 ) -> void:
-	# Wrigley Building: twin cream glazed-terra-cotta towers and clock crown.
-	# CHI-LOOK-01: on the east side of Michigan Avenue, as in the city; it stood on the Michigan turn's road.
-	var wrigley = world([41.8882, -87.6246, 8]) + ChicagoCity.WRIGLEY_OFFSET
-	var terra_cotta_bands: Array = []
-	for tower in [[-31.0, 138.0, 35.0], [27.0, 91.0, 31.0]]:
-		var center = wrigley + Vector3(tower[0], tower[1] * .5, 0)
-		facade_block(asset, parent, "WrigleyTower", center, Vector2(24, 28), tower[1], "stone", 0.31)
-		for floor_i in range(4, int(tower[1] / 4.0), 4):
-			terra_cotta_bands.append([wrigley + Vector3(tower[0], floor_i, 0), Vector3(25, .65, 29)])
-		var cap = PrismMesh.new()
-		cap.size = Vector3(28, 8, 32)
-		cap.material = stone
-		mesh_node(asset, parent, "WrigleyCrown", cap, wrigley + Vector3(tower[0], tower[1] + 4, 0))
-	multimesh_boxes(asset, parent, "WrigleyTerraCottaBands", material(Color("e5ddc7")), terra_cotta_bands)
-	add_wrigley_clocks(asset, parent, wrigley + Vector3(-31, 112, 0))
+	# Mapped west-of-Michigan office blocks, bridges and four-sided clock tower.
+	var wrigley = PropMesh.mesh("res://assets/chicago/landmarks/wrigley_building.glb").duplicate()
+	for surface in wrigley.get_surface_count():
+		var mat = wrigley.surface_get_material(surface)
+		if mat is StandardMaterial3D and mat.resource_name.begins_with("Night"):
+			mat = mat.duplicate()
+			mat.set_meta("chicago_night", true)
+			mat.emission_enabled = false
+			wrigley.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "WrigleyBuilding", wrigley, ChicagoCity.WRIGLEY_POSITION)
 	# Blender-authored limestone shaft, inset windows and open Gothic buttress crown.
 	var tribune = PropMesh.mesh("res://assets/chicago/landmarks/tribune_tower.glb").duplicate()
 	for surface in tribune.get_surface_count():
@@ -809,49 +804,6 @@ static func add_river_bridges(asset: Node3D, parent: Node) -> void:
 	multimesh_boxes(asset, parent, "ChicagoBridgeSteel", steel, steel_boxes)
 	multimesh_boxes(asset, parent, "ChicagoBridgeHouses", stone, house_boxes)
 	multimesh_boxes(asset, parent, "ChicagoBridgeHouseWindows", material(Color("1d2e33")), window_boxes)
-
-
-static func add_wrigley_clocks(asset: Node3D, parent: Node, center: Vector3) -> void:
-	# BLDG.51 museum, 2017-06-07: four faces, diameter 19 ft 7 in (5.969 m).
-	# Tower placement remains subject to the sourced-massing pass; these follow its current walls.
-	var dial = CylinderMesh.new()
-	dial.top_radius = 2.9845
-	dial.bottom_radius = 2.9845
-	dial.height = .12
-	dial.radial_segments = 64
-	dial.material = night_material(Color("f0dfb1"), .55)
-	var numerals = ["XII", "I", "II", "III", "IIII", "V", "VI", "VII", "VIII", "IX", "X", "XI"]
-	var hands: Array = []
-	for face in 4:
-		var basis = Basis(Vector3.UP, face * PI * .5)
-		var wall_distance = 14.1 if face % 2 == 0 else 12.1
-		var origin = center + basis * Vector3(0, 0, wall_distance)
-		var node = mesh_node(asset, parent, "WrigleyClock%d" % face, dial, origin)
-		node.basis = basis * Basis(Vector3.RIGHT, PI * .5)
-		for hour in 12:
-			var angle = hour * TAU / 12.0
-			var label = Label3D.new()
-			label.text = numerals[hour]
-			label.font_size = 48
-			label.pixel_size = .012
-			label.outline_size = 0
-			label.modulate = Color("292e2a")
-			label.shaded = false
-			label.double_sided = false
-			label.position = origin + basis * Vector3(sin(angle) * 2.4, cos(angle) * 2.4, .09)
-			label.basis = basis
-			attach(asset, parent, label, "WrigleyHour%d_%d" % [face, hour])
-		# Static 10:10 display; no claim to reproduce a historical photographed time.
-		for hand in [[-PI / 3.0, 1.6], [PI / 3.0, 2.2]]:
-			var direction = Vector3(sin(hand[0]), cos(hand[0]), 0)
-			hands.append(
-				[
-					origin + basis * (direction * hand[1] * .5 + Vector3(0, 0, .13)),
-					Vector3(.13, hand[1], .06),
-					basis * Basis(Vector3.FORWARD, hand[0])
-				]
-			)
-	multimesh_boxes(asset, parent, "WrigleyClockHands", material(Color("292e2a")), hands)
 
 
 static func add_lower_deck(asset: Node3D, parent: Node, road: RoadPath) -> void:

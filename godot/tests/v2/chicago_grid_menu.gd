@@ -68,6 +68,16 @@ func run() -> void:
 			if entry.osm_id == "w150407241" and entry.reason == "separate landmark proximity":
 				excluded_tribune = true
 		check(excluded_tribune, "Mapped Tribune footprint is excluded from generic city geometry")
+		var wrigley = app.track.get_node_or_null("Scenery/WrigleyBuilding")
+		check(
+			wrigley is MeshInstance3D and wrigley.mesh.get_surface_count() == 12,
+			"Wrigley loads its mapped Blender exterior"
+		)
+		var excluded_wrigley = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "r17460539" and entry.reason == "authored Wrigley exterior":
+				excluded_wrigley += 1
+		check(excluded_wrigley == 2, "Both mapped Wrigley blocks are replaced, without generic duplicates")
 		var chicago_buildings = [
 			"ChicagoTheatre",
 			"PageBrothers",
@@ -109,6 +119,7 @@ func run() -> void:
 			"Original Chicago remains available with its record identity"
 		)
 		check(app.track.has_node("Scenery/TribuneTower"), "Authored Tribune Tower loads in original Chicago")
+		check(app.track.has_node("Scenery/WrigleyBuilding"), "Authored Wrigley loads in original Chicago")
 		for name in chicago_buildings:
 			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")
 		check(

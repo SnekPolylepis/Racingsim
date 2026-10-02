@@ -8,7 +8,7 @@ import math
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from architecture import material, mesh, box, line, arch, finish
+from architecture import material, mesh, box as baked_box, line, arch, finish
 
 OUT = Path(sys.argv[sys.argv.index('--') + 1]).resolve()
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -17,6 +17,13 @@ trim = material('Raised limestone tracery', (.49, .44, .36), roughness=.73)
 shadow = material('Recessed bronze spandrels', (.15, .17, .15), metallic=.3)
 glass = material('Night warm windows', (.16, .19, .18), metallic=.3, roughness=.24, glow=.35)
 roof = material('Dark terrace roofing', (.13, .14, .13), roughness=.9)
+
+
+def box(name, pos, size, mat):
+    # Keep local centres for crown faces; elevations rotate their centres explicitly.
+    obj = baked_box(name, (0,0,0), size, mat)
+    obj.location = pos
+    return obj
 
 
 def pinnacle(x, y, z, width=1.1, height=3):

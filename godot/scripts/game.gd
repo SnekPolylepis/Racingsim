@@ -602,6 +602,9 @@ func check_exported_v2_assets() -> void:
 		"UniversityClub",
 		"OrchestraHall"
 	]
+	ok = ok and track.has_node("Scenery/WrigleyBuilding")
+	if track.has_node("Scenery/WrigleyBuilding"):
+		ok = ok and track.get_node("Scenery/WrigleyBuilding").mesh.get_surface_count() == 12
 	ok = ok and track.has_node("Scenery/TribuneTower")
 	if track.has_node("Scenery/TribuneTower"):
 		ok = ok and track.get_node("Scenery/TribuneTower").mesh.get_surface_count() == 5
@@ -609,6 +612,9 @@ func check_exported_v2_assets() -> void:
 		ok = ok and track.has_node("Scenery/City/" + name)
 	ok = ok and track.get_meta("city").get("physical_windows", 0) > 1000
 	ok = ok and load_v2_track("chicago") and track.id == "chicago" and track.length > 5000.0
+	ok = ok and track.has_node("Scenery/WrigleyBuilding")
+	if track.has_node("Scenery/WrigleyBuilding"):
+		ok = ok and track.get_node("Scenery/WrigleyBuilding").mesh.get_surface_count() == 12
 	ok = ok and track.has_node("Scenery/TribuneTower")
 	if track.has_node("Scenery/TribuneTower"):
 		ok = ok and track.get_node("Scenery/TribuneTower").mesh.get_surface_count() == 5

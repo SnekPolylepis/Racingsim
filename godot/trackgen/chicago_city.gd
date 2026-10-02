@@ -67,10 +67,8 @@ const AUTHORED_BUILDINGS = {
 	"w145493030": ["OrchestraHall", "orchestra_hall"],
 }
 
-## The Wrigley Building's offset from its route.json point (CHI-LOOK-01, CHI-SC-4): east of Michigan Avenue and
-## north of the lower route. At 58 m east only, its towers straddled the lower route (z ~ -382) and the west tower
-## overlapped Michigan's track edge (clip_scan.gd).
-const WRIGLEY_OFFSET = Vector3(70.0, 0.0, -31.0)
+## Blender model origin for mapped Wrigley blocks, OSM relation r17460539.
+const WRIGLEY_POSITION = Vector3(-40, STREET_Y, -530)
 
 ## Buildings under this height, and flat surfaces, are culled beyond these distances (m); fog ends at 1900-2800.
 const LOW_BUILDING_M = 40.0
@@ -100,7 +98,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if landmarks.has(name):
 			var p = world_of.call(landmarks[name])
 			if name == "Wrigley Building":
-				p += WRIGLEY_OFFSET
+				p = WRIGLEY_POSITION
 			elif name == "Tribune Tower":
 				p = TRIBUNE_POSITION
 			skip_at.append([Vector2(p.x, p.z), OWN_LANDMARKS[name]])
@@ -128,6 +126,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "r17460539":
+			exclusion = "authored Wrigley exterior"
 		# Authored exteriors have checked overhangs; retain 1 m beyond the 8 m carriageway.
 		elif _touches_route(route, ring, -.5 if AUTHORED_BUILDINGS.has(b.get("o", "")) else 0.0):
 			exclusion = "authored route clearance"
