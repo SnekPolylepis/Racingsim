@@ -5,6 +5,7 @@ const Generator = preload("res://trackgen/chicago.gd")
 const TrackAsset = preload("res://scripts/track/track_asset.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 var asset
+var loop_grid = false
 var frames = 0
 var checks = 0
 var failures = []
@@ -18,7 +19,8 @@ func check(ok, label):
 
 
 func _initialize():
-	asset = Generator.build_asset()
+	loop_grid = "--track=chicago_grid" in OS.get_cmdline_user_args()
+	asset = Generator.build_asset(loop_grid)
 	root.add_child(asset)
 
 
@@ -29,6 +31,7 @@ func _physics_process(_delta):
 	if frames > 3:
 		quit(1)
 		return true
+	check(asset.id == ("chicago_grid" if loop_grid else "chicago"), "Distinct track identity")
 	check(asset.validate().is_empty(), "TrackAsset contract: %s" % [asset.validate()])
 	var road = asset.get_node("Main")
 	check(road.last_bake.warnings.is_empty(), "Bake without warnings")
@@ -74,7 +77,9 @@ func _physics_process(_delta):
 		"N–S 13 ft 9 in ceiling clearance: %d probes, error %.4f m" % [ceiling_checks, ceiling_error]
 	)
 	for height in [Generator.ChicagoCity.LOW_ROAD_Y, 8.0]:
-		var p = Generator.world([41.883, -87.6369, height])
+		var latitude = 41.8800 if loop_grid and height == 8.0 else 41.883
+		var longitude = -87.636999 if loop_grid and height == 8.0 else -87.6369
+		var p = Generator.world([latitude, longitude, height])
 		var hit = surf.contact(p + Vector3.UP * .5, Vector3.DOWN, 1.0, 0)
 		check(
 			hit.get("surface", -1) == 0 and absf(hit.get("point", Vector3.INF).y - height) < .05,

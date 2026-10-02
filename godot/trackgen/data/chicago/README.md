@@ -101,3 +101,20 @@ other surfaces retain the old path material pending source-specific finishes.
 Paths are emitted before flat meshes commit, with a 15 mm rendering bias above
 raised park polygons. That bias is not a surveyed elevation. Accurate terrain
 grade, default widths, materials, joins and clipping remain open.
+
+## Chicago — Loop Grid variant
+
+`route-grid.json` adapts Route I (Grand Tour II) from
+`claude/chicago-track-detours-kzoiyk` commit c46748e1. Michigan/Wabash weave,
+Columbus/Monroe lakefront connection and Franklin/Washington/State return follow
+the draft OSM coordinates. Geographic-source licence remains ODbL. Existing
+harbor and south connectors remain authored game links. Lower Wacker uses the
+current 3.4288 m road level and south ramp midpoint 5.7144 m. A Willis-view
+point remains on the upper south approach.
+
+`chicago_grid.gd` calls shared `chicago.gd` with the variant enabled. It has
+its own track id, record identity and cache; original `route.json` is unchanged.
+Downtown intersection setbacks are limited to 18 m to keep the weave on the street
+grid. Measured Wacker lane bay, current city assets, elevated L, river, lake
+and day/night presentation use the shared implementation. Draft polyline
+lengths differ from baked racing-line lengths.

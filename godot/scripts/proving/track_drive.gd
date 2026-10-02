@@ -11,6 +11,7 @@ const VisualAdapter = preload("res://scripts/proving/visual_adapter.gd")
 const PRESET_KEYS = ["roadster", "gt", "f296gt3", "f2004", "rb19"]
 const GENERATORS = {
 	"chicago": "res://trackgen/chicago.gd",
+	"chicago_grid": "res://trackgen/chicago_grid.gd",
 	"monaco": "res://trackgen/monaco.gd",
 	"spa": "res://trackgen/spa.gd",
 	"proving_ground": "res://trackgen/proving_ground.gd",
@@ -129,7 +130,11 @@ static func _cache_revision(id: String, generator_path: String) -> String:
 	for file in DirAccess.get_files_at("res://trackgen"):
 		if file.ends_with(".gd"):
 			files.append("res://trackgen/" + file)
-	var directories: Array[String] = ["res://scripts/track", "res://shaders", "res://trackgen/data/" + id]
+	var directories: Array[String] = [
+		"res://scripts/track",
+		"res://shaders",
+		"res://trackgen/data/" + ("chicago" if id == "chicago_grid" else id)
+	]
 	while not directories.is_empty():
 		var directory = directories.pop_back()
 		if not DirAccess.dir_exists_absolute(directory):

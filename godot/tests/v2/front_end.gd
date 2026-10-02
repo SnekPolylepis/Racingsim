@@ -73,8 +73,7 @@ func run() -> void:
 	var next_key = keys[(keys.find(app.preset_key) + 1) % keys.size()]
 	app.frontend.cycle_v2_car()
 	check(
-		app.preset_key == next_key and app.car.p.name == app.presets[next_key].name,
-		"car picker changes body"
+		app.preset_key == next_key and app.car.p.name == app.presets[next_key].name, "car picker changes body"
 	)
 	app.frontend.show_page("circuit")
 	var picked = []
@@ -82,7 +81,7 @@ func run() -> void:
 		app.frontend.cycle_v2_track()
 		picked.append(app.frontend.selected_track)
 	check(
-		picked == ["spa", "nordschleife", "chicago", "monaco", "proving_ground"],
+		picked == ["spa", "nordschleife", "chicago", "chicago_grid", "monaco", "proving_ground"],
 		"circuit picker cycles every circuit: " + str(picked)
 	)
 	app.frontend.cycle_v2_track()

@@ -128,6 +128,7 @@ var applied_horizon = ""
 ## Which wooded-hill silhouette each circuit's sky carries (RetroAssets.HILLS).
 const HORIZON_STYLES = {
 	"chicago": "flat",
+	"chicago_grid": "flat",
 	"monaco": "flat",
 	"proving_ground": "generic",
 	"spa": "ardennes",
@@ -531,6 +532,7 @@ func check_exported_v2_assets() -> void:
 	await get_tree().process_frame
 	var inputs = (
 		FileAccess.file_exists("res://trackgen/data/chicago/route.json")
+		and FileAccess.file_exists("res://trackgen/data/chicago/route-grid.json")
 		and FileAccess.file_exists("res://trackgen/data/chicago/city.json")
 		and FileAccess.file_exists("res://trackgen/data/monaco/city.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
@@ -559,6 +561,7 @@ func check_exported_v2_assets() -> void:
 	)
 	var ok = inputs and load_v2_track("spa") and track.id == "spa" and track.length > 6000.0
 	ok = ok and load_v2_track("nordschleife") and track.id == "nordschleife" and track.length > 20000.0
+	ok = ok and load_v2_track("chicago_grid") and track.id == "chicago_grid" and track.length > 8000.0
 	ok = ok and load_v2_track("chicago") and track.id == "chicago" and track.length > 5000.0
 	ok = ok and load_v2_track("monaco") and track.id == "monaco" and track.length > 3000.0
 	print("V2 EXPORT ", "PASS" if ok else "FAIL")
@@ -587,7 +590,7 @@ func load_v2_track(id: String) -> bool:
 	add_child(track)
 	v2_track_id = id
 	# Chicago is an NFS night city by default; the player can still switch in Settings.
-	if id == "chicago":
+	if id in ["chicago", "chicago_grid"]:
 		settings.time_of_day = 1
 	apply_track_night()
 	if environment != null:
@@ -1109,7 +1112,11 @@ func update_camera(dt, snap = false):
 	var rain = camera.get_node_or_null("Rain")
 	if rain:
 		var covered = pos.y <= 3.0
-		if v2_track_id == "chicago" and race.asset_hint >= 0 and race.asset_hint < track.line.size():
+		if (
+			v2_track_id in ["chicago", "chicago_grid"]
+			and race.asset_hint >= 0
+			and race.asset_hint < track.line.size()
+		):
 			var road_pos: Vector3 = track.line[race.asset_hint]
 			covered = road_pos.y <= float(track.get_meta("wacker_floor_y", 0.0)) + .1 and road_pos.z <= 720.0
 		rain.visible = rain.emitting and not covered
@@ -1278,7 +1285,7 @@ func apply_time_of_day():
 		var paint = PanoramaSkyMaterial.new()
 		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(night, horizon)
 		# Chicago & Spa: sky-only HDRIs (Poly Haven, CC0) so the lake/mountain horizon stays open.
-		if v2_track_id == "chicago":
+		if v2_track_id in ["chicago", "chicago_grid"]:
 			paint.panorama = load(
 				(
 					"res://assets/chicago/sky/%s.hdr"
@@ -1325,7 +1332,7 @@ func apply_time_of_day():
 		# ASSET-02: the moon must not mirror off the damp road; the lamps provide the night reflections.
 		sun.light_specular = .08 if night else 1.0
 		camera.far = 650 if night else 1250
-		if v2_track_id == "chicago":
+		if v2_track_id in ["chicago", "chicago_grid"]:
 			# Preserve the lake horizon and Navy Pier/Willis sightlines in this flat city.
 			environment.fog_depth_begin = 180 if night else 350
 			environment.fog_depth_end = 1900 if night else 2800
@@ -1342,7 +1349,7 @@ func apply_time_of_day():
 			environment.fog_depth_end = 650 if night else 1450
 			camera.far = 1600
 		# NFSU night haze: lamps and neon scatter in a thin volumetric fog; filmic keeps the highlights.
-		var nfs_night = night and v2_track_id == "chicago"
+		var nfs_night = night and v2_track_id in ["chicago", "chicago_grid"]
 		environment.volumetric_fog_enabled = nfs_night
 		environment.volumetric_fog_density = 0.004
 		environment.volumetric_fog_albedo = Color("b8a894")

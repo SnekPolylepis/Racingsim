@@ -1,0 +1,348 @@
+{
+  "origin": [
+    41.8848,
+    -87.6244
+  ],
+  "description": "Chicago Loop Grid variant adapted from Claude Route I; real-street detours, authored easing and heights. Lower Wacker uses current CDOT-derived 3.4288 m floor.",
+  "landmarks": {
+    "Bean": [
+      41.88266,
+      -87.6233,
+      8
+    ],
+    "Willis Tower": [
+      41.87888,
+      -87.63592,
+      8
+    ],
+    "Navy Pier": [
+      41.8917,
+      -87.6059,
+      2
+    ],
+    "Chicago River": [
+      41.8877,
+      -87.631,
+      -3
+    ],
+    "Lake Michigan": [
+      41.883,
+      -87.609,
+      -3
+    ],
+    "Wrigley Building": [
+      41.8882,
+      -87.6246,
+      8
+    ],
+    "Tribune Tower": [
+      41.8905,
+      -87.623,
+      8
+    ],
+    "Chicago Board of Trade": [
+      41.8787,
+      -87.6325,
+      8
+    ],
+    "Michigan Avenue Bridge": [
+      41.88865,
+      -87.6245,
+      8
+    ],
+    "State Street Bridge": [
+      41.8888,
+      -87.627,
+      8
+    ],
+    "LaSalle Street Bridge": [
+      41.8888,
+      -87.629,
+      8
+    ]
+  },
+  "points": [
+    [
+      41.8848,
+      -87.6244,
+      8,
+      "Michigan Avenue"
+    ],
+    [
+      41.882115,
+      -87.624508,
+      8,
+      "Michigan Ave & Madison St"
+    ],
+    [
+      41.882079,
+      -87.626192,
+      8,
+      "Madison St & Wabash Ave"
+    ],
+    [
+      41.880802,
+      -87.626161,
+      8,
+      "Monroe St & Wabash Ave"
+    ],
+    [
+      41.880835,
+      -87.624471,
+      8,
+      "Michigan Ave & Monroe St"
+    ],
+    [
+      41.879556,
+      -87.624444,
+      8,
+      "Michigan Ave & Adams St"
+    ],
+    [
+      41.879529,
+      -87.62613,
+      8,
+      "Adams St & Wabash Ave"
+    ],
+    [
+      41.878262,
+      -87.626099,
+      8,
+      "Jackson Blvd & Wabash Ave"
+    ],
+    [
+      41.878294,
+      -87.624413,
+      8,
+      "Michigan Ave & Jackson Blvd"
+    ],
+    [
+      41.878341,
+      -87.62071,
+      8,
+      "Jackson Dr & Columbus Dr"
+    ],
+    [
+      41.880877,
+      -87.620794,
+      8,
+      "Columbus Dr & Monroe Dr"
+    ],
+    [
+      41.880924,
+      -87.617244,
+      8,
+      "DuSable Lake Shore Dr & Monroe Dr"
+    ],
+    [
+      41.8823,
+      -87.6168,
+      8,
+      "Lake Shore Drive"
+    ],
+    [
+      41.8834,
+      -87.6155,
+      9,
+      "Lake Shore Drive"
+    ],
+    [
+      41.8841,
+      -87.6141,
+      11,
+      "Lake Shore Drive"
+    ],
+    [
+      41.8862,
+      -87.6139,
+      13,
+      "Navy Pier view"
+    ],
+    [
+      41.8876,
+      -87.6139,
+      13,
+      "Harbor connector"
+    ],
+    [
+      41.8877,
+      -87.6155,
+      5,
+      "Harbor connector ramp"
+    ],
+    [
+      41.88765,
+      -87.6175,
+      3.4288,
+      "Lower Wacker portal"
+    ],
+    [
+      41.88791,
+      -87.62075,
+      3.4288,
+      "Lower Wacker"
+    ],
+    [
+      41.8882,
+      -87.6224,
+      3.4288,
+      "Lower Wacker"
+    ],
+    [
+      41.88825,
+      -87.6245,
+      3.4288,
+      "Lower Michigan crossing"
+    ],
+    [
+      41.88802,
+      -87.6257,
+      3.4288,
+      "Lower Wacker"
+    ],
+    [
+      41.88742,
+      -87.62621,
+      3.4288,
+      "Lower Wacker river bend west"
+    ],
+    [
+      41.88709,
+      -87.6266,
+      3.4288,
+      "Lower Wacker river bend"
+    ],
+    [
+      41.8869,
+      -87.6273,
+      3.4288,
+      "Lower Wacker"
+    ],
+    [
+      41.8869,
+      -87.6348,
+      3.4288,
+      "Lower Wacker west"
+    ],
+    [
+      41.8864,
+      -87.6361,
+      3.4288,
+      "Lower Wacker bend"
+    ],
+    [
+      41.88575,
+      -87.6369,
+      3.4288,
+      "Lower Wacker south"
+    ],
+    [
+      41.8819,
+      -87.6369,
+      3.4288,
+      "Lower Wacker south"
+    ],
+    [
+      41.877,
+      -87.6369,
+      3.4288,
+      "South connector"
+    ],
+    [
+      41.877,
+      -87.6345,
+      3.4288,
+      "South connector"
+    ],
+    [
+      41.878,
+      -87.6345,
+      5.7144,
+      "South connector ramp"
+    ],
+    [
+      41.878,
+      -87.6369,
+      8,
+      "Upper Wacker portal"
+    ],
+    [
+      41.8795,
+      -87.637,
+      8,
+      "Willis Tower view"
+    ],
+    [
+      41.880628,
+      -87.636998,
+      8,
+      "Wacker Dr & Monroe St"
+    ],
+    [
+      41.88065,
+      -87.635307,
+      8,
+      "Franklin St & Monroe St"
+    ],
+    [
+      41.883239,
+      -87.635376,
+      8,
+      "Franklin St & Washington St"
+    ],
+    [
+      41.883248,
+      -87.627866,
+      8,
+      "State St & Washington St"
+    ],
+    [
+      41.885755,
+      -87.627936,
+      8,
+      "Lake St & State St"
+    ],
+    [
+      41.886817,
+      -87.627892,
+      8,
+      "Upper Wacker Dr & State St"
+    ],
+    [
+      41.88715,
+      -87.62633,
+      8,
+      "Upper Wacker river bend west"
+    ],
+    [
+      41.88768,
+      -87.62586,
+      8,
+      "Upper Wacker river bend"
+    ],
+    [
+      41.88817,
+      -87.62536,
+      8,
+      "Upper Wacker river bend east"
+    ],
+    [
+      41.88823,
+      -87.62496,
+      8,
+      "Upper Wacker Michigan approach"
+    ],
+    [
+      41.88825,
+      -87.6245,
+      8,
+      "Michigan turn"
+    ],
+    [
+      41.8873,
+      -87.6244,
+      8,
+      "Michigan Avenue"
+    ]
+  ]
+}

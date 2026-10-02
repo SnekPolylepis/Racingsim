@@ -29,6 +29,7 @@ const NO_SHADOW = [
 	"ChicagoBridgeDecks"
 ]
 const PARKED = ["taxi", "taxi", "sedan", "sedan", "hatch", "suv", "police", "sports", "sports2"]
+const GRID_DATA = "res://trackgen/data/chicago/route-grid.json"
 const DATA = "res://trackgen/data/chicago/route.json"
 ## Named corners for the visual review: [route.json point index, name]. Stations are found on the road.
 const CORNERS = [
@@ -59,8 +60,8 @@ const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
 
-static func data() -> Dictionary:
-	return JSON.parse_string(FileAccess.get_file_as_string(DATA))
+static func data(grid: bool = false) -> Dictionary:
+	return JSON.parse_string(FileAccess.get_file_as_string(GRID_DATA if grid else DATA))
 
 
 static func world(row: Array) -> Vector3:
@@ -68,9 +69,9 @@ static func world(row: Array) -> Vector3:
 	return Vector3((row[1] + 87.6244) * 82860.0, row[2], (41.8848 - row[0]) * 111320.0)
 
 
-static func points() -> Array[Vector3]:
+static func points(grid: bool = false) -> Array[Vector3]:
 	var out: Array[Vector3] = []
-	for row in data().points:
+	for row in data(grid).points:
 		out.append(world(row))
 	return out
 
@@ -79,9 +80,9 @@ static func covered_wacker(p: Vector3) -> bool:
 	return p.y <= ChicagoCity.LOW_ROAD_Y + .1 and p.z <= 720.0
 
 
-static func route_curve() -> Curve3D:
+static func route_curve(grid: bool = false) -> Curve3D:
 	# Tangent-continuous fillets; 55 m setback on broad junctions, reduced on short blocks.
-	var p = points()
+	var p = points(grid)
 	var c = Curve3D.new()
 	c.bake_interval = .25
 	for i in p.size():
@@ -90,7 +91,8 @@ static func route_curve() -> Curve3D:
 		var a = before.normalized()
 		var b = after.normalized()
 		var angle = acos(clampf(a.dot(b), -1.0, 1.0))
-		var cut = minf(55.0, minf(before.length(), after.length()) * .3)
+		var limit = 18.0 if grid and p[i].y > 7.0 and p[i].z > -250.0 else 55.0
+		var cut = minf(limit, minf(before.length(), after.length()) * .3)
 		var handle = cut * (4.0 / 3.0) * tan(angle / 4.0) / maxf(.00001, tan(angle / 2.0))
 		if angle < .015:
 			c.add_point(p[i])
@@ -174,17 +176,18 @@ static func solid_box(asset: Node3D, title: String, xform: Transform3D, size: Ve
 	attach(asset, body, col, "Shape")
 
 
-static func build_asset() -> Node3D:
+static func build_asset(grid: bool = false) -> Node3D:
 	var asset = TrackAsset.new()
 	asset.name = "Chicago"
-	asset.id = "chicago"
-	asset.display_name = "Chicago — River & Lake"
-	asset.version = 3
+	asset.id = "chicago_grid" if grid else "chicago"
+	asset.display_name = "Chicago — Loop Grid" if grid else "Chicago — River & Lake"
+	asset.version = 1 if grid else 3
 	asset.set_meta("wacker_floor_y", ChicagoCity.LOW_ROAD_Y)
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
 	road.name = "Main"
-	road.curve = route_curve()
+	road.curve = route_curve(grid)
+	road.set_meta("loop_grid", grid)
 	road.along_step = 1.5
 	road.road_stations = 9
 	road.grid_first_m = 35.0
@@ -209,7 +212,7 @@ static func build_asset() -> Node3D:
 		)
 	)
 	# The N–S section's through-lane bay is 26 ft wide (CDOT 2012 section).
-	var narrow_from = road.curve.get_closest_offset(world(data().points[19]))
+	var narrow_from = road.curve.get_closest_offset(world(data(grid).points[26 if grid else 19]))
 	var narrow_to = road.curve.get_closest_offset(Vector3(-1035.75, ChicagoCity.LOW_ROAD_Y, 720))
 	for key in [
 		[narrow_from - 40.0, HALF_WIDTH],
@@ -231,8 +234,29 @@ static func build_asset() -> Node3D:
 	attach(asset, asset, road, "Main")
 	road.bake()
 	var corners = {}
-	for corner in CORNERS:
-		corners[corner[1]] = road.curve.get_closest_offset(world(data().points[corner[0]]))
+	if grid:
+		for row in data(true).points:
+			corners[row[3]] = road.curve.get_closest_offset(world(row))
+		for alias in [
+			[8, "Jackson Turn"],
+			[11, "Lakefront Turn"],
+			[12, "Lake Shore Drive"],
+			[15, "Navy Pier View"],
+			[16, "Harbor Connector"],
+			[18, "Lower Wacker Portal"],
+			[21, "Michigan Crossing"],
+			[24, "River Bend"],
+			[27, "Wacker West Bend"],
+			[30, "South Connector"],
+			[33, "Upper Wacker Portal"],
+			[34, "Willis Tower View"],
+			[42, "Upper River Bend"],
+			[45, "Michigan Turn"]
+		]:
+			corners[alias[1]] = road.curve.get_closest_offset(world(data(true).points[alias[0]]))
+	else:
+		for corner in CORNERS:
+			corners[corner[1]] = road.curve.get_closest_offset(world(data().points[corner[0]]))
 	asset.set_meta("corners", corners)
 	var timing = asset.get_node("TimingLine")
 	timing.set_meta("sector_offsets", [road.last_bake.length / 3.0, road.last_bake.length * 2.0 / 3.0])
@@ -1354,9 +1378,10 @@ static func road_frame(road: RoadPath) -> Array:
 ## Route offsets [from, to] of the Upper Wacker riverfront (route rows "Upper Wacker riverfront" to the
 ## Michigan approach), where the river lies on the left of the lap.
 static func river_span(road: RoadPath) -> Vector2:
-	var rows = data().points
-	var a = road.curve.get_closest_offset(world(rows[30]))
-	var b = road.curve.get_closest_offset(world(rows[35]))
+	var grid = road.get_meta("loop_grid", false)
+	var rows = data(grid).points
+	var a = road.curve.get_closest_offset(world(rows[41 if grid else 30]))
+	var b = road.curve.get_closest_offset(world(rows[44 if grid else 35]))
 	return Vector2(minf(a, b), maxf(a, b))
 
 

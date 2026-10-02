@@ -5,6 +5,7 @@ extends SceneTree
 ##   tools/Godot.exe --headless --path . --script tests/visual/clip_scan.gd -- --track=chicago [--step=5]
 ## Prints CLIP lines and CLIP SCAN RESULTS; fails on anything over or across the road except OVERHEAD structures.
 
+const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 var track = "chicago"
 var step = 5.0
 ## How far above the road surface a foreign mesh counts (2 cm catches coplanar streets that z-fight the track).
@@ -72,13 +73,16 @@ func run():
 						if not grid.has(k):
 							grid[k] = []
 						grid[k].append([a, b, c, path, si])
+	var road = asset.get_node("Main")
 	var hits = 0
 	var reported = {}
 	var s = 0.0
 	while s < asset.length:
 		var st = asset.station(s)
 		var right = st.tangent.cross(Vector3.UP).normalized()
-		for off in [-7.0, -4.0, 0.0, 4.0, 7.0]:
+		var section = RoadBuilder.section_at(road.sections, s, asset.length, road.closed)
+		for fraction in [-.875, -.5, 0.0, .5, .875]:
+			var off = fraction * (section.width_left if fraction < 0.0 else section.width_right)
 			var p = st.pos + right * off
 			var k = Vector2i(floori(p.x / 20.0), floori(p.z / 20.0))
 			for tri in grid.get(k, []):
@@ -99,7 +103,13 @@ func run():
 							failures.append(line)
 			# Walls and columns standing on the road: a ray 1 m up, along the road to the next station.
 			var nxt = asset.station(fposmod(s + step, asset.length))
-			var q = nxt.pos + nxt.tangent.cross(Vector3.UP).normalized() * off
+			var next_section = RoadBuilder.section_at(
+				road.sections, fposmod(s + step, asset.length), asset.length, road.closed
+			)
+			var next_off = (
+				fraction * (next_section.width_left if fraction < 0.0 else next_section.width_right)
+			)
+			var q = nxt.pos + nxt.tangent.cross(Vector3.UP).normalized() * next_off
 			var o = p + Vector3.UP
 			var seg = (q + Vector3.UP) - o
 			for tri in grid.get(k, []):

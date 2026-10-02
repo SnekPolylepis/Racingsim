@@ -494,7 +494,8 @@ static func _route_dist(route: Dictionary, p: Vector2, reach: float, low_only: b
 	for dx in range(-r, r + 1):
 		for dz in range(-r, r + 1):
 			for q in route.get(Vector2i(cx + dx, cz + dz), []):
-				if low_only and q.y > STREET_Y - 1.0:
+				# Clear street-level tiles over the entire ramp, including its last metre of rise.
+				if low_only and q.y >= STREET_Y - .02:
 					continue
 				best = minf(best, p.distance_to(Vector2(q.x, q.z)))
 	return best

@@ -20,6 +20,7 @@ const DT = 1.0 / 240
 const BASELINE = "res://docs/rebuild/laps-v2-baseline.json"
 const TRACKS = {
 	"chicago": "res://trackgen/chicago.gd",
+	"chicago_grid": "res://trackgen/chicago_grid.gd",
 	"monaco": "res://trackgen/monaco.gd",
 	"proving_ground": "res://trackgen/proving_ground.gd",
 	"spa": "res://trackgen/spa.gd",
@@ -42,9 +43,7 @@ func check(ok, what):
 
 
 func _initialize():
-	presets = GatesEnv.only_car(
-		JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
-	)
+	presets = GatesEnv.only_car(JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json")))
 	var selected = ""
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--track="):
@@ -98,8 +97,7 @@ func _physics_process(_delta):
 					timing = "baseline %.2f s (%+.2f%%)" % [base, (r.lap / base - 1) * 100]
 					timing_ok = absf(r.lap / base - 1) < .02
 				var hairpin_ok = (
-					not (id == "monaco" and key in ["f2004", "rb19"])
-					or r.hairpin_min_speed >= 6.8
+					not (id == "monaco" and key in ["f2004", "rb19"]) or r.hairpin_min_speed >= 6.8
 				)
 				var hairpin_speed = (
 					"n/a" if r.hairpin_min_speed <= 0 else "%.0f km/h" % (r.hairpin_min_speed * 3.6)
@@ -140,10 +138,7 @@ func _physics_process(_delta):
 		f.store_string(JSON.stringify(out, "  ", true) + "\n")
 		f.close()
 		print("RECORDED %s" % BASELINE)
-	print(
-		"LAPS RESULTS ",
-		JSON.stringify({"checks": checks, "failures": failures, "results": results})
-	)
+	print("LAPS RESULTS ", JSON.stringify({"checks": checks, "failures": failures, "results": results}))
 	quit(0 if failures.is_empty() else 1)
 	return true
 

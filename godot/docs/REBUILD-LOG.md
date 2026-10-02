@@ -3625,3 +3625,43 @@ in a separate Desktop/Racingsim-preview10 Git checkout. Main unchanged.
   * tests/v2/nordschleife.gd: 7/7 PASS (0 errors, 0 bake warnings, 6998/6998 BotLine points on tarmac, road width >= 3.5 m, 0 terrain pokes, 0 trenches).
   * tests/v2/footprint.gd: 10/10 PASS (no NaN, no snagging, peak loads within envelope).
   * tests/v2/surfaces.gd: 36/36 PASS.
+
+### 2026-10-01 — CLAIM CHI-GRID-01 Codex
+
+Owner requested Claude Route I as a selectable sibling variant. Branch
+`codex/chicago-loop-grid` starts from Preview 10 main 988f4e9c. Reuse current
+Chicago scenery, preserve original route/identity/baselines, update variant
+Lower Wacker to 3.4288 m and ramp to 5.7144 m. Runtime id `chicago_grid`.
+Validation and playable Windows rebuild are in progress.
+
+### 2026-10-01 — DONE CHI-GRID-01 Chicago Loop Grid variant
+
+Selectable `Chicago — Loop Grid` (`chicago_grid@v1`) adapts Claude Route I on
+current Preview 10 Chicago scenery. Shared generator, separate cache/records;
+original route.json, chicago@v3 and all existing lap baselines preserved.
+Corrected Wacker floor/ramp heights retained; measured narrow lane bay retained.
+Downtown corner setbacks 18 m; baked lap 8784.2595 m, maximum grade 6.0154%.
+Remapped corner labels and upper-river fence span; Chicago skies/rain/lighting
+apply to both layouts. Runtime data included in every export preset and verifier.
+City ground-tile clearance now includes the last metre of ramp rise. Clip scan
+follows actual section widths rather than casting outside the narrow lane bay.
+
+Evidence: geometry 45/45 and clip scan pass for each Chicago layout. All five
+cars, both handling modes: 10/10 valid variant laps, zero off-track/wall/prop
+ticks, maximum deviation 1.563 m. New lap baselines only; old entries verified
+unchanged. Full run `tests/logs/gates/20261001-190755`: 52/53 pass; sole failure
+was old front-end test expecting five circuit choices. Updated expected list;
+front_end 29/29 and new actual menu/drive test 5/5 pass in final serial run
+`20261001-191424`, empty stderr. All 54 current suites therefore have passing
+results across full and scoped runs; full runner was not repeated after the
+test-only fixes. Earlier concurrent source/export cache checks collided and
+reported corrupt cache reads; final serial checks were clean. New menu test
+uses existing audio teardown convention and creates its bot in a physics frame.
+
+Windowed full-route review: 122 captures, no capture failures, contact sheet
+inspected at visual-review/loop-grid-day/chicago_grid-sheet.png. Reviewed the
+Wabash apex at full size. Windows export exits 0, empty stderr. Packaged six-track
+V2 EXPORT PASS; exported Loop Grid short drive/presentation 72/72 PASS, empty
+stderr, 18 captures. Formatter check on all 11 changed scripts and diff check
+pass. Performance gates not rerun (owner makes them advisory); macOS variant
+export and hardware playtest not performed in this Windows task.
