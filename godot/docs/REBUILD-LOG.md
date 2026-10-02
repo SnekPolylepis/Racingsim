@@ -3855,3 +3855,46 @@ depth, 156/160 triangles, and can be reused; ChicagoKit.build is currently not
 called, only sidewalk_props is. Next: address/review remaining route-facing
 flat facade representations. These source counts are not runtime visibility
 counts; QUEUE remains claimed and the full goal is incomplete.
+
+### 2026-10-01 — PROGRESS CHI-3D-BUILDINGS: native generic facade windows
+
+Added acquired Quaternius CC0 Metal_FirstFloor_Window frame/glass surfaces to
+actual near-route city wall planes, replacing their shader-painted panes.
+No full cover panels, fake-interior surfaces, hashed cornices or roof props.
+Measured massing/roof steps and tagged colours retained. Frames cover every
+fitting floor, including street level, within 160 m of the route. Angled walls
+are supported. Adjacent measured cells merge floor by floor so roof-height
+noise does not fragment every lower row. Layouts are generic interpretations,
+not surveyed elevations. Final Loop Grid: 191,674 window instances / 200 groups.
+
+A separate native glass shader retains stable floor occupancy, warm/cool rooms
+and blinds through the existing NightGlow toggle. Packed vertex-colour markers
+suppress the old nearby grid (negative markers would be clamped). Distant panes
+return as subpixel geometry fades at 570–650 m. Building bodies retain street
+shadows; frames add no lamp-shadow draws. Kit inputs now participate in the
+cache fingerprint. Existing seven authored landmark exteriors remain.
+
+Review caught a ground-floor rejection caused by retaining the removed
+kickboard's bounds; corrected against the actual frame minimum and added a
+street-floor regression check. Final windowed placement test: 12/12, including
+mixed roof heights, rotated planes, packed-colour/tint retention and bounds.
+Actual menu/drive/model checks: 30/30 in gates/20261001-223452. Final Mesh/MultiMesh
+clip scans: gates/20261001-223442, zero failures, 100/108 expected overhead/flush
+hits. Grid scan took 584 s; original 127 s. A primary-display cached Grid repeat
+also reports zero failures / 100 hits. Earlier headless/aborted scans are not
+passes. Dense scanning now reads one native buffer per group and bounds geometry
+against the same queried road cells before expanding triangles.
+
+Final day/night street and close-up captures: visual-review/windows-3d; 16 views
+reviewed. Import/Windows export clean. Final packaged six-track verifier PASS,
+including physical-window metadata in both Chicago layouts, all seven authored
+models and all 40 recorded engine layers; actual Engine-bus peak 0.512745.
+Evidence: tests/logs/native-windows-export-final.out/.err. Matching Windows binary
+installed and launched; previous executable retained. SHA-256:
+E5B4D7EA654DE28A9A9BB4779556380447F103D291076BC1FFE2DE3AAD985BFB.
+Full gates, performance sweep and macOS validation not rerun.
+
+Full objective remains ACTIVE. This is a route-facing generic facade pass,
+not a claim that every remaining city representation has been individually
+reviewed or surveyed. Continue the wider exterior/mapped-footprint review;
+QUEUE remains claimed.

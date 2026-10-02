@@ -35,6 +35,10 @@ func run() -> void:
 			"Circuit button loads Loop Grid and starts driving"
 		)
 		var identity = app.track.record_key()
+		check(
+			app.track.get_meta("city").get("physical_windows", 0) > 1000,
+			"Loop Grid includes native frames and glazing on generic measured facades"
+		)
 		check(identity == "chicago_grid@v1", "Variant has independent record identity")
 		var lower = app.track.station(app.track.get_meta("corners")["Lower Wacker Portal"] + 250.0)
 		app.TrackLights.update_pool(app.lamp_pool, app.track, lower.pos, true)
@@ -96,6 +100,10 @@ func run() -> void:
 		)
 		for name in chicago_buildings:
 			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")
+		check(
+			app.track.get_meta("city").get("physical_windows", 0) > 1000,
+			"Original Chicago includes native generic facade windows"
+		)
 	for player in app.find_children("*", "AudioStreamPlayer", true, false):
 		player.stop()
 		player.stream = null

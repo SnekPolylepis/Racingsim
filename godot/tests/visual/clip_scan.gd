@@ -47,6 +47,20 @@ func run():
 		return
 	root.add_child(asset)
 	await process_frame
+	var road = asset.get_node("Main")
+	# Only projections into cells queried by the road rays can affect this scan.
+	# Bound each instance before expanding its shared mesh (dense native windows).
+	var road_cells = {}
+	var station_m = 0.0
+	while station_m < asset.length:
+		var station = asset.station(station_m)
+		var section = RoadBuilder.section_at(road.sections, station_m, asset.length, road.closed)
+		var right = station.tangent.cross(Vector3.UP).normalized()
+		for fraction in [-.875, -.5, 0.0, .5, .875]:
+			var off = fraction * (section.width_left if fraction < 0.0 else section.width_right)
+			var p = station.pos + right * off
+			road_cells[Vector2i(floori(p.x / 20.0), floori(p.z / 20.0))] = true
+		station_m += step
 	# Collect triangles of every candidate mesh once, bucketed on a 20 m grid.
 	var grid = {}
 	for mi in asset.find_children("*", "GeometryInstance3D", true, false):
@@ -62,9 +76,31 @@ func run():
 		var transforms = [mi.global_transform]
 		if mi is MultiMeshInstance3D:
 			transforms.clear()
-			for instance in mi.multimesh.instance_count:
-				transforms.append(mi.global_transform * mi.multimesh.get_instance_transform(instance))
+			# One renderer readback per group, not a synchronous getter per window.
+			var mm = mi.multimesh
+			var buffer = mm.buffer
+			var stride = 12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0)
+			if mm.transform_format != MultiMesh.TRANSFORM_3D or buffer.size() != mm.instance_count * stride:
+				failures.append("Cannot inspect MultiMesh buffer: " + path)
+				continue
+			for instance in mm.instance_count:
+				var j = instance * stride
+				var basis = Basis(
+					Vector3(buffer[j], buffer[j + 4], buffer[j + 8]),
+					Vector3(buffer[j + 1], buffer[j + 5], buffer[j + 9]),
+					Vector3(buffer[j + 2], buffer[j + 6], buffer[j + 10])
+				)
+				var origin = Vector3(buffer[j + 3], buffer[j + 7], buffer[j + 11])
+				transforms.append(mi.global_transform * Transform3D(basis, origin))
 		for xf in transforms:
+			var bounds = xf * mesh.get_aabb()
+			var relevant = false
+			for gx in range(floori(bounds.position.x / 20.0), floori(bounds.end.x / 20.0) + 1):
+				for gz in range(floori(bounds.position.z / 20.0), floori(bounds.end.z / 20.0) + 1):
+					if road_cells.has(Vector2i(gx, gz)):
+						relevant = true
+			if not relevant:
+				continue
 			for si in mesh.get_surface_count():
 				var arr = mesh.surface_get_arrays(si)
 				var v = arr[Mesh.ARRAY_VERTEX]
@@ -81,10 +117,11 @@ func run():
 					for gx in range(floori(lo.x / 20.0), floori(hi.x / 20.0) + 1):
 						for gz in range(floori(lo.y / 20.0), floori(hi.y / 20.0) + 1):
 							var k = Vector2i(gx, gz)
+							if not road_cells.has(k):
+								continue
 							if not grid.has(k):
 								grid[k] = []
 							grid[k].append([a, b, c, path, si])
-	var road = asset.get_node("Main")
 	var hits = 0
 	var reported = {}
 	var s = 0.0

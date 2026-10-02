@@ -13,6 +13,7 @@ extends RefCounted
 ##   Parks      parks, gardens and lawns in grass
 ## Geometry is batched per 600 m chunk and material, so the whole city is a few hundred draw calls at most.
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
+const ChicagoWindows = preload("res://trackgen/chicago_windows.gd")
 const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 const ChicagoCrowns = preload("res://trackgen/chicago_crowns.gd")
 const ChicagoL = preload("res://trackgen/chicago_l.gd")
@@ -324,6 +325,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 					st.set_uv(v)
 					st.add_vertex(Vector3(v.x, STREET_Y + .04, v.y))
 	# Commit every chunk's surfaces.
+	var window_walls = {}
 	for group in [
 		[chunks, 0.0, "Chunk"], [low_chunks, LOW_RANGE_M, "Low"], [flat_chunks, FLAT_RANGE_M, "Flat"]
 	]:
@@ -331,8 +333,11 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			var mesh = ArrayMesh.new()
 			for mat_name in group[0][key]:
 				var st: SurfaceTool = group[0][key][mat_name]
-				st.set_material(material(mat_name))
-				st.commit(mesh)
+				var arrays = st.commit_to_arrays()
+				if mat_name == "facade":
+					ChicagoWindows.collect(arrays, route, window_walls)
+				mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+				mesh.surface_set_material(mesh.get_surface_count() - 1, material(mat_name))
 			var node = MeshInstance3D.new()
 			node.name = "%s_%d_%d" % [group[2], key.x, key.y]
 			node.mesh = mesh
@@ -345,6 +350,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			)
 			holder.add_child(node)
 			node.owner = asset
+	stats["physical_windows"] = ChicagoWindows.build(asset, holder, window_walls)
 	_trees(asset, holder, doc.get("trees", []), route, world_of.call(landmarks["Bean"]))
 	stats.merge(ChicagoHarbor.build(asset, holder, doc))
 	ChicagoCrowns.build(asset, holder, crowns)

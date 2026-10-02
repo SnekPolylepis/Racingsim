@@ -9,5 +9,9 @@ at game time. `textures/*.jpg` are the kit's 2048 px albedos reduced to 1024 px 
 The free kit has no storefront signs, fire escapes, water tanks, hydrants, newspaper boxes or benches; it does
 have first-floor windows and walls, cornices, doors, AC units, bollards, planters, roof and stair pieces.
 
-Used by `trackgen/chicago_kit.gd` (ground floors and cornices on buildings facing the route). Total size about
-0.7 MB.
+`trackgen/chicago_kit.gd` retains the original placement helpers. Its hashed cornice/shopfront building pass
+is disabled. `trackgen/chicago_windows.gd` uses only the acquired Metal_FirstFloor_Window frame and glass
+surfaces, without the cover panels/interior, on actual route-facing city wall planes at every fitting floor.
+Measured roof steps and sourced facade colours remain. Generic bay layouts are interpretations, not surveys.
+Glazing uses the game's day/night material with stable floor occupancy. Far windows use the facade shader
+as subpixel geometry fades out. Total acquired kit size remains about 0.7 MB.

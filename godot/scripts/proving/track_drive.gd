@@ -137,6 +137,7 @@ static func _cache_revision(id: String, generator_path: String) -> String:
 	]
 	if id in ["chicago", "chicago_grid"]:
 		directories.append("res://assets/chicago/buildings")
+		directories.append("res://assets/chicago/downtown-kit")
 	while not directories.is_empty():
 		var directory = directories.pop_back()
 		if not DirAccess.dir_exists_absolute(directory):

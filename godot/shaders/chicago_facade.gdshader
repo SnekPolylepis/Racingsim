@@ -29,13 +29,17 @@ uniform float day_windows = 1.0;
 varying flat float seed;
 varying flat float kind;
 varying flat float roof;
+varying flat float physical_windows;
+varying float window_distance;
 varying flat vec3 source_colour;
 
 void vertex() {
 	seed = COLOR.r;
 	kind = floor(COLOR.g * 8.0 + 0.5);
-	roof = COLOR.b;
+	physical_windows = COLOR.b > .4 && COLOR.b < .9 ? 1.0 : 0.0;
+	roof = physical_windows > .5 ? (COLOR.b > .6 ? .25 : 0.0) : COLOR.b;
 	source_colour = vec3(UV2, COLOR.a);
+	window_distance = distance((MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz, CAMERA_POSITION_WORLD);
 }
 
 float hash21(vec2 p) {
@@ -58,7 +62,11 @@ void fragment() {
 	if (roof > 0.1) {
 		base = pow(source_colour, vec3(2.2));
 	}
-	ALBEDO = base;
+	// Acquired glass replaces the facade photo's painted curtain-wall panes.
+	if (physical_windows > .5 && glassy > .5 && roof < .1) {
+		base = vec3(.12, .14, .16) * tint;
+	}
+	ALBEDO = afterhours && physical_windows > .5 ? base * .35 : base;
 	NORMAL_MAP = texture(normal_tex, vec3(uv, kind)).rgb;
 	ROUGHNESS = texture(rough_tex, vec3(uv, kind)).r;
 	METALLIC = glassy * 0.35;
@@ -69,12 +77,14 @@ void fragment() {
 	vec2 bays = window_cell * vec2(mix(0.85, 1.28, h1), mix(0.91, 1.08, h2));
 	vec2 cell = floor(UV / bays);
 	vec2 f = fract(UV / bays);
-	if (!afterhours && day_windows > 0.0) {
+	// The distant shader grid replaces subpixel geometry as its MultiMesh fades out.
+	float window_grid = physical_windows > .5 ? smoothstep(570.0, 650.0, window_distance) : 1.0;
+	if (!afterhours && day_windows > 0.0 && window_grid > 0.0) {
 		// Fade the grid out where a cell is under about 3 pixels, so distant towers do not shimmer.
 		vec2 w = fwidth(UV / bays);
 		// Narrow bays (LOOK-14) would fade twice as soon on width; judge width at half weight so mid-distance towers
 		// keep their grid.
-		float fade = 1.0 - smoothstep(0.25, 0.6, max(w.x * 0.5, w.y));
+		float fade = (1.0 - smoothstep(0.25, 0.6, max(w.x * 0.5, w.y))) * window_grid;
 		float ground = 1.0 - step(1.0, cell.y);
 		// Masonry: a punched vertical window (about 1.1 x 2.3 m) with a light trim frame. Glass towers: a
 		// curtain-wall ribbon, mullions only.
@@ -101,7 +111,7 @@ void fragment() {
 		METALLIC = mix(METALLIC, 0.0, glossy);
 		NORMAL_MAP = mix(NORMAL_MAP, vec3(0.5, 0.5, 1.0), glossy);
 	}
-	if (afterhours) {
+	if (afterhours && window_grid > 0.0) {
 		// A window pane inside each cell (not the spandrel or mullions), above the ground floor.
 		float pane = mix(step(0.21, f.x) * step(f.x, 0.79) * step(0.2, f.y) * step(f.y, 0.8), step(0.04, f.x) * step(f.x, 0.96) * step(0.1, f.y) * step(f.y, 0.9), step(0.5, glassy)) * step(1.0, cell.y);
 		// LOOK-17: occupancy varies by floor (dark floors and busy floors) and brightness per window. Every
@@ -117,14 +127,14 @@ void fragment() {
 		vec3 warm = vec3(1.0, 0.72, 0.38);
 		vec3 cool = vec3(0.72, 0.84, 1.0);
 		vec3 light = mix(warm, cool, glassy * step(0.5, hash21(cell.yx + seed * 13.0)));
-		ALBEDO = mix(base * 0.35, vec3(0.035, 0.047, 0.058), pane * 0.65);
+		ALBEDO = mix(base * 0.35, vec3(0.035, 0.047, 0.058), pane * 0.65 * window_grid);
 		vec3 detail = light * pane * lit * level * glow_energy;
 		// Past a few pixels per cell the grid aliases into white noise, so it settles into the facade's
 		// average glow (about a third of each cell is pane, a third of panes lit, at 0.8 level).
 		vec2 w = fwidth(UV / bays);
 		float far = smoothstep(0.25, 0.6, max(w.x * 0.5, w.y));
 		vec3 average = mix(warm, cool, glassy * 0.5) * 0.36 * lit_chance * 0.34 * glow_energy;
-		EMISSION = mix(detail, average, far);
+		EMISSION = mix(detail, average, far) * window_grid;
 	}
 }
 }
