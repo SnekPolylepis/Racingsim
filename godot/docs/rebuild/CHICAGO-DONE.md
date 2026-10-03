@@ -172,3 +172,14 @@ reference assets. Current conversion and native-view evidence is recorded in
 REBUILD-LOG.md under CHI-3D-BUILDINGS; this note does not check off the broader
 route-wide building detail or visual acceptance items. `exterior_wall` retains
 the mapped edge/orientation helper for model placement.
+
+### 2026-10-03 — Reliance attribution correction and authored exterior
+
+The earlier Reliance white-terra-cotta attribution to w145625877 was mistaken:
+the name alias covers a larger neighboring outline. Historic Reliance is
+w124865461, 1 West Washington / Staypineapple, with addr:housename Reliance
+Building. CAC and HABS references now accompany that footprint. Its authored
+Blender exterior replaces only that block; the neighboring mass remains.
+Eight day/night native views and 95 targeted checks passed; see REBUILD-LOG.
+This corrects attribution, not the dated observations of prior screenshots.
+Other Wacker/Monadnock detail and wider city acceptance remain open.

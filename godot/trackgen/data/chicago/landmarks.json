@@ -323,12 +323,6 @@
       "src": "https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?counter=2&lanId=1233: terra cotta cladding. Decorative details remain open. https://chistockimages.com/building/jewelers-building/: cream-coloured cladding. Ivory encodes the published cream category, not a measured photographic colour.",
       "c": "#fffff0"
     },
-    "w145625877": {
-      "name": "Reliance Building",
-      "k": "terracotta",
-      "src": "https://www.architecture.org/online-resources/buildings-of-chicago/reliance-building: glass and white terra cotta facade. White is a semantic colour, not a measured sample; Chicago-window proportions and ground-floor granite remain open.",
-      "c": "#ffffff"
-    },
     "w73671128": {
       "name": "Monadnock Building",
       "k": "brick",
@@ -595,6 +589,12 @@
         ],
         "source": "https://gisapps.chicago.gov/gisimages/zoning_pds/PD527.pdf, sheets A-2/A-3 container keys: 8-foot widths, 20/40-foot lengths, 12.5-foot ground breezeway. A-4 south elevation traced at grade y469, first container roof y355, upper deck y351, upper flat roof y229, canopy peak y200 in 2400-pixel page render, scaled to A-1 21.97-foot total height. A-3 roof plan labels west slope 2:12; its intersection with the traced flat-roof level derives the pitched span. Vertical proportions/canopy outline are drawing traces, not surveyed as-built dimensions. Local x east/z south, centred on mapped footprint; alignment is map-derived. Deck and west canopy follow A-3 floor/roof plan; stairs, columns, railings, finishes and as-built reconciliation remain open."
       }
+    },
+    "w124865461": {
+      "name": "Reliance Building",
+      "k": "terracotta",
+      "src": "https://www.architecture.org/online-resources/buildings-of-chicago/reliance-building: glass and white terra cotta. HABS ILL-1029 https://tile.loc.gov/storage-services/master/pnp/habshaer/il/il0000/il0041/data/il0041data.pdf: 55 ft 10 in by 84 ft 10 in, 200 ft architectural height, projecting Chicago windows, Gothic terra cotta and granite. Historic footprint is OSM w124865461 (1 West Washington, addr:housename Reliance Building); w145625877 has a Reliance alias but covers the larger neighboring footprint. Corrected 2026-10-03.",
+      "c": "#ffffff"
     }
   }
 }

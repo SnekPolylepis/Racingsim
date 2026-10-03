@@ -740,6 +740,19 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 			carbide.surface_set_material(surface, mat)
 	var carbide_node = mesh_node(asset, parent, "CarbideCarbon", carbide, ChicagoCity.CARBIDE_POSITION)
 	carbide_node.rotation.y = ChicagoCity.CARBIDE_YAW
+	# Reliance: actual projecting Chicago windows and molded terra cotta.
+	var reliance = PropMesh.mesh("res://assets/chicago/landmarks/reliance_building.glb").duplicate()
+	for surface in reliance.get_surface_count():
+		var mat = reliance.surface_get_material(surface)
+		if mat is StandardMaterial3D and mat.resource_name.begins_with("Night"):
+			mat = mat.duplicate()
+			mat.set_meta("chicago_night", true)
+			mat.emission = Color(.65, .48, .25)
+			mat.emission_energy_multiplier = .4
+			mat.emission_enabled = false
+			reliance.surface_set_material(surface, mat)
+	var reliance_node = mesh_node(asset, parent, "RelianceBuilding", reliance, ChicagoCity.RELIANCE_POSITION)
+	reliance_node.rotation.y = ChicagoCity.RELIANCE_YAW
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

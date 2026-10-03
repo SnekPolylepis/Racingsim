@@ -4281,3 +4281,52 @@ previous executable retained, normal game launch started. Installed SHA-256:
 Goal ACTIVE: remaining route-visible buildings still need reference-faithful
 window proportions, entrances, podiums and ornament (see CHICAGO-DONE.md's
 Wacker/Reliance/Monadnock items). Full-photo removal is not full city acceptance.
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: authored Reliance exterior
+
+Authored Reliance in Blender from CAC exterior reference and HABS ILL-1029:
+projecting Chicago-window bays, angled operable panes, molded Gothic terra cotta,
+physical sashes, granite retail base, rear lightwell, stepped reconstructed
+cornice and selective occupied-window night emission. Original geometry, eight
+materials, 241,808 triangles; no facade photograph. Saved canonical authoring
+script, editable .blend and imported GLB. Two initial authoring assertions caught
+an over-height body and over-projecting cornice; corrected geometry and completed
+a full final canonical build successfully, stderr empty.
+
+Corrected historic footprint attribution: w124865461 (1 West Washington,
+addr:housename Reliance Building) is the small historic footprint. The prior
+white-terra-cotta override on w145625877 followed a misleading Reliance alias
+on a larger neighboring outline. Moved only material attribution, excluded only
+the historic block, and preserved neighboring massing and all mapped polygons.
+Model uses HABS 84 ft 10 in by 55 ft 10 in and 200 ft architectural height;
+placement (-317.6, 8, 195.65), yaw .0074. Raw inventory names remain unchanged.
+CSV review caught unrelated UTF-8 name corruption from the attribution writer;
+restored those names from HEAD before commit, leaving exactly two changed rows.
+
+Gates/20261003-184241: authored coverage 23/23, Reliance 20/20, actual menu/drive
+and both Chicago layouts 50/50, both clipping scans pass (108/100 expected
+underpass overhead hits, zero failures). Five gates, 95 logical checks, 113 s
+wall; stderr empty. Import, game parse and Windows export exit 0, stderr empty.
+Reviewed eight native day/night views in visual-review/reliance: street,
+entrance, crown and northeast overview. No floating parts observed in these
+views. Generic physical-window count 1,086,257 after exact block replacement.
+Warmed frozen final overview/night sample: 19.396 ms over 120 frames,
+58,002,350 render primitives. Advisory 60 fps not met; cameras differ from prior
+samples, so no comparative speedup or full performance guarantee claimed.
+
+Packaged six-track/40 engine-bank verifier reports V2 EXPORT PASS, stderr empty;
+process terminal/missing after bounded observation (exit code unavailable from
+reopened handle). Gameplay engine bus capture peak .353532; this does not prove
+owner-device audibility or subjective whine acceptance. Installed verified
+RacingSim-reliance.exe as build/RacingSim.exe, retaining previous executable.
+Installed SHA-256:
+67D7F5FB513973054134BA37326703B4E2ADF413A00A5A7A07D03EAFB9140F6C
+Normal local launch started. Goal ACTIVE: continue remaining recognizable
+buildings, including Monadnock and Wacker exteriors; broad prop/lighting, owner
+audio acceptance and performance work remain open. No macOS/full matrix claimed.
+
+Final attribution diff review also restored unrelated landmark reference text
+from HEAD. Re-exported with corrected text (exit 0, empty stderr), repeated
+packaged verifier (reliance-package-final.out/.err): V2 EXPORT PASS, stderr
+empty, terminal after bounded wait; engine bus peak .351490. Installed this
+final verified export and relaunched normally; preceding hash above is final.

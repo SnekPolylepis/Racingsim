@@ -618,6 +618,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/CarbideCarbon")
 	if track.has_node("Scenery/CarbideCarbon"):
 		ok = ok and track.get_node("Scenery/CarbideCarbon").mesh.get_surface_count() == 8
+	ok = ok and track.has_node("Scenery/RelianceBuilding")
+	if track.has_node("Scenery/RelianceBuilding"):
+		ok = ok and track.get_node("Scenery/RelianceBuilding").mesh.get_surface_count() == 8
 	ok = ok and track.has_node("Scenery/BoardOfTrade")
 	if track.has_node("Scenery/BoardOfTrade"):
 		ok = ok and track.get_node("Scenery/BoardOfTrade").mesh.get_surface_count() == 10
@@ -637,6 +640,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/CarbideCarbon")
 	if track.has_node("Scenery/CarbideCarbon"):
 		ok = ok and track.get_node("Scenery/CarbideCarbon").mesh.get_surface_count() == 8
+	ok = ok and track.has_node("Scenery/RelianceBuilding")
+	if track.has_node("Scenery/RelianceBuilding"):
+		ok = ok and track.get_node("Scenery/RelianceBuilding").mesh.get_surface_count() == 8
 	ok = ok and track.has_node("Scenery/BoardOfTrade")
 	if track.has_node("Scenery/BoardOfTrade"):
 		ok = ok and track.get_node("Scenery/BoardOfTrade").mesh.get_surface_count() == 10

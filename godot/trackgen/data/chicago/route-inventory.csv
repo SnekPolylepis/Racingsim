@@ -22,7 +22,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 3787,w114824291,Macy's,North State Street,101-137,-218.4,107.0,88.0,166.4,160,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/114824291
 3479,w764598208,,,,242.9,164.3,36.5,234.2,170,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/764598208
 3477,w764598206,,,,174.4,167.8,17.5,165.9,175,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/764598206
-112,w124865461,"Staypineapple, An Iconic Hotel, The Loop",West Washington Street,1,-315.2,197.3,63.0,304.2,190,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/124865461
+112,w124865461,"Staypineapple, An Iconic Hotel, The Loop",West Washington Street,1,-315.2,197.3,63.0,304.2,190,1,0,1,1.0,0,,,"https://www.architecture.org/online-resources/buildings-of-chicago/reliance-building: glass and white terra cotta. HABS ILL-1029 https://tile.loc.gov/storage-services/master/pnp/habshaer/il/il0000/il0041/data/il0041data.pdf: 55 ft 10 in by 84 ft 10 in, 200 ft architectural height, projecting Chicago windows, Gothic terra cotta and granite. Historic footprint is OSM w124865461 (1 West Washington, addr:housename Reliance Building); w145625877 has a Reliance alias but covers the larger neighboring footprint. Corrected 2026-10-03.",,https://www.openstreetmap.org/way/124865461
 407,w147776392,Primark,North State Street,35,-234.8,201.2,22.5,221.8,210,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147776392
 159,w126982630,Michigan Boulevard Building,North Michigan Avenue,30,-47.0,207.8,91.5,24.0,215,1,1,1,1.0,0,,white,,,https://www.openstreetmap.org/way/126982630
 3128,w234052883,,,,-17.2,226.5,4.0,15.7,225,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/234052883
@@ -34,7 +34,7 @@ city_index,osm_id,name,street,number,x,z,height,route_distance,nearest_station,n
 375,w147476145,Wabash Jewelers Mall,North Wabash Avenue,17,-110.2,234.6,95.0,85.1,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/147476145
 409,w147776394,Stevens Building,North State Street,17,-199.6,240.5,96.0,164.9,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/147776394
 3565,w1175466069,Stevens Building,North State Street,17,-238.6,229.5,94.0,222.9,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/1175466069
-283,w145625877,Reliance Building,North State Street,20,-341.4,220.9,102.0,305.1,245,1,1,1,1.0,0,,,"https://www.architecture.org/online-resources/buildings-of-chicago/reliance-building: glass and white terra cotta facade. White is a semantic colour, not a measured sample; Chicago-window proportions and ground-floor granite remain open.",,https://www.openstreetmap.org/way/145625877
+283,w145625877,Reliance Building,North State Street,20,-341.4,220.9,102.0,305.1,245,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/145625877
 143,w124873932,State-Madison Building,North Dearborn Street,1,-361.0,273.8,104.5,305.2,250,1,1,1,1.0,0,,,,,https://www.openstreetmap.org/way/124873932
 162,w126982634,20 North Michigan,North Michigan Avenue,20,-49.9,234.7,58.5,23.7,260,1,0,1,1.0,0,,brown,,,https://www.openstreetmap.org/way/126982634
 373,w147476140,,North Wabash Avenue,11,-109.9,251.8,41.5,84.8,260,1,0,1,1.0,0,,,,,https://www.openstreetmap.org/way/147476140

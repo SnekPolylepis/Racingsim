@@ -98,6 +98,20 @@ func run() -> void:
 			if entry.osm_id == "w148544831" and entry.reason == "authored Carbide and Carbon exterior":
 				excluded_carbide += 1
 		check(excluded_carbide == 1, "Mapped Carbide and Carbon block is replaced exactly once")
+		var reliance = app.track.get_node_or_null("Scenery/RelianceBuilding")
+		check(
+			reliance is MeshInstance3D and reliance.mesh.get_surface_count() == 8, "Authored Reliance loads"
+		)
+		var excluded_reliance = 0
+		var neighboring_block_kept = true
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w124865461" and entry.reason == "authored Reliance exterior":
+				excluded_reliance += 1
+			neighboring_block_kept = neighboring_block_kept and entry.osm_id != "w145625877"
+		check(
+			excluded_reliance == 1 and neighboring_block_kept,
+			"Historic Reliance replaced once; larger neighbor retained"
+		)
 
 		var board = app.track.get_node_or_null("Scenery/BoardOfTrade")
 		check(
@@ -181,6 +195,7 @@ func run() -> void:
 			app.track.has_node("Scenery/CarbideCarbon"),
 			"Authored Carbide and Carbon loads in original Chicago"
 		)
+		check(app.track.has_node("Scenery/RelianceBuilding"), "Authored Reliance loads in original Chicago")
 		for name in chicago_buildings:
 			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")
 		check(

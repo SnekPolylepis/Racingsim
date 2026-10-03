@@ -62,6 +62,9 @@ const JEWELERS_YAW = .006
 ## Mapped Pendry / Carbide and Carbon footprint w148544831.
 const CARBIDE_POSITION = Vector3(-50.4, STREET_Y, -192.2)
 const CARBIDE_YAW = .0114
+## Historic Reliance / 1 West Washington, not the larger neighboring OSM alias.
+const RELIANCE_POSITION = Vector3(-317.6, STREET_Y, 195.65)
+const RELIANCE_YAW = .0074
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
@@ -136,6 +139,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "w124865461":
+			exclusion = "authored Reliance exterior"
 		elif b.get("o", "") == "w148544831":
 			exclusion = "authored Carbide and Carbon exterior"
 		elif b.get("o", "") == "w124865488":
