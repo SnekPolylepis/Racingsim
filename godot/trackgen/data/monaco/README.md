@@ -1,4 +1,4 @@
-# Circuit de Monaco (MON-01)
+﻿# Circuit de Monaco (MON-01)
 
 The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` from `city.json`.
 
@@ -8,7 +8,12 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
    `centreline.json`: 3.32 km against the official 3.337 km.
 2. `dem_sample.py <Copernicus_DSM_COG_10_N43_00_E007_00_DEM.tif>` decodes the Copernicus GLO-30 tile
    around Monaco into `dem.json` (the tile itself is not kept).
-3. `build_profile.py` reads road height as the DSM's low envelope (the DSM includes buildings), bridges
+2b. `fetch_ign.py` samples IGN RGE ALTI (1 m bare-earth DTM; the Geoplateforme service covers Monaco)
+   every 5 m along the lap -> `ign.json`. When present, `build_profile.py` uses it instead of the DSM:
+   tunnel bridged between detected portals, periodic Gaussian sigma 25 m. `build_city.py` then fetches the
+   same DTM on its 8 m ground grid once (cached in `ign-grid.json`). Measured against it, the DSM profile
+   had held Mirabeau-Portier 7-10 m high; the IGN profile spans 41.3 m (published ~42 m), max grade 9.6 %.
+3. (DSM fallback) `build_profile.py` reads road height as the DSM's low envelope (the DSM includes buildings), bridges
    the tunnel between its portals, smooths over 120 m and limits grade to 12 %. It then resamples the
    complete closed lap at about 3 m, including the formerly missing closing segment, and applies a
    periodic Gaussian (sigma 60 m) to remove abrupt grade changes -> `profile.json`.
@@ -27,6 +32,13 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   (54777070030)", "- Sortie du Tunnel (54783799505)": flat concrete ceiling, tiled inner wall with a lamp strip,
   open bays on the sea side, armco throughout, masonry retaining walls at the exit.
 
+## Frontage
+
+Every non-landmark building within 30 m of the lap is flagged in `city.json` (element 4, OSM id at 5) and
+modelled by `tools/blender/monaco_frontage.py` into `assets/monaco/frontage.glb`: stone ground floor and
+shopfronts, recessed windows, shutters, balconies, cornices. `monaco.gd` skips extruding those footprints.
+Rerun the Blender script after `build_city.py`.
+
 ## Known limits
 
 - The DSM is 30 m and includes rooftops. The smoothed profile has about 45 m of elevation range;
@@ -43,7 +55,7 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   lifted by the tunnel-roof correction unless the nearby road point is actually in the tunnel.
 - The rectangular Pool quay height correction feathers into the surrounding terrain over 24 m.
   This softens its edge; it does not replace the 30 m DSM with surveyed topography.
-- Formula presets use 26° maximum front-wheel lock plus a 60 m/s speed falloff. Formula Monaco lap gates
+- Formula presets use 26Â° maximum front-wheel lock plus a 60 m/s speed falloff. Formula Monaco lap gates
   measure actual speed within 35 m of Fairmont's apex: F2004 stays above 25 km/h and RB19 above 30 km/h
   across Simulation and Simcade, with zero off-track wheel ticks, wall contacts or prop contacts.
 - Fairmont's named OSM marker is near the exit. `fairmont_apex` locates the tightest nearby bend for
@@ -54,7 +66,7 @@ The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` fr
   in both handling models.
   All eight cases must finish without off-track wheel ticks or wall contacts and stay above 24.5 km/h.
   The driving reference is automated; these runs do not establish human playtest acceptance.
-- The 2026-09-29 100 ms run passes all eight cases at minimum speeds of 25.19–31.70 km/h.
+- The 2026-09-29 100 ms run passes all eight cases at minimum speeds of 25.19â€“31.70 km/h.
   Earlier coarse keyboard failures came from the replay releasing a key when full requested input
   equalled current input; it now holds full steering/pedal requests. Production controls are unchanged.
 
