@@ -249,7 +249,7 @@ for iz in range(nz):
 def ground_at(x, z):
     fx, fz = (x - x0) / G, (z - z0) / G
     i, j = min(max(int(fz), 0), nz - 2), min(max(int(fx), 0), nx - 2)
-    tx, tz = fx - j, fz - i
+    tx, tz = min(max(fx - j, 0.0), 1.0), min(max(fz - i, 0.0), 1.0)
     g = ground
     return (g[i][j] * (1 - tx) + g[i][j + 1] * tx) * (1 - tz) + (g[i + 1][j] * (1 - tx) + g[i + 1][j + 1] * tx) * tz
 
@@ -319,7 +319,9 @@ trees = []
 for e in nature:
     if e["type"] == "node":
         x, z = xz(e["lat"], e["lon"])
-        if not near_road(x, z, 6.0):
+        # Outside the ground grid there is no ground to stand on (and nothing a driver sees).
+        inside = x0 <= x <= x0 + (nx - 1) * G and z0 <= z <= z0 + (nz - 1) * G
+        if inside and not near_road(x, z, 6.0):
             trees.append([round(x, 2), round(ground_at(x, z), 2), round(z, 2)])
 parks, piers = [], []
 for e in nature:
