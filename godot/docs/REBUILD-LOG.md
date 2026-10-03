@@ -4114,3 +4114,28 @@ No full gate matrix, performance sweep or macOS validation claimed.
 Goal ACTIVE: continue authored recognizable exteriors (35 East Wacker / Carbide
 and Carbon), route-band window coverage and remaining generic material paths.
 Owner gameplay audio/whine confirmation and wider visual review remain open.
+
+### 2026-10-03 — PROGRESS MON-POLISH: surveyed elevation, open Nouvelle Chicane, barrier-mounted dressing
+
+Owner asked for Monaco fixes at named spots, then every building along the circuit, then a graphics pass.
+
+Elevation: measured, not reshaped by feel. The Copernicus DSM low envelope held the Casino-to-Portier
+descent 7-10 m too high (Mirabeau Haute 38.7 vs 28.8 m, Portier 17.2 vs 8.5 m, Nouvelle Chicane 7.9 vs
+2.5 m) and kept the tunnel flat. IGN RGE ALTI (1 m bare-earth DTM; the Geoplateforme service covers Monaco)
+now drives both the road profile (fetch_ign.py -> ign.json, tunnel bridged between detected portals,
+Gaussian sigma 25 m) and the 8 m ground grid (ign-grid.json). Range 41.3 m (published ~42 m), max grade
+9.6 % (published ~12 % on Beau Rivage). The Beau Rivage climb was already right; the remaining "too steep"
+impression is likely the chase camera, which stays world-level on grades (not changed: shared game.gd).
+
+monaco.gd: advertising panels and impact blocks are placed on the baked barrier line (their old stepped
+half-width ignored the smoothstep blend, so panels crossed the armco); Nouvelle Chicane has 7 m tarmac runoff
+and 1 m kerbs both sides (barriers and fences step back with it); the Fairmont stands on the tunnel roof
+(base road + 5.4 m, 24 m tall, closed underside) instead of floating 8 m up; dressed sandstone retaining walls
+(Poly Haven CC0 sandstone_blocks_05) stand 2.5 m behind the barrier wherever the IGN hillside rises >1.5 m,
+with build_city.py stepping that ground up within 16 m instead of a 23 m earth ramp. Track version 5.
+
+tests/v2/monaco.gd crest finder now requires the whole 90 m launch run to be straight in plan: on the new
+profile it had picked Casino Square's crest inside a 57 degree bend and the unsteered car left the road.
+Gates: monaco 25/25; laps monaco rb19 2/2; laps monaco f2004 Simulation passes, Simcade Fairmont minimum
+24.3 km/h vs the 24.5 km/h floor (0.04 m/s short) — floor left unchanged for owner decision. Baselines
+re-recorded for version 5. Buildings and the general graphics pass remain.

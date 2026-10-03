@@ -1,4 +1,4 @@
-extends SceneTree
+﻿extends SceneTree
 ## Daylight review captures of Monaco, Proving Ground, Spa and Nordschleife through the real
 ## presentation chain (the default 640x448 Authentic look), HUD hidden. Run windowed (never
 ## --headless), with the flow-test flag so the user's settings file is untouched:
@@ -69,6 +69,15 @@ func shots() -> Array:
 		["monaco", "monaco-fairmont", ["Grand Hotel Hairpin", -30.0]],
 		["monaco", "monaco-fairmont-apex", ["Grand Hotel Hairpin", 0.0], CAM_BONNET],
 		["monaco", "monaco-pool", ["Piscine", -45.0]],
+		["monaco", "monaco-fairmont-bonnet", ["Grand Hotel Hairpin", -25.0], CAM_BONNET],
+		["monaco", "monaco-beau-rivage", ["Beau Rivage", -60.0], CAM_BONNET],
+		["monaco", "monaco-mirabeau", ["Mirabeau Haute", -60.0], CAM_BONNET],
+		["monaco", "monaco-portier", ["Portier", -50.0], CAM_BONNET],
+		["monaco", "monaco-tunnel-entry", ["Tunnel", -135.0], CAM_BONNET],
+		["monaco", "monaco-tunnel-entry-chase", ["Tunnel", -150.0]],
+		["monaco", "monaco-tunnel", ["Tunnel", 0.0], CAM_BONNET],
+		["monaco", "monaco-chicane", ["Nouvelle Chicane", -70.0], CAM_BONNET],
+		["monaco", "monaco-chicane-chase", ["Nouvelle Chicane", -40.0]],
 		["proving_ground", "pg-start", -45.0],
 		["proving_ground", "pg-turn1", 200.0],
 		["proving_ground", "pg-back-straight", 550.0],

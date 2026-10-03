@@ -1,4 +1,4 @@
-extends SceneTree
+﻿extends SceneTree
 ## Monaco closure/profile and open Swimming Pool regression. Physics queries run in the physics frame.
 const Monaco = preload("res://trackgen/monaco.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")
@@ -49,9 +49,13 @@ func _physics_process(_dt):
 		max_grade = maxf(max_grade, absf(b.y - a.y) / maxf(Vector2(b.x - a.x, b.z - a.z).length(), 0.1))
 		max_curvature = maxf(max_curvature, absf(b.y - 2 * p.y + a.y) / 9.0)
 		var kv = (b.y - 2 * p.y + a.y) / 9.0
-		var ta = Vector2(p.x - a.x, p.z - a.z).normalized()
-		var tb = Vector2(b.x - p.x, b.z - p.z).normalized()
-		if kv < crest_curvature and absf(ta.cross(tb)) < 0.006:
+		# The launch run below drives 45 m in and out without steering: the whole run must be straight in plan,
+		# not just +-3 m (Casino Square's crest sits in a 57 degree bend, and the car left the road).
+		var p0 = curve.sample_baked(fposmod(i - 45.0, length), true)
+		var p1 = curve.sample_baked(fposmod(i + 45.0, length), true)
+		var ta = Vector2(p.x - p0.x, p.z - p0.z).normalized()
+		var tb = Vector2(p1.x - p.x, p1.z - p.z).normalized()
+		if kv < crest_curvature and absf(ta.cross(tb)) < 0.05:
 			crest_curvature = kv
 			crest = float(i)
 	results.max_grade = max_grade
@@ -59,7 +63,7 @@ func _physics_process(_dt):
 	results.crest_station = crest
 	check(max_grade < 0.125, "road grade stays below 12.5 percent")
 	check(max_curvature < 0.002, "vertical profile has no short launch ramps, including the lap seam")
-	check(asset.version == 4, "changed track geometry has separate record identity")
+	check(asset.version == 5, "changed track geometry has separate record identity")
 	var hairpin_at = asset.get_meta("fairmont_apex")
 	var cars = JSON.parse_string(FileAccess.get_file_as_string("res://data/cars.json"))
 	var surf = asset.surface()

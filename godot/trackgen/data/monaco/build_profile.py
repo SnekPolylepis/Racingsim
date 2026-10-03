@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Road elevation along the lap from dem.json (Copernicus GLO-30 DSM) -> profile.json [[s, h], ...].
 
 The DSM is a surface model, so buildings, trees and the Fairmont over the tunnel read high. The road is
@@ -56,6 +56,26 @@ while i1 < len(P) - 1 and raw[i1][1] > 10.0:
 for i in range(i0 + 1, i1):
     t = (raw[i][0] - raw[i0][0]) / (raw[i1][0] - raw[i0][0])
     raw[i][1] = raw[i0][1] + (raw[i1][1] - raw[i0][1]) * t
+SIGMA = 60.0
+cl_s = [r[0] for r in raw]
+SOURCE = "Copernicus GLO-30 DSM, low envelope, tunnel bridged, grade limited then periodic Gaussian sigma 60 m; authored approximation"
+try:
+    # IGN RGE ALTI (fetch_ign.py): a 1 m bare-earth DTM, so no low envelope and far less smoothing. Its
+    # samples replace the DSM; the DTM reads the hill over the tunnel, so bridge between the portals: the
+    # last road-level sample before the hill and the first after it, inside the OSM tunnel's window.
+    ign = json.load(open("ign.json", encoding="utf-8"))["samples"]
+    t0, t1 = raw[i0][0] - 40.0, raw[max(idx)][0] + 40.0
+    inside = [k for k, (si, h) in enumerate(ign) if t0 < si < t1 and h > 10.0]
+    a, b = inside[0] - 1, inside[-1] + 1
+    for k in range(a + 1, b):
+        t = (ign[k][0] - ign[a][0]) / (ign[b][0] - ign[a][0])
+        ign[k][1] = ign[a][1] + (ign[b][1] - ign[a][1]) * t
+    raw = [[si, max(h, 1.0)] for si, h in ign]
+    i0, i1 = a, b
+    SIGMA = 25.0
+    SOURCE = "IGN RGE ALTI 1 m DTM (fetch_ign.py), tunnel bridged between portals, grade limited, periodic Gaussian sigma 25 m"
+except FileNotFoundError:
+    pass
 
 # 120 m moving average on a closed loop (the 30 m DSM puts cliff edges into the Beau Rivage climb).
 out = []
@@ -64,8 +84,8 @@ for si, _ in raw:
     for sj, hj in raw:
         d = abs(sj - si)
         d = min(d, length - d)
-        if d < 60:
-            w = 1 - d / 60
+        if d < SIGMA:
+            w = 1 - d / SIGMA
             num += hj * w
             den += w
     out.append([round(si, 1), round(num / den, 2)])
@@ -92,18 +112,18 @@ for i in range(n):
     uniform.append(heights[j] + (heights[j + 1] - heights[j]) * t)
 # Smooth the grade limiter's sharp transitions as well as the DEM. This models the broad street
 # profile, not rooftop edges; preserve planar chicanes. A denser surveyed profile can replace it.
-sigma = 60.0
+sigma = SIGMA
 reach = math.ceil(4 * sigma / step)
 weights = [math.exp(-0.5 * (k * step / sigma) ** 2) for k in range(-reach, reach + 1)]
 weight_sum = sum(weights)
 out = [[round(i * step, 4), round(sum(uniform[(i + k) % n] * w for k, w in zip(range(-reach, reach + 1), weights)) / weight_sum, 4)] for i in range(n)]
 out.append([round(length, 4), out[0][1]])
-json.dump({"source": "Copernicus GLO-30 DSM, low envelope, tunnel bridged, grade limited then periodic Gaussian sigma 60 m; authored approximation",
+json.dump({"source": SOURCE,
            "length": round(length, 1), "tunnel": [raw[i0][0], raw[i1][0]], "profile": out}, open("profile.json", "w", encoding="utf-8"))
 hs = [h for _, h in out]
 grades = [abs(out[i + 1][1] - out[i][1]) / max(out[i + 1][0] - out[i][0], 1) for i in range(len(out) - 1)]
 print("length", round(length), "min", min(hs), "max", max(hs), "range", round(max(hs) - min(hs), 1), "max grade %.1f%%" % (100 * max(grades)))
 for n, lat, lon in [("Start", 43.7340, 7.4214), ("Ste Devote", 43.7369, 7.4217), ("Casino", 43.7394, 7.4274), ("Mirabeau", 43.7411, 7.4288), ("Portier", 43.7410, 7.4303), ("Chicane", 43.7371, 7.4250), ("Tabac", 43.7369, 7.4230), ("Rascasse", 43.7325, 7.4227)]:
-    s = raw[nearest_s((lat, lon))][0]
+    s = cl_s[nearest_s((lat, lon))]
     i = min(range(len(out)), key=lambda k: abs(out[k][0] - s))
     print(f"{n:11s} s={out[i][0]:6.0f} h={out[i][1]:5.1f}")

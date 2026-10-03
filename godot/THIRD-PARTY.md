@@ -1,4 +1,4 @@
-# Third-party download ledger
+﻿# Third-party download ledger
 
 The shipped game runs offline. Reference images under `reference/` are ignored and explicitly excluded from the export; they are never used as runtime textures. This ledger records the follow-up downloads separately from already-vendored assets.
 
@@ -18,8 +18,8 @@ Downloaded 2026-09-21. Authors/rightsholders: Sony/Polyphony Digital for GT4; El
 
 ## Additional CC0 photographs (2026-09-21)
 
-- **Kloofendal 48d partly cloudy pure sky**, Greg Zaal (photography), Jarod Guest (sky edits). [Asset page](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky), [1K HDR download](https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr). Use: downsampled, tone-mapped 256×128 RGB555 sky and reflection maps, with original horizon treatment.
-- **Pine Tree 01 twig diffuse and alpha**, Rob Tuytel (photography), Rico Cilliers (modeling). [Asset page](https://polyhaven.com/a/pine_tree_01), [diffuse PNG](https://dl.polyhaven.org/file/ph-assets/Models/png/1k/pine_tree_01/pine_tree_01_twig_diff_1k.png), [alpha PNG](https://dl.polyhaven.org/file/ph-assets/Models/png/1k/pine_tree_01/pine_tree_01_twig_alpha_1k.png). Use: an original arrangement of photographed branches on a 128×256, 16-colour tree card. No downloaded tree geometry.
+- **Kloofendal 48d partly cloudy pure sky**, Greg Zaal (photography), Jarod Guest (sky edits). [Asset page](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky), [1K HDR download](https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr). Use: downsampled, tone-mapped 256Ã—128 RGB555 sky and reflection maps, with original horizon treatment.
+- **Pine Tree 01 twig diffuse and alpha**, Rob Tuytel (photography), Rico Cilliers (modeling). [Asset page](https://polyhaven.com/a/pine_tree_01), [diffuse PNG](https://dl.polyhaven.org/file/ph-assets/Models/png/1k/pine_tree_01/pine_tree_01_twig_diff_1k.png), [alpha PNG](https://dl.polyhaven.org/file/ph-assets/Models/png/1k/pine_tree_01/pine_tree_01_twig_alpha_1k.png). Use: an original arrangement of photographed branches on a 128Ã—256, 16-colour tree card. No downloaded tree geometry.
 
 Both are CC0 1.0. Original bytes and hashes are recorded in `assets/cc0-source/sources.json`. The [unmodified CC0 legal text](https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt) is vendored in `assets/licenses/CC0-1.0.txt` and copied beside the executable. Raw build sources are excluded from the executable; converted runtime textures are packed into it. Pillow 12.3.0 was already available in the bundled build runtime; no package installation or Blender was needed.
 
@@ -45,8 +45,8 @@ Edits: mono conversion, removal of DC/wind rumble, selected excerpts, pitch stab
 Authored in-engine and via `tools/generate_vehicle_audio_suite.py` (MIT License) without proprietary or external binary audio blobs. All audio assets are generated from mathematical acoustic models (additive/subtractive synthesis, physical harmonic series, FIR bandpass/comb filtering):
 - **Per-Car Engine Sound Banks** (`assets/audio/` + `assets/audio/per-car-manifest.json`):
   - `roadster`: Mazda MX-5 NA 1.6 Inline-4 (1-3-4-2 firing pulses, intake bark, 7200 RPM redline);
-  - `f296gt3`: Ferrari 296 GT3 (120° V6 Twin-Turbo growl + compressor spool, 8500 RPM redline);
-  - `gt`: Grand Tourer (90° Crossplane V8 with 1-8-4-3-6-5-7-2 burble, 7500 RPM redline);
+  - `f296gt3`: Ferrari 296 GT3 (120Â° V6 Twin-Turbo growl + compressor spool, 8500 RPM redline);
+  - `gt`: Grand Tourer (90Â° Crossplane V8 with 1-8-4-3-6-5-7-2 burble, 7500 RPM redline);
   - `f2004`: Ferrari F2004 3.0L V10 (screaming high-order harmonics, 18,500 RPM redline);
   - `rb19`: Red Bull RB19 (1.6L V6 Turbo Hybrid + MGU-K electric whine, 15,000 RPM redline).
 - **Physical Wavetables & Environmental SFX**:
@@ -59,7 +59,7 @@ Authored in-engine and via `tools/generate_vehicle_audio_suite.py` (MIT License)
 
 ## Circuit geometry and elevation data
 
-- **Spa-Francorchamps & Nürburgring Nordschleife**:
+- **Spa-Francorchamps & NÃ¼rburgring Nordschleife**:
   - Centerline geometry: OpenStreetMap contributors, Open Database License (ODbL 1.0, https://opendatacommons.org/licenses/odbl/).
   - Elevation: EU-DEM v1.1 (Copernicus Land Monitoring Service) and SRTM 30m (NASA, public domain), accessed via OpenTopoData.
   - Derived documents in `tracks/` and `trackgen/` are made available under the ODbL.
@@ -68,30 +68,30 @@ Authored in-engine and via `tools/generate_vehicle_audio_suite.py` (MIT License)
 
 Checked 2026-09-22; no data from these sources has been downloaded, committed or shipped. See [P5-01 source notes](docs/rebuild/data-sources-P5-01.md) for access, resolution and survey caveats. Recheck each licence when fetching data, and record the access date, exact files and any modifications before using derived data.
 
-- **Nordschleife:** [LVermGeo Rheinland-Pfalz open data](https://lvermgeo.rlp.de/geodaten-geoshop/open-data): DGM1 terrain, DOM1 surface model, laser point clouds and DOP20 orthophotos. Licence: Datenlizenz Deutschland – Namensnennung – Version 2.0 (dl-de/by-2-0). Attribution for modified data: `©GeoBasis-DE / LVermGeoRP<year>, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`; replace `<year>` with the year of data access.
-- **Spa-Francorchamps:** Service public de Wallonie [MNT 1 m 2021–2022](https://geoportail.wallonie.be/catalogue/fe13bc84-e371-46ca-9632-8ad4139f1ee5.html) terrain and [Orthophotos 2023 Été](https://geoportail.wallonie.be/catalogue/ad55c2ce-62ad-4c3c-b3cf-8fbc270a6b6e.html). Both are CC BY 4.0. Attribute SPW, each dataset's catalogue title and source URL, and indicate modifications. Record the final attribution in the game's credits when derived data first ships.
+- **Nordschleife:** [LVermGeo Rheinland-Pfalz open data](https://lvermgeo.rlp.de/geodaten-geoshop/open-data): DGM1 terrain, DOM1 surface model, laser point clouds and DOP20 orthophotos. Licence: Datenlizenz Deutschland â€“ Namensnennung â€“ Version 2.0 (dl-de/by-2-0). Attribution for modified data: `Â©GeoBasis-DE / LVermGeoRP<year>, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`; replace `<year>` with the year of data access.
+- **Spa-Francorchamps:** Service public de Wallonie [MNT 1 m 2021â€“2022](https://geoportail.wallonie.be/catalogue/fe13bc84-e371-46ca-9632-8ad4139f1ee5.html) terrain and [Orthophotos 2023 Ã‰tÃ©](https://geoportail.wallonie.be/catalogue/ad55c2ce-62ad-4c3c-b3cf-8fbc270a6b6e.html). Both are CC BY 4.0. Attribute SPW, each dataset's catalogue title and source URL, and indicate modifications. Record the final attribution in the game's credits when derived data first ships.
 
 ## Spa authored TrackAsset v0 (P6-01; downloaded 2026-09-23)
 
-- **Centreline:** © OpenStreetMap contributors, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Fresh raw way/node JSON were obtained from the official OSM API after three Overpass endpoints failed. The GP raceway ways were joined in their one-way racing direction, projected to local metres, resampled to about 10 m and rotated to an approximate start line before La Source. Geometry was not scaled to force the nominal lap length. The raw extract and derived centreline database, including its derivation script, are distributed under ODbL in `trackgen/data/spa/`; [OSM attribution](https://www.openstreetmap.org/copyright).
-- **Elevation:** Service public de Wallonie (SPW) - **Relief de la Wallonie - Modèle Numérique de Terrain (MNT) 2021-2022 (2024-01-23)**, © SPW 2021-2022, [source catalogue](https://geoportail.wallonie.be/catalogue/a004e570-99d6-4fe5-b83d-49b774409278.html), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Licence rechecked on download day. The public MapServer's 0.5 m LiDAR ground model was sampled via its numeric identify API, producing a compact **20 m terrain crop** and independently sampled road heights about every 20 m. Modifications: coordinate conversion, cropping, resampling, road median/Gaussian smoothing, curvature constraint and subtraction of the start-line height. Raw numeric responses and the derived float32 grid are preserved. This is not a full-resolution LiDAR mesh. Buildings, vegetation and bridges are absent from the source terrain.
+- **Centreline:** Â© OpenStreetMap contributors, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Fresh raw way/node JSON were obtained from the official OSM API after three Overpass endpoints failed. The GP raceway ways were joined in their one-way racing direction, projected to local metres, resampled to about 10 m and rotated to an approximate start line before La Source. Geometry was not scaled to force the nominal lap length. The raw extract and derived centreline database, including its derivation script, are distributed under ODbL in `trackgen/data/spa/`; [OSM attribution](https://www.openstreetmap.org/copyright).
+- **Elevation:** Service public de Wallonie (SPW) - **Relief de la Wallonie - ModÃ¨le NumÃ©rique de Terrain (MNT) 2021-2022 (2024-01-23)**, Â© SPW 2021-2022, [source catalogue](https://geoportail.wallonie.be/catalogue/a004e570-99d6-4fe5-b83d-49b774409278.html), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Licence rechecked on download day. The public MapServer's 0.5 m LiDAR ground model was sampled via its numeric identify API, producing a compact **20 m terrain crop** and independently sampled road heights about every 20 m. Modifications: coordinate conversion, cropping, resampling, road median/Gaussian smoothing, curvature constraint and subtraction of the start-line height. Raw numeric responses and the derived float32 grid are preserved. This is not a full-resolution LiDAR mesh. Buildings, vegetation and bridges are absent from the source terrain.
 
-- **Polish (P6-01, downloaded 2026-09-23):** road cross-sections from the same SPW MNT 2021-2022 0.5 m ground model (39,843 points across the road every ~10 m; `cross-sections.json`, `fetch_sections.py`) give the crossfall banking. Service public de Wallonie (SPW) - **Orthophotos 2023 Été**, © SPW, [source catalogue](https://geoportail.wallonie.be/catalogue/ad55c2ce-62ad-4c3c-b3cf-8fbc270a6b6e.html), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): 70 tiles of 140 m at 0.25 m/px exported along the circuit (`ortho-tiles.json`, `fetch_ortho.py`), used only to measure road half-widths to the white track-limit lines and kerb positions (`road-profile.json`, `analyse_road.py`). Modifications: colour classification along lines perpendicular to the OSM centreline, median smoothing, linear fits. The images themselves are not distributed.
+- **Polish (P6-01, downloaded 2026-09-23):** road cross-sections from the same SPW MNT 2021-2022 0.5 m ground model (39,843 points across the road every ~10 m; `cross-sections.json`, `fetch_sections.py`) give the crossfall banking. Service public de Wallonie (SPW) - **Orthophotos 2023 Ã‰tÃ©**, Â© SPW, [source catalogue](https://geoportail.wallonie.be/catalogue/ad55c2ce-62ad-4c3c-b3cf-8fbc270a6b6e.html), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): 70 tiles of 140 m at 0.25 m/px exported along the circuit (`ortho-tiles.json`, `fetch_ortho.py`), used only to measure road half-widths to the white track-limit lines and kerb positions (`road-profile.json`, `analyse_road.py`). Modifications: colour classification along lines perpendicular to the OSM centreline, median smoothing, linear fits. The images themselves are not distributed.
 
 Exact requests, SHA-256 hashes, source limitations, the heightmap header and source measurements are recorded in [the Spa data README](trackgen/data/spa/README.md) and `trackgen/data/spa/sources.json`. Unmodified ODbL and CC BY licence texts are vendored under `trackgen/data/spa/licenses/`. The drive scene shows the abbreviated OSM/SPW attribution supplied by the generated TrackAsset; this ledger supplies the full titles, source links and modification details.
 
 ## Nordschleife Section 1 authored TrackAsset v0 (P6-02a; downloaded 2026-09-23)
 
-- **Centreline:** © OpenStreetMap contributors, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). The Section 1 raceway ways from T13 to Aremberg exit (~4.16 km) were extracted from the Nordschleife loop, projected to local metres (ETRS89 / UTM 32N origin at T13 Start Line: 50.33771 N, 6.95108 E), and closed with an engineered return road loop. The derived centreline database and builder script are in `trackgen/data/nordschleife/`; [OSM attribution](https://www.openstreetmap.org/copyright).
-- **Elevation:** Landesamt für Vermessung und Geobasisinformation Rheinland-Pfalz (LVermGeo RLP) - **Digitales Geländemodell 1 m (DGM1)**, 2025 survey, [source catalogue](https://geoshop.rlp.de/opendata-dgm1.html), [dl-de/by-2-0](licenses/dl-de-by-2.0.txt). Licence rechecked on download day. 20 tiles of 1 m LiDAR DGM1 (UTM Zone 32, E 351..354, N 5577..5581) were acquired. Road elevations were sampled directly from the 1 m LiDAR DEM with median and Gaussian smoothing. Crossfall bankings (+6.9° at Aremberg to -5.6° at Hatzenbogen) and tarmac widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections. Surrounding terrain is exported as a 20 m grid in `dem.raw` referenced to the start line elevation (619.38 m). Raw GeoTIFF downloads are kept outside git.
-- **Attribution:** `© GeoBasis-DE / LVermGeoRP 2026, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`.
+- **Centreline:** Â© OpenStreetMap contributors, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). The Section 1 raceway ways from T13 to Aremberg exit (~4.16 km) were extracted from the Nordschleife loop, projected to local metres (ETRS89 / UTM 32N origin at T13 Start Line: 50.33771 N, 6.95108 E), and closed with an engineered return road loop. The derived centreline database and builder script are in `trackgen/data/nordschleife/`; [OSM attribution](https://www.openstreetmap.org/copyright).
+- **Elevation:** Landesamt fÃ¼r Vermessung und Geobasisinformation Rheinland-Pfalz (LVermGeo RLP) - **Digitales GelÃ¤ndemodell 1 m (DGM1)**, 2025 survey, [source catalogue](https://geoshop.rlp.de/opendata-dgm1.html), [dl-de/by-2-0](licenses/dl-de-by-2.0.txt). Licence rechecked on download day. 20 tiles of 1 m LiDAR DGM1 (UTM Zone 32, E 351..354, N 5577..5581) were acquired. Road elevations were sampled directly from the 1 m LiDAR DEM with median and Gaussian smoothing. Crossfall bankings (+6.9Â° at Aremberg to -5.6Â° at Hatzenbogen) and tarmac widths (8.5 to 11.8 m) were surveyed directly from DEM cross-sections. Surrounding terrain is exported as a 20 m grid in `dem.raw` referenced to the start line elevation (619.38 m). Raw GeoTIFF downloads are kept outside git.
+- **Attribution:** `Â© GeoBasis-DE / LVermGeoRP 2026, dl-de/by-2-0, www.lvermgeo.rlp.de [Daten bearbeitet]`.
 - Hashes and file metadata are recorded in `trackgen/data/nordschleife/sources.json`. Unmodified ODbL and dl-de/by-2-0 license texts are vendored under `trackgen/data/nordschleife/licenses/`.
 
 ## CAR-01 Mazda MX-5 / Miata NA exterior (2026-09-24)
 
 **Mazda Miata MX-5 NA** by **Lexyc16**, [Sketchfab source](https://sketchfab.com/3d-models/mazda-miata-mx-5-na-d51fcd44b74f4daf8012c41e0400c041), is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The author-supplied attribution and license details are preserved in `assets/cars/mx5na/license.txt`. Source glTF ZIP SHA-256: `69438fb7e708c1c0c42b9ab89e1d82125a19196caf86dbfe008215c4a99b3c5f`.
 
-Modifications: fitted and reoriented the body to the roadster preset and 3970 × 1675 × 1230 mm NA dimensions; removed the source display plane, wheels, and an unneeded interior mesh; rebuilt normals; replaced the paint material with preset-driven colour; added night lamp glow meshes and game wheel assemblies. The source and fitted glTF are in `assets/cars/mx5na/`; `prepare.py` records the fit. The author does not endorse this game.
+Modifications: fitted and reoriented the body to the roadster preset and 3970 Ã— 1675 Ã— 1230 mm NA dimensions; removed the source display plane, wheels, and an unneeded interior mesh; rebuilt normals; replaced the paint material with preset-driven colour; added night lamp glow meshes and game wheel assemblies. The source and fitted glTF are in `assets/cars/mx5na/`; `prepare.py` records the fit. The author does not endorse this game.
 
 ## Tree cards and horizon (Look-6; downloaded 2026-09-24)
 
@@ -105,7 +105,7 @@ A second atlas, `assets/undergrowth/undergrowth_atlas.png` (1.8 MB), holds low v
 
 ## Chicago circuit (CHI-01)
 
-Road scaffold © OpenStreetMap contributors, ODbL 1.0 (https://www.openstreetmap.org/copyright;
+Road scaffold Â© OpenStreetMap contributors, ODbL 1.0 (https://www.openstreetmap.org/copyright;
 https://opendatacommons.org/licenses/odbl/1-0/). The source and edited geographic data are available
 in `godot/trackgen/data/chicago/` in https://github.com/SnekPolylepis/Racingsim .
 Acquired 2026-09-25; widths, heights, corner easing and two game-only ramp connectors are authored.
@@ -134,7 +134,7 @@ Tribune Tower, Board of Trade, Michigan Avenue, State Street and LaSalle Street 
 ### Chicago city, models and textures added after CHI-01 (2026-09-25 to 2026-09-27)
 
 - **Streets, buildings, water and parks** of downtown Chicago (`trackgen/data/chicago/city.json`, from
-  `osm-roads.json` and the OSM extract described in that folder's README): © OpenStreetMap contributors,
+  `osm-roads.json` and the OSM extract described in that folder's README): Â© OpenStreetMap contributors,
   ODbL 1.0. Footprints, heights and kinds are derived from OSM; the meshes are generated.
 - **Parked cars** (`assets/chicago/cars/`): Kenney Car Kit, CC0 1.0, https://kenney.nl/assets/car-kit .
 - **Particle sprites** (`assets/particles/particle_atlas.png`): eight sprites from the Kenney Particle
@@ -155,7 +155,7 @@ landmark is used.
 ## ASSET-02 models (Sketchfab, downloaded by the owner 2026-09-26; reduced with tools/blender/)
 
 Monaco's Fairmont island palm: Kenney, [Nature Kit 2.1](https://kenney.nl/assets/nature-kit),
-CC0 1.0. Original `tree_palmDetailedTall.glb`, used at 4.5× scale. Model and original licence in
+CC0 1.0. Original `tree_palmDetailedTall.glb`, used at 4.5Ã— scale. Model and original licence in
 `assets/nature/kenney/`.
 
 All CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified: re-oriented, scaled, split, decimated,
@@ -176,7 +176,7 @@ textures reduced.
 | kloofendal_48d_partly_cloudy_puresky and kloppenheim_07_puresky HDRIs (Chicago sky) | Poly Haven | CC0 1.0 | godot/assets/chicago/sky/ |
 | City of Chicago Building Footprints (storey counts) | data.cityofchicago.org syp8-uezg | City of Chicago Data Portal terms | godot/assets/cc0-source/chicago/roadmap/city-footprints.json |
 | USGS 3DEP LiDAR IL 4County Cook 2017 (building roof shapes, Chicago) | USGS via usgs-lidar-public (Entwine) | Public domain (US Government) | baked into godot/trackgen/data/chicago/city.json; fetch_lidar.py |
-| Navy Pier Marina amenities-building approved dimensions | Town Studios Inc., sheets A-1–A-4, City of Chicago [PD527 public planning file](https://gisapps.chicago.gov/gisimages/zoning_pds/PD527.pdf), January 2025 approval, pages 3–6 | Factual dimensions transcribed with source citation; architectural drawings/images are not redistributed as game textures | godot/trackgen/data/chicago/landmarks.json, w1417040524 |
+| Navy Pier Marina amenities-building approved dimensions | Town Studios Inc., sheets A-1â€“A-4, City of Chicago [PD527 public planning file](https://gisapps.chicago.gov/gisimages/zoning_pds/PD527.pdf), January 2025 approval, pages 3â€“6 | Factual dimensions transcribed with source citation; architectural drawings/images are not redistributed as game textures | godot/trackgen/data/chicago/landmarks.json, w1417040524 |
 | Chicago Athletic Association facade photo | Beyond My Ken, Wikimedia Commons | CC BY-SA 4.0 (texture is a derivative, same licence) | godot/assets/chicago/facade-photos/caa_east.jpg |
 | University Club of Chicago facade photo | Beyond My Ken, Wikimedia Commons | CC BY-SA 4.0 (texture is a derivative, same licence) | godot/assets/chicago/facade-photos/uc_east.jpg |
 | University Club full east-facade reference (16 May 2018) | David Brossard, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:University_Club_of_Chicago_(44385995292).jpg) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/); unchanged source bitmap, facade derivative uses projective UVs, same licence | godot/assets/chicago/facade-photos/uc_2018_full.jpg |
@@ -225,3 +225,9 @@ download URLs, API MD5 and SHA-256. Applied only to three OSM surface=wood
 pier areas. Generic material example, not a photograph of the installed docks;
 exact finish, board layout and dimensions remain unverified. Texture source
 spans approximately 1800 mm per the API, not an installed-dock measurement.
+
+## Monaco (2026-10-03)
+
+IGN RGE ALTI 1 m digital terrain model (bare earth), sampled through the Geoplateforme altimetry service (https://data.geopf.fr/altimetrie), IGN Licence Ouverte 2.0 (Etalab): road profile `trackgen/data/monaco/ign.json` and ground grid `ign-grid.json` (fetch_ign.py, build_city.py).
+
+Poly Haven CC0 texture set `sandstone_blocks_05` (1K albedo, OpenGL normal, roughness; https://polyhaven.com/a/sandstone_blocks_05) in `assets/textures/monaco/sandstone_blocks_05/`: Monaco's roadside retaining walls.

@@ -1,4 +1,4 @@
-extends SceneTree
+﻿extends SceneTree
 ## Circuit de Monaco (3.32 km), built from real data in trackgen/data/monaco/ (README there):
 ##   Lap        the OpenStreetMap streets and raceway ways of the Grand Prix lap, chained in race order
 ##              (build_route.py): Boulevard Albert 1er, Sainte-Devote, Avenue d'Ostende (Beau Rivage),
@@ -103,7 +103,7 @@ static func build_asset() -> Node3D:
 	asset.name = "Monaco"
 	asset.id = "monaco"
 	asset.display_name = "Circuit de Monaco"
-	asset.version = 4
+	asset.version = 5
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
 	road.curve = route_curve(d.road)
@@ -123,6 +123,8 @@ static func build_asset() -> Node3D:
 	)
 	road.sections.append(RoadSection.make(0.0, _section(START_HALF_WIDTH, false)))
 	for c in CORNERS:
+		if c[0] == "Nouvelle Chicane":
+			continue  # its own keys below
 		var section = _section(c[3], c[4])
 		if c[0] == "Piscine":
 			section.runoff_left = 4.0
@@ -134,7 +136,18 @@ static func build_asset() -> Node3D:
 			section.runoff_left = 4.0
 			section.runoff_right = 4.0
 		road.sections.append(RoadSection.make(at, section))
+	# Owner: Nouvelle Chicane is open asphalt with kerbs, not a walled channel. Tarmac runoff both sides
+	# through the chicane; the barriers and fences sit beyond the runoff, so they step back with it.
+	var chicane = Vector2(corners["Nouvelle Chicane"] - 40.0, corners["Nouvelle Chicane"] + 70.0)
+	for at in [chicane.x, chicane.x + 20.0, chicane.y - 20.0, chicane.y]:
+		var section = _section(5.0, true)
+		section.kerb_width = 1.0
+		if at > chicane.x and at < chicane.y:
+			section.runoff_left = 7.0
+			section.runoff_right = 7.0
+		road.sections.append(RoadSection.make(at, section))
 	road.sections.sort_custom(func(a, b): return a.at < b.at)
+	asset.set_meta("chicane", chicane)
 	attach(asset, asset, road, "Main")
 	road.bake()
 	asset.set_meta("corners", corners)
@@ -192,6 +205,7 @@ static func build_asset() -> Node3D:
 	_impact_blocks(asset, scenery, road, corners)
 	var garden_trees = _ground(asset, scenery, d.ground)
 	_sea(asset, scenery, d.ground)
+	_retaining_walls(asset, scenery, d.ground, tunnel)
 	_fairmont_island(asset, scenery, road, corners["Grand Hotel Hairpin"], d.ground)
 	var casino = _buildings(asset, scenery, d.buildings)
 	if not casino.is_empty():
@@ -360,14 +374,8 @@ static func _fairmont_island(
 		(aa * (b.y - c.y) + bb * (c.y - a.y) + cc * (a.y - b.y)) / det,
 		(aa * (c.x - b.x) + bb * (a.x - c.x) + cc * (b.x - a.x)) / det
 	)
-	var gx = (center.x - float(terrain.x0)) / float(terrain.cell)
-	var gz = (center.y - float(terrain.z0)) / float(terrain.cell)
-	var ix = clampi(floori(gx), 0, int(terrain.nx) - 2)
-	var iz = clampi(floori(gz), 0, int(terrain.nz) - 2)
-	var tx = clampf(gx - ix, 0.0, 1.0)
-	var tz = clampf(gz - iz, 0.0, 1.0)
-	var h: Array = terrain.h
-	var ground_y = lerpf(lerpf(h[iz][ix], h[iz][ix + 1], tx), lerpf(h[iz + 1][ix], h[iz + 1][ix + 1], tx), tz)
+	var ground_y = _ground_y(terrain, center.x, center.y)
+
 	var bed = CylinderMesh.new()
 	bed.top_radius = 2.7
 	bed.bottom_radius = 2.9
@@ -471,7 +479,10 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 		if b[3] == "fairmont":
 			tint = Color(0.9, 0.84, 0.72)
 		var seed = rng.randf()
-		_extrude(chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), seed, layer, tint)
+		# The Fairmont stands on the tunnel roof, over the road and the sea: close its underside.
+		_extrude(
+			chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), seed, layer, tint, b[3] == "fairmont"
+		)
 		# Nearby apartment terraces need a silhouette and cast shadow, beyond the painted distant facade.
 		var near = curve.get_closest_point(Vector3(c.x, b[1], c.y))
 		if (
@@ -573,7 +584,8 @@ static func _extrude(
 	top: float,
 	seed: float,
 	layer: float,
-	tint: Color
+	tint: Color,
+	underside := false
 ) -> void:
 	var code = (roundi(tint.r * 5) * 36 + roundi(tint.g * 5) * 6 + roundi(tint.b * 5) + 1) / 255.0
 	var c = Vector2.ZERO
@@ -611,6 +623,12 @@ static func _extrude(
 			var p = ring[tris[i + k]]
 			st.set_uv(p)
 			st.add_vertex(Vector3(p.x, top, p.y))
+	if underside:
+		for i in range(0, tris.size(), 3):
+			for k in [0, 1, 2]:
+				var p = ring[tris[i + k]]
+				st.set_uv(p)
+				st.add_vertex(Vector3(p.x, bottom, p.y))
 
 
 ## Generic sponsor colours for the barrier panels (no real brands).
@@ -625,43 +643,110 @@ const AD_COLORS = [
 ]
 
 
-## Road half-width at `s` (the last section key at or before it).
-static func _half_at(road, s: float) -> float:
-	var half = START_HALF_WIDTH
-	for sec in road.sections:
-		if sec.at <= s:
-			half = sec.width_right
-	return half
+## The baked barrier line on one side as [road metres, inner-face base point, outward] every 2 m. Dressing
+## mounted on the armco reads this, so it can never part from the barrier where the road width blends.
+static func _barrier_line(asset: Node3D, side: int) -> Array:
+	var out = []
+	var prefix = "LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier"
+	for title in [prefix, prefix + "B"]:
+		var wall = asset.get_node(title)
+		var line: PackedVector3Array = wall.last_bake.line
+		var count = line.size() - 1
+		for i in line.size():
+			var s = wall.from_m + (wall.to_m - wall.from_m) * i / maxf(count, 1)
+			out.append([s, line[i], wall.last_bake.outward[i]])
+	return out
+
+
+## Ground height from the city grid (bilinear), as the ground mesh draws it.
+static func _ground_y(g: Dictionary, x: float, z: float) -> float:
+	var gx = (x - float(g.x0)) / float(g.cell)
+	var gz = (z - float(g.z0)) / float(g.cell)
+	var ix = clampi(floori(gx), 0, int(g.nx) - 2)
+	var iz = clampi(floori(gz), 0, int(g.nz) - 2)
+	var tx = clampf(gx - ix, 0.0, 1.0)
+	var tz = clampf(gz - iz, 0.0, 1.0)
+	var h: Array = g.h
+	return lerpf(lerpf(h[iz][ix], h[iz][ix + 1], tx), lerpf(h[iz + 1][ix], h[iz + 1][ix + 1], tx), tz)
+
+
+## Dressed-stone retaining walls behind the pavement wherever the hillside stands above the road (Mirabeau,
+## the Fairmont hairpin, Portier, Beau Rivage). build_city.py steps the IGN ground up to full height by 16 m
+## out on that side; the wall's face, 2.5 m behind the barrier, hides the step. Visual only.
+static func _retaining_walls(asset: Node3D, parent: Node, g: Dictionary, tunnel: Vector2) -> void:
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
+		var line = _barrier_line(asset, side)
+		var u = 0.0
+		for i in line.size() - 1:
+			var a = line[i]
+			var b = line[i + 1]
+			var step = a[1].distance_to(b[1])
+			if step > 6.0 or (a[0] > tunnel.x - 2.0 and a[0] < tunnel.y + 2.0):
+				continue
+			var pa: Vector3 = a[1] + a[2] * 2.5
+			var pb: Vector3 = b[1] + b[2] * 2.5
+			var back_a: Vector3 = a[1] + a[2] * 10.0
+			var back_b: Vector3 = b[1] + b[2] * 10.0
+			var top_a = _ground_y(g, back_a.x, back_a.z) + 0.6
+			var top_b = _ground_y(g, back_b.x, back_b.z) + 0.6
+			if minf(top_a - pa.y, top_b - pb.y) < 1.5:
+				u += step
+				continue
+			var base_a = Vector3(pa.x, pa.y - 0.3, pa.z)
+			var base_b = Vector3(pb.x, pb.y - 0.3, pb.z)
+			var crown_a = Vector3(pa.x, top_a, pa.z)
+			var crown_b = Vector3(pb.x, top_b, pb.z)
+			_quad(st, base_a, base_b, crown_b, crown_a, u, u + step)
+			# Coping: a 0.6 m deep cap back towards the hill.
+			_quad(st, crown_a, crown_b, crown_b + b[2] * 0.6, crown_a + a[2] * 0.6, u, u + step)
+			u += step
+	st.generate_normals()
+	var mat = StandardMaterial3D.new()
+	var dir = "res://assets/textures/monaco/sandstone_blocks_05/sandstone_blocks_05_"
+	mat.albedo_texture = load(dir + "diff_1k.jpg")
+	mat.normal_enabled = true
+	mat.normal_texture = load(dir + "nor_gl_1k.jpg")
+	mat.roughness_texture = load(dir + "rough_1k.jpg")
+	mat.uv1_scale = Vector3(0.4, 0.4, 1.0)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	var node = MeshInstance3D.new()
+	node.mesh = st.commit()
+	node.material_override = mat
+	attach(asset, parent, node, "StoneWalls")
 
 
 ## Advertising panels flat on the armco face, both sides, end to end, as on the F1 onboards; none in the
 ## tunnel. One MultiMesh with per-panel colour.
 static func _ad_panels(asset: Node3D, parent: Node, road, tunnel: Vector2) -> void:
-	var c: Curve3D = road.working_curve()
-	var length = c.get_baked_length()
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 98010
 	var xforms = []
 	var colors = []
 	var customs = []
-	var at = 3.0
-	var pool_gap: Vector2 = asset.get_meta("pool_gap")
-	while at < length:
-		if (at < tunnel.x - 5.0 or at > tunnel.y + 5.0) and (at < pool_gap.x - 3.0 or at > pool_gap.y + 3.0):
-			var f = _level_frame(c, at)
-			# Follow the road's pitch so panels on the Beau Rivage climb run with the barrier, not in steps.
-			var along = (
-				(c.sample_baked(minf(at + 3.0, length)) - c.sample_baked(maxf(at - 3.0, 0.0))).normalized()
-			)
-			var up = f[1].cross(along).normalized()
-			for side in [-1.0, 1.0]:
-				var p = f[0] + f[1] * side * (_half_at(road, at) + 1.08) + up * 0.55
-				xforms.append(
-					Transform3D(Basis(along, up, f[1]) * Basis.from_scale(Vector3(5.9, 0.9, 0.04)), p)
-				)
-				colors.append(AD_COLORS[rng.randi() % AD_COLORS.size()])
-				customs.append(Color((rng.randi() % 4 + 0.5) / 4.0, rng.randf(), 0, 0))
-		at += 6.0
+	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
+		var line = _barrier_line(asset, side)
+		# One 6 m panel per three 2 m barrier points, centred on the middle one.
+		for i in range(1, line.size() - 1, 3):
+			var s = line[i][0]
+			if s > tunnel.x - 5.0 and s < tunnel.y + 5.0:
+				continue
+			var a: Vector3 = line[i - 1][1]
+			var b: Vector3 = line[i + 1][1]
+			# Follow the barrier's pitch so panels on the Beau Rivage climb run with it, not in steps.
+			var along = (b - a).normalized()
+			var outward: Vector3 = line[i][2]
+			if along.length() < 0.5 or a.distance_to(b) > 6.0:
+				continue
+			var up = along.cross(outward).normalized()
+			if up.y < 0.0:
+				up = -up
+			var normal = along.cross(up).normalized()
+			var p = line[i][1] - outward * 0.05 + up * 0.55
+			xforms.append(Transform3D(Basis(along, up, normal) * Basis.from_scale(Vector3(5.9, 0.9, 0.04)), p))
+			colors.append(AD_COLORS[rng.randi() % AD_COLORS.size()])
+			customs.append(Color((rng.randi() % 4 + 0.5) / 4.0, rng.randf(), 0, 0))
 	var mat = ShaderMaterial.new()
 	mat.shader = preload("res://shaders/ad_panel.gdshader")
 	var mesh = BoxMesh.new()
@@ -693,17 +778,19 @@ static func _impact_blocks(asset: Node3D, parent: Node, road, corners: Dictionar
 		var f0 = _level_frame(c, fposmod(apex - 10.0, length))
 		var f1 = _level_frame(c, fposmod(apex + 10.0, length))
 		# Turning right when the right vector swings toward the tangent's old side: outside is the left.
-		var outside = -1.0 if f0[1].cross(f1[1]).y < 0.0 else 1.0
-		var at = apex - 25.0
+		var outside = WallPath.Side.LEFT if f0[1].cross(f1[1]).y < 0.0 else WallPath.Side.RIGHT
+		# Stacked against the armco's inner face (the baked barrier line), one 1.9 m block per 2 m point.
 		var k = 0
-		while at < apex + 25.0:
-			var f = _level_frame(c, fposmod(at, length))
-			var p = f[0] + f[1] * outside * (_half_at(road, fposmod(at, length)) + 0.85) + Vector3(0, 0.45, 0)
+		for q in _barrier_line(asset, outside):
+			var d = fposmod(q[0] - apex + length * 0.5, length) - length * 0.5
+			if absf(d) > 25.0:
+				continue
+			var outward: Vector3 = q[2]
+			var p: Vector3 = q[1] - outward * 0.36 + Vector3(0, 0.45, 0)
 			var xf = Transform3D(
-				Basis(f[1].cross(Vector3.UP), Vector3.UP, f[1]) * Basis.from_scale(Vector3(1.4, 0.9, 0.7)), p
+				Basis(outward.cross(Vector3.UP), Vector3.UP, outward) * Basis.from_scale(Vector3(1.9, 0.9, 0.7)), p
 			)
 			(red if k % 2 == 0 else white).append(xf)
-			at += 1.5
 			k += 1
 	for batch in [
 		[red, Color(0.78, 0.08, 0.07), "ImpactBlocksRed"],

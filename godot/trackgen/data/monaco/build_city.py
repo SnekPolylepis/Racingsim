@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Monaco data for trackgen/monaco.gd -> city.json, all in local metres about ORIGIN (+X east, +Z south, +Y up).
 
   road       the lap centreline resampled to 3 m, y from profile.json
@@ -158,6 +158,34 @@ x0, x1 = min(xs) - 400, max(xs) + 400
 z0, z1 = min(zs) - 400, max(zs) + 400
 G = 8.0
 nx, nz = int((x1 - x0) / G) + 1, int((z1 - z0) / G) + 1
+
+def ign_grid():
+    """IGN RGE ALTI bare-earth heights on this grid, cached in ign-grid.json (one network fetch)."""
+    key = [round(x0, 2), round(z0, 2), nx, nz, G]
+    try:
+        cached = json.load(open("ign-grid.json", encoding="utf-8"))
+        if cached["key"] == key:
+            return cached["h"]
+    except FileNotFoundError:
+        pass
+    import urllib.request
+    pts = [latlon(x0 + ix * G, z0 + iz * G) for iz in range(nz) for ix in range(nx)]
+    flat = []
+    for i in range(0, len(pts), 200):
+        batch = pts[i : i + 200]
+        body = json.dumps({"lon": "|".join(f"{p[1]:.7f}" for p in batch), "lat": "|".join(f"{p[0]:.7f}" for p in batch),
+                           "resource": "ign_rge_alti_wld", "zonly": "true"}).encode()
+        req = urllib.request.Request("https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json", body,
+                                     {"Content-Type": "application/json"})
+        flat += json.load(urllib.request.urlopen(req))["elevations"]
+    h = [[round(v, 2) for v in flat[iz * nx : (iz + 1) * nx]] for iz in range(nz)]
+    json.dump({"source": "IGN RGE ALTI via data.geopf.fr, Licence Ouverte 2.0", "key": key, "h": h},
+              open("ign-grid.json", "w", encoding="utf-8"))
+    return h
+
+
+# Bare-earth DTM when profile.json came from IGN (no rooftops, so no low envelope); else the DSM envelope.
+IGN = ign_grid() if "IGN" in json.load(open("profile.json", encoding="utf-8"))["source"] else None
 ground = []
 paved = []  # 1 within 35 m of the road (pavements, squares), 0 beyond (the hillside's gardens)
 for iz in range(nz):
@@ -165,13 +193,19 @@ for iz in range(nz):
     prow = []
     for ix in range(nx):
         x, z = x0 + ix * G, z0 + iz * G
-        h = max(low(x, z), -3.0)
+        h = max(IGN[iz][ix] if IGN else low(x, z), -3.0)
+        # IGN reports no-data (-99999) offshore.
+        h = -3.0 if h < -100 else h
         nr = near_road(x, z, 35.0)
         prow.append(1 if nr else 0)
         if nr:
             # Pavements are level with the road: ground 0.15 m under the tarmac out to 12 m, blending back to
             # the DEM by 35 m. The tunnel is enclosed by its own walls and ceiling (monaco.gd).
             t = max(0.0, (nr[0] - 12.0) / 23.0)
+            if IGN and h > nr[1] + 2.0:
+                # Uphill of the road Monaco is held by vertical masonry (monaco.gd _retaining_walls stands in
+                # front of this step), not a 23 m earth ramp: reach the bare-earth height by 16 m.
+                t = max(0.0, (nr[0] - 10.0) / 6.0)
             h = (nr[1] - 0.15) * (1 - t) + h * t if t < 1.0 else h
         distance, land = shore(x, z)
         if not land and not (nr and nr[0] < 12.0):
@@ -209,7 +243,7 @@ def num(v):
 # Casino Square landmarks: OSM tags them as 2-level retail/hotel; heights from their facades (Casino with
 # its towers ~20 m above the square, measured from its lowest corner 14 m below it: 36 m; Hotel de
 # Paris ~26 m). monaco.gd renders them in cream stone.
-LANDMARKS = {161769674: ("casino", 36.0), 8280869: ("hotel_de_paris", 26.0), 2093796: ("fairmont", 10.6)}
+LANDMARKS = {161769674: ("casino", 36.0), 8280869: ("hotel_de_paris", 26.0), 2093796: ("fairmont", 24.0)}
 buildings = []
 dropped = 0
 for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
@@ -241,8 +275,8 @@ for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
         ring = pushed
         hits = [h for h in [near_road(px, pz, 7.5) for px, pz in ring[::max(1, len(ring) // 12)]] + [near_road(cx, cz, 7.5)] if h and h[2]]
         base = min(ground_at(px, pz) for px, pz in ring)
-        if hits:  # over the tunnel (the Fairmont): stands on the rock above the roof
-            base = max(base, max(h[1] for h in hits) + 7.0)
+        if hits:  # over the tunnel (the Fairmont): its walls start on the tunnel roof (monaco.gd, 5.4 m)
+            base = max(h[1] for h in hits) + 5.4
         h = num(t.get("height"))
         if h is None and num(t.get("building:levels")) is not None:
             h = num(t["building:levels"]) * 3.2 + 1.0
