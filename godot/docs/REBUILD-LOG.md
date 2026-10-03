@@ -4056,3 +4056,23 @@ conversion and exterior review remain: raster staircase perimeter handling,
 physical-window coverage beyond the route band, glassblock/pavilion paths and
 other recognizable landmarks (e.g. 35 East Wacker / Carbide and Carbon).
 The current narrow landmark checks do not prove that wider city work complete.
+
+### 2026-10-03 — PAUSED at owner request: tomorrow handoff
+
+Stopped at verified commit b73947f on codex/chicago-3d-buildings, already pushed
+to main. Installed build/RacingSim.exe remains the matching tested Windows build;
+Play Racing Sim.cmd launches it. No source edits followed that verified build.
+121 targeted checks and packaged verifier evidence are recorded above.
+
+Next exterior investigation: generic LiDAR buildings currently pass an empty
+footprint ring unless they have a photo facade. Inspect existing _lidar_footprint
+clipping and missing edge cells before changing the shared perimeter path;
+physical windows currently cover the 160 m route band. No fix was applied yet.
+Continue recognizable exteriors such as 35 East Wacker and Carbide and Carbon.
+
+Owner feedback to retain for gameplay review: engines audible in debug but not
+in game, plus high-pitched car whine; prop placement/clipping, Lower Wacker light
+bleeding onto Upper Wacker, and Willis Tower visibility. Earlier fixes and export
+checks are recorded, but they do not establish owner confirmation of resolution.
+Resume by checking actual gameplay audio and remaining visual reports against
+the installed build, then continue the city exterior work. Goal paused, not done.
