@@ -708,6 +708,25 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 				mat.emission_enabled = false
 				board.surface_set_material(surface, mat)
 	mesh_node(asset, parent, "BoardOfTrade", board, ChicagoCity.BOARD_POSITION)
+	# 35 East Wacker: four open corner turrets, tall drum and carved dome.
+	var jewelers = PropMesh.mesh("res://assets/chicago/landmarks/jewelers_building.glb").duplicate()
+	for surface in jewelers.get_surface_count():
+		var mat = jewelers.surface_get_material(surface)
+		if mat is StandardMaterial3D:
+			var floodlit = mat.resource_name in ["Raised classical ornament", "Carved terra cotta dome"]
+			if floodlit or mat.resource_name.begins_with("Night"):
+				mat = mat.duplicate()
+				mat.set_meta("chicago_night", true)
+				if floodlit:
+					mat.emission = mat.albedo_color
+					mat.emission_energy_multiplier = .12
+				elif mat.resource_name == "Night recessed office glazing":
+					mat.emission = Color(.68, .50, .25)
+					mat.emission_energy_multiplier = .55
+				mat.emission_enabled = false
+				jewelers.surface_set_material(surface, mat)
+	var jewelers_node = mesh_node(asset, parent, "JewelersBuilding", jewelers, ChicagoCity.JEWELERS_POSITION)
+	jewelers_node.rotation.y = ChicagoCity.JEWELERS_YAW
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

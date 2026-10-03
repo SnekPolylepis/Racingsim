@@ -4114,3 +4114,55 @@ No full gate matrix, performance sweep or macOS validation claimed.
 Goal ACTIVE: continue authored recognizable exteriors (35 East Wacker / Carbide
 and Carbon), route-band window coverage and remaining generic material paths.
 Owner gameplay audio/whine confirmation and wider visual review remain open.
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: 35 East Wacker authored exterior
+
+Replaced the mapped generic w124865488 Jewelers Building with an original Blender
+exterior: paired inset glazing/sash, continuous piers, rounded upper window heads,
+layered cornices, four open corner colonnades and domes, upper shaft/setbacks,
+glazed drum, corner buttresses, physical ribbed/coffered central dome, north
+entrance/address lettering, projecting northeast clock with Arabic mesh numerals,
+TIME plaque and stylized winged Father Time figure. Canonical author script and
+editable .blend retained; no facade-photo panel or new dependency.
+
+City of Chicago north-elevation/clock photos and Skyscraper Center crown/shaft
+photos inspected in browser. GP renovation PDF text consulted; its screenshot
+request timed out and was not visual evidence. References and approximation
+limits recorded in jewelers_building-SOURCES.md. Mapped origin (-198.2,8,-192.35),
+yaw .006 rad; ~50.4 x 44.3 m footprint, major measured roof plateau 88.5 m.
+Authored architectural top 159.4 m above model base, based on published CVU
+height; floor groups, carvings, sculpture and detailed dimensions are stylized,
+not surveyed. Exact generic exclusion occurs once in each layout.
+
+First native views exposed weak night contrast and a street camera inside a
+tree. Added selectively occupied office bays plus warm glass emission; restrained
+ornament/dome accents toggle alongside clock and windows (four materials).
+Street camera now comes from actual upper-route station (-207.276,9.3,-248.039).
+The blocked first street image was not accepted as final QA. Base Blender build
+then selective-glazing rebuild succeeded; an incremental clock-detail pass on
+the editable model added numerals/wings, saved .blend and exported GLB (exit 0,
+stderr empty). Canonical author source synchronized with that detail pass and
+syntax checked. Final 254,150 triangles / ten materials. Native bounds:
+x -25.67..25.67, z -23.63..22.62, y 0..159.4.
+
+Final gates/20261003-172814: Jewelers 30/30, actual menu/drive/both layouts/exact
+replacement/engine-only capture 44/44, both full renderer clipping scans 1/1
+(100/108 expected overhead hits; zero failures), parse clean. Five gates,
+76 checks, 164 s wall. Earlier nine-material gates/20261003-171655 were passes
+but are superseded. Eight final day/night street/clock/crown/river views reviewed
+in visual-review/jewelers; native review exit 0, stderr empty. Final views show
+correct clock lettering/numerals, crown geometry and selective warm night windows.
+
+Final Windows export exit 0, stderr empty; packaged six-track/40 engine-bank
+verifier PASS (jewelers-package-final.out/.err; gameplay engine peak 0.351922).
+Packaged process ended; no final exit code captured from the completed handle.
+Matching build/RacingSim.exe installed, prior executable retained, normal game
+launch started. Installed SHA-256:
+B85C6AFA557337EBC0103D6B2FC9BD60B38C035E0C10FE7B5AAF06E51863EC60.
+No full matrix, performance sweep or macOS validation claimed.
+
+Goal ACTIVE: seven photo facades plus Tribune, Wrigley, Board of Trade and
+Jewelers have authored exteriors. Next recognizable target: Carbide and Carbon
+(mapped Pendry w148544831); route-band physical-window coverage and remaining
+generic glassblock/pavilion/material paths also remain. This landmark pass does
+not establish the wider city conversion complete or resolve owner audio feedback.

@@ -56,6 +56,9 @@ const KINDS = {
 const TRIBUNE_POSITION = Vector3(67.1, STREET_Y, -632.6)
 ## Historic north tower; the OSM compound centroid also includes two later wings.
 const BOARD_POSITION = Vector3(-653, STREET_Y, 788)
+## 35 East Wacker mapped footprint w124865488, north face slightly angled along Wacker.
+const JEWELERS_POSITION = Vector3(-198.2, STREET_Y, -192.35)
+const JEWELERS_YAW = .006
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
@@ -130,6 +133,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "w124865488":
+			exclusion = "authored Jewelers exterior"
 		elif b.get("o", "") == "w28951633":
 			exclusion = "authored Board of Trade exterior"
 		elif b.get("o", "") == "r17460539":
