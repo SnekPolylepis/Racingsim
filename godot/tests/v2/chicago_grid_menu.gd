@@ -117,8 +117,32 @@ func run() -> void:
 				check(no_photo, name + " no longer renders a full-building photo panel")
 		await physics_frame
 		app.v2_bot = app.BotDriver.new(app.track.get_node("BotLine"), app.car, app.v2_surface)
+		var engine_bus = AudioServer.get_bus_index("Engine")
+		var capture = AudioEffectCapture.new()
+		capture.buffer_length = 6.0
+		var capture_index = AudioServer.get_bus_effect_count(engine_bus)
+		AudioServer.add_bus_effect(engine_bus, capture)
+		var effects_on_engine = []
+		for key in app.sound.players:
+			var player = app.sound.players[key]
+			if player.bus == "Engine" and not (key.begins_with("engine_") or key.begins_with("coast_")):
+				effects_on_engine.append(player)
+				player.bus = "World"
 		var start = app.car.pos
 		await create_timer(5.0).timeout
+		var engine_peak = 0.0
+		for frame in capture.get_buffer(capture.get_frames_available()):
+			engine_peak = maxf(engine_peak, maxf(absf(frame.x), absf(frame.y)))
+		print("CHICAGO gameplay engine peak ", engine_peak)
+		check(engine_peak > .001, "Gameplay engine bus produces audio while driving")
+		var engine_voices_playing = true
+		for band in app.sound.current_engine_bands:
+			for prefix in ["engine_", "coast_"]:
+				engine_voices_playing = engine_voices_playing and app.sound.players[prefix + band[0]].playing
+		check(engine_voices_playing, "All gameplay engine loops remain playing after car voice selection")
+		for player in effects_on_engine:
+			player.bus = "Engine"
+		AudioServer.remove_bus_effect(engine_bus, capture_index)
 		check(
 			app.car.pos.distance_to(start) > 5.0 and app.car.speed > 1.0,
 			"Selected variant drives in the real game loop"

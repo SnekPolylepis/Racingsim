@@ -4076,3 +4076,41 @@ bleeding onto Upper Wacker, and Willis Tower visibility. Earlier fixes and expor
 checks are recorded, but they do not establish owner confirmation of resolution.
 Resume by checking actual gameplay audio and remaining visual reports against
 the installed build, then continue the city exterior work. Goal paused, not done.
+
+### 2026-10-03 — PROGRESS resumed: mapped city walls and gameplay audio verification
+
+Owner resumed the paused work. Generic measured Chicago buildings now use the
+existing mapped-footprint clipping path, retaining measured roof steps while
+removing outward square-cell wall staircases. No new geometry dependency or
+replacement data introduced. A diagonal-footprint native check verifies bounds,
+angled normals and preservation of the taller measured roof cell. This improves
+generic exterior geometry; it is not completion of authored landmark conversion.
+
+Audio report revisited: owner settings have mute=false and engine_volume=0.8.
+Earlier export verification played a separate probe sample, which did not test
+actual gameplay loops. Export checker now starts a real driving session and
+captures recorded engine/coast voices, temporarily routing synthesized Engine
+effects elsewhere to prevent whine from masking a silent recorded bank. Chicago
+menu gate likewise checks actual engine-only output and all eight loops playing.
+Source driving peak 0.538547; packaged gameplay peak 0.352236. No production audio
+mix change in this pass, and bus output does not prove owner/device audibility or
+resolve the subjective whine report. Saved user settings were read, not changed.
+
+Gates/20261003-165637: audio 144, sweep 480, deep 62 and preliminary menu 41
+checks PASS. Final gates/20261003-165956: parse clean, windows 15, menu/actual
+drive/both layouts 41, both full renderer clipping scans 1 each PASS (100/108
+expected overhead hits, zero failures); five gates, 257 s wall. Eight actual
+day/night views reviewed in visual-review/mapped-walls (Wacker facade, LaSalle,
+Willis and Lower Wacker). Native review exits 0, stderr empty. Willis texture and
+silhouette visible; Lower Wacker fixtures remain on the ceiling. These sampled
+views do not certify every prop or upper-deck lighting case.
+
+Windows export exits 0 with empty stderr; six-track packaged verifier PASS with
+empty stderr. Matching executable installed at build/RacingSim.exe, previous
+build backed up, normal launch started. SHA-256:
+2DA807C8826E34AC84B2AEAE7F11C5AA55372AF4C0C35460C5DCA256240CB6E6.
+No full gate matrix, performance sweep or macOS validation claimed.
+
+Goal ACTIVE: continue authored recognizable exteriors (35 East Wacker / Carbide
+and Carbon), route-band window coverage and remaining generic material paths.
+Owner gameplay audio/whine confirmation and wider visual review remain open.

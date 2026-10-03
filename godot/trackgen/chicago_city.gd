@@ -187,14 +187,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		if b.has("plan"):
 			_plan_building(facade, ring, b.plan, kind_layer(kind), tint)
 		elif b.has("L"):
-			_lidar_building(
-				facade,
-				b.L,
-				fmod(i * 0.6180339, 1.0),
-				kind_layer(kind),
-				tint,
-				ring if b.has("ph") else PackedVector2Array()
-			)
+			_lidar_building(facade, b.L, fmod(i * 0.6180339, 1.0), kind_layer(kind), tint, ring)
 		else:
 			_building(
 				facade, facade, ring, float(b.h), fmod(i * 0.6180339, 1.0), bottom, kind_layer(kind), tint
@@ -781,7 +774,7 @@ static func _lidar_building(
 
 
 ## Clip measured cells to the mapped footprint, retaining every measured roof step.
-## Photo facades must attach to these walls, not to an outward raster staircase.
+## All measured exteriors follow mapped walls rather than an outward raster staircase.
 static func _lidar_footprint(
 	st: SurfaceTool,
 	ring: PackedVector2Array,

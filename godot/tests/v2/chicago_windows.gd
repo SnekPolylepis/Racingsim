@@ -57,5 +57,43 @@ func _initialize():
 			assert(xf.basis.z.is_equal_approx(normal), "Angled footprint normals are retained")
 			assert(absf(normal.dot(xf.origin - origin) - .13) < .002, "Frames follow the measured plane")
 	rotated_asset.free()
-	print("CHICAGO WINDOWS RESULTS ", JSON.stringify({"checks": 12, "failures": []}))
+	# A measured roof must follow its diagonal mapped walls, with roof steps retained.
+	var footprint = PackedVector2Array([Vector2(4, 0), Vector2(8, 4), Vector2(4, 8), Vector2(0, 4)])
+	var raw = PackedByteArray()
+	raw.resize(32)
+	for i in 16:
+		raw.encode_u16(i * 2, 300 if i == 5 else 240)
+	var mapped = SurfaceTool.new()
+	mapped.begin(Mesh.PRIMITIVE_TRIANGLES)
+	City._lidar_building(
+		mapped, [0, 0, 4, 4, 2, Marshalls.raw_to_base64(raw)], .4, 4, Color(0, 0, 0, 0), footprint
+	)
+	var mapped_arrays = mapped.commit_to_arrays()
+	var contained = true
+	var diagonal_wall = false
+	var roof_height = 0.0
+	for i in mapped_arrays[Mesh.ARRAY_VERTEX].size():
+		var v: Vector3 = mapped_arrays[Mesh.ARRAY_VERTEX][i]
+		var point = Vector2(v.x, v.z)
+		var on_edge = false
+		for edge in footprint.size():
+			on_edge = (
+				on_edge
+				or (
+					point.distance_to(
+						Geometry2D.get_closest_point_to_segment(
+							point, footprint[edge], footprint[(edge + 1) % footprint.size()]
+						)
+					)
+					< .01
+				)
+			)
+		contained = contained and (on_edge or Geometry2D.is_point_in_polygon(point, footprint))
+		var n: Vector3 = mapped_arrays[Mesh.ARRAY_NORMAL][i]
+		diagonal_wall = diagonal_wall or (absf(n.x) > .5 and absf(n.z) > .5)
+		roof_height = maxf(roof_height, v.y)
+	assert(contained, "Measured geometry stays inside the mapped footprint")
+	assert(diagonal_wall, "Mapped diagonal walls replace square raster stairs")
+	assert(is_equal_approx(roof_height, City.STREET_Y + 30), "Measured taller roof cells survive clipping")
+	print("CHICAGO WINDOWS RESULTS ", JSON.stringify({"checks": 15, "failures": []}))
 	quit()

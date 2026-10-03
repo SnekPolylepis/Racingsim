@@ -576,20 +576,24 @@ func check_exported_v2_assets() -> void:
 	var capture = AudioEffectCapture.new()
 	var capture_index = AudioServer.get_bus_effect_count(engine_bus)
 	AudioServer.add_bus_effect(engine_bus, capture)
-	var probe = AudioStreamPlayer.new()
-	probe.stream = sound._load_stream_or_synth("res://assets/audio/roadster_idle_power.wav", "engine_idle")
-	probe.bus = "Engine"
-	add_child(probe)
-	probe.play()
-	await get_tree().create_timer(.3).timeout
+	# Measure the actual gameplay loops, excluding synthesized whine/intake/turbo.
+	var effects_on_engine = []
+	for key in sound.players:
+		var player = sound.players[key]
+		if player.bus == "Engine" and not (key.begins_with("engine_") or key.begins_with("coast_")):
+			effects_on_engine.append(player)
+			player.bus = "World"
+	controls.poll_hardware = false
+	start_v2_drive()
+	await get_tree().create_timer(.5).timeout
 	var peak = 0.0
 	for frame in capture.get_buffer(capture.get_frames_available()):
 		peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
 	ok = ok and peak > .001
-	print("V2 EXPORT engine sample peak ", peak)
-	probe.stop()
-	probe.stream = null
-	probe.queue_free()
+	print("V2 EXPORT gameplay engine peak ", peak)
+	for player in effects_on_engine:
+		player.bus = "Engine"
+	return_v2_menu()
 	AudioServer.remove_bus_effect(engine_bus, capture_index)
 	ok = ok and load_v2_track("nordschleife") and track.id == "nordschleife" and track.length > 20000.0
 	ok = ok and load_v2_track("chicago_grid") and track.id == "chicago_grid" and track.length > 8000.0
