@@ -158,7 +158,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			continue
 		if AUTHORED_BUILDINGS.has(b.get("o", "")):
 			var authored: Array = AUTHORED_BUILDINGS[b.o]
-			var wall = ChicagoCrowns.photo_wall(ring, b.ph)
+			var wall = ChicagoCrowns.exterior_wall(ring, b.ph)
 			var along: Vector2 = (wall[1] - wall[0]).normalized()
 			var outward: Vector2 = wall[2]
 			var theatre = MeshInstance3D.new()
@@ -204,9 +204,6 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			)
 		if b.has("cr"):
 			crowns.append([ring, STREET_Y + float(b.h), b.cr])
-		if b.has("ph"):
-			var photo_height = _photo_height(ring, b.ph, b.L) if b.has("L") else float(b.h)
-			crowns.append([ring, STREET_Y + photo_height, {"type": "photo", "ph": b.ph, "h": photo_height}])
 		stats.buildings += 1
 	# Building details must come from mapped/cited overrides. Hash-selected kit
 	# cornices and roof props float over stepped roofs and invent architecture.
@@ -830,34 +827,6 @@ static func _lidar_footprint(
 						lo,
 						height
 					)
-
-
-## Median of measured cells immediately inside the photographed street wall.
-## The highest return over the whole footprint may belong to a rear tower/adjacent building.
-static func _photo_height(ring: PackedVector2Array, ph: Dictionary, grid: Array) -> float:
-	var wall = ChicagoCrowns.photo_wall(ring, ph)
-	var a: Vector2 = wall[0]
-	var b: Vector2 = wall[1]
-	var normal: Vector2 = wall[2]
-	var cell = float(grid[4])
-	var raw = Marshalls.base64_to_raw(str(grid[5]))
-	var samples = PackedFloat32Array()
-	var count = maxi(1, ceili(a.distance_to(b) / cell))
-	var positions: Array = ph.get("roof_samples", [])
-	if positions.is_empty():
-		for i in count:
-			positions.append((i + .5) / count)
-	for position in positions:
-		var p = a.lerp(b, float(position)) - normal * cell * .5
-		var x = floori((p.x - float(grid[0])) / cell)
-		var z = floori((p.y - float(grid[1])) / cell)
-		if x >= 0 and z >= 0 and x < int(grid[2]) and z < int(grid[3]):
-			var value = raw.decode_u16((z * int(grid[2]) + x) * 2) * .1
-			if value > 0:
-				samples.append(value)
-	assert(not samples.is_empty(), "Photographed facade has no measured roof cells")
-	samples.sort()
-	return samples[samples.size() / 2]
 
 
 static func _lidar_wall(st: SurfaceTool, a: Vector3, b: Vector3, n: Vector3, lo: float, hi: float) -> void:

@@ -161,3 +161,14 @@ Final Page Brothers confirmation: inspected `chi-page-final-page-state-{day,nigh
 
 - [x] Respect surface=wood on the three mapped marina pier areas instead of rendering their tops as concrete. Inspected `chi-mapped-wood-final-marina-plan-air-day.png` and breezeway night: separate wood tops now appear. Uses CC0 material example, not measured installed finish; sides/freeboard remain unchanged and unaccepted.
 - [ ] Match installed dock board direction, dimensions, colour/finish and supports; resolve distant wood-texture aliasing visible in marina aerial before accepting dock materials.
+
+### 2026-10-03 — Full-photo facade path retired
+
+The seven `city.json` photo-tagged buildings now use authored Blender exteriors;
+`ChicagoCrowns.photo_facade` and its projection/height-sampling path were removed.
+The older photo crop/orientation/transient-content items above describe the
+superseded panel implementation. Source photographs and their credits remain
+reference assets. Current conversion and native-view evidence is recorded in
+REBUILD-LOG.md under CHI-3D-BUILDINGS; this note does not check off the broader
+route-wide building detail or visual acceptance items. `exterior_wall` retains
+the mapped edge/orientation helper for model placement.

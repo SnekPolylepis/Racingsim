@@ -4252,3 +4252,32 @@ Goal ACTIVE: seven full-photo replacements plus Tribune, Wrigley, Board of Trade
 Jewelers and Carbide and Carbon now have authored exteriors. Continue remaining
 generic exterior/material paths and recognizable buildings; broader performance,
 prop/lighting review and owner audio acceptance remain open.
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: retire full-photo facade fallback
+
+City inventory contains seven ph entries, all mapped to authored Blender
+exteriors. Removed the full-photo crown case, rectified panel construction,
+projective UV helper and now-unused frontage photo-height sampling. References
+and licensed photo files retained; they still document source elevations.
+Renamed photo_wall to exterior_wall for its remaining authored placement role.
+No geometry/orientation change to that helper. Retired standalone photo panel
+orientation suite, retaining its measured footprint/rear-roof-step regression
+and stable script UID in newly registered chicago_authored_coverage suite.
+The new suite enumerates actual city ph records, requires authored models,
+checks their materials for full-facade photographs, and verifies all four
+exterior edge orientations under both footprint windings. This pass prevents
+the old fallback returning silently; it does not author additional buildings.
+
+Gates/20261003-182114: authored coverage 23/23, actual menu/drive/both layouts
+47/47 PASS, stderr empty; two gates, 70 checks, 89 s wall. Game parse check
+exit 0, stderr empty; Windows export exit 0, stderr empty. Geometry is unchanged
+for current seven conversions; no new screenshot/clipping matrix claimed.
+
+Packaged six-track/40 engine-bank verifier reports V2 EXPORT PASS, stderr empty;
+process terminal/missing after bounded observation (final exit code unavailable).
+Gameplay engine capture peak 0.353423. Matching build/RacingSim.exe installed,
+previous executable retained, normal game launch started. Installed SHA-256:
+6AE7CB32A1C6AA193E450C8FC4EF09A590E9A9E1A13A089F8897FCBA6055F202
+Goal ACTIVE: remaining route-visible buildings still need reference-faithful
+window proportions, entrances, podiums and ornament (see CHICAGO-DONE.md's
+Wacker/Reliance/Monadnock items). Full-photo removal is not full city acceptance.

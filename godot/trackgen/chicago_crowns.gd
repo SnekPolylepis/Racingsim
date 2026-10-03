@@ -98,8 +98,6 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 					light.look_at_from_position(
 						light.position, Vector3(edge.x, top * 0.6, edge.y), Vector3.UP
 					)
-			"photo":
-				node = photo_facade(ring, top, float(cr.h), cr.ph)
 		if node == null:
 			continue
 		node.name = "Crown%d" % i
@@ -110,72 +108,8 @@ static func build(asset: Node3D, holder: Node3D, crowns: Array) -> void:
 			child.owner = asset
 
 
-## A rectified reference photo on the footprint wall that best faces `face` (outward), covering the top
-## `frac` of the building's height, 0.2 m proud of the wall.
-static func photo_facade(ring: PackedVector2Array, top: float, h: float, ph: Dictionary) -> MeshInstance3D:
-	var wall = photo_wall(ring, ph)
-	var wa: Vector2 = wall[0]
-	var wb: Vector2 = wall[1]
-	var wn: Vector2 = wall[2]
-	var y0 = top - h * float(ph.get("frac", 1.0))
-	var off = Vector3(wn.x, 0, wn.y) * 0.2
-	var p = [
-		Vector3(wa.x, y0, wa.y) + off,
-		Vector3(wb.x, y0, wb.y) + off,
-		Vector3(wb.x, top, wb.y) + off,
-		Vector3(wa.x, top, wa.y) + off
-	]
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var projection = photo_projection(ph.get("quad", [[0, 0], [1, 0], [1, 1], [0, 1]]))
-	var steps = 16 if ph.has("quad") else 1
-	for row in steps:
-		for col in steps:
-			for corner in [
-				Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 1), Vector2(1, 0), Vector2(0, 0)
-			]:
-				var t = (Vector2(col, row) + corner) / steps
-				var projected = projection * Vector3(t.x, t.y, 1)
-				st.set_normal(Vector3(wn.x, 0, wn.y))
-				st.set_uv(Vector2(projected.x, projected.y) / projected.z)
-				st.add_vertex(p[3].lerp(p[2], t.x).lerp(p[0].lerp(p[1], t.x), t.y))
-	var mat = StandardMaterial3D.new()
-	mat.albedo_texture = load("res://assets/chicago/facade-photos/" + str(ph.file))
-	mat.roughness = 0.85
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	var node = MeshInstance3D.new()
-	node.mesh = st.commit()
-	node.material_override = mat
-	return node
-
-
-## Unit facade to the four photographed corners (TL, TR, BR, BL), in source-image UV.
-## Projective UVs rectify perspective without modifying the licensed source bitmap.
-static func photo_projection(quad: Array) -> Basis:
-	assert(quad.size() == 4)
-	var a = Vector2(quad[0][0], quad[0][1])
-	var b = Vector2(quad[1][0], quad[1][1])
-	var c = Vector2(quad[2][0], quad[2][1])
-	var d = Vector2(quad[3][0], quad[3][1])
-	var delta = a - b + c - d
-	var g = 0.0
-	var h = 0.0
-	if delta.length_squared() > .00000001:
-		var bc = b - c
-		var dc = d - c
-		var determinant = bc.cross(dc)
-		assert(absf(determinant) > .00000001, "Degenerate facade photo corners")
-		g = delta.cross(dc) / determinant
-		h = bc.cross(delta) / determinant
-	return Basis(
-		Vector3(b.x - a.x + g * b.x, b.y - a.y + g * b.y, g),
-		Vector3(d.x - a.x + h * d.x, d.y - a.y + h * d.y, h),
-		Vector3(a.x, a.y, 1)
-	)
-
-
-## Shared exterior edge and left-to-right orientation for photo placement and roof sampling.
-static func photo_wall(ring: PackedVector2Array, ph: Dictionary) -> Array:
+## Referenced exterior edge and left-to-right orientation for authored model placement.
+static func exterior_wall(ring: PackedVector2Array, ph: Dictionary) -> Array:
 	var want = Vector2(ph.face[0], ph.face[1]).normalized()
 	var c = centroid(ring)
 	var best = -INF
