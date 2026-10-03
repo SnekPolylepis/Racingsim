@@ -4139,3 +4139,27 @@ profile it had picked Casino Square's crest inside a 57 degree bend and the unst
 Gates: monaco 25/25; laps monaco rb19 2/2; laps monaco f2004 Simulation passes, Simcade Fairmont minimum
 24.3 km/h vs the 24.5 km/h floor (0.04 m/s short) — floor left unchanged for owner decision. Baselines
 re-recorded for version 5. Buildings and the general graphics pass remain.
+
+### 2026-10-03 — PROGRESS MON-POLISH: tunnel, frontage exteriors, Fairmont, ground fixes
+
+Tunnel (Commons references): plain Concrete034 ceiling instead of the masonry material; cream 0.35 x 0.6 m
+tiles in 4 m panels up to 4.2 m under a concrete band; floodlight rows every 2 m on the inner rail and the
+sea-side beam; omni every 16 m (warm); 1.1 m pillars. build_city.py keeps the tunnel's sea side (found from
+the coastline) below the road, so the bays look out over the water instead of the DTM's hotel platform.
+
+Frontage: city.json flags every non-landmark building within 30 m of the lap (element 4, OSM id 5).
+tools/blender/monaco_frontage.py models them (58 incl. the Fairmont, 575k triangles) as Riviera exteriors:
+stone ground floor and recessed shopfronts, recessed windows with sills, shutters, French or continuous
+balconies, cornices, closed roofs; style seeded by OSM id. monaco.gd skips extruding them. No online model of
+any Monaco building is downloadable (Sketchfab search), hence Blender. The Fairmont (flag 2) uses white
+balcony bands and wall-to-wall dark glass on the tunnel roof, underside closed.
+
+Ground: pavements now flat to 20 m (building fronts), blending to the IGN DTM by 35 m; retaining walls are
+skipped wherever a footprint lies within 20 m behind them, capped at 12 m, smoothed, and runs under 6 m
+dropped (they read as spires). Paved ground uses Poly Haven CC0 rectangular_paving, steep cells sandstone.
+Trees outside the ground grid were extrapolated up to 170 m (the floating specks over the city since
+MON-01); build_city.py now clamps ground_at and drops them. Exported Windows build: V2 EXPORT PASS.
+
+Gates: monaco 25/25, laps monaco rb19 2/2, front_end, track_asset, scenery pass; laps monaco f2004 Simcade
+Fairmont minimum 24.3 vs 24.5 km/h floor unchanged (owner decision). Left: Casino and Hotel de Paris
+bespoke models, general graphics pass (night, haze), the chase camera's world-level pitch on grades.

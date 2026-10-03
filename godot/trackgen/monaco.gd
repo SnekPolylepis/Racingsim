@@ -458,7 +458,7 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 	rng.seed = 98000
 	for b in list:
 		# Frontage (b[4]): modelled in Blender (tools/blender/monaco_frontage.py), placed by _frontage().
-		if b.size() > 4 and b[4] == 1:
+		if b.size() > 4 and b[4] >= 1:
 			continue
 		var flat: Array = b[0]
 		var ring = PackedVector2Array()
@@ -485,13 +485,8 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 			# Casino Square's Belle Epoque stone (Garnier's Casino, the Hotel de Paris).
 			tint = Color(0.96, 0.9, 0.76)
 			layer = ChicagoCity.kind_layer("stone")
-		if b[3] == "fairmont":
-			tint = Color(0.9, 0.84, 0.72)
 		var seed = rng.randf()
-		# The Fairmont stands on the tunnel roof, over the road and the sea: close its underside.
-		_extrude(
-			chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), seed, layer, tint, b[3] == "fairmont"
-		)
+		_extrude(chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), seed, layer, tint)
 		# Nearby apartment terraces need a silhouette and cast shadow, beyond the painted distant facade.
 		var near = curve.get_closest_point(Vector3(c.x, b[1], c.y))
 		if (
@@ -593,8 +588,7 @@ static func _extrude(
 	top: float,
 	seed: float,
 	layer: float,
-	tint: Color,
-	underside := false
+	tint: Color
 ) -> void:
 	var code = (roundi(tint.r * 5) * 36 + roundi(tint.g * 5) * 6 + roundi(tint.b * 5) + 1) / 255.0
 	var c = Vector2.ZERO
@@ -632,12 +626,6 @@ static func _extrude(
 			var p = ring[tris[i + k]]
 			st.set_uv(p)
 			st.add_vertex(Vector3(p.x, top, p.y))
-	if underside:
-		for i in range(0, tris.size(), 3):
-			for k in [0, 1, 2]:
-				var p = ring[tris[i + k]]
-				st.set_uv(p)
-				st.add_vertex(Vector3(p.x, bottom, p.y))
 
 
 ## Generic sponsor colours for the barrier panels (no real brands).

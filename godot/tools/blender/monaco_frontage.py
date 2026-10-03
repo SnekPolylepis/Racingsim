@@ -113,7 +113,7 @@ class Face:
         box(mat, c, self.t, self.n, (self.length - 2 * inset + depth * 2 * (inset == 0), depth, height))
 
 
-def building(ring, base, top, kind, osm_id):
+def building(ring, base, top, kind, osm_id, flag=1):
     rng = random.Random(osm_id)
     pts = [Vector((ring[i], -ring[i + 1], 0)) for i in range(0, len(ring) - 1, 2)]
     if len(pts) > 2 and (pts[0] - pts[-1]).length < 0.05:
@@ -134,6 +134,12 @@ def building(ring, base, top, kind, osm_id):
     upper_top = base + ground + floors * storey
     win_w = 1.5 if modern else 1.15
     awning = "awning%d" % rng.randrange(4) if shops and rng.random() < 0.4 else None
+    if flag == 2:
+        # The Fairmont (1975) over the tunnel: white balcony bands on every storey, dark glass wall to wall.
+        wall, modern, shutters, balconies, shops, awning = "wall3", True, None, "continuous", False, None
+        ground, win_w = storey, 99.0
+        floors = max(0, int((h - ground - 1.2) / storey))
+        upper_top = base + ground + floors * storey
     for a, b in zip(pts, pts[1:] + pts[:1]):
         f = Face(a, b)
         L = f.length
@@ -161,7 +167,7 @@ def building(ring, base, top, kind, osm_id):
             for k in range(bays):
                 u0, u1 = k * pitch, (k + 1) * pitch
                 mid = (u0 + u1) / 2
-                w = min(win_w, pitch - 0.6)
+                w = min(win_w, pitch - 0.4 if flag == 2 else pitch - 0.6)
                 if w < 0.6:
                     f.rect(wall, u0, u1, z0, z0 + storey)
                     continue
@@ -185,22 +191,23 @@ def building(ring, base, top, kind, osm_id):
         f.rect(wall, 0, L, upper_top, top)
         if h >= 7:
             f.strip("cornice", top - 1.1, 0.45, 0.45)
-    # Flat roof.
+    # Flat roof; a building standing over the road (flag 2) also closes its underside.
     tris = tessellate_polygon([[p.to_3d() for p in pts]])
-    for tri in tris:
-        v, faces, uvs = geo["roof"]
-        n = len(v)
-        v.extend(Vector((pts[i].x, pts[i].y, top)) for i in tri)
-        faces.append((n, n + 1, n + 2) if (pts[tri[1]] - pts[tri[0]]).cross(pts[tri[2]] - pts[tri[0]]).z > 0
-                     else (n, n + 2, n + 1))
-        uvs.extend((pts[i].x / 4, pts[i].y / 4) for i in tri)
+    for z, mat, up in [(top, "roof", True)] + ([(base - 0.5, "cornice", False)] if flag == 2 else []):
+        for tri in tris:
+            v, faces, uvs = geo[mat]
+            n = len(v)
+            v.extend(Vector((pts[i].x, pts[i].y, z)) for i in tri)
+            ccw = (pts[tri[1]] - pts[tri[0]]).cross(pts[tri[2]] - pts[tri[0]]).z > 0
+            faces.append((n, n + 1, n + 2) if ccw == up else (n, n + 2, n + 1))
+            uvs.extend((pts[i].x / 4, pts[i].y / 4) for i in tri)
 
 
 doc = json.loads((ROOT / "trackgen/data/monaco/city.json").read_text())
 count = 0
 for b in doc["buildings"]:
     if len(b) > 4 and b[4]:
-        building(b[0], b[1], b[1] + b[2], b[3], b[5])
+        building(b[0], b[1], b[1] + b[2], b[3], b[5], b[4])
         count += 1
 
 objects = []
