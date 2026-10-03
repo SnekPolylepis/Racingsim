@@ -1,4 +1,4 @@
-extends Node3D
+﻿extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
 ## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
@@ -536,6 +536,7 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/chicago/city.json")
 		and FileAccess.file_exists("res://trackgen/data/monaco/city.json")
 		and ResourceLoader.exists("res://assets/monaco/frontage.glb")
+		and ResourceLoader.exists("res://assets/monaco/monaco_casino.glb")
 		and ResourceLoader.exists("res://assets/textures/monaco/sandstone_blocks_05/sandstone_blocks_05_diff_1k.jpg")
 		and ResourceLoader.exists("res://assets/textures/monaco/rectangular_paving/rectangular_paving_diff_1k.jpg")
 		and FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
@@ -983,7 +984,7 @@ func physics_v2(dt):
 		)
 	if race.update_asset(car, track, dt):
 		save_record()
-		message("New best lap Â· " + RaceModel.time_text(race.best))
+		message("New best lap Ã‚Â· " + RaceModel.time_text(race.best))
 	if race.sectors_dirty:
 		save_sectors()
 	elapsed += dt

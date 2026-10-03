@@ -81,6 +81,7 @@ func shots() -> Array:
 		["monaco", "monaco-start", -60.0],
 		["monaco", "monaco-sainte-devote", ["Sainte-Devote", -70.0]],
 		["monaco", "monaco-casino", ["Casino Square", -60.0]],
+		["monaco", "monaco-casino-apex", ["Casino Square", 0.0], CAM_BONNET],
 		["monaco", "monaco-tabac", ["Tabac", -60.0]],
 		["monaco", "monaco-rascasse", ["La Rascasse", -60.0]],
 		["proving_ground", "pg-start", -45.0],

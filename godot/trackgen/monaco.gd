@@ -207,9 +207,7 @@ static func build_asset() -> Node3D:
 	_sea(asset, scenery, d.ground)
 	_retaining_walls(asset, scenery, d.ground, tunnel, d.buildings)
 	_fairmont_island(asset, scenery, road, corners["Grand Hotel Hairpin"], d.ground)
-	var casino = _buildings(asset, scenery, d.buildings)
-	if not casino.is_empty():
-		_casino_towers(asset, scenery, casino, road.working_curve().sample_baked(corners["Casino Square"]))
+	_buildings(asset, scenery, d.buildings)
 	_frontage(asset, scenery)
 	_flats(asset, scenery, d.piers, 1.4, "sidewalk", "Piers")
 	_pools(asset, scenery, d.get("pools", []))
@@ -449,16 +447,15 @@ static func _sea(asset: Node3D, parent: Node, g: Dictionary) -> void:
 
 
 ## OSM footprints extruded from their ground base; facade shader (lit windows at night) in Riviera tints.
-static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
-	var casino = {}
+static func _buildings(asset: Node3D, parent: Node, list: Array) -> void:
 	var chunks = {}
 	var balconies = {}
 	var curve: Curve3D = asset.get_node("Main").working_curve()
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 98000
 	for b in list:
-		# Frontage (b[4]): modelled in Blender (tools/blender/monaco_frontage.py), placed by _frontage().
-		if b.size() > 4 and b[4] >= 1:
+		# Frontage (b[4]) and the Casino: modelled in Blender, placed by _frontage().
+		if (b.size() > 4 and b[4] >= 1) or b[3] == "casino":
 			continue
 		var flat: Array = b[0]
 		var ring = PackedVector2Array()
@@ -479,9 +476,7 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 			chunks[key] = st
 		var tint = TINTS[rng.randi() % TINTS.size()]
 		var layer = ChicagoCity.kind_layer("stone" if rng.randf() < 0.7 else "concrete")
-		if b[3] == "casino":
-			casino = {"ring": ring, "top": float(b[1]) + float(b[2])}
-		if b[3] in ["casino", "hotel_de_paris"]:
+		if b[3] == "hotel_de_paris":
 			# Casino Square's Belle Epoque stone (Garnier's Casino, the Hotel de Paris).
 			tint = Color(0.96, 0.9, 0.76)
 			layer = ChicagoCity.kind_layer("stone")
@@ -523,61 +518,6 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 		node.mesh = slab.commit()
 		node.visibility_range_end = 500.0
 		attach(asset, parent, node, "Balconies_%d_%d" % [key.x, key.y])
-	return casino
-
-
-## The Casino de Monte-Carlo's square-side towers (Garnier, 1878): a square tower at each end of the facade
-## that faces Casino Square, rising above the roof under a verdigris copper pyramid.
-static func _casino_towers(asset: Node3D, parent: Node, casino: Dictionary, square: Vector3) -> void:
-	var ring: PackedVector2Array = casino.ring
-	var top: float = casino.top
-	var c = Vector2.ZERO
-	for p in ring:
-		c += p
-	c /= ring.size()
-	var best = -1
-	var best_d = INF
-	for i in ring.size():
-		var a = ring[i]
-		var b = ring[(i + 1) % ring.size()]
-		var d = ((a + b) * 0.5).distance_to(Vector2(square.x, square.z))
-		if a.distance_to(b) > 12.0 and d < best_d:
-			best_d = d
-			best = i
-	if best < 0:
-		return
-	var a = ring[best]
-	var b = ring[(best + 1) % ring.size()]
-	var dir = (b - a).normalized()
-	var inward = (c - (a + b) * 0.5).normalized()
-	var stone = StandardMaterial3D.new()
-	stone.albedo_color = Color(0.93, 0.86, 0.72)
-	stone.roughness = 0.8
-	var copper = StandardMaterial3D.new()
-	copper.albedo_color = Color(0.36, 0.56, 0.47)
-	copper.roughness = 0.6
-	for k in 2:
-		var at = (a + dir * 4.5 if k == 0 else b - dir * 4.5) + inward * 4.0
-		var tower = MeshInstance3D.new()
-		var box = BoxMesh.new()
-		box.size = Vector3(7.0, 14.0, 7.0)
-		box.material = stone
-		tower.mesh = box
-		tower.position = Vector3(at.x, top + 0.0, at.y)
-		tower.rotation.y = -dir.angle()
-		attach(asset, parent, tower, "CasinoTower%d" % k)
-		var cap = MeshInstance3D.new()
-		var pyramid = CylinderMesh.new()
-		pyramid.top_radius = 0.0
-		pyramid.bottom_radius = 5.2
-		pyramid.height = 6.0
-		pyramid.radial_segments = 4
-		pyramid.rings = 1
-		pyramid.material = copper
-		cap.mesh = pyramid
-		cap.position = Vector3(at.x, top + 10.0, at.y)
-		cap.rotation.y = -dir.angle() + PI / 4.0
-		attach(asset, parent, cap, "CasinoTowerRoof%d" % k)
 
 
 ## Walls and a flat roof; vertex colour and UVs as chicago_city._building sets them for the facade shader.
@@ -640,13 +580,14 @@ const AD_COLORS = [
 ]
 
 
-## Every non-landmark building within 30 m of the lap, as Blender exteriors in world coordinates.
+## Blender exteriors in world coordinates: every non-landmark building within 30 m of the lap (frontage)
+## and the Casino's square elevation (tools/blender/monaco_frontage.py, monaco_casino.py).
 static func _frontage(asset: Node3D, parent: Node) -> void:
-	var scene: PackedScene = load("res://assets/monaco/frontage.glb")
-	var node = scene.instantiate()
-	attach(asset, parent, node, "Frontage")
-	for child in node.find_children("*", "", true, false):
-		child.owner = asset
+	for pair in [["frontage", "Frontage"], ["monaco_casino", "Casino"]]:
+		var node = load("res://assets/monaco/%s.glb" % pair[0]).instantiate()
+		attach(asset, parent, node, pair[1])
+		for child in node.find_children("*", "", true, false):
+			child.owner = asset
 
 
 ## The baked barrier line on one side as [road metres, inner-face base point, outward] every 2 m. Dressing
