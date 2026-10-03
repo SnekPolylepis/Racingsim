@@ -4009,3 +4009,50 @@ Goal remains ACTIVE. Next: author/review modern south/east wings and upper
 ornament, integrate at mapped site with exact duplicate exclusion, inspect
 whole-city day/night views, then drive/export/install. Wider city exterior audit
 also remains. Do not mark the broader goal complete from the asset-only check.
+
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: mapped Board of Trade compound installed
+
+Completed the original Blender exterior with south office annex/stepped octagonal
+roof, east trading hall's tall curtain glazing and raised LaSalle plaza span.
+Existing USGS roof medians: south 88.5 m (body 82 m plus roof), east 40.5 m.
+FJG project sheet/CME addition history consulted; references and approximate
+geometry limits in board_of_trade-SOURCES.md. Full original exterior now replaces
+three flat facade tiers and PrismMesh cap. Exact w28951633 exclusion removes
+one generic compound; north origin (-653, 8, 788), retained both layouts.
+263,306 triangles / ten materials / 184.5 m top; editable .blend retained.
+Night toggles: occupied glazing, clock, limestone trim/body and Ceres floodlight.
+Removed the unused facade_block helper and unused landmark material parameters.
+
+Native bounds exposed Blender-to-glTF Y reversal: first integrated annexes went
+north rather than south. The failed 20261003-161637 asset gate is not a pass;
+its drive/clip passes did not prove correct placement. Corrected mapped-plan
+export with Y reflection, determinant-aware winding and text orientation; added
+explicit native north-clock/south-annex assertions. Corrected crown relief offset
+on narrower side faces. A class-level Blender API probe failed; instance-level
+Mesh.flip_normals documentation confirmed availability. Final Blender build
+successful with --python-exit-code 1; final Godot import stderr empty.
+
+Final gates/20261003-163612: Board 31/31, Tribune 14/14, Wrigley 35/35,
+actual menu/both layouts/duplicate exclusion/five-second drive 39/39, both full
+renderer-backed clipping scans 1/1 each (100 and 108 expected overhead hits;
+zero failures). Six gates, 121 checks, 133 s wall. Eight final day/night city
+captures reviewed under visual-review/board (street, clock, annex and roof);
+clock lettering/numerals read correctly, annexes sit on mapped sides, Ceres and
+roof seams render. Capture camera corrected from neighbouring geometry onto
+mapped LaSalle street; blocked diagnostic views were not accepted as final QA.
+Source tests/logs/board-city-final.out/.err; native rendering PASS, stderr empty.
+
+Final Windows export clean, packaged six-track/40 imported-engine-bank verifier
+PASS (tests/logs/board-package.out/.err; engine peak 0.510809); matching build
+installed at build/RacingSim.exe, prior executable retained and normal Chicago
+Grid launch started. Installed SHA-256:
+A4053C59BE922C9AE5FD3D02E336CF65835199856A9777593519E8BBFF4E3303.
+No full gate matrix, performance sweep or macOS validation claimed this turn.
+
+Goal remains ACTIVE. Seven full-photo replacements plus Tribune, Wrigley and
+Board of Trade now have authored exteriors. Broader mapped/generic building
+conversion and exterior review remain: raster staircase perimeter handling,
+physical-window coverage beyond the route band, glassblock/pavilion paths and
+other recognizable landmarks (e.g. 35 East Wacker / Carbide and Carbon).
+The current narrow landmark checks do not prove that wider city work complete.

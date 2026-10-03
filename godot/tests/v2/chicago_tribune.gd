@@ -10,11 +10,10 @@ func _initialize():
 func run():
 	var asset = Node3D.new()
 	root.add_child(asset)
-	var stone = StandardMaterial3D.new()
 	var scenery = Node3D.new()
 	scenery.name = "Scenery"
 	asset.add_child(scenery)
-	Chicago.add_loop_landmarks(asset, scenery, stone, stone, stone)
+	Chicago.add_loop_landmarks(asset, scenery)
 	var tower = scenery.get_node("TribuneTower")
 	assert(tower.mesh.get_surface_count() == 5)
 	assert(tower.position.distance_to(Vector3(67.1, 8, -632.6)) < .01)

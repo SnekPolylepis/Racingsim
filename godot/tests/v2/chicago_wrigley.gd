@@ -13,8 +13,7 @@ func run():
 	var scenery = Node3D.new()
 	scenery.name = "Scenery"
 	asset.add_child(scenery)
-	var mat = StandardMaterial3D.new()
-	Chicago.add_loop_landmarks(asset, scenery, mat, mat, mat)
+	Chicago.add_loop_landmarks(asset, scenery)
 	var building = scenery.get_node("WrigleyBuilding")
 	assert(building.position.distance_to(Vector3(-40, 8, -530)) < .01)
 	assert(building.mesh.get_surface_count() == 12)

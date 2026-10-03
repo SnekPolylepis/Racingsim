@@ -54,6 +54,8 @@ const KINDS = {
 ## CHI-01 models these landmarks itself: OSM outlines within this distance (m) of them are left out.
 ## Mapped Tribune Tower footprint w150407241 (route-inventory.csv), not the old eastward POI pin.
 const TRIBUNE_POSITION = Vector3(67.1, STREET_Y, -632.6)
+## Historic north tower; the OSM compound centroid also includes two later wings.
+const BOARD_POSITION = Vector3(-653, STREET_Y, 788)
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
@@ -101,6 +103,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 				p = WRIGLEY_POSITION
 			elif name == "Tribune Tower":
 				p = TRIBUNE_POSITION
+			elif name == "Chicago Board of Trade":
+				p = BOARD_POSITION
 			skip_at.append([Vector2(p.x, p.z), OWN_LANDMARKS[name]])
 	var chunks = {}
 	# LOD (CHI-LOOK-01): low buildings and flat ground/street surfaces go to their own chunk sets with a
@@ -126,6 +130,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "w28951633":
+			exclusion = "authored Board of Trade exterior"
 		elif b.get("o", "") == "r17460539":
 			exclusion = "authored Wrigley exterior"
 		# Authored exteriors have checked overhangs; retain 1 m beyond the 8 m carriageway.

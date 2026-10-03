@@ -666,43 +666,11 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 	var axle_node = mesh_node(asset, parent, "WheelAxle", axle, hub)
 	axle_node.rotation_degrees.x = 90
 
-	add_loop_landmarks(asset, parent, stone, dark, silver)
+	add_loop_landmarks(asset, parent)
 
 
-## A landmark tower with the city's window-grid facade shader (perimeter UVs) instead of a plain box.
-## `center` is the middle of the block at half its height, as for `box`.
-static func facade_block(
-	asset: Node3D,
-	parent: Node,
-	title: String,
-	center: Vector3,
-	size: Vector2,
-	h: float,
-	kind: String,
-	seed: float
-) -> void:
-	var ring = PackedVector2Array(
-		[
-			Vector2(center.x - size.x * .5, center.z - size.y * .5),
-			Vector2(center.x + size.x * .5, center.z - size.y * .5),
-			Vector2(center.x + size.x * .5, center.z + size.y * .5),
-			Vector2(center.x - size.x * .5, center.z + size.y * .5)
-		]
-	)
-	var base_y = center.y - h * .5
-	var facade = SurfaceTool.new()
-	facade.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# ChicagoCity's top is STREET_Y + its h; the block starts at its own base (kept off the lower level).
-	var layer = ChicagoCity.kind_layer(kind)
-	ChicagoCity._building(facade, facade, ring, h + base_y - ChicagoCity.STREET_Y, seed, base_y, layer)
-	facade.set_material(ChicagoCity.material(kind))
-	var mesh = facade.commit()
-	mesh_node(asset, parent, title, mesh, Vector3.ZERO)
-
-
-static func add_loop_landmarks(
-	asset: Node3D, parent: Node, stone: Material, dark: Material, silver: Material
-) -> void:
+## Authored landmark exteriors share mapped positions and native night toggles.
+static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 	# Mapped west-of-Michigan office blocks, bridges and four-sided clock tower.
 	var wrigley = PropMesh.mesh("res://assets/chicago/landmarks/wrigley_building.glb").duplicate()
 	for surface in wrigley.get_surface_count():
@@ -723,32 +691,23 @@ static func add_loop_landmarks(
 			mat.emission_enabled = false
 			tribune.surface_set_material(surface, mat)
 	mesh_node(asset, parent, "TribuneTower", tribune, ChicagoCity.TRIBUNE_POSITION)
-	# Board of Trade at LaSalle: symmetrical Art Deco setbacks and pyramid crown.
-	var board = world([41.8787, -87.6325, 8])
-	var tiers = [[0.0, 100.0, 84.0], [100.0, 48.0, 66.0], [148.0, 36.0, 44.0]]
-	for tier in tiers:
-		facade_block(
-			asset,
-			parent,
-			"BoardOfTradeSetback",
-			board + Vector3(0, tier[1] * .5 + tier[0], 0),
-			Vector2(tier[2], tier[2] * .78),
-			tier[1],
-			"stone",
-			.44
-		)
-		box(
-			asset,
-			parent,
-			"BoardOfTradeCornice",
-			board + Vector3(0, tier[1] + tier[0], 0),
-			Vector3(tier[2] + 2, 1.8, tier[2] * .78 + 2),
-			stone
-		)
-	var pyramid = PrismMesh.new()
-	pyramid.size = Vector3(39, 34, 32)
-	pyramid.material = material(Color("8f7959"))
-	mesh_node(asset, parent, "BoardOfTradePyramid", pyramid, board + Vector3(0, 169, 0))
+	# Authored historic north tower and later south/east annexes at their mapped site.
+	var board = PropMesh.mesh("res://assets/chicago/landmarks/board_of_trade.glb").duplicate()
+	for surface in board.get_surface_count():
+		var mat = board.surface_get_material(surface)
+		if mat is StandardMaterial3D:
+			var floodlit = (
+				mat.resource_name in ["Grey Indiana limestone", "Raised pale limestone", "Ceres aluminum"]
+			)
+			if floodlit or mat.resource_name.begins_with("Night"):
+				mat = mat.duplicate()
+				mat.set_meta("chicago_night", true)
+				if floodlit:
+					mat.emission = mat.albedo_color
+					mat.emission_energy_multiplier = .16
+				mat.emission_enabled = false
+				board.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "BoardOfTrade", board, ChicagoCity.BOARD_POSITION)
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:
