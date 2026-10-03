@@ -113,7 +113,7 @@ in_tunnel = set(range(tunnel[0], tunnel[1] + 1))
 CELL = 20.0
 grid = {}
 for i, (x, y, z) in enumerate(road):
-    grid.setdefault((int(x // CELL), int(z // CELL)), []).append((x, y, z, i in in_tunnel))
+    grid.setdefault((int(x // CELL), int(z // CELL)), []).append((x, y, z, i in in_tunnel, i))
 
 
 def near_road(x, z, reach):
@@ -125,7 +125,7 @@ def near_road(x, z, reach):
             for p in grid.get((cx + dx, cz + dz), []):
                 d = math.hypot(p[0] - x, p[2] - z)
                 if d < reach and (best is None or d < best[0]):
-                    best = (d, p[1], p[3], p[0], p[2])
+                    best = (d, p[1], p[3], p[0], p[2], p[4])
     return best
 
 
@@ -184,6 +184,24 @@ def ign_grid():
     return h
 
 
+def sea_normal(i):
+    a, b = road[max(i - 2, 0)], road[min(i + 2, len(road) - 1)]
+    tx, tz = b[0] - a[0], b[2] - a[2]
+    m = math.hypot(tx, tz) or 1.0
+    return (-tz / m, tx / m)
+
+
+SEA_SIDE = {}
+
+
+def sea_side(i):
+    # +1 when the sea lies along sea_normal(i) from road point i (40 m out is off the mapped coastline), else -1.
+    if i not in SEA_SIDE:
+        nx_, nz_ = sea_normal(i)
+        SEA_SIDE[i] = -1 if shore(road[i][0] + nx_ * 40.0, road[i][2] + nz_ * 40.0)[1] else 1
+    return SEA_SIDE[i]
+
+
 # Bare-earth DTM when profile.json came from IGN (no rooftops, so no low envelope); else the DSM envelope.
 IGN = ign_grid() if "IGN" in json.load(open("profile.json", encoding="utf-8"))["source"] else None
 ground = []
@@ -202,7 +220,11 @@ for iz in range(nz):
             # Pavements are level with the road: ground 0.15 m under the tarmac out to 12 m, blending back to
             # the DEM by 35 m. The tunnel is enclosed by its own walls and ceiling (monaco.gd).
             t = max(0.0, (nr[0] - 12.0) / 23.0)
-            if IGN and h > nr[1] + 2.0:
+            if IGN and nr[2] and sea_side(nr[5]) * ((x - nr[3]) * sea_normal(nr[5])[0] + (z - nr[4]) * sea_normal(nr[5])[1]) > 0:
+                # The tunnel's open bays face the sea: the DTM there is the Fairmont's built platform, not
+                # ground a driver sees. Keep that side below the road so the bays look out over the water.
+                h = min(h, nr[1] - 3.0)
+            elif IGN and h > nr[1] + 2.0 and not nr[2]:
                 # Uphill of the road Monaco is held by vertical masonry (monaco.gd _retaining_walls stands in
                 # front of this step), not a 23 m earth ramp: reach the bare-earth height by 16 m.
                 t = max(0.0, (nr[0] - 10.0) / 6.0)

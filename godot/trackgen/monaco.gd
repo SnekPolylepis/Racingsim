@@ -980,6 +980,8 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 	walls.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var tiles = SurfaceTool.new()
 	tiles.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var ceiling = SurfaceTool.new()
+	ceiling.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var lamps = []
 	var pillars = []
 	var step = 2.0
@@ -989,9 +991,10 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 		var e = minf(s + step, span.y)
 		var f0 = _level_frame(c, s)
 		var f1 = _level_frame(c, e)
-		# Ceiling (seen from below), inner tiled wall, sea-side kerb wall and the beam over the bays.
+		# Ceiling (seen from below), inner tiled wall under a concrete band (the lamp rail and vents), sea-side
+		# kerb wall and the beam over the bays.
 		_quad(
-			walls,
+			ceiling,
 			f0[0] - f0[1] * 7.0 + Vector3(0, 5.4, 0),
 			f1[0] - f1[1] * 7.0 + Vector3(0, 5.4, 0),
 			f1[0] + f1[1] * 7.0 + Vector3(0, 5.4, 0),
@@ -1003,6 +1006,15 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 			tiles,
 			f0[0] + f0[1] * 7.0 + Vector3(0, -0.3, 0),
 			f1[0] + f1[1] * 7.0 + Vector3(0, -0.3, 0),
+			f1[0] + f1[1] * 7.0 + Vector3(0, 4.2, 0),
+			f0[0] + f0[1] * 7.0 + Vector3(0, 4.2, 0),
+			s,
+			e
+		)
+		_quad(
+			walls,
+			f0[0] + f0[1] * 7.0 + Vector3(0, 4.2, 0),
+			f1[0] + f1[1] * 7.0 + Vector3(0, 4.2, 0),
 			f1[0] + f1[1] * 7.0 + Vector3(0, 5.4, 0),
 			f0[0] + f0[1] * 7.0 + Vector3(0, 5.4, 0),
 			s,
@@ -1031,31 +1043,42 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 				Transform3D(
 					(
 						Basis(f0[1], Vector3.UP, f0[1].cross(Vector3.UP))
-						* Basis.from_scale(Vector3(0.8, 3.6, 0.8))
+						* Basis.from_scale(Vector3(1.1, 3.6, 1.1))
 					),
 					f0[0] - f0[1] * 7.3 + Vector3(0, 2.9, 0)
 				)
 			)
-		if n % 2 == 0:
+		# Floodlight rows every 2 m: on the rail atop the tiled wall and under the sea-side beam.
+		for at in [[6.6, 4.95], [-6.7, 4.55]]:
 			lamps.append(
 				Transform3D(
 					(
 						Basis(f0[1], Vector3.UP, f0[1].cross(Vector3.UP))
-						* Basis.from_scale(Vector3(0.35, 0.18, 1.1))
+						* Basis.from_scale(Vector3(0.45, 0.2, 0.8))
 					),
-					f0[0] + f0[1] * 6.7 + Vector3(0, 5.1, 0)
+					f0[0] + f0[1] * at[0] + Vector3(0, at[1], 0)
 				)
 			)
-		if n % 18 == 0:
+		if n % 8 == 0:
 			var light = OmniLight3D.new()
 			light.position = f0[0] + Vector3(0, 4.4, 0)
-			light.light_color = Color(1.0, 0.93, 0.8)
-			light.light_energy = 1.4
-			light.omni_range = 20.0
+			light.light_color = Color(1.0, 0.86, 0.65)
+			light.light_energy = 1.2
+			light.omni_range = 16.0
 			attach(asset, parent, light, "TunnelLight%d" % n)
 		s = e
 		n += 1
-	for pair in [[walls, ChicagoCity.material("wall"), "Tunnel"], [tiles, _tile_material(), "TunnelTiles"]]:
+	var concrete = StandardMaterial3D.new()
+	concrete.albedo_texture = load("res://assets/textures/chicago/Concrete034/Concrete034_color.jpg")
+	concrete.albedo_color = Color(0.82, 0.8, 0.76)
+	concrete.uv1_triplanar = true
+	concrete.uv1_scale = Vector3.ONE * 0.25
+	concrete.roughness = 0.9
+	for pair in [
+		[walls, ChicagoCity.material("wall"), "Tunnel"],
+		[tiles, _tile_material(), "TunnelTiles"],
+		[ceiling, concrete, "TunnelCeiling"]
+	]:
 		pair[0].generate_normals()
 		var node = MeshInstance3D.new()
 		node.mesh = pair[0].commit()
@@ -1064,8 +1087,8 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 	var lamp_mat = StandardMaterial3D.new()
 	lamp_mat.albedo_color = Color(1, 0.97, 0.9)
 	lamp_mat.emission_enabled = true
-	lamp_mat.emission = Color(1.0, 0.95, 0.85)
-	lamp_mat.emission_energy_multiplier = 4.0
+	lamp_mat.emission = Color(1.0, 0.88, 0.66)
+	lamp_mat.emission_energy_multiplier = 2.2
 	for batch in [[pillars, ChicagoCity.material("wall"), "TunnelPillars"], [lamps, lamp_mat, "TunnelLamps"]]:
 		var mesh = BoxMesh.new()
 		mesh.material = batch[1]
