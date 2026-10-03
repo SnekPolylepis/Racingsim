@@ -231,3 +231,5 @@ spans approximately 1800 mm per the API, not an installed-dock measurement.
 IGN RGE ALTI 1 m digital terrain model (bare earth), sampled through the Geoplateforme altimetry service (https://data.geopf.fr/altimetrie), IGN Licence Ouverte 2.0 (Etalab): road profile `trackgen/data/monaco/ign.json` and ground grid `ign-grid.json` (fetch_ign.py, build_city.py).
 
 Poly Haven CC0 texture set `sandstone_blocks_05` (1K albedo, OpenGL normal, roughness; https://polyhaven.com/a/sandstone_blocks_05) in `assets/textures/monaco/sandstone_blocks_05/`: Monaco's roadside retaining walls.
+
+Poly Haven CC0 texture set `rectangular_paving` (1K albedo, OpenGL normal, roughness; https://polyhaven.com/a/rectangular_paving) in `assets/textures/monaco/rectangular_paving/`: Monaco's paved ground.

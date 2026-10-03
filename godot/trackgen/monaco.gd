@@ -205,11 +205,12 @@ static func build_asset() -> Node3D:
 	_impact_blocks(asset, scenery, road, corners)
 	var garden_trees = _ground(asset, scenery, d.ground)
 	_sea(asset, scenery, d.ground)
-	_retaining_walls(asset, scenery, d.ground, tunnel)
+	_retaining_walls(asset, scenery, d.ground, tunnel, d.buildings)
 	_fairmont_island(asset, scenery, road, corners["Grand Hotel Hairpin"], d.ground)
 	var casino = _buildings(asset, scenery, d.buildings)
 	if not casino.is_empty():
 		_casino_towers(asset, scenery, casino, road.working_curve().sample_baked(corners["Casino Square"]))
+	_frontage(asset, scenery)
 	_flats(asset, scenery, d.piers, 1.4, "sidewalk", "Piers")
 	_pools(asset, scenery, d.get("pools", []))
 	for st in STANDS:
@@ -325,11 +326,16 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 						)
 					)
 					st.add_vertex(q[k])
-	for pair in [[flat, "ground", "Ground"], [steep, "wall", "RetainingWalls"], [garden, "park", "Gardens"]]:
+	# Paved Monaco: pale slab pavements, dressed-stone faces on the steep cells (Poly Haven CC0).
+	for pair in [
+		[flat, _pbr("rectangular_paving", 3.0), "Ground"],
+		[steep, _pbr("sandstone_blocks_05", 1.2), "RetainingWalls"],
+		[garden, ChicagoCity.material("park"), "Gardens"]
+	]:
 		pair[0].generate_normals()
 		var node = MeshInstance3D.new()
 		node.mesh = pair[0].commit()
-		node.material_override = ChicagoCity.material(pair[1])
+		node.material_override = pair[1]
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		attach(asset, parent, node, pair[2])
 	return trees
@@ -451,6 +457,9 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> Dictionary:
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 98000
 	for b in list:
+		# Frontage (b[4]): modelled in Blender (tools/blender/monaco_frontage.py), placed by _frontage().
+		if b.size() > 4 and b[4] == 1:
+			continue
 		var flat: Array = b[0]
 		var ring = PackedVector2Array()
 		for i in range(0, flat.size() - 1, 2):
@@ -643,6 +652,15 @@ const AD_COLORS = [
 ]
 
 
+## Every non-landmark building within 30 m of the lap, as Blender exteriors in world coordinates.
+static func _frontage(asset: Node3D, parent: Node) -> void:
+	var scene: PackedScene = load("res://assets/monaco/frontage.glb")
+	var node = scene.instantiate()
+	attach(asset, parent, node, "Frontage")
+	for child in node.find_children("*", "", true, false):
+		child.owner = asset
+
+
 ## The baked barrier line on one side as [road metres, inner-face base point, outward] every 2 m. Dressing
 ## mounted on the armco reads this, so it can never part from the barrier where the road width blends.
 static func _barrier_line(asset: Node3D, side: int) -> Array:
@@ -673,48 +691,83 @@ static func _ground_y(g: Dictionary, x: float, z: float) -> float:
 ## Dressed-stone retaining walls behind the pavement wherever the hillside stands above the road (Mirabeau,
 ## the Fairmont hairpin, Portier, Beau Rivage). build_city.py steps the IGN ground up to full height by 16 m
 ## out on that side; the wall's face, 2.5 m behind the barrier, hides the step. Visual only.
-static func _retaining_walls(asset: Node3D, parent: Node, g: Dictionary, tunnel: Vector2) -> void:
+static func _retaining_walls(asset: Node3D, parent: Node, g: Dictionary, tunnel: Vector2, buildings: Array) -> void:
+	# Footprints by 10 m cell: no wall where a building fronts the pavement.
+	var cells = {}
+	for b in buildings:
+		var ring = PackedVector2Array()
+		for i in range(0, b[0].size() - 1, 2):
+			ring.append(Vector2(b[0][i], b[0][i + 1]))
+		var box = Rect2(ring[0], Vector2.ZERO)
+		for p in ring:
+			box = box.expand(p)
+		for cx in range(floori(box.position.x / 10.0), floori(box.end.x / 10.0) + 1):
+			for cz in range(floori(box.position.y / 10.0), floori(box.end.y / 10.0) + 1):
+				cells.get_or_add(Vector2i(cx, cz), []).append(ring)
+	var built = func(p: Vector3) -> bool:
+		for ring in cells.get(Vector2i(floori(p.x / 10.0), floori(p.z / 10.0)), []):
+			if Geometry2D.is_point_in_polygon(Vector2(p.x, p.z), ring):
+				return true
+		return false
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
 		var line = _barrier_line(asset, side)
 		var u = 0.0
+		var run = []
 		for i in line.size() - 1:
 			var a = line[i]
 			var b = line[i + 1]
 			var step = a[1].distance_to(b[1])
 			if step > 6.0 or (a[0] > tunnel.x - 2.0 and a[0] < tunnel.y + 2.0):
+				_wall_run(st, run)
+				run = []
 				continue
 			var pa: Vector3 = a[1] + a[2] * 2.5
 			var pb: Vector3 = b[1] + b[2] * 2.5
-			var back_a: Vector3 = a[1] + a[2] * 10.0
-			var back_b: Vector3 = b[1] + b[2] * 10.0
-			var top_a = _ground_y(g, back_a.x, back_a.z) + 0.6
-			var top_b = _ground_y(g, back_b.x, back_b.z) + 0.6
-			if minf(top_a - pa.y, top_b - pb.y) < 1.5:
+			# The hill height where build_city.py has blended fully back to the survey (35 m from the road).
+			var back_a: Vector3 = a[1] + a[2] * 28.0
+			var back_b: Vector3 = b[1] + b[2] * 28.0
+			# Monaco's roadside walls stand 5-15 m; the terraces above them are out of a driver's view.
+			var top_a = minf(_ground_y(g, back_a.x, back_a.z) + 0.6, pa.y + 12.0)
+			var top_b = minf(_ground_y(g, back_b.x, back_b.z) + 0.6, pb.y + 12.0)
+			var fronted = [2.0, 5.0, 9.0, 14.0, 20.0].any(func(k): return built.call(pa + a[2] * k))
+			if fronted or minf(top_a - pa.y, top_b - pb.y) < 1.5:
+				_wall_run(st, run)
+				run = []
 				u += step
 				continue
-			var base_a = Vector3(pa.x, pa.y - 0.3, pa.z)
-			var base_b = Vector3(pb.x, pb.y - 0.3, pb.z)
-			var crown_a = Vector3(pa.x, top_a, pa.z)
-			var crown_b = Vector3(pb.x, top_b, pb.z)
-			_quad(st, base_a, base_b, crown_b, crown_a, u, u + step)
-			# Coping: a 0.6 m deep cap back towards the hill.
-			_quad(st, crown_a, crown_b, crown_b + b[2] * 0.6, crown_a + a[2] * 0.6, u, u + step)
+			run.append([pa, pb, top_a, top_b, a[2], b[2], u, u + step])
 			u += step
+		_wall_run(st, run)
 	st.generate_normals()
-	var mat = StandardMaterial3D.new()
-	var dir = "res://assets/textures/monaco/sandstone_blocks_05/sandstone_blocks_05_"
-	mat.albedo_texture = load(dir + "diff_1k.jpg")
-	mat.normal_enabled = true
-	mat.normal_texture = load(dir + "nor_gl_1k.jpg")
-	mat.roughness_texture = load(dir + "rough_1k.jpg")
-	mat.uv1_scale = Vector3(0.4, 0.4, 1.0)
-	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	var node = MeshInstance3D.new()
 	node.mesh = st.commit()
-	node.material_override = mat
+	node.material_override = _pbr("sandstone_blocks_05", 0.4)
 	attach(asset, parent, node, "StoneWalls")
+
+
+## One continuous wall: face and coping per segment. Runs under 6 m (a slot between two buildings) read as
+## free-standing spires, so they are left to the buildings either side.
+static func _wall_run(st: SurfaceTool, run: Array) -> void:
+	if run.size() < 3:
+		return
+	# Coping follows the hill as a smooth line (a 5-segment moving average), not survey-cell wedges.
+	var tops = []
+	for i in run.size():
+		var sum = 0.0
+		var count = 0
+		for k in range(maxi(i - 2, 0), mini(i + 3, run.size())):
+			sum += (run[k][2] + run[k][3]) * 0.5
+			count += 1
+		tops.append(sum / count)
+	for i in run.size():
+		var r = run[i]
+		var crown_a = Vector3(r[0].x, tops[maxi(i - 1, 0)] * 0.5 + tops[i] * 0.5, r[0].z)
+		var crown_b = Vector3(r[1].x, tops[i] * 0.5 + tops[mini(i + 1, run.size() - 1)] * 0.5, r[1].z)
+		_quad(st, r[0] - Vector3(0, 0.3, 0), r[1] - Vector3(0, 0.3, 0), crown_b, crown_a, r[6], r[7])
+		# Coping: a 0.6 m deep cap back towards the hill.
+		_quad(st, crown_a, crown_b, crown_b + r[5] * 0.6, crown_a + r[4] * 0.6, r[6], r[7])
 
 
 ## Advertising panels flat on the armco face, both sides, end to end, as on the F1 onboards; none in the
@@ -1121,6 +1174,19 @@ static func _quad(
 	for k in [0, 1, 2, 0, 2, 3, 0, 2, 1, 0, 3, 2]:
 		st.set_uv(uv[k])
 		st.add_vertex(v[k])
+
+
+## A Poly Haven 1K set from assets/textures/monaco/<id>/ (albedo, OpenGL normal, roughness), UVs scaled.
+static func _pbr(id: String, scale: float) -> StandardMaterial3D:
+	var dir = "res://assets/textures/monaco/%s/%s_" % [id, id]
+	var mat = StandardMaterial3D.new()
+	mat.albedo_texture = load(dir + "diff_1k.jpg")
+	mat.normal_enabled = true
+	mat.normal_texture = load(dir + "nor_gl_1k.jpg")
+	mat.roughness_texture = load(dir + "rough_1k.jpg")
+	mat.uv1_scale = Vector3(scale, scale, 1.0)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	return mat
 
 
 static func _facade_material() -> ShaderMaterial:

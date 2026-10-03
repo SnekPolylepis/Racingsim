@@ -224,10 +224,10 @@ for iz in range(nz):
                 # The tunnel's open bays face the sea: the DTM there is the Fairmont's built platform, not
                 # ground a driver sees. Keep that side below the road so the bays look out over the water.
                 h = min(h, nr[1] - 3.0)
-            elif IGN and h > nr[1] + 2.0 and not nr[2]:
-                # Uphill of the road Monaco is held by vertical masonry (monaco.gd _retaining_walls stands in
-                # front of this step), not a 23 m earth ramp: reach the bare-earth height by 16 m.
-                t = max(0.0, (nr[0] - 10.0) / 6.0)
+            elif IGN and not nr[2]:
+                # Pavements run flat to the building fronts (frontage stands 8-20 m out); the hill rises behind
+                # them, or behind monaco.gd's dressed-stone retaining walls where no building fronts the road.
+                t = max(0.0, (nr[0] - 20.0) / 15.0)
             h = (nr[1] - 0.15) * (1 - t) + h * t if t < 1.0 else h
         distance, land = shore(x, z)
         if not land and not (nr and nr[0] < 12.0):
@@ -309,7 +309,11 @@ for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
         kind = t.get("building", "yes")
         if e["id"] in LANDMARKS:
             kind, h = LANDMARKS[e["id"]]
-        buildings.append([[round(px, 2) for p in ring for px in p], round(base, 2), round(h, 1), kind])
+        # Frontage: any corner within 30 m of the lap. tools/blender/monaco_frontage.py models these as
+        # detailed exteriors and monaco.gd stops extruding them; landmarks and canopies keep their own path.
+        front = int(kind not in ("casino", "hotel_de_paris", "fairmont", "roof", "bridge")
+                    and any(near_road(px, pz, 30.0) for px, pz in ring))
+        buildings.append([[round(px, 2) for p in ring for px in p], round(base, 2), round(h, 1), kind, front, e["id"]])
 
 trees = []
 for e in nature:
