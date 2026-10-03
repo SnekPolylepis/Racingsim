@@ -4166,3 +4166,34 @@ Jewelers have authored exteriors. Next recognizable target: Carbide and Carbon
 (mapped Pendry w148544831); route-band physical-window coverage and remaining
 generic glassblock/pavilion/material paths also remain. This landmark pass does
 not establish the wider city conversion complete or resolve owner audio feedback.
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: visible route-band windows
+
+Expanded generic measured-facade physical windows from 160 m to the existing
+650 m geometry visibility band. Removed the nearest-road facing test: a wall
+facing away from its closest road can be visible from another circuit leg.
+Conservative padded 25 m cell lookups are shared across chunks within one city
+build, not across tracks. The existing 570–650 m facade transition remains.
+Glassblock/pavilion paths and further recognizable exteriors remain separate work.
+
+Gates/20261003-174344: windows 18/18 (including 500 m, outside-band and independent
+route regressions), actual menu/drive/both layouts 44/44, both full renderer
+clipping scans 1/1 with 108/100 expected overhead hits, parse clean; five gates,
+62 checks, zero failures, stderr empty, recorded wall time 105 s. Eight actual
+street/clock/crown/river day/night views reviewed in visual-review/window-band;
+native review exit 0 and stderr empty. Chicago Grid reports 1,088,374 physical
+windows. A warmed frozen river/night view averaged 19.296 ms across 120 frames
+and reported 82,493,435 render primitives; this is one sampled view, not a full
+performance sweep or gameplay frame-rate guarantee. Advisory 60 fps target is
+not met in that sample. Built-in ImporterMesh simplification was probed on the
+existing window mesh and produced zero LODs; no ineffective runtime LOD code added.
+
+Windows export exit 0, stderr empty; packaged six-track/40 engine-bank verifier
+reports V2 EXPORT PASS, stderr empty (window-band-package.out/.err); captured
+55 s observation reported live, terminal success subsequently observed in log.
+Gameplay engine capture peak 0.353322. Installed matching build/RacingSim.exe,
+retained previous executable, and started normal local game launch. SHA-256:
+68BA4175700691A98417DA3036E3085122499CA29E46F0E92EEECA668729A034
+No full matrix, broader gameplay performance sweep or macOS validation claimed.
+Goal ACTIVE: continue Carbide and Carbon and remaining generic exterior paths;
+owner engine audibility/whine acceptance and wider prop/lighting review remain open.

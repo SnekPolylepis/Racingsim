@@ -95,5 +95,32 @@ func _initialize():
 	assert(contained, "Measured geometry stays inside the mapped footprint")
 	assert(diagonal_wall, "Mapped diagonal walls replace square raster stairs")
 	assert(is_equal_approx(roof_height, City.STREET_Y + 30), "Measured taller roof cells survive clipping")
-	print("CHICAGO WINDOWS RESULTS ", JSON.stringify({"checks": 15, "failures": []}))
+	# Visible facades beyond the old 160 m band receive physical windows, even
+	# when their nearest road is behind the face (another circuit leg can see it).
+	var distant = SurfaceTool.new()
+	distant.begin(Mesh.PRIMITIVE_TRIANGLES)
+	distant.set_color(Color(.4, .5, 0))
+	City._lidar_wall(distant, Vector3(0, 0, 500), Vector3(10, 0, 500), Vector3.BACK, 0, 24)
+	var distant_walls = {}
+	Windows.collect(distant.commit_to_arrays(), {Vector2i.ZERO: [Vector3(5, 8, 0)]}, distant_walls)
+	assert(
+		not distant_walls.is_empty(), "500 m facade receives physical geometry despite nearest road behind it"
+	)
+	var outside = SurfaceTool.new()
+	outside.begin(Mesh.PRIMITIVE_TRIANGLES)
+	outside.set_color(Color(.4, .5, 0))
+	City._lidar_wall(outside, Vector3(0, 0, 750), Vector3(10, 0, 750), Vector3.FORWARD, 0, 24)
+	var outside_walls = {}
+	Windows.collect(outside.commit_to_arrays(), {Vector2i.ZERO: [Vector3(5, 8, 0)]}, outside_walls)
+	assert(outside_walls.is_empty(), "Outside the visible band remains culled")
+	var independent_walls = {}
+	var independent = SurfaceTool.new()
+	independent.begin(Mesh.PRIMITIVE_TRIANGLES)
+	independent.set_color(Color(.4, .5, 0))
+	City._lidar_wall(independent, Vector3.ZERO, Vector3(10, 0, 0), Vector3.FORWARD, 0, 24)
+	Windows.collect(
+		independent.commit_to_arrays(), {Vector2i(100, 100): [Vector3(2500, 8, 2500)]}, independent_walls
+	)
+	assert(independent_walls.is_empty(), "Route coverage is not reused from another track")
+	print("CHICAGO WINDOWS RESULTS ", JSON.stringify({"checks": 18, "failures": []}))
 	quit()

@@ -334,6 +334,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 					st.add_vertex(Vector3(v.x, STREET_Y + .04, v.y))
 	# Commit every chunk's surfaces.
 	var window_walls = {}
+	var window_coverage = {}
 	for group in [
 		[chunks, 0.0, "Chunk"], [low_chunks, LOW_RANGE_M, "Low"], [flat_chunks, FLAT_RANGE_M, "Flat"]
 	]:
@@ -343,7 +344,7 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 				var st: SurfaceTool = group[0][key][mat_name]
 				var arrays = st.commit_to_arrays()
 				if mat_name == "facade":
-					ChicagoWindows.collect(arrays, route, window_walls)
+					ChicagoWindows.collect(arrays, route, window_walls, window_coverage)
 				mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 				mesh.surface_set_material(mesh.get_surface_count() - 1, material(mat_name))
 			var node = MeshInstance3D.new()

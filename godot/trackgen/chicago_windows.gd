@@ -1,9 +1,9 @@
 extends RefCounted
-## Near-route LiDAR facades: measured wall planes, acquired CC0 frames and glazing.
+## Visible route-band LiDAR facades: measured wall planes, acquired CC0 frames and glazing.
 ## Generic bay spacing is an interpretation; these are not surveyed landmark elevations.
 const Kit = preload("res://trackgen/chicago_kit.gd")
 const GLASS = preload("res://shaders/chicago_window_glass.gdshader")
-const RANGE_M = 160.0
+const RANGE_M = 650.0
 const CHUNK_M = 100.0
 const STREET_Y = 8.0
 
@@ -14,7 +14,10 @@ static func _hash(p: Vector2) -> float:
 
 ## SurfaceTool's unindexed wall quads are six vertices. Merge adjacent coplanar
 ## raster cells before placing windows, so a cell boundary never cuts a frame.
-static func collect(arrays: Array, route: Dictionary, walls: Dictionary) -> void:
+static func collect(arrays: Array, route: Dictionary, walls: Dictionary, coverage = null) -> void:
+	# Share route-cell lookups across chunks, not across tracks. Cell-centre padding
+	# covers every wall point in a 25 m cell without rescanning the route per quad.
+	var nearby: Dictionary = {} if coverage == null else coverage
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 	var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
 	var colours: PackedColorArray = arrays[Mesh.ARRAY_COLOR]
@@ -34,13 +37,12 @@ static func collect(arrays: Array, route: Dictionary, walls: Dictionary) -> void
 		if absf(a.y - b.y) > .01 or top.y <= a.y + .05:
 			continue
 		var mid = (a + top) * .5
-		var nearest = Kit.nearest_route(route, Vector2(mid.x, mid.z), RANGE_M)
-		var to_route = nearest - Vector2(mid.x, mid.z)
-		if (
-			nearest.x == INF
-			or to_route.length() > RANGE_M
-			or Vector2(n.x, n.z).dot(to_route.normalized()) < .15
-		):
+		var cell = Vector2i(floori(mid.x / 25.0), floori(mid.z / 25.0))
+		if not nearby.has(cell):
+			var centre = Vector2(cell) * 25.0 + Vector2(12.5, 12.5)
+			var nearest = Kit.nearest_route(route, centre, RANGE_M + 18.0)
+			nearby[cell] = nearest.x != INF and centre.distance_to(nearest) <= RANGE_M + 18.0
+		if not nearby[cell]:
 			continue
 		var along = Vector3(n.z, 0, -n.x)
 		var plane = n.dot(a)
@@ -162,7 +164,7 @@ static func build(asset: Node3D, holder: Node, walls: Dictionary) -> int:
 		var node = MultiMeshInstance3D.new()
 		node.name = "Windows3D_%d_%d" % [key.x, key.y]
 		node.multimesh = instances
-		node.visibility_range_end = 650.0
+		node.visibility_range_end = RANGE_M
 		node.visibility_range_end_margin = 80.0
 		node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 		# Measured building bodies cast street shadows; tiny frames need no extra lamp-shadow draws.
