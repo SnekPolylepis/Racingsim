@@ -46,6 +46,7 @@
     {"name": "road_density", "script": "tests/v2/road_density.gd", "groups": ["vehicle", "track"]},
     {"name": "scenery", "script": "tests/v2/scenery.gd", "groups": ["vehicle", "track"]},
     {"name": "test_surfaces_scene", "script": "tests/v2/test_surfaces_scene.gd", "groups": ["vehicle"], "deps": ["scripts/proving/", "scenes/proving/"]},
+    {"name": "chicago_board_of_trade", "script": "tests/v2/chicago_board_of_trade.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/board_of_trade", "scripts/track/prop_mesh.gd"]},
     {"name": "chicago_wrigley", "script": "tests/v2/chicago_wrigley.gd", "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "assets/chicago/landmarks/wrigley_building", "scripts/track/chicago_night.gd"]},
     {"name": "chicago_tribune", "script": "tests/v2/chicago_tribune.gd", "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "assets/chicago/landmarks/tribune_tower", "scripts/track/chicago_night.gd"]},
     {"name": "chicago_windows", "script": "tests/v2/chicago_windows.gd", "window": true, "groups": ["track"], "deps": ["trackgen/chicago_windows.gd", "trackgen/chicago_city.gd", "trackgen/chicago_kit.gd", "assets/chicago/downtown-kit/", "shaders/chicago_facade.gdshader", "shaders/chicago_window_glass.gdshader"]},

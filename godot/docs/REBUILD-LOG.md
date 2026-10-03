@@ -3978,3 +3978,34 @@ Full clip scans, full gates, performance sweep and macOS validation not rerun.
 Full objective remains ACTIVE. Seven full-photo replacements plus Tribune and
 Wrigley now have authored exteriors; Board of Trade's facade-block approximation
 and the broader mapped city/exterior audit remain. QUEUE stays claimed.
+
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: Board of Trade exterior study
+
+Resumed owner goal. Existing seven full-photo overrides remain covered by
+AUTHORED_BUILDINGS; Tribune/Wrigley remain authored. Added original Blender
+Board of Trade north-tower study: limestone piers, recessed glazing/spandrels,
+stepped shoulders, four-sided copper roof/seams, stylized Ceres, mesh Roman clock,
+hooded/eagle relief silhouettes, inscription and tall trading-floor windows.
+No photograph pixels. Script, editable .blend, GLB and source/limitation notes
+saved. 218,422 triangles / eight materials / 184.5 m top. First render corrected
+excessively wide glazing and misplaced clock; revised render inspected at
+reference/board/model.png against owner/CAC photos. Sculptures are approximate.
+
+Existing landmark pin (-671.166, 8, 679.052) is displaced from the actual site.
+OSM w28951633 combines historic north block and later south/east wings; compound
+centroid (-629.9, 834.4) must not position the historic tower. Proposed north
+origin (-653, 8, 788); footprint/road-clearance review still needed.
+
+Blender final export successful; native Godot editor import stderr empty. Native
+asset bounds P(-26.69875, 0, -36.68294), S(53.3975, 184.5, 73.86032).
+Initial north/south bounds assertion assumed at most 37 m and failed: exterior
+trim reaches 37.17738 m. Corrected check to 38 m envelope; both failed probes
+terminated explicitly. Final gates/20261003-160132: chicago_board_of_trade 13/13
+checks, zero failures. No runtime replacement, drive/export or installation
+claimed for this study. The earlier playable executable is retained.
+
+Goal remains ACTIVE. Next: author/review modern south/east wings and upper
+ornament, integrate at mapped site with exact duplicate exclusion, inspect
+whole-city day/night views, then drive/export/install. Wider city exterior audit
+also remains. Do not mark the broader goal complete from the asset-only check.
