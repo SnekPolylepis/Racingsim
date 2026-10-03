@@ -59,6 +59,9 @@ const BOARD_POSITION = Vector3(-653, STREET_Y, 788)
 ## 35 East Wacker mapped footprint w124865488, north face slightly angled along Wacker.
 const JEWELERS_POSITION = Vector3(-198.2, STREET_Y, -192.35)
 const JEWELERS_YAW = .006
+## Mapped Pendry / Carbide and Carbon footprint w148544831.
+const CARBIDE_POSITION = Vector3(-50.4, STREET_Y, -192.2)
+const CARBIDE_YAW = .0114
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
@@ -133,6 +136,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "w148544831":
+			exclusion = "authored Carbide and Carbon exterior"
 		elif b.get("o", "") == "w124865488":
 			exclusion = "authored Jewelers exterior"
 		elif b.get("o", "") == "w28951633":

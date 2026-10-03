@@ -4197,3 +4197,58 @@ retained previous executable, and started normal local game launch. SHA-256:
 No full matrix, broader gameplay performance sweep or macOS validation claimed.
 Goal ACTIVE: continue Carbide and Carbon and remaining generic exterior paths;
 owner engine audibility/whine acceptance and wider prop/lighting review remain open.
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: Carbide and Carbon authored exterior
+
+Original Blender modeled exterior replaces mapped Pendry w148544831 exactly,
+with street black granite, green glazed raised piers, inset window/sash/spandrel
+geometry, stylized botanical relief and volutes, east-end stepped tower,
+shoulder pinnacles/medallion frieze, narrow gilded cap/coffers/vent grille,
+and physical east entrance grille/name lettering. Editable .blend and canonical
+author script retained. Eight material surfaces, 251,228 triangles; no facade
+photo pixels or third-party model distributed. Sources and approximation limits
+recorded in carbide_carbon-SOURCES.md. Full exterior and crown photographs from
+Chicago Architecture Center inspected in browser; Chicago Loop height text read.
+Mapped origin (-50.4,8,-192.2), yaw .0114; ~39.5 x 43.9 m base, main measured
+roof cluster near 86 m, authored main terrace 86.7 m. Architectural cap 153.3 m
+based on published 503 ft height rather than the mapped 158 m height tag.
+Floor divisions, upper offsets and relief profiles are stylized approximations.
+Selective occupied windows and gilded crown/relief toggle with time of day.
+
+First author assertion caught a bottom cornice below street level; corrected
+before export. Final Blender run saved .blend and exported GLB, stderr empty;
+Godot import and Windows export exit 0, stderr empty. Native checks and visual
+review below determine acceptance; these authoring results alone are not QA.
+
+First eight-view review exposed a squat cap and an occluded river camera.
+Refined cap proportions without changing the 153.3 m top, added the lower
+botanical band, and moved river-view camera to the open Michigan route at
+(0,25,-270). Full Blender refinement exported 252,620 triangles, then a small
+incremental coffer-divider pass on the editable .blend saved/exported 252,716
+triangles (exit 0, stderr empty). Canonical script includes the same dividers
+and was syntax checked. Final native envelope x -20.633..20.633,
+z -22.833..22.833, y 0..153.3; ornament overhangs included.
+
+Final gates/20261003-181253: Carbide 25/25, actual menu/drive/both layouts/exact
+replacement 47/47, both full renderer clipping scans 1/1 with 108/100 expected
+overhead hits, zero failures, stderr empty; four gates, 74 checks, 103 s wall.
+Game parse check separately exit 0, stderr empty. Earlier gates/20261003-180504
+(74 checks, 108 s) passed but are superseded. Final import and Windows export
+exit 0, stderr empty. Eight final street/entrance/crown/route day/night views
+reviewed in visual-review/carbide; native review exit 0, stderr empty. Final
+views show readable entrance text, lower band and refined cap. Warmed frozen
+final route/night sample 16.181 ms over 120 frames, 53,043,048 render primitives;
+this camera differs from earlier samples, so no speedup claim or full gameplay
+performance guarantee. Chicago Grid generic physical-window count 1,086,901
+after exact block replacement. No full matrix or macOS validation claimed.
+
+Final packaged six-track/40 engine-bank verifier reports V2 EXPORT PASS, stderr
+empty (carbide-package-final.out/.err), gameplay engine capture peak 0.357914.
+Process terminal/missing after bounded wait; final exit code unavailable from
+reopened handle. Matching build/RacingSim.exe installed, prior build retained,
+normal local game launch started. Installed SHA-256:
+6609CC44C7BF6BB8B917D969F53735DB4DCF66E2ABFC12C8A04F8C3C451A833E
+Goal ACTIVE: seven full-photo replacements plus Tribune, Wrigley, Board of Trade,
+Jewelers and Carbide and Carbon now have authored exteriors. Continue remaining
+generic exterior/material paths and recognizable buildings; broader performance,
+prop/lighting review and owner audio acceptance remain open.

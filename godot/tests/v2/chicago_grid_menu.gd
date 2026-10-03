@@ -88,6 +88,17 @@ func run() -> void:
 			if entry.osm_id == "w124865488" and entry.reason == "authored Jewelers exterior":
 				excluded_jewelers += 1
 		check(excluded_jewelers == 1, "Mapped Jewelers block is replaced exactly once")
+		var carbide = app.track.get_node_or_null("Scenery/CarbideCarbon")
+		check(
+			carbide is MeshInstance3D and carbide.mesh.get_surface_count() == 8,
+			"Authored Carbide and Carbon loads"
+		)
+		var excluded_carbide = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w148544831" and entry.reason == "authored Carbide and Carbon exterior":
+				excluded_carbide += 1
+		check(excluded_carbide == 1, "Mapped Carbide and Carbon block is replaced exactly once")
+
 		var board = app.track.get_node_or_null("Scenery/BoardOfTrade")
 		check(
 			board is MeshInstance3D and board.mesh.get_surface_count() == 10,
@@ -166,6 +177,10 @@ func run() -> void:
 		check(app.track.has_node("Scenery/WrigleyBuilding"), "Authored Wrigley loads in original Chicago")
 		check(app.track.has_node("Scenery/BoardOfTrade"), "Authored Board of Trade loads in original Chicago")
 		check(app.track.has_node("Scenery/JewelersBuilding"), "Authored Jewelers loads in original Chicago")
+		check(
+			app.track.has_node("Scenery/CarbideCarbon"),
+			"Authored Carbide and Carbon loads in original Chicago"
+		)
 		for name in chicago_buildings:
 			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")
 		check(

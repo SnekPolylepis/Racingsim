@@ -727,6 +727,19 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 				jewelers.surface_set_material(surface, mat)
 	var jewelers_node = mesh_node(asset, parent, "JewelersBuilding", jewelers, ChicagoCity.JEWELERS_POSITION)
 	jewelers_node.rotation.y = ChicagoCity.JEWELERS_YAW
+	# Green terra-cotta shaft, dimensional relief and illuminated gold crown.
+	var carbide = PropMesh.mesh("res://assets/chicago/landmarks/carbide_carbon.glb").duplicate()
+	for surface in carbide.get_surface_count():
+		var mat = carbide.surface_get_material(surface)
+		if mat is StandardMaterial3D and mat.resource_name.begins_with("Night"):
+			mat = mat.duplicate()
+			mat.set_meta("chicago_night", true)
+			mat.emission = Color(.80, .55, .18) if "gilded" in mat.resource_name else Color(.65, .48, .25)
+			mat.emission_energy_multiplier = .4
+			mat.emission_enabled = false
+			carbide.surface_set_material(surface, mat)
+	var carbide_node = mesh_node(asset, parent, "CarbideCarbon", carbide, ChicagoCity.CARBIDE_POSITION)
+	carbide_node.rotation.y = ChicagoCity.CARBIDE_YAW
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:
