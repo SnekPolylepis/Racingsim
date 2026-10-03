@@ -1,4 +1,4 @@
-extends SceneTree
+﻿extends SceneTree
 ## P4-07 / section 6 "Laps": the bot (scripts/vehicle/bot_driver.gd) on each generated track, every car,
 ## both handling models: a valid flying lap (gates in order), zero wheels off the track (grass, gravel,
 ## runoff), zero wall contacts, zero prop contacts (the track's Props/ cones are off the racing line),
@@ -96,8 +96,9 @@ func _physics_process(_delta):
 				if base > 0 and r.lap > 0:
 					timing = "baseline %.2f s (%+.2f%%)" % [base, (r.lap / base - 1) * 100]
 					timing_ok = absf(r.lap / base - 1) < .02
+				# Owner 2026-10-03: 24 km/h (was 24.5) after the surveyed Mirabeau descent; the steering-lock bug ran far below.
 				var hairpin_ok = (
-					not (id == "monaco" and key in ["f2004", "rb19"]) or r.hairpin_min_speed >= 6.8
+					not (id == "monaco" and key in ["f2004", "rb19"]) or r.hairpin_min_speed >= 6.66
 				)
 				var hairpin_speed = (
 					"n/a" if r.hairpin_min_speed <= 0 else "%.0f km/h" % (r.hairpin_min_speed * 3.6)
