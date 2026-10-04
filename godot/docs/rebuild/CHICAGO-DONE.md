@@ -251,3 +251,16 @@ separate approximate service/plant geometry; registry/grid height discrepancy is
 unresolved and documented in wacker_125-SOURCES.md. Current Windows build installed.
 Willis highlight/detail and wider city/props/lighting/performance work remain open.
 See REBUILD-LOG for dated results, diagnostic correction and validation limits.
+
+
+### 2026-10-03 — Willis glare and antenna warning lights
+
+Willis retains its existing attributed 3D model and facade textures, with imported
+gloss maps replaced by restrained runtime reflections. The white flare is removed
+at the matching 111-Wacker street camera. Oversized floating warning lights are
+now small lights attached to the two measured antenna tips. Six day/night views
+reviewed, menu/drive 71 checks and both clipping scans pass, parse clean;
+packaged verifier passes and matching Windows build installed. This is not a new
+complete facade rebuild or city-wide visual/performance acceptance. Remaining
+recognizable exteriors, broader placement/lighting and owner audio listening are
+open. See REBUILD-LOG for the corrected initial encoding failure and dated limits.

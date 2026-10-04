@@ -58,6 +58,25 @@ func run() -> void:
 				)
 			)
 		check(textured, "Willis night glow preserves facade textures")
+		var restrained = true
+		for surface in tower.mesh.get_surface_count():
+			var mat = tower.mesh.surface_get_material(surface)
+			restrained = restrained and mat.metallic_texture == null and mat.roughness_texture == null
+			restrained = (
+				restrained and mat.metallic == 0.0 and mat.roughness >= 0.4 and mat.metallic_specular <= 0.15
+			)
+		check(restrained, "Willis dark facade avoids imported gloss-map glare")
+		var tips = [Vector3(-17.484, 525.144, -11.483), Vector3(-17.485, 527.408, 15.980)]
+		for i in tips.size():
+			var beacon = app.track.get_node("Scenery/WillisBeacon%d" % (-1 if i == 0 else 1))
+			check(
+				(
+					beacon.global_position.distance_to(tower.global_position + tips[i]) < 0.05
+					and beacon.mesh.get_aabb().size.length() < 1.0
+				),
+				"Willis antenna %d beacon is attached and small" % i
+			)
+
 		var tribune = app.track.get_node_or_null("Scenery/TribuneTower")
 		check(
 			tribune is MeshInstance3D and tribune.mesh.get_surface_count() >= 5,

@@ -4651,3 +4651,46 @@ PID 197860 responsive, empty stderr. Installed SHA-256:
 9ADB24F6027997412D1A8BE334E636D7077CF03448512688BEB4063C79716C02
 Goal ACTIVE: remaining recognizable exterior work and broader city/props/lighting/
 performance acceptance remain open; Willis detail/material review is next.
+
+
+### 2026-10-03 — Willis Tower material glare and attached antenna beacons
+
+Retained BoldlyBuilding's existing CC BY 4.0 model, bundled-tube silhouette,
+roof equipment, antennas and original diffuse/normal textures. No replacement
+model or facade photographs added. Native import probe found three materials
+with converted specular/gloss textures driving roughness and specular .5.
+Runtime materials now discard converted metallic/roughness maps, use dielectric
+metallic 0, roughness .48 and specular .12. Existing texture-multiplied night
+emission is preserved. SOM's primary reference describes black aluminum and
+bronze-tinted glare-reducing glass:
+https://www.som.com/projects/willis-tower-formerly-sears-tower/
+Imported mesh bounds remain 120 x 527.4078 x 112 m, at (-954.5472, 8, 659.0144).
+This is a material correction, not a claim that all facade panes were newly modeled.
+
+The old 2.5 x 1.5 x 2.5 m warning-light cubes floated at local (+/-9, 508, 0).
+GLB vertex measurements locate antenna tips at (-17.484, 525.144, -11.483)
+and (-17.485, 527.408, 15.980). Lights now use those positions and .5 m cubes.
+Six final native street/crown/matching-111-glare views, day and night, reviewed:
+white Willis reflection removed at the matching street camera; small warning
+lights are visibly attached to tips. Review terminal PASS, empty stderr, process
+finished; final exit code unavailable. Frozen final matching-glare/night 120-frame
+sample 20.9912 ms, 103,805,253 primitives alongside source checks; not 60 fps,
+not a controlled comparison or route-wide performance claim.
+
+First menu run (gates/20261003-234818) failed selection because this edit's
+Windows text decoding damaged the em dash; restored original UTF-8 text.
+Final gates/20261003-234858: menu 71/71 including three new Willis checks,
+actual runtime drive/engine bus output and both layouts; parse clean; both PASS,
+85 s, empty stderr. Windowed gates/20261003-235035: both clipping scans PASS,
+77 s, empty stderr; original 108 and Grid 100 expected hits, zero failures.
+Four targeted gates, 73 logical checks plus parse. Full matrix/macOS not run.
+Engine bus signal is not owner-device audibility/whine listening acceptance.
+
+Windows export completed with empty stderr. Packaged six-track/40-engine-bank
+verifier V2 EXPORT PASS, empty stderr; both processes finished, final exit codes
+unavailable. Installed matching build/RacingSim.exe, prior 125-Wacker executable
+backed up as RacingSim-before-willis-20261003.exe. Installed SHA-256:
+C64101071B9EC1F8E986F94C56F13FA4ACD0357915CCC445B3602929108CE51E
+Normal menu launch PID 215164 responsive, empty stderr after launch.
+Goal ACTIVE: remaining recognizable exteriors, broad city/props/lighting review,
+performance and subjective audio acceptance remain open.

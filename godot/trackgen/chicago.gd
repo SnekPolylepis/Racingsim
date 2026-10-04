@@ -569,6 +569,12 @@ static func add_landmarks(asset: Node3D, parent: Node) -> void:
 		var mat = tower.surface_get_material(i)
 		if mat is StandardMaterial3D:
 			mat = mat.duplicate()
+			# The imported gloss maps turn the dark bronze facade into a white solar reflection.
+			mat.metallic_texture = null
+			mat.roughness_texture = null
+			mat.metallic = 0.0
+			mat.roughness = 0.48
+			mat.metallic_specular = 0.12
 			mat.emission = Color("ffd9a0")
 			mat.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
 			mat.emission_texture = mat.albedo_texture
@@ -1215,13 +1221,15 @@ static func add_night_details(asset: Node3D, parent: Node, road: RoadPath, lamps
 			warm
 		)
 	var willis = world(data().landmarks["Willis Tower"])
-	for side in [-1, 1]:
+	# Match the two antenna tips in the imported model; the old +/-9 m beacons floated beside them.
+	var antenna_tips = [Vector3(-17.484, 525.144, -11.483), Vector3(-17.485, 527.408, 15.980)]
+	for i in antenna_tips.size():
 		box(
 			asset,
 			parent,
-			"WillisBeacon%d" % side,
-			willis + Vector3(side * 9, 508, 0),
-			Vector3(2.5, 1.5, 2.5),
+			"WillisBeacon%d" % (-1 if i == 0 else 1),
+			willis + antenna_tips[i],
+			Vector3(0.5, 0.5, 0.5),
 			night_material(Color("ed6050"), 2.0)
 		)
 	var bean = world(data().landmarks["Bean"])
