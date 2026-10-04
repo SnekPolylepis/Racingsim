@@ -4774,3 +4774,20 @@ RacingSim-before-london-20261004.exe. Normal menu launch PID 239580 responsive,
 empty stderr after launch. Root Play Racing Sim.cmd continues to launch it.
 Goal ACTIVE: remaining recognizable exteriors, broad city/props/lighting review,
 performance and subjective audio acceptance remain open.
+
+## 2026-10-04 — Owner-requested overnight pause
+
+Playable London Guarantee/Wacker checkpoint is 6463336; installed executable
+remains SHA-256 1F71FF25B57C1CE4B1648E63EE7AAF882A730285F65F742F8DE4D0EC51664FC5,
+normal game PID 239580 responsive with empty launch stderr. No new model or
+source edits after that checkpoint. Next exterior candidate: 333 West Wacker,
+mapped w116017092, current polygon bounds x[-993.1,-926.6], z[-183.0,-115.8].
+References verified before pause: KPF project describes curved green river
+facade, notched south side, granite/green-marble base, two-story lobby and
+mechanical floor; CVU lists 148.6 m / 36 floors versus current mapped h147.5.
+https://www.kpf.com/project/333-wacker-drive
+https://www.skyscrapercenter.com/building/333-wacker-drive/9021
+https://www.architecture.org/online-resources/buildings-of-chicago/333-west-wacker
+Next session: inspect reference photos and mapped roof data, author the exterior,
+then review placement/day-night and verify the playable export. Research only
+so far; 333 Wacker is not implemented. Owner requests goal PAUSED overnight.
