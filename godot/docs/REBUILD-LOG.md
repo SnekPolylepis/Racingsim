@@ -4218,3 +4218,13 @@ stone wall stands at the first 1 m rise found walking out from 5.5 m (_escarpmen
 flat to 30 m then stepped. Yachts: Blender motor yacht (tools/blender/monaco_yacht.py) replaces the box mesh,
 and only berths afloat and 15 m clear of the lap are filled (hulls stood in the chicane runoff).
 screenshot tool: --stations=a,b,... --cam=N for review sweeps. Gates: monaco, laps monaco pass.
+
+### 2026-10-04 — PROGRESS MON-POLISH: three graphics/terrain passes
+
+Each pass: full-lap sweep (40 m bonnet day; 80 m chase night), fix the worst, recheck. Pass 1: day tonemap was
+linear and the Riviera sun clipped white facades flat; Monaco now filmic by day (exposure 0.95, white 4.0), sun 1.4;
+paving grey-tinted (read as sand across the pool quay). Pass 2: Le Rocher's steep unpaved ground used the masonry
+blocks and alternated rock/lawn per terrace step (stripes); cliffs > 53 deg now Poly Haven CC0 marble_cliff_02,
+the rest garden. Pass 3 (night sweep): night look holds (lamps, lit windows, wet road, tunnel); escarpment wall
+tops now look 24 m back so the hill no longer peeks over them as pyramids. Left: one short slope at ~2580 m where
+a wall run ends. Gates monaco, laps monaco, track_asset, scenery, front_end pass; export V2 EXPORT PASS.

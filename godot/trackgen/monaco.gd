@@ -710,10 +710,10 @@ static func _retaining_walls(
 	attach(asset, parent, node, "StoneWalls")
 
 
-## Highest ground 4-12 m out from p along outward.
-static func _ground_max(g: Dictionary, p: Vector3, outward: Vector3) -> float:
+## Highest ground 4 m to each out from p along outward.
+static func _ground_max(g: Dictionary, p: Vector3, outward: Vector3, reach := 12.0) -> float:
 	var top = -INF
-	for k in [4.0, 8.0, 12.0]:
+	for k in range(4, int(reach) + 1, 4):
 		var q = p + outward * k
 		top = maxf(top, _ground_y(g, q.x, q.z))
 	return top
@@ -752,8 +752,8 @@ static func _escarpment(
 				and not built.call(hit)
 			)
 			if keep:
-				var top_a = minf(_ground_max(g, prev[0], prev[1]) + 0.3, prev[0].y + 25.0)
-				var top_b = minf(_ground_max(g, hit, out) + 0.3, hit.y + 25.0)
+				var top_a = minf(_ground_max(g, prev[0], prev[1], 24.0) + 0.3, prev[0].y + 25.0)
+				var top_b = minf(_ground_max(g, hit, out, 24.0) + 0.3, hit.y + 25.0)
 				run.append([prev[0], hit, top_a, top_b, prev[1], out, s - 2.0, s])
 			else:
 				_wall_run(st, run)
