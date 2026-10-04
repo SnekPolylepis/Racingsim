@@ -584,6 +584,22 @@ static func _frontage(asset: Node3D, parent: Node) -> void:
 		attach(asset, parent, node, pair[1])
 		for child in node.find_children("*", "", true, false):
 			child.owner = asset
+	# Glass gains the night toggle (NightGlow walks mesh surface materials with an fterhours uniform).
+	var windows = {}
+	for pair in [["Dark window glass", 0.35, 1.6], ["Shopfront glass", 0.7, 0.7], ["Casino dark glass", 0.5, 1.2]]:
+		var mat = ShaderMaterial.new()
+		mat.shader = preload("res://shaders/monaco_window.gdshader")
+		mat.set_shader_parameter("lit_share", pair[1])
+		mat.set_shader_parameter("glow", pair[2])
+		windows[pair[0]] = mat
+	for mesh_node in (
+		parent.get_node("Frontage").find_children("*", "MeshInstance3D", true, false)
+		+ parent.get_node("Casino").find_children("*", "MeshInstance3D", true, false)
+	):
+		for i in mesh_node.mesh.get_surface_count():
+			var mat = mesh_node.mesh.surface_get_material(i)
+			if mat and windows.has(mat.resource_name):
+				mesh_node.mesh.surface_set_material(i, windows[mat.resource_name])
 
 
 ## The baked barrier line on one side as [road metres, inner-face base point, outward] every 2 m. Dressing
