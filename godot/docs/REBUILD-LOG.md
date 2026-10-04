@@ -4591,3 +4591,63 @@ PID 198576 responsive, empty stderr. Installed SHA-256:
 A3A1493099DC0F1FDC77953560CCB0F64878C14E7752691653CDCD3B95197FE3
 Goal ACTIVE: remaining recognizable exteriors, neighboring glare, broader city/
 props/lighting/performance acceptance and owner audio playtest remain open.
+
+
+## DONE CHI-3D-BUILDINGS / 125 South Wacker — Codex — 2026-10-03
+
+Native pixel/footprint ray diagnostic identifies the previous 111-street view's
+large right-hand flare as w147350191 / Northern Trust Building, 125 South Wacker.
+Initial temporary diagnostic had a duplicate local variable and failed to parse;
+corrected diagnostic exit 0, three matching pixels identify the same nearest
+mapped building. Original Blender exterior now replaces only that mapped block,
+at (-998.175, 8, 564.75), yaw .019009, in both Chicago layouts. Owner and official
+building-site west/south/entrance/lobby photographs inform deep granite ribs,
+separate bronze spandrels/vision panes, grille bands, recessed Wacker/Adams arcades,
+clear supported canopy/address, white lobby column, elevator walls, wood ceiling,
+linear lights, reception desk and blue lounge geometry. Existing landscaping kept.
+Canonical generation: 157,452 triangles, ten materials; completed, empty stderr.
+Native bounds x -15.803..20.77712, z -30.01368..30.01656, y -8..141.5.
+
+CVU's 126.5 m / 31 floors / Perkins+Will matches the street-facing parapet.
+Raw mapped roof grid has a broad 123.5–124 m deck, central/rear steps and 141.5 m
+maximum. Separate rear service/plant geometry preserves those heights instead of
+stretching the office facade. Registry/grid height difference remains unresolved;
+plant interpretation, louver treatment and exact enclosure dimensions are
+approximate, not surveyed/photographically verified. Reference details, historical
+bank-office distinction, wrong owner-brochure link and omissions are recorded in
+wacker_125-SOURCES.md. No facade photos or third-party models redistributed.
+Dielectric glass roughness .48, granite .88; specular .12 on glass/granite/bronze.
+Clear lobby/canopy alpha .12, two-sided. Three separate night materials.
+
+Source gates/20261003-232500: coverage 23/23, 125 Wacker 35/35, menu/drive/both
+layouts 68/68, parse clean; all four PASS, 86 s wall, empty stderr. Geometry checks
+establish proud ribs, true arcade setbacks, separate office/rear-plant tops and
+transparent lobby. Windowed clipping gates/20261003-232847: both PASS, 100 s wall,
+empty stderr, original 108 / Grid 100 expected overhead/furniture hits, zero failures.
+Six targeted gates / 128 passing logical checks plus clean parse. Final test-only
+finite-sample guards strengthened (reject missing pane samples); unit rerun
+gates/20261003-233633 35/35 PASS, empty stderr. Tests excluded from Windows export;
+no runtime/art changes after package validation. Full matrix, macOS and owner-device
+audio listening not run.
+
+Twelve native day/night street, lobby, Adams arcade, crown, interior and matching
+111-Wacker glare views reviewed. Review terminal PASS, empty stderr; process
+terminal/missing after bounded observation, final exit code unavailable. The large
+125-Wacker daytime flare is gone at the matching prior camera; Willis Tower still
+shows a strong highlight farther behind, no city-wide glare claim. Lobby details
+remain visible through actual clear glass. Existing street/raised-ground edges
+outside the mapped foundation are unchanged, not accepted as globally corrected.
+Generic physical windows 1,070,254. Warmed frozen matching-glare/night sample over
+120 frames: 48.6192083 ms, 103,805,277 primitives. This review ran alongside
+headless source checks; advisory 60 fps not met, no controlled comparative or
+route-wide performance claim.
+
+Import and Windows export exit 0, empty stderr. Packaged six-track/40 engine-bank
+verifier V2 EXPORT PASS, empty stderr; terminal/missing after bounded observation,
+final exit code unavailable. Gameplay Engine bus peak .3500442 is nonzero, not
+owner-device audibility/whine listening evidence. Verified RacingSim-wacker125.exe
+copied to build/RacingSim.exe, prior 71 build backed up; normal menu launch
+PID 197860 responsive, empty stderr. Installed SHA-256:
+9ADB24F6027997412D1A8BE334E636D7077CF03448512688BEB4063C79716C02
+Goal ACTIVE: remaining recognizable exterior work and broader city/props/lighting/
+performance acceptance remain open; Willis detail/material review is next.

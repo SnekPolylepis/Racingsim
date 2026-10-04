@@ -238,3 +238,16 @@ is removed at matching 111 street camera. Neighboring generic-facade glare and
 wider city/props/lighting/performance acceptance remain open. Current local Windows
 build installed; source proportions and omissions are in wacker_71-SOURCES.md.
 See REBUILD-LOG for rejected initial garden camera and dated validation limits.
+
+### 2026-10-03 — 125 Wacker authored granite ribs and street arcade
+
+Northern Trust / 125 South Wacker now has real granite ribs, bronze spandrels,
+individual panes, recessed Wacker/Adams arcades and supported glass canopy. The
+clear lobby contains stone/wood/column/ceiling/furniture geometry. Twelve native
+day/night views reviewed; 128 targeted checks and packaged verifier pass. The
+large 125-Wacker flare in the matching 111 street view is removed. Street-facing
+parapet uses published 126.5 m, with measured higher rear roof cells kept as
+separate approximate service/plant geometry; registry/grid height discrepancy is
+unresolved and documented in wacker_125-SOURCES.md. Current Windows build installed.
+Willis highlight/detail and wider city/props/lighting/performance work remain open.
+See REBUILD-LOG for dated results, diagnostic correction and validation limits.
