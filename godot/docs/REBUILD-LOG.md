@@ -4430,3 +4430,58 @@ executable; normal local launch started. Installed SHA-256:
 61691598DD7DFD36E2BA65B7930BEF66E80E12FC0CB668083910B2BE8A4B32DC
 Goal ACTIVE: 155 North Wacker arcade/glare, 111/71 South Wacker and remaining
 recognizable exteriors; wider props/lighting/performance acceptance remains open.
+
+
+### DONE CHI-3D-BUILDINGS — 155 North Wacker exterior, Codex, 2026-10-03
+
+Continued active owner-directed replacement work with original Blender geometry
+for mapped w136662656, at (-987.7, 8, -3.15), yaw .0047. Replaced only that generic
+block in both Chicago layouts; neighboring outlines/data untouched. Goettsch
+Partners built exterior/lobby photographs inform H-shaped massing, projecting
+silver blades and six south arcade piers, cable-supported oversized lobby panes,
+recessed doors/address, warm walls, ceiling grid/strips and mechanical louvers.
+Architect arcade height 45 ft / 13.716 m; CVU architectural top 194.6 m, occupied
+178.8 m. Floor counts differ (architect 48, owner 46, CVU 45), recorded in sources;
+photo-derived recess/roof/pier proportions are not surveyed drawings. Foundation
+extends 8 m below modeled raised street to ground; garage interior not authored.
+
+Canonical Blender source, editable .blend and GLB committed; original geometry
+CC0, no third-party model or photo pixels. Four canonical runs completed, empty
+stderr: first 158,948 triangles; later soffit/lobby and foundation corrections;
+final 158,960 triangles / nine materials. Native mesh bounds x +/-33.375,
+z +/-27.515, y -8..194.6 (architectural height above street). Glass metallic 0,
+roughness .36/.42 and native metallic_specular .12 retain readable facades.
+Clear lobby alpha .12, two-sided; office panes, warm lobby walls and ceiling
+strips respond separately to night mode. First native close-up had overly dark
+lobby glazing and strips buried in soffit; rejected that detail and corrected
+alpha, strip placement, night wall emission and foundation before final export.
+First source and clipping checks passed but did not establish final art acceptance.
+No rejected intermediate build installed.
+
+Final import and Windows export exit 0, empty stderr. Source gates/20261003-221039:
+authored coverage 23/23, 155 Wacker 33/33, actual menu/drive/both layouts 59/59,
+game parse PASS: four gates / 115 logical checks, 98 s wall, empty stderr.
+Unit rays against imported triangles establish actual H recess, open south arcade
+and ceiling clearance; luminous-strip bounds prevent the burial caught visually.
+
+Reviewed all ten final native captures in visual-review/wacker155: street,
+lobby, crown, river day/night plus the previous 191-Wacker street-glare camera.
+H recess, tower blades, lobby cable wall/doors, warm night walls and ceiling strips
+read correctly; previous generic 155 facade flare is gone at the matching camera.
+This is not whole-city or all-prop visual acceptance. Native review terminal PASS,
+empty stderr. Physical generic windows 1,078,181. Frozen glare/night sample,
+120 warmed frames: 25.591683 ms, 42,597,635 render primitives. Advisory 60 fps not
+met; different final camera from prior 191 river sample, no speedup/route-wide
+performance claim. Full matrix/macOS and owner-device listening not validated.
+
+Final clipping gates/20261003-221145 both PASS, 87 s wall, empty stderr:
+original Chicago 108 / Loop Grid 100 expected overhead hits, zero failures.
+Six relevant gates / 117 logical checks total. Final packaged six-track/40-bank
+verifier V2 EXPORT PASS, empty stderr (wacker155-package.out/.err); process
+terminal/missing after bounded observation, final exit code unavailable.
+Gameplay engine bus peak .3519867 is nonzero, not owner-device listening evidence.
+Installed verified build/RacingSim-wacker155.exe as build/RacingSim.exe with prior
+191 build backed up; normal local menu launch started. SHA-256:
+13987EB18005ECDD81476E283D6C00B611FBC0D16C95E552E3224F77F57D26C3
+Goal ACTIVE: continue 111/71 South Wacker and remaining recognizable exteriors;
+wider props/lighting/performance acceptance remains open.

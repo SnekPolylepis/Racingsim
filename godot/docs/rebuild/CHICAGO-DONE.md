@@ -202,3 +202,15 @@ checks plus both unchanged-geometry clipping scans pass. 155 Wacker's foreground
 glare remains visible in the track street view; its facade/arcade replacement is
 next. 111/71 South Wacker and wider city/prop/performance acceptance remain open.
 See REBUILD-LOG for intermediate failed checks and final package evidence.
+
+### 2026-10-03 — 155 Wacker authored arcade and tower
+
+155 North Wacker now uses an original Blender H-shaped tower and open south
+arcade, with separate piers, cable glass wall, recessed entry, warm lobby and
+visible ceiling strips. A foundation meets ground beneath raised Wacker street.
+The large generic-facade flare seen in the previous 191 Wacker street view is
+removed at that matching camera. Ten final native day/night views reviewed;
+115 source checks, both clipping scans and packaged verifier pass. Source
+proportions remain approximations documented in wacker_155-SOURCES.md.
+111/71 South Wacker and wider city/prop/performance acceptance remain open.
+See REBUILD-LOG for intermediate art corrections and final package evidence.
