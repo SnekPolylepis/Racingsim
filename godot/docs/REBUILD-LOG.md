@@ -4228,3 +4228,10 @@ blocks and alternated rock/lawn per terrace step (stripes); cliffs > 53 deg now 
 the rest garden. Pass 3 (night sweep): night look holds (lamps, lit windows, wet road, tunnel); escarpment wall
 tops now look 24 m back so the hill no longer peeks over them as pyramids. Left: one short slope at ~2580 m where
 a wall run ends. Gates monaco, laps monaco, track_asset, scenery, front_end pass; export V2 EXPORT PASS.
+
+### 2026-10-04 — PROGRESS MON-POLISH: slope after the chicane, windowed features, frame rate
+
+Escarpment walls now stand at the foot of the slope (first 0.3 m rise, search to 48 m): at ~2580 m the walk
+straight out from a bend reached the rise past 34 m and the wall stood partway up its slope. Windowed
+features 77/77. Monaco frame rate (RTX 4080, presentation chain, vsync off, 8 lap stations): day 514-623 fps,
+night 393-585 fps. Fresh Windows export V2 EXPORT PASS.
