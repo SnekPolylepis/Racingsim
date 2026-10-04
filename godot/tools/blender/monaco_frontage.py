@@ -1,4 +1,4 @@
-﻿"""Monaco frontage exteriors: every non-landmark building within 30 m of the lap (city.json flag 4), modelled
+"""Monaco frontage exteriors: every non-landmark building within 30 m of the lap (city.json flag 4), modelled
 from its mapped OSM footprint as Riviera street architecture instead of an extruded block:
   ground floor  stone base, shopfronts recessed 0.35 m behind the wall with dark glass, some awnings
   upper floors  3.1 m storeys; recessed windows with sills, louvred shutters on most older blocks, and
@@ -65,12 +65,16 @@ rail_mat.blend_method = "CLIP" if hasattr(rail_mat, "blend_method") else None
 rail_mat.use_backface_culling = False
 M["railing"] = rail_mat
 
-geo = {k: ([], [], []) for k in M}  # material -> (vertices, faces, uvs)
+# One GLB per detail tier (city.json flag): frontage 1-3 (Fairmont 2, Hotel de Paris 3), mid 4 (30-120 m,
+# no railings or awnings), far 5 (120-250 m, flush panes on a plain wall).
+TIERS = {"frontage": (1, 2, 3), "mid": (4,), "far": (5,)}
+geo = {tier: {k: ([], [], []) for k in M} for tier in TIERS}  # tier -> material -> (vertices, faces, uvs)
+CUR = "frontage"
 
 
 def quad(mat, p, uv=None):
     """Four corners counter-clockwise seen from the front."""
-    v, f, u = geo[mat]
+    v, f, u = geo[CUR][mat]
     n = len(v)
     v.extend(p)
     f.append((n, n + 1, n + 2, n + 3))
@@ -175,6 +179,14 @@ def building(ring, base, top, kind, osm_id, flag=1):
         ground, win_w = storey, 99.0
         floors = max(0, int((h - ground - 1.2) / storey))
         upper_top = base + ground + floors * storey
+    if flag == 4:
+        awning = None
+        if balconies == "french":
+            balconies = "slab"
+    if flag == 5:
+        far_building(pts, base, top, h, wall, ground, storey, floors, upper_top, shops)
+        roof(pts, base, top, flag)
+        return
     for a, b in zip(pts, pts[1:] + pts[:1]):
         f = Face(a, b)
         L = f.length
@@ -209,26 +221,60 @@ def building(ring, base, top, kind, osm_id, flag=1):
                 sill = z0 + (0.15 if balconies else 0.85)
                 head = z0 + 2.55
                 f.opening(wall, "frame", "glass", u0, u1, z0, z0 + storey, mid - w / 2, mid + w / 2, sill, head, 0.2)
-                box("cornice", f.p(mid, sill - 0.04, 0.06), f.t, f.n, (w + 0.2, 0.14, 0.08))
+                if flag != 4:
+                    box("cornice", f.p(mid, sill - 0.04, 0.06), f.t, f.n, (w + 0.2, 0.14, 0.08))
                 if shutters and pitch > w + 1.3:
                     for s in (-1, 1):
-                        box(shutters, f.p(mid + s * (w * 0.75 + 0.02), (sill + head) / 2, 0.03), f.t, f.n,
-                            (w / 2, 0.04, head - sill))
-                if balconies == "french":
+                        sx = mid + s * (w * 0.75 + 0.02)
+                        if flag == 4:  # 30-120 m: flat shutter panels, 2 triangles instead of 12
+                            f.rect(shutters, sx - w / 4, sx + w / 4, sill, head, 0.03)
+                        else:
+                            box(shutters, f.p(sx, (sill + head) / 2, 0.03), f.t, f.n, (w / 2, 0.04, head - sill))
+                if balconies in ("french", "slab"):
                     box("cornice", f.p(mid, sill - 0.08, 0.3), f.t, f.n, (w + 0.5, 0.6, 0.12))
+                if balconies == "french":
                     railing(f, mid, w + 0.5, sill, 0.58)
             if balconies == "continuous":
                 f.strip("cornice", z0 - 0.09, 0.18, 1.3, inset=0.3)
-                railing(f, L / 2, L - 0.6, z0, 1.25)
+                if flag != 4:
+                    railing(f, L / 2, L - 0.6, z0, 1.25)
         # Parapet and cornice.
         f.rect(wall, 0, L, upper_top, top)
         if h >= 7:
             f.strip("cornice", top - 1.1, 0.45, 0.45)
+    roof(pts, base, top, flag)
+
+
+def far_building(pts, base, top, h, wall, ground, storey, floors, upper_top, shops):
+    """120-250 m: one wall quad per edge, flush window panes 3 cm proud, string course and cornice."""
+    for a, b in zip(pts, pts[1:] + pts[:1]):
+        f = Face(a, b)
+        L = f.length
+        f.rect("stone", 0, L, base - 0.5, base + ground)
+        f.rect(wall, 0, L, base + ground, top)
+        if L < 2.6:
+            continue
+        bays = max(1, round(L / 3.2))
+        pitch = L / bays
+        for k in range(bays):
+            mid = (k + 0.5) * pitch
+            if shops and pitch > 2.2:
+                f.rect("shop", mid - pitch / 2 + 0.45, mid + pitch / 2 - 0.45, base + 0.05, base + ground - 0.9, 0.03)
+            w = min(1.2, pitch - 0.6)
+            for row in range(floors if w >= 0.6 else 0):
+                z0 = base + ground + row * storey
+                f.rect("glass", mid - w / 2, mid + w / 2, z0 + 0.85, z0 + 2.55, 0.03)
+        f.strip("cornice", base + ground - 0.15, 0.3, 0.22)
+        if h >= 7:
+            f.strip("cornice", top - 1.1, 0.45, 0.45)
+
+
+def roof(pts, base, top, flag):
     # Flat roof; a building standing over the road (flag 2) also closes its underside.
     tris = tessellate_polygon([[p.to_3d() for p in pts]])
     for z, mat, up in [(top, "roof", True)] + ([(base - 0.5, "cornice", False)] if flag == 2 else []):
         for tri in tris:
-            v, faces, uvs = geo[mat]
+            v, faces, uvs = geo[CUR][mat]
             n = len(v)
             v.extend(Vector((pts[i].x, pts[i].y, z)) for i in tri)
             ccw = (pts[tri[1]] - pts[tri[0]]).cross(pts[tri[2]] - pts[tri[0]]).z > 0
@@ -237,17 +283,18 @@ def building(ring, base, top, kind, osm_id, flag=1):
 
 
 doc = json.loads((ROOT / "trackgen/data/monaco/city.json").read_text())
-count = 0
+count = {}
 for b in doc["buildings"]:
     if len(b) > 4 and b[4]:
+        CUR = next(tier for tier, flags in TIERS.items() if b[4] in flags)
         building(b[0], b[1], b[1] + b[2], b[3], b[5], b[4])
-        count += 1
+        count[CUR] = count.get(CUR, 0) + 1
 
-objects = []
-for key, (v, f, u) in geo.items():
+objects = {tier: [] for tier in TIERS}
+for tier, key, (v, f, u) in [(tier, k, g) for tier in TIERS for k, g in geo[tier].items()]:
     if not f:
         continue
-    data = bpy.data.meshes.new(key)
+    data = bpy.data.meshes.new(tier + " " + key)
     data.from_pydata([tuple(p) for p in v], [], f)
     layer = data.uv_layers.new(name="UVMap")
     for poly in data.polygons:
@@ -257,13 +304,16 @@ for key, (v, f, u) in geo.items():
     obj = bpy.data.objects.new(M[key].name, data)
     bpy.context.collection.objects.link(obj)
     obj.data.materials.append(M[key])
-    objects.append(obj)
+    objects[tier].append(obj)
 OUT.mkdir(parents=True, exist_ok=True)
 authored = Path(__file__).resolve().parent / "authored"
 authored.mkdir(exist_ok=True)
 (authored / ".gdignore").touch()
 bpy.ops.wm.save_as_mainfile(filepath=str(authored / "monaco_frontage.blend"))
-bpy.ops.object.select_all(action="SELECT")
-bpy.ops.export_scene.gltf(filepath=str(OUT / "frontage.glb"), export_format="GLB", use_selection=True)
-tris = sum(sum(len(p.vertices) - 2 for p in o.data.polygons) for o in objects)
-print("MONACO_FRONTAGE AUTHORED", count, "buildings;", len(objects), "materials;", tris, "triangles")
+for tier, objs in objects.items():
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in objs:
+        o.select_set(True)
+    bpy.ops.export_scene.gltf(filepath=str(OUT / (tier + ".glb")), export_format="GLB", use_selection=True)
+    tris = sum(sum(len(p.vertices) - 2 for p in o.data.polygons) for o in objs)
+    print("MONACO_FRONTAGE AUTHORED", tier, count.get(tier, 0), "buildings;", len(objs), "materials;", tris, "triangles")

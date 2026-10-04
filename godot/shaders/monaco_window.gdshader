@@ -1,4 +1,4 @@
-﻿shader_type spatial;
+shader_type spatial;
 // Glass on the Blender-modelled Monaco exteriors (monaco.gd _frontage): dark reflective panes by day; after
 // hours a share of windows glow warm, as monaco_facade.gdshader does for the extruded blocks. Each pane is
 // its own quad, so a hash of its world-space cell (about one window bay by one storey) picks it.

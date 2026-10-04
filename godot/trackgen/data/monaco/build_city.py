@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Monaco data for trackgen/monaco.gd -> city.json, all in local metres about ORIGIN (+X east, +Z south, +Y up).
 
   road       the lap centreline resampled to 3 m, y from profile.json
@@ -311,8 +311,12 @@ for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
             kind, h = LANDMARKS[e["id"]]
         # Frontage: any corner within 30 m of the lap. tools/blender/monaco_frontage.py models these as
         # detailed exteriors and monaco.gd stops extruding them; landmarks and canopies keep their own path.
-        front = int(kind not in ("casino", "hotel_de_paris", "fairmont", "roof", "bridge")
-                    and any(near_road(px, pz, 30.0) for px, pz in ring))
+        # Detail tier by the nearest corner's distance to the lap: 1 frontage (30 m), 4 mid (120 m), 5 far
+        # (250 m); 0 beyond, left to monaco.gd's facade shader with a modelled cornice.
+        front = 0
+        if kind not in ("casino", "hotel_de_paris", "fairmont", "roof", "bridge"):
+            nearest = min((h[0] for h in (near_road(px, pz, 250.0) for px, pz in ring) if h), default=1e9)
+            front = 1 if nearest < 30.0 else 4 if nearest < 120.0 else 5 if nearest < 250.0 else 0
         if kind == "hotel_de_paris":
             front = 3  # Belle Epoque: cream stone, French balconies, arcaded ground floor
         if kind == "fairmont":

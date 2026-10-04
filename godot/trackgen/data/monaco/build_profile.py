@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Road elevation along the lap from dem.json (Copernicus GLO-30 DSM) -> profile.json [[s, h], ...].
 
 The DSM is a surface model, so buildings, trees and the Fairmont over the tunnel read high. The road is

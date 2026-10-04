@@ -1,4 +1,4 @@
-﻿shader_type spatial;
+shader_type spatial;
 // The Monaco tunnel's inner wall: tall cream tiles (about 0.35 x 0.6 m) with light grout, in 4 m panels
 // with a darker seam, as in the Commons reference photos ("Circuit de Monaco - Tunnel", "Dans le tunnel
 // Louis II"). UV is metres along the wall and up it.

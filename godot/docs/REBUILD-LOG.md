@@ -4189,3 +4189,16 @@ the ridge behind the city stays readable, camera far 2 km, SSAO for contact shad
 cornices (Monaco only). Nights reuse the NFSU volumetric haze and filmic tonemap without rain. Paving tinted
 cooler (it read as sand at a distance). Full gates: 57/57 (chicago_grid_clip failed once under parallel load
 with no RESULTS line after 28 s, then passed alone in 120 s; it passed in the morning run too).
+
+### 2026-10-03 — PROGRESS MON-POLISH: distant buildings in detail tiers
+
+Owner asked for the distant buildings modelled too. city.json now tiers every non-landmark building by its
+nearest corner's distance to the lap: 1 frontage (<30 m, 57), 4 mid (<120 m, 124), 5 far (<250 m, 306),
+0 beyond (3,442). monaco_frontage.py writes one GLB per tier: frontage (full detail, 570k tris), mid (no
+railings/awnings, flat shutter panels, no sills; 483k), far (one wall quad per edge, flush panes, string
+course and cornice; 126k, culled past 1.5 km). Beyond 250 m the facade shader keeps the windows and a modelled
+cornice band gives the roofline (replacing the 90 m balcony slabs, which no longer applied). All tier glass
+gets the night-window shader. Modelling all 3,900 at frontage detail was estimated at tens of millions of
+triangles and several hundred MB, hence the tiers. UTF-8 BOMs written by PowerShell into 13 branch files
+were stripped (gdformat failed on monaco.gd). Gates: monaco, laps monaco, front_end, optimization,
+track_asset, scenery pass; fresh Windows export V2 EXPORT PASS.

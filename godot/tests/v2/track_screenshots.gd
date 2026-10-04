@@ -1,4 +1,4 @@
-﻿extends SceneTree
+extends SceneTree
 ## Daylight review captures of Monaco, Proving Ground, Spa and Nordschleife through the real
 ## presentation chain (the default 640x448 Authentic look), HUD hidden. Run windowed (never
 ## --headless), with the flow-test flag so the user's settings file is untouched:

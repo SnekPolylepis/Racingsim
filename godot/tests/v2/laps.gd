@@ -1,4 +1,4 @@
-﻿extends SceneTree
+extends SceneTree
 ## P4-07 / section 6 "Laps": the bot (scripts/vehicle/bot_driver.gd) on each generated track, every car,
 ## both handling models: a valid flying lap (gates in order), zero wheels off the track (grass, gravel,
 ## runoff), zero wall contacts, zero prop contacts (the track's Props/ cones are off the racing line),

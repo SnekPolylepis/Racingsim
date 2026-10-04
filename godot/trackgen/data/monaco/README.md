@@ -1,4 +1,4 @@
-﻿# Circuit de Monaco (MON-01)
+# Circuit de Monaco (MON-01)
 
 The Grand Prix lap on the real streets, built offline by `trackgen/monaco.gd` from `city.json`.
 

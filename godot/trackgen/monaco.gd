@@ -1,4 +1,4 @@
-﻿extends SceneTree
+extends SceneTree
 ## Circuit de Monaco (3.32 km), built from real data in trackgen/data/monaco/ (README there):
 ##   Lap        the OpenStreetMap streets and raceway ways of the Grand Prix lap, chained in race order
 ##              (build_route.py): Boulevard Albert 1er, Sainte-Devote, Avenue d'Ostende (Beau Rivage),
@@ -449,8 +449,7 @@ static func _sea(asset: Node3D, parent: Node, g: Dictionary) -> void:
 ## OSM footprints extruded from their ground base; facade shader (lit windows at night) in Riviera tints.
 static func _buildings(asset: Node3D, parent: Node, list: Array) -> void:
 	var chunks = {}
-	var balconies = {}
-	var curve: Curve3D = asset.get_node("Main").working_curve()
+	var cornices = {}
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 98000
 	for b in list:
@@ -478,23 +477,15 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> void:
 		var layer = ChicagoCity.kind_layer("stone" if rng.randf() < 0.7 else "concrete")
 		var seed = rng.randf()
 		_extrude(chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), seed, layer, tint)
-		# Nearby apartment terraces need a silhouette and cast shadow, beyond the painted distant facade.
-		var near = curve.get_closest_point(Vector3(c.x, b[1], c.y))
-		if (
-			Vector2(near.x, near.z).distance_to(c) < 90.0
-			and b[2] > 7.0
-			and b[3] not in ["casino", "hotel_de_paris", "roof"]
-		):
-			var outer = Geometry2D.offset_polygon(ring, 1.0)
-			if not outer.is_empty():
-				if not balconies.has(key):
-					var slab = SurfaceTool.new()
-					slab.begin(Mesh.PRIMITIVE_TRIANGLES)
-					balconies[key] = slab
-				var y = float(b[1]) + 3.1
-				while y < float(b[1]) + float(b[2]) - 0.5:
-					_extrude(balconies[key], outer[0], y - 0.18, y, seed, layer, tint)
-					y += 3.1
+		# Past 250 m the painted facade carries the windows; a modelled cornice gives the skyline its roofline.
+		var outer = Geometry2D.offset_polygon(ring, 0.45)
+		if b[2] > 7.0 and b[3] != "roof" and not outer.is_empty():
+			if not cornices.has(key):
+				var band = SurfaceTool.new()
+				band.begin(Mesh.PRIMITIVE_TRIANGLES)
+				cornices[key] = band
+			var top = float(b[1]) + float(b[2])
+			_extrude(cornices[key], outer[0], top - 1.1, top - 0.65, seed, layer, tint)
 	for key in chunks:
 		var st: SurfaceTool = chunks[key]
 		st.generate_normals()
@@ -503,17 +494,16 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> void:
 		var node = MeshInstance3D.new()
 		node.mesh = st.commit()
 		attach(asset, parent, node, "Buildings_%d_%d" % [key.x, key.y])
-	var terrace_mat = StandardMaterial3D.new()
-	terrace_mat.albedo_color = Color("d4cbbb")
-	terrace_mat.roughness = 0.85
-	for key in balconies:
-		var slab: SurfaceTool = balconies[key]
-		slab.generate_normals()
-		slab.set_material(terrace_mat)
+	var cornice_mat = StandardMaterial3D.new()
+	cornice_mat.albedo_color = Color("e6dfd2")
+	cornice_mat.roughness = 0.8
+	for key in cornices:
+		var band: SurfaceTool = cornices[key]
+		band.generate_normals()
+		band.set_material(cornice_mat)
 		var node = MeshInstance3D.new()
-		node.mesh = slab.commit()
-		node.visibility_range_end = 500.0
-		attach(asset, parent, node, "Balconies_%d_%d" % [key.x, key.y])
+		node.mesh = band.commit()
+		attach(asset, parent, node, "Cornices_%d_%d" % [key.x, key.y])
 
 
 ## Walls and a flat roof; vertex colour and UVs as chicago_city._building sets them for the facade shader.
@@ -579,14 +569,24 @@ const AD_COLORS = [
 ## Blender exteriors in world coordinates: every non-landmark building within 30 m of the lap (frontage)
 ## and the Casino's square elevation (tools/blender/monaco_frontage.py, monaco_casino.py).
 static func _frontage(asset: Node3D, parent: Node) -> void:
-	for pair in [["frontage", "Frontage"], ["monaco_casino", "Casino"]]:
+	# [glb, node, visibility range end (0 = always)]: the 120-250 m tier is culled past 1.5 km.
+	for pair in [
+		["frontage", "Frontage", 0],
+		["mid", "FrontageMid", 0],
+		["far", "FrontageFar", 1500],
+		["monaco_casino", "Casino", 0]
+	]:
 		var node = load("res://assets/monaco/%s.glb" % pair[0]).instantiate()
 		attach(asset, parent, node, pair[1])
 		for child in node.find_children("*", "", true, false):
 			child.owner = asset
+			if pair[2] > 0 and child is GeometryInstance3D:
+				child.visibility_range_end = pair[2]
 	# Glass gains the night toggle (NightGlow walks mesh surface materials with an fterhours uniform).
 	var windows = {}
-	for pair in [["Dark window glass", 0.35, 1.6], ["Shopfront glass", 0.7, 0.7], ["Casino dark glass", 0.5, 1.2]]:
+	for pair in [
+		["Dark window glass", 0.35, 1.6], ["Shopfront glass", 0.7, 0.7], ["Casino dark glass", 0.5, 1.2]
+	]:
 		var mat = ShaderMaterial.new()
 		mat.shader = preload("res://shaders/monaco_window.gdshader")
 		mat.set_shader_parameter("lit_share", pair[1])
@@ -594,6 +594,8 @@ static func _frontage(asset: Node3D, parent: Node) -> void:
 		windows[pair[0]] = mat
 	for mesh_node in (
 		parent.get_node("Frontage").find_children("*", "MeshInstance3D", true, false)
+		+ parent.get_node("FrontageMid").find_children("*", "MeshInstance3D", true, false)
+		+ parent.get_node("FrontageFar").find_children("*", "MeshInstance3D", true, false)
 		+ parent.get_node("Casino").find_children("*", "MeshInstance3D", true, false)
 	):
 		for i in mesh_node.mesh.get_surface_count():
@@ -632,7 +634,9 @@ static func _ground_y(g: Dictionary, x: float, z: float) -> float:
 ## Dressed-stone retaining walls behind the pavement wherever the hillside stands above the road (Mirabeau,
 ## the Fairmont hairpin, Portier, Beau Rivage). build_city.py steps the IGN ground up to full height by 16 m
 ## out on that side; the wall's face, 2.5 m behind the barrier, hides the step. Visual only.
-static func _retaining_walls(asset: Node3D, parent: Node, g: Dictionary, tunnel: Vector2, buildings: Array) -> void:
+static func _retaining_walls(
+	asset: Node3D, parent: Node, g: Dictionary, tunnel: Vector2, buildings: Array
+) -> void:
 	# Footprints by 10 m cell: no wall where a building fronts the pavement.
 	var cells = {}
 	for b in buildings:
@@ -738,7 +742,9 @@ static func _ad_panels(asset: Node3D, parent: Node, road, tunnel: Vector2) -> vo
 				up = -up
 			var normal = along.cross(up).normalized()
 			var p = line[i][1] - outward * 0.05 + up * 0.55
-			xforms.append(Transform3D(Basis(along, up, normal) * Basis.from_scale(Vector3(5.9, 0.9, 0.04)), p))
+			xforms.append(
+				Transform3D(Basis(along, up, normal) * Basis.from_scale(Vector3(5.9, 0.9, 0.04)), p)
+			)
 			colors.append(AD_COLORS[rng.randi() % AD_COLORS.size()])
 			customs.append(Color((rng.randi() % 4 + 0.5) / 4.0, rng.randf(), 0, 0))
 	var mat = ShaderMaterial.new()
@@ -782,7 +788,11 @@ static func _impact_blocks(asset: Node3D, parent: Node, road, corners: Dictionar
 			var outward: Vector3 = q[2]
 			var p: Vector3 = q[1] - outward * 0.36 + Vector3(0, 0.45, 0)
 			var xf = Transform3D(
-				Basis(outward.cross(Vector3.UP), Vector3.UP, outward) * Basis.from_scale(Vector3(1.9, 0.9, 0.7)), p
+				(
+					Basis(outward.cross(Vector3.UP), Vector3.UP, outward)
+					* Basis.from_scale(Vector3(1.9, 0.9, 0.7))
+				),
+				p
 			)
 			(red if k % 2 == 0 else white).append(xf)
 			k += 1

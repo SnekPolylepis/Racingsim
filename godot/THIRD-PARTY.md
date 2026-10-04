@@ -1,4 +1,4 @@
-﻿# Third-party download ledger
+# Third-party download ledger
 
 The shipped game runs offline. Reference images under `reference/` are ignored and explicitly excluded from the export; they are never used as runtime textures. This ledger records the follow-up downloads separately from already-vendored assets.
 

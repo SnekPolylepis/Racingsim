@@ -1,4 +1,4 @@
-﻿extends SceneTree
+extends SceneTree
 ## Monaco closure/profile and open Swimming Pool regression. Physics queries run in the physics frame.
 const Monaco = preload("res://trackgen/monaco.gd")
 const CarBody = preload("res://scripts/vehicle/car_body.gd")

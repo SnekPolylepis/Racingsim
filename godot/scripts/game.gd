@@ -1,4 +1,4 @@
-﻿extends Node3D
+extends Node3D
 ## Application root: owns models and coordinates UI, persistence, fixed physics and rendering.
 ## See docs/ARCHITECTURE.md before changing frame order.
 ## The game drives CarBody on TrackAssets in native Godot coordinates (the pre-rebuild planar game was
@@ -539,8 +539,14 @@ func check_exported_v2_assets() -> void:
 		and FileAccess.file_exists("res://trackgen/data/monaco/city.json")
 		and ResourceLoader.exists("res://assets/monaco/frontage.glb")
 		and ResourceLoader.exists("res://assets/monaco/monaco_casino.glb")
-		and ResourceLoader.exists("res://assets/textures/monaco/sandstone_blocks_05/sandstone_blocks_05_diff_1k.jpg")
-		and ResourceLoader.exists("res://assets/textures/monaco/rectangular_paving/rectangular_paving_diff_1k.jpg")
+		and ResourceLoader.exists("res://assets/monaco/mid.glb")
+		and ResourceLoader.exists("res://assets/monaco/far.glb")
+		and ResourceLoader.exists(
+			"res://assets/textures/monaco/sandstone_blocks_05/sandstone_blocks_05_diff_1k.jpg"
+		)
+		and ResourceLoader.exists(
+			"res://assets/textures/monaco/rectangular_paving/rectangular_paving_diff_1k.jpg"
+		)
 		and FileAccess.file_exists("res://trackgen/data/spa/centreline.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/terrain.json")
 		and FileAccess.file_exists("res://trackgen/data/spa/dem.raw")

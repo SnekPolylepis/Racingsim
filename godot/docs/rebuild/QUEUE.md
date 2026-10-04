@@ -1,4 +1,4 @@
-﻿# Rebuild task queue
+# Rebuild task queue
 
 The shared work list for the Racing Sim rebuild (REBUILD-PLAN.md Â§9, rule 2). Every model runs the same loop:
 
