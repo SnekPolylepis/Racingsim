@@ -326,7 +326,8 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 					st.add_vertex(q[k])
 	# Paved Monaco: pale slab pavements, dressed-stone faces on the steep cells (Poly Haven CC0).
 	for pair in [
-		[flat, _pbr("rectangular_paving", 3.0, Color(0.78, 0.8, 0.84)), "Ground"],
+		# Grey-toned: beige slabs read as sand across the open pool quay.
+		[flat, _pbr("rectangular_paving", 3.0, Color(0.62, 0.64, 0.68)), "Ground"],
 		[steep, _pbr("sandstone_blocks_05", 1.2), "RetainingWalls"],
 		[garden, ChicagoCity.material("park"), "Gardens"]
 	]:

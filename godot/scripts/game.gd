@@ -1443,7 +1443,7 @@ func apply_time_of_day():
 			sun.rotation_degrees = Vector3(-42, -40, 0)
 			if not night:
 				sun.light_color = Color("ffe4b5")
-				sun.light_energy = 1.65
+				sun.light_energy = 1.4
 				environment.ambient_light_color = Color("a8bfd8")
 				environment.ambient_light_energy = 0.5
 				environment.fog_light_color = Color("b4c3d2")
@@ -1462,10 +1462,13 @@ func apply_time_of_day():
 		environment.volumetric_fog_albedo = Color("b8a894")
 		environment.volumetric_fog_length = 120.0
 		environment.volumetric_fog_ambient_inject = 0.0
+		# Monaco by day too: the Riviera sun clipped its white facades to flat white under the linear tonemap.
+		var filmic = nfs_night or v2_track_id == "monaco"
 		environment.tonemap_mode = (
-			Environment.TONE_MAPPER_FILMIC if nfs_night else Environment.TONE_MAPPER_LINEAR
+			Environment.TONE_MAPPER_FILMIC if filmic else Environment.TONE_MAPPER_LINEAR
 		)
-		environment.tonemap_exposure = 0.82 if nfs_night else 1.0
+		environment.tonemap_exposure = 0.82 if nfs_night else (0.95 if filmic else 1.0)
+		environment.tonemap_white = 4.0 if filmic and not nfs_night else 1.0
 		set_rain(nfs_night and v2_track_id != "monaco")
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
