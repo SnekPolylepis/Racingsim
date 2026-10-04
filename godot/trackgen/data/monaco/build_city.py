@@ -313,6 +313,8 @@ for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
         # detailed exteriors and monaco.gd stops extruding them; landmarks and canopies keep their own path.
         front = int(kind not in ("casino", "hotel_de_paris", "fairmont", "roof", "bridge")
                     and any(near_road(px, pz, 30.0) for px, pz in ring))
+        if kind == "hotel_de_paris":
+            front = 3  # Belle Epoque: cream stone, French balconies, arcaded ground floor
         if kind == "fairmont":
             front = 2  # modelled with a fixed style: white balcony bands over the tunnel roof
         buildings.append([[round(px, 2) for p in ring for px in p], round(base, 2), round(h, 1), kind, front, e["id"]])

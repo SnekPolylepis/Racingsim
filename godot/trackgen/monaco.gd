@@ -476,10 +476,6 @@ static func _buildings(asset: Node3D, parent: Node, list: Array) -> void:
 			chunks[key] = st
 		var tint = TINTS[rng.randi() % TINTS.size()]
 		var layer = ChicagoCity.kind_layer("stone" if rng.randf() < 0.7 else "concrete")
-		if b[3] == "hotel_de_paris":
-			# Casino Square's Belle Epoque stone (Garnier's Casino, the Hotel de Paris).
-			tint = Color(0.96, 0.9, 0.76)
-			layer = ChicagoCity.kind_layer("stone")
 		var seed = rng.randf()
 		_extrude(chunks[key], ring, float(b[1]) - 0.5, float(b[1]) + float(b[2]), seed, layer, tint)
 		# Nearby apartment terraces need a silhouette and cast shadow, beyond the painted distant facade.

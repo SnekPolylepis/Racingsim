@@ -44,6 +44,27 @@ for i, c in enumerate([(.2, .36, .25), (.36, .3, .22), (.55, .6, .58), (.75, .72
 for i, c in enumerate([(.62, .1, .1), (.12, .22, .4), (.18, .35, .25), (.85, .82, .74)]):
     M["awning%d" % i] = material("Awning %d" % i, c, roughness=.8)
 
+# Wrought-iron railing: 32 x 64 RGBA, one baluster per tile, rails top and bottom, alpha-clipped.
+img = bpy.data.images.new("railing_bars", 32, 64, alpha=True)
+px = []
+for y in range(64):
+    for x in range(32):
+        solid = 14 <= x <= 17 or y < 5 or y > 57
+        px += [.1, .11, .1, 1.0 if solid else 0.0]
+img.pixels = px
+img.pack()
+rail_mat = material("Wrought iron railing", (.1, .11, .1), metallic=.5, roughness=.45)
+nodes = rail_mat.node_tree.nodes
+tex = nodes.new("ShaderNodeTexImage")
+tex.image = img
+tex.interpolation = "Closest"
+bsdf = nodes.get("Principled BSDF")
+rail_mat.node_tree.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+rail_mat.node_tree.links.new(tex.outputs["Alpha"], bsdf.inputs["Alpha"])
+rail_mat.blend_method = "CLIP" if hasattr(rail_mat, "blend_method") else None
+rail_mat.use_backface_culling = False
+M["railing"] = rail_mat
+
 geo = {k: ([], [], []) for k in M}  # material -> (vertices, faces, uvs)
 
 
@@ -113,6 +134,14 @@ class Face:
         box(mat, c, self.t, self.n, (self.length - 2 * inset + depth * 2 * (inset == 0), depth, height))
 
 
+def railing(f, mid, width, floor, out):
+    """Open railing as one alpha-cut quad (bars every 0.3 m, top and bottom rails): a solid panel read as a
+    dark blob over the window, and modelled balusters cost 700k triangles across the frontage."""
+    u0, u1 = mid - width / 2, mid + width / 2
+    uv = [(0, 0), (width / 0.3, 0), (width / 0.3, 1), (0, 1)]
+    quad("railing", [f.p(u0, floor, out), f.p(u1, floor, out), f.p(u1, floor + 1.05, out), f.p(u0, floor + 1.05, out)], uv)
+
+
 def building(ring, base, top, kind, osm_id, flag=1):
     rng = random.Random(osm_id)
     pts = [Vector((ring[i], -ring[i + 1], 0)) for i in range(0, len(ring) - 1, 2)]
@@ -134,6 +163,12 @@ def building(ring, base, top, kind, osm_id, flag=1):
     upper_top = base + ground + floors * storey
     win_w = 1.5 if modern else 1.15
     awning = "awning%d" % rng.randrange(4) if shops and rng.random() < 0.4 else None
+    if flag == 3:
+        # Hotel de Paris (1864): cream stone, French balconies at every window, arcaded ground floor.
+        wall, modern, shutters, balconies, shops, awning = "wall0", False, None, "french", True, None
+        ground = 5.5
+        floors = max(0, int((h - ground - 1.2) / storey))
+        upper_top = base + ground + floors * storey
     if flag == 2:
         # The Fairmont (1975) over the tunnel: white balcony bands on every storey, dark glass wall to wall.
         wall, modern, shutters, balconies, shops, awning = "wall3", True, None, "continuous", False, None
@@ -181,12 +216,10 @@ def building(ring, base, top, kind, osm_id, flag=1):
                             (w / 2, 0.04, head - sill))
                 if balconies == "french":
                     box("cornice", f.p(mid, sill - 0.08, 0.3), f.t, f.n, (w + 0.5, 0.6, 0.12))
-                    box("rail", f.p(mid, sill + 0.95, 0.58), f.t, f.n, (w + 0.5, 0.04, 0.06))
-                    box("rail", f.p(mid, sill + 0.5, 0.58), f.t, f.n, (w + 0.5, 0.02, 0.9))
+                    railing(f, mid, w + 0.5, sill, 0.58)
             if balconies == "continuous":
                 f.strip("cornice", z0 - 0.09, 0.18, 1.3, inset=0.3)
-                box("rail", f.p(L / 2, z0 + 1.0, 1.25), f.t, f.n, (L - 0.6, 0.05, 0.06))
-                box("rail", f.p(L / 2, z0 + 0.55, 1.25), f.t, f.n, (L - 0.6, 0.02, 0.85))
+                railing(f, L / 2, L - 0.6, z0, 1.25)
         # Parapet and cornice.
         f.rect(wall, 0, L, upper_top, top)
         if h >= 7:
