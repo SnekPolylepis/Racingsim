@@ -767,6 +767,27 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		asset, parent, "MonadnockBuilding", monadnock, ChicagoCity.MONADNOCK_POSITION
 	)
 	monadnock_node.rotation.y = ChicagoCity.MONADNOCK_YAW
+	var wacker = PropMesh.mesh("res://assets/chicago/landmarks/wacker_191.glb").duplicate()
+	for surface in wacker.get_surface_count():
+		var mat = wacker.surface_get_material(surface)
+		if not mat is StandardMaterial3D:
+			continue
+		mat = mat.duplicate()
+		if "curtain glass" in mat.resource_name or "spandrels" in mat.resource_name:
+			mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Night"):
+			mat.set_meta("chicago_night", true)
+			var lantern = "lantern" in mat.resource_name
+			mat.emission = Color(.75, .85, 1) if lantern else Color(.65, .48, .25)
+			mat.emission_energy_multiplier = .7 if lantern else .4
+			mat.emission_enabled = false
+		elif mat.resource_name.begins_with("Clear"):
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.albedo_color.a = .18 if "lantern" in mat.resource_name else .32
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		wacker.surface_set_material(surface, mat)
+	var wacker_node = mesh_node(asset, parent, "Wacker191", wacker, ChicagoCity.WACKER_191_POSITION)
+	wacker_node.rotation.y = ChicagoCity.WACKER_191_YAW
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

@@ -68,6 +68,8 @@ const RELIANCE_YAW = .0074
 ## Full historic Monadnock block, mapped w73671128.
 const MONADNOCK_POSITION = Vector3(-426.9, STREET_Y, 808.275)
 const MONADNOCK_YAW = .0246
+const WACKER_191_POSITION = Vector3(-1001.2, STREET_Y, -63.55)
+const WACKER_191_YAW = .0202
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
@@ -142,6 +144,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "w147013355":
+			exclusion = "authored 191 North Wacker exterior"
 		elif b.get("o", "") == "w73671128":
 			exclusion = "authored Monadnock exterior"
 		elif b.get("o", "") == "w124865461":

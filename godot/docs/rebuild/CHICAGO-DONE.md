@@ -192,3 +192,13 @@ sashes. Eight day/night views reviewed and 96 targeted source checks passed.
 This advances the older open Monadnock-oriels item; Wacker exterior detail,
 calibrated colors and broader city/prop/performance acceptance remain open.
 See REBUILD-LOG for limitations and final package evidence.
+
+### 2026-10-03 — 191 Wacker authored exterior
+
+191 North Wacker now has a Blender exterior at its exact mapped block, with
+physical curtain mullions, recessed lobby/entries and a separate clear lantern
+sleeve around the lit solid crown. Eight native views reviewed; 109 final source
+checks plus both unchanged-geometry clipping scans pass. 155 Wacker's foreground
+glare remains visible in the track street view; its facade/arcade replacement is
+next. 111/71 South Wacker and wider city/prop/performance acceptance remain open.
+See REBUILD-LOG for intermediate failed checks and final package evidence.

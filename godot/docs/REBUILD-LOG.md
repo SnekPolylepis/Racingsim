@@ -4378,3 +4378,55 @@ Installed SHA-256:
 456A42C4948BDD2E93734F209BD094904F8FD120E69D5FAC02461152EB22E13E
 Goal ACTIVE: continue Wacker/remaining recognizable exteriors; wider prop and
 lighting/performance acceptance and owner audio listening remain open.
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: authored 191 North Wacker
+
+Previous turn PROGRESS: Monadnock installed/pushed as 1aac4ab. This pass authors
+191 North Wacker at exact mapped w147013355, excluding only that generic block.
+KPF built exterior/lobby photographs inspected; CVU supplies 157.4 m / 37 floors.
+Distinct vertical west/east mullions and horizontal north/south floor bands,
+physical vision panes/spandrels, recessed lobby piers and glazing, revolving
+entrances and raised address. Lantern has a distinct solid inner volume inside
+an actual transparent glass sleeve, with independent night emission from offices.
+Original Blender exterior, 75,996 triangles / ten materials, no facade photo;
+canonical script/editable .blend retained. Position (-1001.2,8,-63.55), yaw .0202,
+mapped 42.3 x 54.2 m plan; roof/crown proportions approximated from photos within
+published height. Frame thickness produces native top 157.4375 m, street base 0.
+
+Three full canonical authoring runs succeeded, stderr empty. Initial daylight
+review rejected oversized metal-glass sun reflection. Reduced metallic/roughness,
+then used dielectric glass (metallic 0, roughness .32/.38, metallic_specular .12)
+to keep facade readable. An intermediate adjustment incorrectly used Godot 3's
+specular property: warnings and a unit script abort failed gates/20261003-213513;
+identified/stopped that failed unit process, corrected to metallic_specular,
+and reran relevant checks. No failed export installed. Initial source gates had
+passed but did not establish visual acceptance; final values are regression checked.
+
+Final source gates/20261003-214148: authored coverage 23/23, Wacker model 30/30,
+actual menu/drive/both layouts 56/56, game parse PASS. Four gates, 109 logical
+checks, 88 s wall, stderr empty. Final import and Windows export exit 0, stderr
+empty. Earlier clipping gates/20261003-213129 both PASS: original 108 / Grid 100
+expected overhead hits, zero failures, 80 s wall. Subsequent edits changed only
+material values; geometry, bounds and 75,996-triangle count stayed unchanged.
+Together: six relevant gates / 111 logical checks; clipping was not rerun for
+material-only tuning.
+
+Reviewed all eight final native day/night street, lobby, crown and river views
+in visual-review/wacker191. 191's river/crown facade, clear sleeve, lit lantern
+and entry parts read correctly. Closer generic 155 Wacker still produces a large
+glare in the actual-track street view; that is an open item for its replacement,
+not evidence of whole-city acceptance. Source review terminal PASS, empty stderr.
+Generic physical-window count 1,081,546. Warmed frozen river/night sample over
+120 frames: 31.234725 ms, 101,991,914 render primitives. Advisory 60 fps not met;
+different camera from other landmarks, no speedup or route-wide performance
+claim. Full matrix/macOS and owner-device audio listening not validated.
+
+Final packaged six-track/40 engine-bank verifier reports V2 EXPORT PASS, stderr
+empty (wacker191-package-final.out/.err); process terminal/missing after bounded
+observation, final exit code unavailable. Gameplay engine bus peak .353330,
+not proof of owner-device audibility/subjective whine acceptance. Installed
+verified build/RacingSim-wacker191.exe as build/RacingSim.exe, preserving prior
+executable; normal local launch started. Installed SHA-256:
+61691598DD7DFD36E2BA65B7930BEF66E80E12FC0CB668083910B2BE8A4B32DC
+Goal ACTIVE: 155 North Wacker arcade/glare, 111/71 South Wacker and remaining
+recognizable exteriors; wider props/lighting/performance acceptance remains open.
