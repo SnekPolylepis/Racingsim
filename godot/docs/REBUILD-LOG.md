@@ -4485,3 +4485,60 @@ Installed verified build/RacingSim-wacker155.exe as build/RacingSim.exe with pri
 13987EB18005ECDD81476E283D6C00B611FBC0D16C95E552E3224F77F57D26C3
 Goal ACTIVE: continue 111/71 South Wacker and remaining recognizable exteriors;
 wider props/lighting/performance acceptance remains open.
+
+
+### DONE CHI-3D-BUILDINGS — 111 South Wacker exterior, Codex, 2026-10-03
+
+Continued owner-directed replacement with original Blender geometry for exact
+mapped w64887962, at (-987.45, 8, 502), yaw .0201, in both Chicago layouts.
+Goettsch Partners built exterior/crown/lobby photographs and James Goettsch's
+2012 CTBUH paper inform the stepped tower, triangular stainless V mullions,
+broad column cladding, round transfer columns, curved cable glass lobby,
+compact marble core, real rising parking-ramp soffit, spiral light rim, radial
+paving, point fittings and recessed entry parts. Early pedestal design in paper
+is historical context, not built geometry. CVU top 207.6 m, occupied 203.8 m;
+floor/parking counts differ among sources and are recorded without inventing a
+surveyed schedule. Shoulder roofs, lobby height, spiral pitch and glass radius
+are reference-informed approximations. Foundation meets city ground below the
+raised Wacker street; accessible garage interior not authored.
+
+Canonical authoring script/.blend/GLB committed: one completed Blender run,
+139,872 triangles, nine materials, empty stderr. No distributed photo pixels or
+third-party model. Native bounds x +/-25.175, z +/-28.875, y -8..207.6.
+Dielectric glass (metallic 0, roughness .36/.42, metallic_specular .12); clear
+curved lobby alpha .12, two-sided. Office panes, inner warm wall and spiral
+lighting toggle separately at night. Both export-layout verifiers require asset.
+
+Initial source gates/20261003-222844: coverage 23/23, menu/drive/both layouts
+62/62, parse PASS; 111 Wacker 34/35, FAILED. The lobby ray sampled the intentionally
+modeled tension cable at centerline. Moved sample between cables, without changing
+model or loosening acceptance; corrected unit proves sightline to compact core.
+Second gates/20261003-222959: Wacker 35/35 and both rendered clipping scans PASS,
+90 s wall, empty stderr. Imported triangle rays also prove rising soffit and real
+recessed shoulders; curved glass vertex test rejects a flat lobby panel.
+Original Chicago 108 / Grid 100 expected overhead hits, zero failures.
+Six relevant gates / 122 passing logical checks from the two runs; first run's
+unit failure retained above, not represented as an all-green initial matrix.
+Final import and Windows export exit 0, empty stderr.
+
+Eight final native day/night street/lobby/crown/Wacker-approach views reviewed in
+visual-review/wacker111. Curved net wall, round piers, spiral underside/light path,
+core, entries, V facade and stepped crown read correctly. Initial distant review
+camera landed inside a neighboring building; rejected that capture and moved
+camera to the actual Wacker corridor. Existing neighbors were not hidden or edited.
+Daytime generic adjacent 71 Wacker still produces large glare in street view,
+left open for its replacement. Final review terminal PASS, empty stderr.
+Generic physical windows 1,075,697. Warmed frozen approach/night sample over
+120 frames: 36.5989 ms, 86,831,688 render primitives. Advisory 60 fps not met;
+camera differs from prior landmarks, no comparative speedup/route-wide claim.
+Full matrix/macOS and owner-device audio listening not validated.
+
+Final packaged six-track/40 engine-bank verifier V2 EXPORT PASS, empty stderr
+(wacker111-package.out/.err); process terminal/missing after bounded observation,
+final exit code unavailable. Engine gameplay bus peak .3544180 is nonzero, not
+owner-device listening evidence. Installed verified build/RacingSim-wacker111.exe
+as build/RacingSim.exe with previous 155 build backed up; normal local menu
+launch started. Installed SHA-256:
+EE0C2DD3D0033E29EE9C7EEB61C0DB5C5839D4D80720C6A9EB6175944C189C4A
+Goal ACTIVE: 71 South Wacker, remaining recognizable exteriors and broader
+city/prop/lighting/performance acceptance remain open.

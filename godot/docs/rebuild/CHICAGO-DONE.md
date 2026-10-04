@@ -214,3 +214,15 @@ removed at that matching camera. Ten final native day/night views reviewed;
 proportions remain approximations documented in wacker_155-SOURCES.md.
 111/71 South Wacker and wider city/prop/performance acceptance remain open.
 See REBUILD-LOG for intermediate art corrections and final package evidence.
+
+### 2026-10-03 — 111 Wacker authored curved lobby and tower
+
+111 South Wacker now has a Blender stepped tower with real V mullions and
+column cladding, round supports, curved cable glass lobby and rising spiral
+parking-ramp soffit. The compact marble core, radial paving, point fittings,
+entries and night light rim are geometry. Eight native day/night views reviewed;
+122 targeted passing checks and packaged verifier pass. An initial unit ray hit
+a tension cable; corrected between-cable sample passes without model changes.
+Reference-informed dimensions/limitations are in wacker_111-SOURCES.md.
+71 South Wacker still has generic facade glare in the street review; replacement
+and wider city/prop/performance acceptance remain open. See REBUILD-LOG.
