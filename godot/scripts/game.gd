@@ -624,6 +624,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/MonadnockBuilding")
 	if track.has_node("Scenery/MonadnockBuilding"):
 		ok = ok and track.get_node("Scenery/MonadnockBuilding").mesh.get_surface_count() == 9
+	ok = ok and track.has_node("Scenery/LondonGuarantee")
+	if track.has_node("Scenery/LondonGuarantee"):
+		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11
 	ok = ok and track.has_node("Scenery/Wacker125")
 	if track.has_node("Scenery/Wacker125"):
 		ok = ok and track.get_node("Scenery/Wacker125").mesh.get_surface_count() == 10
@@ -664,6 +667,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/MonadnockBuilding")
 	if track.has_node("Scenery/MonadnockBuilding"):
 		ok = ok and track.get_node("Scenery/MonadnockBuilding").mesh.get_surface_count() == 9
+	ok = ok and track.has_node("Scenery/LondonGuarantee")
+	if track.has_node("Scenery/LondonGuarantee"):
+		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11
 	ok = ok and track.has_node("Scenery/Wacker125")
 	if track.has_node("Scenery/Wacker125"):
 		ok = ok and track.get_node("Scenery/Wacker125").mesh.get_surface_count() == 10

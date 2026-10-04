@@ -39,7 +39,7 @@ func run() -> void:
 			app.track.get_meta("city").get("physical_windows", 0) > 1000,
 			"Loop Grid includes native frames and glazing on generic measured facades"
 		)
-		check(identity == "chicago_grid@v1", "Variant has independent record identity")
+		check(identity == "chicago_grid@v2", "Variant has independent record identity")
 		var lower = app.track.station(app.track.get_meta("corners")["Lower Wacker Portal"] + 250.0)
 		app.TrackLights.update_pool(app.lamp_pool, app.track, lower.pos, true)
 		var shadowed = true
@@ -117,6 +117,16 @@ func run() -> void:
 			if entry.osm_id == "w148544831" and entry.reason == "authored Carbide and Carbon exterior":
 				excluded_carbide += 1
 		check(excluded_carbide == 1, "Mapped Carbide and Carbon block is replaced exactly once")
+		var london = app.track.get_node_or_null("Scenery/LondonGuarantee")
+		check(
+			london is MeshInstance3D and london.mesh.get_surface_count() == 11,
+			"London Guarantee loads its authored historic exterior"
+		)
+		var london_excluded = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w147399567" and entry.reason == "authored London Guarantee exterior":
+				london_excluded += 1
+		check(london_excluded == 1, "Mapped London Guarantee replaced once without generic cupola")
 		var wacker125 = app.track.get_node_or_null("Scenery/Wacker125")
 		check(
 			wacker125 is MeshInstance3D and wacker125.mesh.get_surface_count() == 10,
@@ -259,7 +269,7 @@ func run() -> void:
 		)
 		app.v2_bot = null
 		check(
-			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v3",
+			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v4",
 			"Original Chicago remains available with its record identity"
 		)
 		check(app.track.has_node("Scenery/TribuneTower"), "Authored Tribune Tower loads in original Chicago")
@@ -274,6 +284,10 @@ func run() -> void:
 		check(app.track.has_node("Scenery/MonadnockBuilding"), "Authored Monadnock loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker191"), "Authored 191 Wacker loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker155"), "Authored 155 Wacker loads in original Chicago")
+		check(
+			app.track.has_node("Scenery/LondonGuarantee"),
+			"Authored London Guarantee loads in original Chicago"
+		)
 		check(app.track.has_node("Scenery/Wacker125"), "Authored 125 Wacker loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker71"), "Authored 71 Wacker loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker111"), "Authored 111 Wacker loads in original Chicago")

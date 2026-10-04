@@ -4694,3 +4694,83 @@ C64101071B9EC1F8E986F94C56F13FA4ACD0357915CCC445B3602929108CE51E
 Normal menu launch PID 215164 responsive, empty stderr after launch.
 Goal ACTIVE: remaining recognizable exteriors, broad city/props/lighting review,
 performance and subjective audio acceptance remain open.
+
+
+## 2026-10-04 — PROGRESS CHI-3D-BUILDINGS: London Guarantee and Michigan/Wacker bend
+
+Original CC0 Blender historic London Guarantee / LondonHouse exterior: irregular
+mapped w147399567 footprint at (-57.85, 8, -351.3), concave limestone frontage,
+separate recessed hotel glazing, sash/jambs, cornice/dentil bands, giant attic
+pilasters, arched entry/lettering and striped cafe awnings. Open eight-column
+cupola, dome/finial, clear enclosure and setback rooftop screens/furniture.
+Final native mesh 151,496 triangles, 11 material surfaces; bounds
+51.84104 x 110.9 x 48.08478 m including foundation down to local -8 and tip 102.9.
+Mapped envelope is 49.5 x 46.2 m; awnings extend beyond it. Exact generic footprint
+exclusion prevents duplicate wall/cupola. Two separate warm night materials.
+Architect/CAC/City/CVU references and dimensional discrepancies recorded in
+assets/chicago/landmarks/london_guarantee-SOURCES.md. Roof, facade rhythm and
+ornament are photo-derived approximations; no redistributed photographs/model,
+no claim of surveyed ornament, hidden interior or infill reconstruction.
+
+Three canonical Blender builds completed with empty stderr. Initial rustication
+crossed glazing; tall attic proportions and entrance windows were corrected.
+Second native review rejected black backing above the arch; third build adds
+solid spandrel/infill with recessed doors/fanlight. Final native import exit 0.
+Initial bounds fixture failed because cafe awnings legitimately extend past
+26 m; fixture corrected to 26.5 after inspecting native bounds. Final unit
+adds actual portal ray checks, not only bounding-box assertions.
+
+Native rendered scans then found the real placement conflict: old Lower Wacker
+diagonal crossed the mapped building, and the wide Upper Wacker fillet cut its
+roofline. Preserve the mapped building and follow mapped city.json carriageway
+control points (-79.3,-375.6), (-61.3,-381.5) on both levels; ease the approach
+from default 16 m to mapped 10.2 m width. Map width is an imported estimate,
+not a verified survey. Record identities now chicago@v4 / chicago_grid@v2,
+cache revision 133; historic lap baselines/records preserved separately.
+
+First route gate invocation selected all Chicago prefixes and hit an undefined
+STREET_Y constant; corrected to ChicagoCity.STREET_Y and stopped only that
+runner/its verified child processes. That aborted run is not a pass. First
+geometry/clip rerun exposed unsorted width keys: bake sorted its copy while
+other consumers read the source order. Sort road.sections before bake. Running
+both geometry scripts concurrently also collided on their shared night-test
+cache file; subsequent geometry runs are sequential. Sorted preliminary
+geometry passes 49 checks per layout; London clips gone. One remaining Grid
+signal instance, foot (-181.049,8,-266.6602), projected onto the lower route
+at s4050 with lateral 6.56 / vertical 4.57 m. Shared pole-foot clearance now
+checks road stations within 8 m vertically (both Wacker decks), retaining
+signals and clipping checks rather than adding an exclusion.
+
+Final source geometry: 49/49 per layout, lengths 8166.7105 / 8789.9133 m,
+max grades .06014993 / .06015092; both terminal PASS and empty stderr,
+final exit codes unavailable. Final rendered gates/20261004-004101: both clip
+scans PASS, original 111 / Grid 101 expected overhead/paint hits, zero failures.
+No clipping whitelist changes. F2004 and RB19 Grid laps each 2/2 PASS. That
+run's menu assertion still expected original @v3, so the overall run failed;
+updated assertion to actual @v4. Final gates/20261004-004326: London 26/26,
+coverage 23/23, menu/runtime drive 74/74 and parse clean, all PASS (13 s).
+Original/Grid roadster laps each 2/2 PASS with zero off-track, wall-contact or
+prop-contact ticks; tests contain zero dynamic props, not a dynamic-prop
+collision acceptance claim. Eight laps total; baseline changes +0.57–0.83%,
+historic baselines unchanged. Formula top speed reaches 306 km/h.
+Eleven logical suites plus parse, 231 checks; full matrix/macOS not run.
+
+Twelve final native views reviewed: frontage/entry/river/cupola and both driving
+approaches, day and night. Approach lanes clear; lower ceiling remains lit,
+upper camera has no lower ceiling halos in this sample. Generic neighboring
+buildings still await individual exterior work. Native review terminal PASS,
+empty stderr, final exit code unavailable. Frozen 120-frame crown/night sample
+16.36875 ms / 87,166,266 primitives alongside other checks, not controlled
+route-wide 60-fps acceptance. Physical window count 1,070,295 after route change.
+Final Windows export terminal complete with empty stderr; final exit code
+unavailable. Exported executable SHA-256:
+1F71FF25B57C1CE4B1648E63EE7AAF882A730285F65F742F8DE4D0EC51664FC5
+
+Packaged six-track/40-engine-bank verifier terminal V2 EXPORT PASS with empty
+stderr; final exit code unavailable. Gameplay engine peak .3636356 measures
+bus signal, not owner-device listening acceptance. Installed matching
+build/RacingSim.exe (SHA above), previous Willis build backed up as
+RacingSim-before-london-20261004.exe. Normal menu launch PID 239580 responsive,
+empty stderr after launch. Root Play Racing Sim.cmd continues to launch it.
+Goal ACTIVE: remaining recognizable exteriors, broad city/props/lighting review,
+performance and subjective audio acceptance remain open.

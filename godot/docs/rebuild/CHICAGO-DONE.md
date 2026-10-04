@@ -264,3 +264,24 @@ packaged verifier passes and matching Windows build installed. This is not a new
 complete facade rebuild or city-wide visual/performance acceptance. Remaining
 recognizable exteriors, broader placement/lighting and owner audio listening are
 open. See REBUILD-LOG for the corrected initial encoding failure and dated limits.
+
+
+### 2026-10-04 — London Guarantee and Michigan/Wacker approach
+
+Authored mapped LondonHouse historic limestone frontage, individual recessed
+panes, arched entry/awnings and open columned cupola/dome; original Blender
+source, 11 materials. Mapped building exposed an old road diagonal/fillet
+conflict; both decks now follow the mapped bend and ease to a 10.2 m corridor.
+Original/Grid record identities advance to @v4/@v2, preserving old records.
+Shared signal placement clears both decks. Final source geometry 49 checks per
+layout, London unit 26, coverage 23, menu/runtime drive 74 and both rendered
+clipping scans pass; parse clean. Eight clean automated laps across roadster,
+F2004 and RB19. Twelve day/night frontage/crown/approach views reviewed.
+Photo-derived ornament/roof proportions remain approximations; source dimensions
+and conflicting published/grid heights are documented with the model. Broader
+recognizable exteriors, visual/performance review and owner audio listening
+remain open. See REBUILD-LOG for failed intermediate runs and validation limits.
+
+Packaged six-track/40-engine-bank verifier passes; matching Windows build
+installed with the prior Willis build backed up. Root Play Racing Sim.cmd
+launches it.

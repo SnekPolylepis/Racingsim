@@ -163,7 +163,7 @@ static func _plain(c: Color) -> StandardMaterial3D:
 
 
 ## Local station offsets can cut inside the next section of a sharp turn. Move the support out
-## until it clears every nearby road section on this deck; the mast arm can still reach over traffic.
+## until it clears nearby road sections on either Wacker deck; mast arms still reach over traffic.
 static func pole_foot(stations: Array, at: Dictionary, lead: float, side: Vector3, offset: float) -> Vector3:
 	var flat = Vector3(at.tangent.x, 0.0, at.tangent.z).normalized()
 	var foot = at.pos + flat * lead + side * offset
@@ -171,7 +171,7 @@ static func pole_foot(stations: Array, at: Dictionary, lead: float, side: Vector
 		var clear = true
 		for station in stations:
 			if (
-				absf(station.pos.y - foot.y) < 2.0
+				absf(station.pos.y - foot.y) < 8.0
 				and Vector2(station.pos.x - foot.x, station.pos.z - foot.z).length_squared() < 100.0
 			):
 				clear = false

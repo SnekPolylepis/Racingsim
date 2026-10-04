@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 132
+const CACHE_REVISION = 133
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -73,6 +73,13 @@ static func points(grid: bool = false) -> Array[Vector3]:
 	var out: Array[Vector3] = []
 	for row in data(grid).points:
 		out.append(world(row))
+		# city.json's mapped Wacker bend: the old lower diagonal crossed London's roof outline.
+		# Keep data-point indices stable for existing corner aliases; these are curve control points.
+		if row[3] == "Lower Michigan crossing":
+			out.append(Vector3(-61.3, row[2], -381.5))
+			out.append(Vector3(-79.3, row[2], -375.6))
+		elif row[3] == "Upper Wacker river bend east":
+			out.append(Vector3(-61.3, row[2], -381.5))
 	return out
 
 
@@ -181,7 +188,7 @@ static func build_asset(grid: bool = false) -> Node3D:
 	asset.name = "Chicago"
 	asset.id = "chicago_grid" if grid else "chicago"
 	asset.display_name = "Chicago — Loop Grid" if grid else "Chicago — River & Lake"
-	asset.version = 1 if grid else 3
+	asset.version = 2 if grid else 4
 	asset.set_meta("wacker_floor_y", ChicagoCity.LOW_ROAD_Y)
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
@@ -231,6 +238,22 @@ static func build_asset(grid: bool = false) -> Node3D:
 			section.verge_left = 0.0
 			section.verge_right = 0.0
 		road.sections.append(section)
+	# The mapped Michigan/Wacker approach is 10.2 m, rather than the default 16 m race corridor.
+	# Ease both levels into that corridor while retaining the historic building's mapped location.
+	for level in [ChicagoCity.LOW_ROAD_Y, ChicagoCity.STREET_Y]:
+		var approach = road.curve.get_closest_offset(Vector3(-61.3, level, -381.5))
+		for key in [
+			[approach - 90.0, HALF_WIDTH],
+			[approach - 45.0, 5.1],
+			[approach + 45.0, 5.1],
+			[approach + 90.0, HALF_WIDTH]
+		]:
+			var section = road.sections[0].duplicate()
+			section.at = key[0]
+			section.width_left = key[1]
+			section.width_right = key[1]
+			road.sections.append(section)
+	road.sections.sort_custom(func(a, b): return a.at < b.at)
 	attach(asset, asset, road, "Main")
 	road.bake()
 	var corners = {}
@@ -883,6 +906,24 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		wacker125.surface_set_material(surface, mat)
 	var wacker125_node = mesh_node(asset, parent, "Wacker125", wacker125, ChicagoCity.WACKER_125_POSITION)
 	wacker125_node.rotation.y = ChicagoCity.WACKER_125_YAW
+	var london = PropMesh.mesh("res://assets/chicago/landmarks/london_guarantee.glb").duplicate()
+	for surface in london.get_surface_count():
+		var mat = london.surface_get_material(surface)
+		if not mat is StandardMaterial3D:
+			continue
+		mat = mat.duplicate()
+		mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Night"):
+			mat.set_meta("chicago_night", true)
+			mat.emission = Color(.65, .48, .25)
+			mat.emission_energy_multiplier = .35
+			mat.emission_enabled = false
+		elif mat.resource_name.begins_with("Clear"):
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.albedo_color.a = .12
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		london.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "LondonGuarantee", london, ChicagoCity.LONDON_POSITION)
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

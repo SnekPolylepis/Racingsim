@@ -36,6 +36,18 @@ func _physics_process(_delta):
 	var road = asset.get_node("Main")
 	check(road.last_bake.warnings.is_empty(), "Bake without warnings")
 	check(asset.length > 5000 and asset.length < 10000, "Closed lap length %.1f m" % asset.length)
+	for level in [Generator.ChicagoCity.LOW_ROAD_Y, 8.0]:
+		var target = Vector3(-61.3, level, -381.5)
+		var approach_s = road.curve.get_closest_offset(target)
+		check(
+			road.curve.sample_baked(approach_s).distance_to(target) < 1.0,
+			"Mapped Michigan/Wacker bend at level %.2f" % level
+		)
+		var approach_section = RoadBuilder.section_at(road.sections, approach_s, asset.length, road.closed)
+		check(
+			absf(approach_section.width_left - 5.1) < .01 and absf(approach_section.width_right - 5.1) < .01,
+			"Mapped Wacker driving corridor at level %.2f" % level
+		)
 	var surf = asset.surface()
 	var misses = 0
 	var max_error = 0.0
@@ -161,7 +173,7 @@ func _physics_process(_delta):
 			)
 			for station in road.last_bake.stations:
 				if (
-					absf(station.pos.y - foot.y) < 2.0
+					absf(station.pos.y - foot.y) < 8.0
 					and Vector2(station.pos.x - foot.x, station.pos.z - foot.z).length() < 9.9
 				):
 					poles_clear = false
