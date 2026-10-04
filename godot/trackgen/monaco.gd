@@ -722,7 +722,7 @@ static func _ground_max(g: Dictionary, p: Vector3, outward: Vector3, reach := 12
 ## Escarpment walls where the ground actually steps up beside the lap: build_city.py keeps it flat around
 ## each road, so between two legs at different heights (the harbour straight under Beau Rivage, the hairpin
 ## exit under Mirabeau) it steps up midway, where the 8 m grid drew stone pyramids between the buildings.
-## Walking out from 5.5 m to 34 m, the first rise of 1 m places the wall; its top is the ground 4-12 m beyond.
+## Walking out from 5.5 m to 48 m, the first rise of 0.3 m (the foot of the slope) places the wall; its top is the ground 4-12 m beyond.
 static func _escarpment(
 	asset: Node3D, st: SurfaceTool, g: Dictionary, tunnel: Vector2, built: Callable
 ) -> void:
@@ -737,9 +737,9 @@ static func _escarpment(
 			var out: Vector3 = f[1] * side
 			var hit = null
 			var k = 5.5
-			while k <= 34.0:
+			while k <= 48.0:
 				var q: Vector3 = f[0] + out * k
-				if _ground_y(g, q.x, q.z) > f[0].y + 1.0:
+				if _ground_y(g, q.x, q.z) > f[0].y + 0.3:
 					hit = f[0] + out * (k - 0.6)
 					break
 				k += 1.0
