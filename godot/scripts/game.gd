@@ -170,6 +170,8 @@ var prev_pose = {}
 var v2_smoke = false
 var v2_flow_test = false
 var cam_dir = Vector3.ZERO
+## Chase camera pitch (radians), eased toward 70 % of the car's so it tilts with grades (Monaco, Spa).
+var cam_pitch = 0.0
 var v2_export_check = false
 var v2_visual_smoke = false
 var v2_surface
@@ -1218,12 +1220,16 @@ func chase_camera(dt: float, snap: bool, pos: Vector3, forward: Vector3) -> void
 	else:
 		var rate = 3.2 if nfs else 9.0
 		cam_dir = cam_dir.slerp(aim, 1 - exp(-dt * rate)).normalized()
+	# Owner 2026-10-03: a level camera on an 11 % climb shows the road as a wall. Follow most of the pitch.
+	var pitch = asin(clampf(forward.y, -1.0, 1.0)) * 0.7
+	cam_pitch = pitch if snap else lerpf(cam_pitch, pitch, 1 - exp(-dt * 4.0))
+	var dir = cam_dir * cos(cam_pitch) + Vector3.UP * sin(cam_pitch)
 	var kmh = car.speed * 3.6
 	var dist = (5.6 + (clampf(kmh / 250.0, 0, 1) * 1.6 if nfs else 0.0)) * zoom_user
 	var height = (1.75 if nfs else 1.55) * zoom_user * lerpf(1.4, 0.85, settings.tilt)
-	camera.position = pos - cam_dir * dist + Vector3.UP * height
+	camera.position = pos - dir * dist + Vector3.UP * height
 	camera.position.y = maxf(camera.position.y, camera_ground + 0.8)
-	camera.look_at(pos + cam_dir * (4.0 if nfs else 6.0) + Vector3.UP * (0.9 if nfs else 0.75), Vector3.UP)
+	camera.look_at(pos + dir * (4.0 if nfs else 6.0) + Vector3.UP * (0.9 if nfs else 0.75), Vector3.UP)
 	var fov = 62 + clampf(kmh / 250.0, 0, 1) * 16 if nfs else 58.0
 	camera.fov = fov if snap else lerpf(camera.fov, fov, minf(dt * 3, 1))
 

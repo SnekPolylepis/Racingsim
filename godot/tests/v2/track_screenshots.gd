@@ -71,6 +71,7 @@ func shots() -> Array:
 		["monaco", "monaco-pool", ["Piscine", -45.0]],
 		["monaco", "monaco-fairmont-bonnet", ["Grand Hotel Hairpin", -25.0], CAM_BONNET],
 		["monaco", "monaco-beau-rivage", ["Beau Rivage", -60.0], CAM_BONNET],
+		["monaco", "monaco-beau-rivage-chase", ["Beau Rivage", -60.0]],
 		["monaco", "monaco-mirabeau", ["Mirabeau Haute", -60.0], CAM_BONNET],
 		["monaco", "monaco-portier", ["Portier", -50.0], CAM_BONNET],
 		["monaco", "monaco-tunnel-entry", ["Tunnel", -135.0], CAM_BONNET],
