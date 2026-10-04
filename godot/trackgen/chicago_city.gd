@@ -65,6 +65,9 @@ const CARBIDE_YAW = .0114
 ## Historic Reliance / 1 West Washington, not the larger neighboring OSM alias.
 const RELIANCE_POSITION = Vector3(-317.6, STREET_Y, 195.65)
 const RELIANCE_YAW = .0074
+## Full historic Monadnock block, mapped w73671128.
+const MONADNOCK_POSITION = Vector3(-426.9, STREET_Y, 808.275)
+const MONADNOCK_YAW = .0246
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
 }
@@ -139,6 +142,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "w73671128":
+			exclusion = "authored Monadnock exterior"
 		elif b.get("o", "") == "w124865461":
 			exclusion = "authored Reliance exterior"
 		elif b.get("o", "") == "w148544831":

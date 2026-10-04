@@ -98,6 +98,16 @@ func run() -> void:
 			if entry.osm_id == "w148544831" and entry.reason == "authored Carbide and Carbon exterior":
 				excluded_carbide += 1
 		check(excluded_carbide == 1, "Mapped Carbide and Carbon block is replaced exactly once")
+		var monadnock = app.track.get_node_or_null("Scenery/MonadnockBuilding")
+		check(
+			monadnock is MeshInstance3D and monadnock.mesh.get_surface_count() == 9,
+			"Authored Monadnock loads"
+		)
+		var excluded_monadnock = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w73671128" and entry.reason == "authored Monadnock exterior":
+				excluded_monadnock += 1
+		check(excluded_monadnock == 1, "Historic Monadnock block replaced exactly once")
 		var reliance = app.track.get_node_or_null("Scenery/RelianceBuilding")
 		check(
 			reliance is MeshInstance3D and reliance.mesh.get_surface_count() == 8, "Authored Reliance loads"
@@ -196,6 +206,7 @@ func run() -> void:
 			"Authored Carbide and Carbon loads in original Chicago"
 		)
 		check(app.track.has_node("Scenery/RelianceBuilding"), "Authored Reliance loads in original Chicago")
+		check(app.track.has_node("Scenery/MonadnockBuilding"), "Authored Monadnock loads in original Chicago")
 		for name in chicago_buildings:
 			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")
 		check(

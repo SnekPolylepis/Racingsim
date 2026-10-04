@@ -753,6 +753,20 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 			reliance.surface_set_material(surface, mat)
 	var reliance_node = mesh_node(asset, parent, "RelianceBuilding", reliance, ChicagoCity.RELIANCE_POSITION)
 	reliance_node.rotation.y = ChicagoCity.RELIANCE_YAW
+	var monadnock = PropMesh.mesh("res://assets/chicago/landmarks/monadnock_building.glb").duplicate()
+	for surface in monadnock.get_surface_count():
+		var mat = monadnock.surface_get_material(surface)
+		if mat is StandardMaterial3D and mat.resource_name.begins_with("Night"):
+			mat = mat.duplicate()
+			mat.set_meta("chicago_night", true)
+			mat.emission = Color(.65, .48, .25)
+			mat.emission_energy_multiplier = .4
+			mat.emission_enabled = false
+			monadnock.surface_set_material(surface, mat)
+	var monadnock_node = mesh_node(
+		asset, parent, "MonadnockBuilding", monadnock, ChicagoCity.MONADNOCK_POSITION
+	)
+	monadnock_node.rotation.y = ChicagoCity.MONADNOCK_YAW
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

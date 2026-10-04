@@ -4330,3 +4330,51 @@ from HEAD. Re-exported with corrected text (exit 0, empty stderr), repeated
 packaged verifier (reliance-package-final.out/.err): V2 EXPORT PASS, stderr
 empty, terminal after bounded wait; engine bus peak .351490. Installed this
 final verified export and relaunched normally; preceding hash above is final.
+
+### 2026-10-03 — PROGRESS CHI-3D-BUILDINGS: authored Monadnock exterior
+
+Previous goal turn PROGRESS: Reliance authored, verified, installed and pushed
+as 58226d9. This pass authors Monadnock's full mapped block w73671128 using
+CAC / building-owner photographs and HABS ILL-1027. Distinct northern rounded
+oriels, flared base/cornice and increasing corner chamfer; southern polygonal
+oriels, terra-cotta bands/brackets/cornice; physical single-light double-hung
+sashes, iron sills, retail frames, four historic entrance names and roof skylights.
+Original Blender geometry, no full-facade photograph, eight materials/nine mesh
+surfaces, 223,088 triangles. Canonical editable .blend and script retained.
+Mapped position (-426.9,8,808.275), yaw .0246; only exact generic block excluded.
+Mapped ~20 x 122 m plan retained rather than extending nominal HABS 70 x 420 ft
+into roads. HABS 215 ft masonry top = 65.532 m; stylized skylights add .62 m.
+
+Four full canonical authoring runs completed successfully with empty stderr.
+Later runs correct lettering orientation, Jackson shop glazing, northern roof
+material, buried southern flat panes and skylight placement. Initial source test
+attempts failed: unit fixture lacked Scenery's name, so night toggle could not
+find it; menu fixture used nonexistent exclusions instead of existing excluded.
+Corrected fixtures. Hung failed menu process was identified and stopped; camera
+axis errors after its script abort are not a successful gameplay validation.
+Initial review cameras inside neighboring geometry / behind a barrier were
+rejected and repositioned; no neighboring buildings or barrier props removed.
+
+Final source gates/20261003-191027: authored coverage 23/23, Monadnock 20/20,
+actual menu/drive/both Chicago layouts 53/53 and game parse PASS; four gates,
+96 logical checks, 104 s wall, stderr empty. Final Blender import and Windows
+export exit 0, empty stderr. Reviewed eight final native day/night north, south,
+Jackson entrance and crown/roof captures in visual-review/monadnock. Projected
+bays, flanked entrance, roof and selective night windows visible. Source review
+terminal PASS, empty stderr; generic physical-window count 1,084,618.
+Warmed frozen crown/night sample: 9.747025 ms, 14,264,466 render primitives over
+120 frames. Different camera from prior landmarks; this is not a route-wide
+60 fps guarantee or comparative speedup. Full matrix/macOS not run.
+
+Final clipping gates/20261003-191145 both PASS, zero failures, 100 Grid / 108
+original expected underpass/furniture overhead hits; two gates, 85 s wall.
+Together with source gates: six gates, 98 logical checks, clean parse.
+Packaged six-track/40 engine-bank verifier reports V2 EXPORT PASS, empty stderr;
+process missing/terminal after bounded observation, final exit code unavailable.
+Captured gameplay engine bus peak .365493, not owner-device listening acceptance.
+Verified Windows executable installed as build/RacingSim.exe, previous version
+retained as RacingSim-before-monadnock-20261003.exe; normal local launch started.
+Installed SHA-256:
+456A42C4948BDD2E93734F209BD094904F8FD120E69D5FAC02461152EB22E13E
+Goal ACTIVE: continue Wacker/remaining recognizable exteriors; wider prop and
+lighting/performance acceptance and owner audio listening remain open.

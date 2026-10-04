@@ -183,3 +183,12 @@ Blender exterior replaces only that block; the neighboring mass remains.
 Eight day/night native views and 95 targeted checks passed; see REBUILD-LOG.
 This corrects attribution, not the dated observations of prior screenshots.
 Other Wacker/Monadnock detail and wider city acceptance remain open.
+
+### 2026-10-03 — Monadnock authored block
+
+Monadnock now uses an original Blender exterior at w73671128, with distinct
+north/south bay profiles, cornices, retail glazing and physical double-hung
+sashes. Eight day/night views reviewed and 96 targeted source checks passed.
+This advances the older open Monadnock-oriels item; Wacker exterior detail,
+calibrated colors and broader city/prop/performance acceptance remain open.
+See REBUILD-LOG for limitations and final package evidence.
