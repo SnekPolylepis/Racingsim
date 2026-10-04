@@ -116,6 +116,20 @@ for i, (x, y, z) in enumerate(road):
     grid.setdefault((int(x // CELL), int(z // CELL)), []).append((x, y, z, i in in_tunnel, i))
 
 
+def road_points_near(x, z, reach):
+    cx, cz = int(x // CELL), int(z // CELL)
+    r = int(reach // CELL) + 1
+    return [p for dx in range(-r, r + 1) for dz in range(-r, r + 1) for p in grid.get((cx + dx, cz + dz), [])]
+
+
+def point_in(x, z, ring):
+    inside = False
+    for (ax, az), (bx, bz) in zip(ring, ring[1:] + ring[:1]):
+        if (az > z) != (bz > z) and x < ax + (z - az) * (bx - ax) / (bz - az):
+            inside = not inside
+    return inside
+
+
 def near_road(x, z, reach):
     best = None
     cx, cz = int(x // CELL), int(z // CELL)
@@ -204,6 +218,11 @@ def sea_side(i):
 
 # Bare-earth DTM when profile.json came from IGN (no rooftops, so no low envelope); else the DSM envelope.
 IGN = ign_grid() if "IGN" in json.load(open("profile.json", encoding="utf-8"))["source"] else None
+if IGN:
+    # 3x3 median: under buildings the bare-earth model interpolates, and single spikes (4, 11, 28 m side by
+    # side behind the chicane) drew stone pyramids between the frontage buildings.
+    IGN = [[sorted(IGN[min(max(i + a, 0), nz - 1)][min(max(j + b, 0), nx - 1)] for a in (-1, 0, 1) for b in (-1, 0, 1))[4]
+            for j in range(nx)] for i in range(nz)]
 ground = []
 paved = []  # 1 within 35 m of the road (pavements, squares), 0 beyond (the hillside's gardens)
 for iz in range(nz):
@@ -227,7 +246,9 @@ for iz in range(nz):
             elif IGN and not nr[2]:
                 # Pavements run flat to the building fronts (frontage stands 8-20 m out); the hill rises behind
                 # them, or behind monaco.gd's dressed-stone retaining walls where no building fronts the road.
-                t = max(0.0, (nr[0] - 20.0) / 15.0)
+                # Stepped at 30 m: with 8 m grid spacing the last flat node is then at least 22 m out, so the whole
+                # step stands behind monaco.gd's 22 m escarpment wall (a step from 24 m drew pyramids in front of it).
+                t = max(0.0, (nr[0] - 30.0) / 2.0)
             h = (nr[1] - 0.15) * (1 - t) + h * t if t < 1.0 else h
         distance, land = shore(x, z)
         if not land and not (nr and nr[0] < 12.0):
@@ -295,10 +316,14 @@ for e in json.load(open("osm-buildings.json", encoding="utf-8"))["elements"]:
                 px, pz = h[3] + (px - h[3]) * k, h[4] + (pz - h[4]) * k
             pushed.append((px, pz))
         ring = pushed
+        # A footprint the lap runs through (pushing its corners made an hourglass across Portier) is dropped.
+        if any(not p[3] and point_in(p[0], p[2], ring) for p in road_points_near(cx, cz, max(math.dist((cx, cz), q) for q in ring))):
+            dropped += 1
+            continue
         hits = [h for h in [near_road(px, pz, 7.5) for px, pz in ring[::max(1, len(ring) // 12)]] + [near_road(cx, cz, 7.5)] if h and h[2]]
         base = min(ground_at(px, pz) for px, pz in ring)
         if hits:  # over the tunnel (the Fairmont): its walls start on the tunnel roof (monaco.gd, 5.4 m)
-            base = max(h[1] for h in hits) + 5.4
+            base = max(h[1] for h in hits) + 6.0  # walls start at base - 0.5: above the 5.4 m ceiling
         h = num(t.get("height"))
         if h is None and num(t.get("building:levels")) is not None:
             h = num(t["building:levels"]) * 3.2 + 1.0

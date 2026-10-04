@@ -46,6 +46,9 @@ var compare = false
 var only_track = ""
 var night = false
 var lap_step = 0.0
+## --stations=s1,s2,... (road metres) with --cam=N: ad-hoc review shots of one stretch of --track.
+var stations = []
+var cam = CAM_BONNET
 
 
 func _initialize():
@@ -58,6 +61,11 @@ func _initialize():
 			only_track = arg.trim_prefix("--track=")
 		elif arg == "--night":
 			night = true
+		elif arg.begins_with("--stations="):
+			for s in arg.trim_prefix("--stations=").split(","):
+				stations.append(s.to_float())
+		elif arg.begins_with("--cam="):
+			cam = arg.trim_prefix("--cam=").to_int()
 		elif arg.begins_with("--lap-step="):
 			lap_step = maxf(50.0, arg.trim_prefix("--lap-step=").to_float())
 	call_deferred("run")
@@ -130,6 +138,10 @@ func run():
 	var helper = NightShots.new()
 	var loaded = ""
 	var views = shots()
+	if not stations.is_empty():
+		views = stations.map(
+			func(s): return [only_track, "%s-%04d-cam%d" % [only_track, int(s), cam], s, cam]
+		)
 	if lap_step > 0.0 and not only_track.is_empty():
 		if not app.load_v2_track(only_track):
 			quit(1)

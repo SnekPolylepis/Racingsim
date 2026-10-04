@@ -136,8 +136,9 @@ static func build_asset() -> Node3D:
 			section.runoff_left = 4.0
 			section.runoff_right = 4.0
 		road.sections.append(RoadSection.make(at, section))
-	# Owner: Nouvelle Chicane is open asphalt with kerbs, not a walled channel. Tarmac runoff both sides
-	# through the chicane; the barriers and fences sit beyond the runoff, so they step back with it.
+	# Owner: Nouvelle Chicane is open asphalt with kerbs, not a walled channel: tarmac runoff both sides and no
+	# road-following barrier or fence through it (offset 7 m out, their lines folded back across the track on
+	# the inside of its bends), the same as the Swimming Pool gap.
 	var chicane = Vector2(corners["Nouvelle Chicane"] - 40.0, corners["Nouvelle Chicane"] + 70.0)
 	for at in [chicane.x, chicane.x + 20.0, chicane.y - 20.0, chicane.y]:
 		var section = _section(5.0, true)
@@ -165,7 +166,9 @@ static func build_asset() -> Node3D:
 	# Owner: both Swimming Pool chicanes are open. Share the gap across collision and dressing.
 	asset.set_meta("pool_gap", pool_gap)
 	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
-		for span in [Vector2(0, pool_gap.x), Vector2(pool_gap.y, length)]:
+		var spans = [Vector2(0, chicane.x), Vector2(chicane.y, pool_gap.x), Vector2(pool_gap.y, length)]
+		for k in spans.size():
+			var span = spans[k]
 			var wall = WallPath.new()
 			wall.follow_road = NodePath("../Main")
 			wall.side = side
@@ -178,17 +181,14 @@ static func build_asset() -> Node3D:
 				asset,
 				asset,
 				wall,
-				(
-					("LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier")
-					+ ("B" if span.x > 0 else "")
-				)
+				("LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier") + ["", "B", "C"][k]
 			)
 			wall.bake()
 	var scenery = Node3D.new()
 	attach(asset, asset, scenery, "Scenery")
 	# Debris fencing on both barriers, as at every street circuit; none inside the tunnel.
 	for barrier in ["LeftBarrier", "RightBarrier"]:
-		for span in [[0.0, tunnel.x], [tunnel.y, pool_gap.x], [pool_gap.y, length]]:
+		for span in [[0.0, tunnel.x], [tunnel.y, chicane.x], [chicane.y, pool_gap.x], [pool_gap.y, length]]:
 			var fence = CatchFence.new()
 			# Road metres (a wall-following fence measures along the barrier, which is longer on the outside).
 			fence.follow_road = NodePath("../Main")
@@ -225,7 +225,7 @@ static func build_asset() -> Node3D:
 		gs.open_structure = not gs.solid_front
 		attach(asset, asset, gs, st[0])
 		gs.bake()
-	_yachts(asset, scenery, d.piers)
+	_yachts(asset, scenery, d.piers, d.ground)
 	_trees(asset, scenery, d.trees + garden_trees)
 	_tunnel(asset, scenery, road, tunnel)
 	# Street lamps outside only: the tunnel has its own lamp strip and lights (_tunnel).
@@ -609,8 +609,10 @@ static func _frontage(asset: Node3D, parent: Node) -> void:
 static func _barrier_line(asset: Node3D, side: int) -> Array:
 	var out = []
 	var prefix = "LeftBarrier" if side == WallPath.Side.LEFT else "RightBarrier"
-	for title in [prefix, prefix + "B"]:
-		var wall = asset.get_node(title)
+	for title in [prefix, prefix + "B", prefix + "C"]:
+		var wall = asset.get_node_or_null(title)
+		if wall == null:
+			continue
 		var line: PackedVector3Array = wall.last_bake.line
 		var count = line.size() - 1
 		for i in line.size():
@@ -631,9 +633,9 @@ static func _ground_y(g: Dictionary, x: float, z: float) -> float:
 	return lerpf(lerpf(h[iz][ix], h[iz][ix + 1], tx), lerpf(h[iz + 1][ix], h[iz + 1][ix + 1], tx), tz)
 
 
-## Dressed-stone retaining walls behind the pavement wherever the hillside stands above the road (Mirabeau,
-## the Fairmont hairpin, Portier, Beau Rivage). build_city.py steps the IGN ground up to full height by 16 m
-## out on that side; the wall's face, 2.5 m behind the barrier, hides the step. Visual only.
+## Dressed-stone retaining walls right behind the armco wherever the hillside stands above the road
+## (Mirabeau, the Fairmont hairpin, Portier, Beau Rivage), plus escarpment walls where the ground steps up
+## between two legs of the lap (_escarpment). Visual only.
 static func _retaining_walls(
 	asset: Node3D, parent: Node, g: Dictionary, tunnel: Vector2, buildings: Array
 ) -> void:
@@ -654,6 +656,7 @@ static func _retaining_walls(
 			if Geometry2D.is_point_in_polygon(Vector2(p.x, p.z), ring):
 				return true
 		return false
+	var curve: Curve3D = asset.get_node("Main").working_curve()
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
@@ -668,16 +671,21 @@ static func _retaining_walls(
 				_wall_run(st, run)
 				run = []
 				continue
-			var pa: Vector3 = a[1] + a[2] * 2.5
-			var pb: Vector3 = b[1] + b[2] * 2.5
-			# The hill height where build_city.py has blended fully back to the survey (35 m from the road).
-			var back_a: Vector3 = a[1] + a[2] * 28.0
-			var back_b: Vector3 = b[1] + b[2] * 28.0
-			# Monaco's roadside walls stand 5-15 m; the terraces above them are out of a driver's view.
-			var top_a = minf(_ground_y(g, back_a.x, back_a.z) + 0.6, pa.y + 12.0)
-			var top_b = minf(_ground_y(g, back_b.x, back_b.z) + 0.6, pb.y + 12.0)
+			# Right behind the armco: between two legs at different heights (the hairpin exit under Mirabeau)
+			# the slope starts at the barrier, and a wall set further back stood inside it.
+			var pa: Vector3 = a[1] + a[2] * 0.4
+			var pb: Vector3 = b[1] + b[2] * 0.4
+			# Height: the highest ground in the next 12 m behind, capped (Monaco's roadside walls stand 5-15 m).
+			var top_a = minf(_ground_max(g, a[1], a[2]) + 0.6, pa.y + 12.0)
+			var top_b = minf(_ground_max(g, b[1], b[2]) + 0.6, pb.y + 12.0)
 			var fronted = [2.0, 5.0, 9.0, 14.0, 20.0].any(func(k): return built.call(pa + a[2] * k))
-			if fronted or minf(top_a - pa.y, top_b - pb.y) < 1.5:
+			# On the inside of a tight bend the offset line folds back over the road: a wall must stand
+			# farther from the centreline than its barrier, at both ends.
+			var folded = (
+				_off_centre(curve, pa) < _off_centre(curve, a[1]) + 0.3
+				or _off_centre(curve, pb) < _off_centre(curve, b[1]) + 0.3
+			)
+			if fronted or folded or minf(top_a - pa.y, top_b - pb.y) < 1.5:
 				_wall_run(st, run)
 				run = []
 				u += step
@@ -685,6 +693,7 @@ static func _retaining_walls(
 			run.append([pa, pb, top_a, top_b, a[2], b[2], u, u + step])
 			u += step
 		_wall_run(st, run)
+	_escarpment(asset, st, g, tunnel, built)
 	st.generate_normals()
 	var node = MeshInstance3D.new()
 	node.mesh = st.commit()
@@ -692,24 +701,83 @@ static func _retaining_walls(
 	attach(asset, parent, node, "StoneWalls")
 
 
+## Highest ground 4-12 m out from p along outward.
+static func _ground_max(g: Dictionary, p: Vector3, outward: Vector3) -> float:
+	var top = -INF
+	for k in [4.0, 8.0, 12.0]:
+		var q = p + outward * k
+		top = maxf(top, _ground_y(g, q.x, q.z))
+	return top
+
+
+## Escarpment walls where the ground actually steps up beside the lap: build_city.py keeps it flat around
+## each road, so between two legs at different heights (the harbour straight under Beau Rivage, the hairpin
+## exit under Mirabeau) it steps up midway, where the 8 m grid drew stone pyramids between the buildings.
+## Walking out from 5.5 m to 34 m, the first rise of 1 m places the wall; its top is the ground 4-12 m beyond.
+static func _escarpment(
+	asset: Node3D, st: SurfaceTool, g: Dictionary, tunnel: Vector2, built: Callable
+) -> void:
+	var c: Curve3D = asset.get_node("Main").working_curve()
+	var length = c.get_baked_length()
+	for side in [-1.0, 1.0]:
+		var run = []
+		var s = 0.0
+		var prev = null
+		while s < length:
+			var f = _level_frame(c, s)
+			var out: Vector3 = f[1] * side
+			var hit = null
+			var k = 5.5
+			while k <= 34.0:
+				var q: Vector3 = f[0] + out * k
+				if _ground_y(g, q.x, q.z) > f[0].y + 1.0:
+					hit = f[0] + out * (k - 0.6)
+					break
+				k += 1.0
+			var keep = (
+				hit != null
+				and prev != null
+				and not (s > tunnel.x - 20.0 and s < tunnel.y + 20.0)
+				# Not on another road (the wall line stands between them), not inside a building.
+				and _off_centre(c, hit) > 4.8
+				and not built.call(hit)
+			)
+			if keep:
+				var top_a = minf(_ground_max(g, prev[0], prev[1]) + 0.3, prev[0].y + 25.0)
+				var top_b = minf(_ground_max(g, hit, out) + 0.3, hit.y + 25.0)
+				run.append([prev[0], hit, top_a, top_b, prev[1], out, s - 2.0, s])
+			else:
+				_wall_run(st, run)
+				run = []
+			prev = [hit, out] if hit != null else null
+			s += 2.0
+		_wall_run(st, run)
+
+
+## Horizontal distance from p to the lap's centreline.
+static func _off_centre(curve: Curve3D, p: Vector3) -> float:
+	var on = curve.get_closest_point(p)
+	return Vector2(p.x - on.x, p.z - on.z).length()
+
+
 ## One continuous wall: face and coping per segment. Runs under 6 m (a slot between two buildings) read as
 ## free-standing spires, so they are left to the buildings either side.
 static func _wall_run(st: SurfaceTool, run: Array) -> void:
 	if run.size() < 3:
 		return
-	# Coping follows the hill as a smooth line (a 5-segment moving average), not survey-cell wedges.
+	# Level copings in 1.5 m steps (the highest ground within three segments, rounded up): a coping that
+	# followed the hill rose and fell along each run and read as stone pyramids from the road.
 	var tops = []
 	for i in run.size():
-		var sum = 0.0
-		var count = 0
-		for k in range(maxi(i - 2, 0), mini(i + 3, run.size())):
-			sum += (run[k][2] + run[k][3]) * 0.5
-			count += 1
-		tops.append(sum / count)
+		var high = -INF
+		for k in range(maxi(i - 3, 0), mini(i + 4, run.size())):
+			high = maxf(high, maxf(run[k][2], run[k][3]))
+		var base = minf(run[i][0].y, run[i][1].y)
+		tops.append(base + ceilf((high - base) / 1.5) * 1.5)
 	for i in run.size():
 		var r = run[i]
-		var crown_a = Vector3(r[0].x, tops[maxi(i - 1, 0)] * 0.5 + tops[i] * 0.5, r[0].z)
-		var crown_b = Vector3(r[1].x, tops[i] * 0.5 + tops[mini(i + 1, run.size() - 1)] * 0.5, r[1].z)
+		var crown_a = Vector3(r[0].x, tops[i], r[0].z)
+		var crown_b = Vector3(r[1].x, tops[i], r[1].z)
 		_quad(st, r[0] - Vector3(0, 0.3, 0), r[1] - Vector3(0, 0.3, 0), crown_b, crown_a, r[6], r[7])
 		# Coping: a 0.6 m deep cap back towards the hill.
 		_quad(st, crown_a, crown_b, crown_b + r[5] * 0.6, crown_a + r[4] * 0.6, r[6], r[7])
@@ -818,7 +886,8 @@ static func _impact_blocks(asset: Node3D, parent: Node, road, corners: Dictionar
 
 ## Port Hercule's moored yachts: stern-to along both sides of every OSM pontoon (man_made=pier lines),
 ## 12-40 m motor yachts, one MultiMesh.
-static func _yachts(asset: Node3D, parent: Node, piers: Array) -> void:
+static func _yachts(asset: Node3D, parent: Node, piers: Array, g: Dictionary) -> void:
+	var curve: Curve3D = asset.get_node("Main").working_curve()
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 98002
 	var xforms = []
@@ -845,6 +914,10 @@ static func _yachts(asset: Node3D, parent: Node, piers: Array) -> void:
 					var c = a + along * t + out * side * (2.0 + length * 0.5)
 					if outlines.any(func(r): return Geometry2D.is_point_in_polygon(c, r)):
 						continue
+					# Afloat only, and clear of the lap: by Nouvelle Chicane some pontoon berths fell on the
+					# quay and the runoff, and the hulls stood in the asphalt.
+					if _ground_y(g, c.x, c.y) > -1.0 or _off_centre(curve, Vector3(c.x, SEA_Y, c.y)) < 15.0:
+						continue
 					var dir = out * side
 					var basis = (
 						Basis(Vector3(dir.x, 0, dir.y), Vector3.UP, Vector3(-dir.y, 0, dir.x))
@@ -866,37 +939,17 @@ static func _yachts(asset: Node3D, parent: Node, piers: Array) -> void:
 	attach(asset, parent, node, "Yachts")
 
 
-## Unit yacht (1 m long, 1 m beam, real heights): tapered white hull, cabin, dark window band.
+## Unit yacht (1 m long along +X, 1 m beam, real heights) from tools/blender/monaco_yacht.py: lofted hull,
+## tapered deckhouses with dark window bands, radar arch. The box hull and cabin read as white slabs.
 static func _yacht_mesh() -> ArrayMesh:
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var white = Color(0.95, 0.95, 0.93)
-	var parts = [
-		[Vector3(0.0, 0.8, 0.0), Vector3(1.0, 1.9, 1.0), white],
-		[Vector3(-0.08, 2.4, 0.0), Vector3(0.55, 1.2, 0.8), white],
-		[Vector3(-0.08, 2.35, 0.0), Vector3(0.56, 0.45, 0.82), Color(0.08, 0.1, 0.14)],
-		[Vector3(-0.12, 3.4, 0.0), Vector3(0.3, 0.9, 0.6), white]
-	]
-	for part in parts:
-		var box = BoxMesh.new()
-		box.size = part[1]
-		var arrays = box.get_mesh_arrays()
-		var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-		var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
-		var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
-		for k in idx:
-			var v = verts[k]
-			# Taper the hull's bow (+X half) to a point.
-			if part == parts[0] and v.x > 0.0:
-				v.z *= 0.35
-			st.set_color(part[2])
-			st.set_normal(normals[k])
-			st.add_vertex(v + part[0])
-	var mat = StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.roughness = 0.35
-	st.set_material(mat)
-	return st.commit()
+	var scene = load("res://assets/monaco/monaco_yacht.glb").instantiate()
+	var out = ArrayMesh.new()
+	for part in scene.find_children("*", "MeshInstance3D", true, false):
+		for i in part.mesh.get_surface_count():
+			out.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, part.mesh.surface_get_arrays(i))
+			out.surface_set_material(out.get_surface_count() - 1, part.mesh.surface_get_material(i))
+	scene.free()
+	return out
 
 
 ## Pool basins (OSM leisure=swimming_pool): tiled water just under their deck.
@@ -1072,6 +1125,29 @@ static func _tunnel(asset: Node3D, parent: Node, road, span: Vector2) -> void:
 			attach(asset, parent, light, "TunnelLight%d" % n)
 		s = e
 		n += 1
+	# Portals: a solid face across both ends from the roof up 10 m (the hotel and hillside sit above), and a
+	# cheek wall from the tiled wall out to the hill, so the approach never sees sky through the tunnel's top.
+	for s_end in [span.x, span.y]:
+		var f = _level_frame(c, s_end)
+		var up = Vector3.UP
+		_quad(
+			ceiling,
+			f[0] - f[1] * 12.0 + up * 5.4,
+			f[0] + f[1] * 12.0 + up * 5.4,
+			f[0] + f[1] * 12.0 + up * 15.4,
+			f[0] - f[1] * 12.0 + up * 15.4,
+			-12.0,
+			12.0
+		)
+		_quad(
+			ceiling,
+			f[0] + f[1] * 7.0 - up * 0.3,
+			f[0] + f[1] * 12.0 - up * 0.3,
+			f[0] + f[1] * 12.0 + up * 5.4,
+			f[0] + f[1] * 7.0 + up * 5.4,
+			7.0,
+			12.0
+		)
 	var concrete = StandardMaterial3D.new()
 	concrete.albedo_texture = load("res://assets/textures/chicago/Concrete034/Concrete034_color.jpg")
 	concrete.albedo_color = Color(0.82, 0.8, 0.76)

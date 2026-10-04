@@ -4202,3 +4202,19 @@ gets the night-window shader. Modelling all 3,900 at frontage detail was estimat
 triangles and several hundred MB, hence the tiers. UTF-8 BOMs written by PowerShell into 13 branch files
 were stripped (gdformat failed on monaco.gd). Gates: monaco, laps monaco, front_end, optimization,
 track_asset, scenery pass; fresh Windows export V2 EXPORT PASS.
+### 2026-10-04 — FIX MON-POLISH: after the hairpin (owner: walls clipping, chicane, tunnel entrance)
+
+A 25 m sweep from 1560 to 2460 m found what the corner shots missed. Hairpin exit: the ground between it and
+the Mirabeau leg 8 m above drew a 45 degree stone slope from the barrier over the track; roadside walls now
+stand 0.4 m behind the armco (height: the highest ground 4-12 m behind) and are dropped where their line folds
+back over the road. Portier: an OSM footprint the lap runs through (pushing its corners from the road had made
+an hourglass across the carriageway) is dropped. Tunnel: buildings over it start 0.6 m above the 5.4 m ceiling
+(the Fairmont underside and walls showed as slanted sheets inside), and solid portal faces close both ends.
+Nouvelle Chicane: no road-following barrier, fence or ad panels through it (offset beyond the 7 m runoff, their
+lines folded back across the track inside its bends; the armco was collision); open tarmac and kerbs like the
+pool gap. Escarpments: where the ground steps up between two legs (harbour straight under Beau Rivage), a
+stone wall stands at the first 1 m rise found walking out from 5.5 m (_escarpment); wall copings are level in
+1.5 m steps (copings that followed the hill read as stone pyramids). IGN grid 3x3 median-filtered; ground
+flat to 30 m then stepped. Yachts: Blender motor yacht (tools/blender/monaco_yacht.py) replaces the box mesh,
+and only berths afloat and 15 m clear of the lap are filled (hulls stood in the chicane runoff).
+screenshot tool: --stations=a,b,... --cam=N for review sweeps. Gates: monaco, laps monaco pass.
