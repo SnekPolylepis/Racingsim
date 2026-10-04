@@ -4163,3 +4163,18 @@ MON-01); build_city.py now clamps ground_at and drops them. Exported Windows bui
 Gates: monaco 25/25, laps monaco rb19 2/2, front_end, track_asset, scenery pass; laps monaco f2004 Simcade
 Fairmont minimum 24.3 vs 24.5 km/h floor unchanged (owner decision). Left: Casino and Hotel de Paris
 bespoke models, general graphics pass (night, haze), the chase camera's world-level pitch on grades.
+
+### 2026-10-03 — PROGRESS MON-POLISH: Casino, Hotel de Paris, railings, night windows
+
+Owner accepted lowering the Monaco formula Fairmont floor to 24 km/h (laps.gd 6.66 m/s; was 6.8) after the
+surveyed Mirabeau descent; all Monaco lap gates pass. Casino de Monte-Carlo square elevation authored in
+Blender (tools/blender/monaco_casino.py: mapped footprint, square level from the lap road; corner towers with
+octagonal belvederes, domes and lanterns, copper pavilion dome with oculus dormers, great window, arched
+entrance and marquise); _casino_towers and the extruded Casino removed. Hotel de Paris joins the frontage set
+(flag 3, Belle Epoque: cream stone, French balconies, arcaded ground floor). Railings are one alpha-cut quad
+each (solid panels read as dark L-shaped blobs; modelled balusters cost 700k triangles): frontage 570k
+triangles, 40 MB. Night: shaders/monaco_window.gdshader replaces the modelled glass at load with an
+`afterhours` material (35 % of windows, 70 % of shopfronts at lower glow), so NightGlow lights them.
+Fresh Windows export: V2 EXPORT PASS (Monaco rebuilt in the packaged game). Gates: monaco, laps monaco
+f2004/rb19, front_end, optimization, track_asset, scenery all pass. Left: general haze/lighting pass,
+facades beyond 30 m remain shader-painted blocks, chase camera pitch on grades (shared game.gd).
