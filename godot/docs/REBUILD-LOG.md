@@ -4542,3 +4542,52 @@ launch started. Installed SHA-256:
 EE0C2DD3D0033E29EE9C7EEB61C0DB5C5839D4D80720C6A9EB6175944C189C4A
 Goal ACTIVE: 71 South Wacker, remaining recognizable exteriors and broader
 city/prop/lighting/performance acceptance remain open.
+
+
+## DONE CHI-3D-BUILDINGS / 71 South Wacker — Codex — 2026-10-03
+
+Original editable Blender lozenge tower replaces exactly mapped w148685510,
+at (-964.95, 8, 423.4), yaw .019526, in both Chicago layouts. Architectural top
+207.1 m / 201 m occupied / 48 floors from CVU; PCF&P site plan, exterior and
+lobby photographs inform curved sides, silver bands/end blades, recessed glass
+spines and twin canopies. Published reception/main lobby heights 15.24/10.9728 m;
+modeled granite core, vestibules, clear glass, bamboo planters and ceiling strips.
+Mapped compound outline retained only for ground foundation, not upper massing.
+No redistributed photographs/models. Proportions and omitted garage/skylight detail
+recorded in wacker_71-SOURCES.md. Existing city trees remain. Both packaged-layout
+verifiers require eleven-material asset. Canonical final authoring 182,248 triangles;
+initial 181,920-triangle authoring followed by end-blade/bamboo detail adjustments,
+then final generation. Both Blender runs completed, empty stderr.
+Native bounds x -49.07694..49.073, z -28.1525..29.11846, y -8..207.1.
+Glass metallic 0 / roughness .42, native specular .12; clear lobby alpha .12,
+two-sided. Three separately toggled night materials.
+
+Source gates/20261003-225917: authored coverage 23/23, 71 Wacker 38/38,
+menu/drive/both layouts 65/65, parse PASS; all four PASS, 94 s wall, empty stderr.
+Triangle checks establish genuinely recessed tips, open reception sightlines,
+two ceiling heights and bowed vision geometry. Both windowed clipping scans
+(gates/20261003-230220) PASS, 88 s wall: original 108 / Grid 100 expected overhead
+and furniture hits, zero failures, empty stderr. Six relevant gates / 128 logical
+checks PASS; full/performance matrix and macOS not run.
+
+Twelve native day/night views: street, west reception, crown, south garden,
+curved lobby interior and matching prior 111-Wacker glare camera. Final source
+review terminal PASS, exit 0, empty stderr. Initial garden camera was behind a
+111-Wacker column; rejected that view and moved only the camera to Monroe Street,
+then added an interior view. Neighboring assets remained visible. Previously large
+71-Wacker daytime flare removed at matching prior street camera; another neighboring
+generic facade still has glare, not represented as globally fixed. Clear glazing
+reveals separate core/plant/ceiling geometry. Generic physical windows 1,072,385.
+Final warmed frozen matching-glare/night sample, 120 frames: 39.0296167 ms,
+101,818,908 render primitives. Advisory 60 fps not met. Earlier 111 approach/night
+camera differs, so no comparative speedup or route-wide performance claim.
+
+Import and Windows export exit 0, empty stderr. Packaged six-track/40-engine-bank
+verifier V2 EXPORT PASS, empty stderr; terminal/missing after bounded observation,
+final process exit code unavailable. Gameplay Engine bus peak .3533639 is nonzero,
+not owner-device audibility/whine listening evidence. Verified RacingSim-wacker71.exe
+copied to build/RacingSim.exe, prior 111 build backed up; normal local menu launch
+PID 198576 responsive, empty stderr. Installed SHA-256:
+A3A1493099DC0F1FDC77953560CCB0F64878C14E7752691653CDCD3B95197FE3
+Goal ACTIVE: remaining recognizable exteriors, neighboring glare, broader city/
+props/lighting/performance acceptance and owner audio playtest remain open.

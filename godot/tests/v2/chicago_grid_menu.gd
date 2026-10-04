@@ -98,6 +98,15 @@ func run() -> void:
 			if entry.osm_id == "w148544831" and entry.reason == "authored Carbide and Carbon exterior":
 				excluded_carbide += 1
 		check(excluded_carbide == 1, "Mapped Carbide and Carbon block is replaced exactly once")
+		var wacker71 = app.track.get_node_or_null("Scenery/Wacker71")
+		check(
+			wacker71 is MeshInstance3D and wacker71.mesh.get_surface_count() == 11, "Authored 71 Wacker loads"
+		)
+		var excluded_wacker71 = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w148685510" and entry.reason == "authored 71 South Wacker exterior":
+				excluded_wacker71 += 1
+		check(excluded_wacker71 == 1, "Mapped 71 Wacker replaced exactly once")
 		var wacker111 = app.track.get_node_or_null("Scenery/Wacker111")
 		check(
 			wacker111 is MeshInstance3D and wacker111.mesh.get_surface_count() == 9,
@@ -236,6 +245,7 @@ func run() -> void:
 		check(app.track.has_node("Scenery/MonadnockBuilding"), "Authored Monadnock loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker191"), "Authored 191 Wacker loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker155"), "Authored 155 Wacker loads in original Chicago")
+		check(app.track.has_node("Scenery/Wacker71"), "Authored 71 Wacker loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker111"), "Authored 111 Wacker loads in original Chicago")
 		for name in chicago_buildings:
 			check(app.track.has_node("Scenery/City/" + name), name + " also loads in original Chicago")

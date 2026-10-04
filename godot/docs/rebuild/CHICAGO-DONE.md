@@ -226,3 +226,15 @@ a tension cable; corrected between-cable sample passes without model changes.
 Reference-informed dimensions/limitations are in wacker_111-SOURCES.md.
 71 South Wacker still has generic facade glare in the street review; replacement
 and wider city/prop/performance acceptance remain open. See REBUILD-LOG.
+
+### 2026-10-03 — 71 Wacker authored lozenge and twin entrances
+
+71 South Wacker now uses a Blender lozenge tower with physical bowed curtain
+panes, silver horizontal bands, broad tip blades and inset end spines. Twin
+canopies, tall reception halls, a lower curved lobby, granite core, bamboo and
+raised garden beds are geometry. Twelve native day/night views reviewed;
+128 targeted checks and packaged verifier pass. Previous 71-Wacker white flare
+is removed at matching 111 street camera. Neighboring generic-facade glare and
+wider city/props/lighting/performance acceptance remain open. Current local Windows
+build installed; source proportions and omissions are in wacker_71-SOURCES.md.
+See REBUILD-LOG for rejected initial garden camera and dated validation limits.
