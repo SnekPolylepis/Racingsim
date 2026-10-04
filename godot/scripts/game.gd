@@ -541,6 +541,7 @@ func check_exported_v2_assets() -> void:
 		and ResourceLoader.exists("res://assets/monaco/monaco_casino.glb")
 		and ResourceLoader.exists("res://assets/monaco/mid.glb")
 		and ResourceLoader.exists("res://assets/monaco/far.glb")
+		and ResourceLoader.exists("res://assets/monaco/monaco_yacht.glb")
 		and ResourceLoader.exists(
 			"res://assets/textures/monaco/sandstone_blocks_05/sandstone_blocks_05_diff_1k.jpg"
 		)

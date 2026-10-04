@@ -282,6 +282,8 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 	steep.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var garden = SurfaceTool.new()
 	garden.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var cliff = SurfaceTool.new()
+	cliff.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var paved: Array = g.get("paved", [])
 	var h: Array = g.h
 	var cell = float(g.cell)
@@ -297,6 +299,11 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 			for tri in [[0, 1, 2], [0, 2, 3]]:
 				var n = (q[tri[2]] - q[tri[0]]).cross(q[tri[1]] - q[tri[0]]).normalized()
 				var st = steep if absf(n.y) < 0.77 else flat
+				# Away from the streets the steep ground is Le Rocher's bare limestone, not masonry; only true
+				# cliffs (> 53 deg) show as rock, the rest is terraced garden (alternating rock and lawn on
+				# every terrace step read as stripes).
+				if st == steep and not paved.is_empty() and paved[iz][ix] == 0:
+					st = cliff if absf(n.y) < 0.6 else flat
 				# Away from the road the hillside is gardens between the buildings, not bare earth.
 				if st == flat and not paved.is_empty() and paved[iz][ix] == 0:
 					st = garden
@@ -319,7 +326,7 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 					st.set_uv(
 						(
 							Vector2(q[k].x + q[k].z, q[k].y) / 3.0
-							if st == steep
+							if st == steep or st == cliff
 							else Vector2(q[k].x, q[k].z) / 6.0
 						)
 					)
@@ -329,7 +336,8 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 		# Grey-toned: beige slabs read as sand across the open pool quay.
 		[flat, _pbr("rectangular_paving", 3.0, Color(0.62, 0.64, 0.68)), "Ground"],
 		[steep, _pbr("sandstone_blocks_05", 1.2), "RetainingWalls"],
-		[garden, ChicagoCity.material("park"), "Gardens"]
+		[garden, ChicagoCity.material("park"), "Gardens"],
+		[cliff, _pbr("marble_cliff_02", 0.15, Color(1.05, 1.1, 1.2)), "Cliffs"]
 	]:
 		pair[0].generate_normals()
 		var node = MeshInstance3D.new()
