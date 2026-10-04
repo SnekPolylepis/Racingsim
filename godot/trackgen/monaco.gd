@@ -326,7 +326,7 @@ static func _ground(asset: Node3D, parent: Node, g: Dictionary) -> Array:
 					st.add_vertex(q[k])
 	# Paved Monaco: pale slab pavements, dressed-stone faces on the steep cells (Poly Haven CC0).
 	for pair in [
-		[flat, _pbr("rectangular_paving", 3.0), "Ground"],
+		[flat, _pbr("rectangular_paving", 3.0, Color(0.78, 0.8, 0.84)), "Ground"],
 		[steep, _pbr("sandstone_blocks_05", 1.2), "RetainingWalls"],
 		[garden, ChicagoCity.material("park"), "Gardens"]
 	]:
@@ -1118,10 +1118,11 @@ static func _quad(
 
 
 ## A Poly Haven 1K set from assets/textures/monaco/<id>/ (albedo, OpenGL normal, roughness), UVs scaled.
-static func _pbr(id: String, scale: float) -> StandardMaterial3D:
+static func _pbr(id: String, scale: float, tint := Color.WHITE) -> StandardMaterial3D:
 	var dir = "res://assets/textures/monaco/%s/%s_" % [id, id]
 	var mat = StandardMaterial3D.new()
 	mat.albedo_texture = load(dir + "diff_1k.jpg")
+	mat.albedo_color = tint
 	mat.normal_enabled = true
 	mat.normal_texture = load(dir + "nor_gl_1k.jpg")
 	mat.roughness_texture = load(dir + "rough_1k.jpg")

@@ -1376,6 +1376,10 @@ func apply_time_of_day():
 				"res://assets/spa/sky/%s.hdr" % ("spa_night_puresky" if night else "spa_day_puresky")
 			)
 			paint.energy_multiplier = 0.55 if night else 0.85
+		elif v2_track_id == "monaco" and not night:
+			# Clear Riviera afternoon (Poly Haven CC0 sky-only HDRI, shared with Chicago's day).
+			paint.panorama = load("res://assets/chicago/sky/kloofendal_48d_partly_cloudy_puresky.hdr")
+			paint.energy_multiplier = 1.0
 		sky.sky_material = paint
 		environment.sky = sky
 		# Daylight fill is deliberately weak and cool against a warm key. The old 0.62 ambient
@@ -1426,8 +1430,27 @@ func apply_time_of_day():
 			environment.fog_depth_begin = 90 if night else 120
 			environment.fog_depth_end = 650 if night else 1450
 			camera.far = 1600
+		elif v2_track_id == "monaco":
+			# MON-POLISH: Riviera afternoon. A high warm sun from the south-west over the sea, a warmer fill,
+			# and a pale sea haze (not the forest blue-green) that keeps the Tete de Chien ridge readable
+			# behind the city out to 1.8 km.
+			sun.rotation_degrees = Vector3(-42, -40, 0)
+			if not night:
+				sun.light_color = Color("ffe4b5")
+				sun.light_energy = 1.65
+				environment.ambient_light_color = Color("a8bfd8")
+				environment.ambient_light_energy = 0.5
+				environment.fog_light_color = Color("b4c3d2")
+				environment.fog_depth_begin = 260
+				environment.fog_depth_end = 1800
+				environment.fog_depth_curve = 1.6
+			camera.far = 2000
+		# Contact shadows under Monaco's balconies, cornices and street corners (owner: visuals first).
+		environment.ssao_enabled = v2_track_id == "monaco"
+		environment.ssao_radius = 1.2
+		environment.ssao_intensity = 1.6
 		# NFSU night haze: lamps and neon scatter in a thin volumetric fog; filmic keeps the highlights.
-		var nfs_night = night and v2_track_id in ["chicago", "chicago_grid"]
+		var nfs_night = night and v2_track_id in ["chicago", "chicago_grid", "monaco"]
 		environment.volumetric_fog_enabled = nfs_night
 		environment.volumetric_fog_density = 0.004
 		environment.volumetric_fog_albedo = Color("b8a894")
@@ -1437,7 +1460,7 @@ func apply_time_of_day():
 			Environment.TONE_MAPPER_FILMIC if nfs_night else Environment.TONE_MAPPER_LINEAR
 		)
 		environment.tonemap_exposure = 0.82 if nfs_night else 1.0
-		set_rain(nfs_night)
+		set_rain(nfs_night and v2_track_id != "monaco")
 		visuals.set_time(night)
 		if not ghost_model.is_empty():
 			warm_ghost.call_deferred()

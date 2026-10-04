@@ -4178,3 +4178,14 @@ triangles, 40 MB. Night: shaders/monaco_window.gdshader replaces the modelled gl
 Fresh Windows export: V2 EXPORT PASS (Monaco rebuilt in the packaged game). Gates: monaco, laps monaco
 f2004/rb19, front_end, optimization, track_asset, scenery all pass. Left: general haze/lighting pass,
 facades beyond 30 m remain shader-painted blocks, chase camera pitch on grades (shared game.gd).
+
+### 2026-10-03 — PROGRESS MON-POLISH: chase camera pitch, Monaco haze and lighting
+
+Owner approved a shared game.gd change: the chase camera eases toward 70 % of the car's pitch (cam_pitch),
+so Beau Rivage reads as a climb rather than a wall; bonnet view unchanged. Monaco now has its own lighting
+branch: clear Riviera sky (Poly Haven CC0 kloofendal_48d_partly_cloudy_puresky, already shipped for Chicago),
+high warm south-west sun ffe4b5 x1.65, warmer fill, pale sea haze b4c3d2 from 260 m to 1.8 km (curve 1.6) so
+the ridge behind the city stays readable, camera far 2 km, SSAO for contact shadows under balconies and
+cornices (Monaco only). Nights reuse the NFSU volumetric haze and filmic tonemap without rain. Paving tinted
+cooler (it read as sand at a distance). Full gates: 57/57 (chicago_grid_clip failed once under parallel load
+with no RESULTS line after 28 s, then passed alone in 120 s; it passed in the morning run too).
