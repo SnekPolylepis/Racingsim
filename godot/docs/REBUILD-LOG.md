@@ -5255,3 +5255,16 @@ controlled driving benchmark. Dimensions/brick joints/sculpture/signs remain
 approximate or incomplete in SOURCES. Trackside work continues; next inspect
 243SouthWabash/Computing and Digital Media Center visibility and references.
 No EXE.
+
+## DePaul CDM Center exterior draft — 2026-10-05
+
+Native baselinePID136324 completed,CITY REVIEW PASS/empty stderr; w35601477
+not excluded, route camera(-99.28468,9.3,726.7522),street/entry daylight viewed.
+Owner corner photo and restoration contractor PDF photograph actually
+inspected. Modeled south/west grouped sash rows,terracotta piers/spandrels,
+projecting cornices,separate retail panes,recessed southwest doors and blue
+university signs. Height39m photo-proportion estimate vs mapped58m unverified;
+no survey claim. Second BlenderPID134088 exit0,58,800tri/8mats; import/model
+reviewPID138224 exit0/empty stderr; four model captures inspected. Standalone
+draft only; integration/fit/checks/day-night review next. Sources/limits in
+depaul_cdm-SOURCES.md. No executable export.
