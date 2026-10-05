@@ -17,3 +17,10 @@ Keep documentation synchronized with actual source, and distinguish recorded tes
 No delegation or approval requirements are introduced by this file.
 
 Owner direction 2026-09-28: visual quality over self-imposed limits. See the 'Owner direction' section in CLAUDE.md; it overrides stricter budgets, gates and art restrictions in the docs.
+
+Owner direction 2026-10-04: do not export a full executable for each building.
+Review building/track work from source with Godot. Export only for a requested
+playable update or release. Keep one current `godot/build/RacingSim.exe` and at
+most one fixed `RacingSim-backup.exe`; replace these slots instead of accumulating
+building-named executables or dated backups. A temporary staging export must be
+removed after validation/install. Preserve source assets and user saves.

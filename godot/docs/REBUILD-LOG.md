@@ -4894,3 +4894,31 @@ day/night views, then targeted integration checks/package/install. Installed
 Monroe executable C1C497...F8481BE is unchanged. Broad goal remains active.
 TheChicagoLoop reference site certificate expired; did not bypass. Its error
 tab3 could not be closed through the bound browser API; temporary tab unmarked.
+
+## Owner correction: generated build cleanup — 2026-10-04
+
+Owner interrupted Peoples Gas work: no full executable per building; clean up
+the accumulated ~30 GB first and do not repeat that workflow. Confirmed
+godot/build total31.518 GiB. Deleted59 generated top-level executables only,
+freed29.350 GiB; directory now2.168 GiB including retained release archives,
+legacy archive and macOS package. No recursive deletion, source assets/saves
+untouched. Absolute targets verified within godot/build and not in use before
+removal. Current RacingSim.exe retained byte-for-byte SHA256
+C1C497836909C0509E8BB73F508B877AE43B86655BF4129262E705295F8481BE.
+Retained previous London build, renamed to fixed RacingSim-backup.exe, SHA256
+1F71FF25B57C1CE4B1648E63EE7AAF882A730285F65F742F8DE4D0EC51664FC5.
+Root launcher continues to target RacingSim.exe.
+
+Recorded binding owner direction in root AGENTS.md: review from source; export
+only for requested playable update/release, fixed current/one backup slots,
+temporary staging removed after validation/install. Historical per-building
+build evidence above records past runs; those extra executable files are now
+deleted. Do not repeat the per-building package/export/install loop.
+
+Peoples Gas fifth asset and runtime integration remain uncommitted in this
+checkout:304,432 triangles/10 materials, upper lion reliefs, two adjacent main
+Michigan bay portals and centre entry, recessed vestibules, real oval corner
+holes. Unit24/parse pass (20261004-222859). Final source-native review started
+PID77952; inspect current handle/output and final views before proceeding.
+No Peoples Gas executable exported. Next continue source visual review and
+targeted menu/clip verification under the revised owner workflow.
