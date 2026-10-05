@@ -5226,3 +5226,16 @@ Mapped w145493033 is absent from the Grid exclusion list; nearest camera
 corner camera shows neighboring walls and is not frontage acceptance.
 Inspect the north-facing Adams frontage and primary HABS drawings next.
 No executable export.
+
+## Chapin & Gore standalone exterior draft — 2026-10-04
+
+Corrected north-facing baseline reviewPID121740 completed CITY REVIEW PASS/
+empty stderr; street-day capture inspected. City facade/detail photos
+actually inspected; HABS site unavailable, no drawing-based dimensions claimed.
+Authored four brick bays, five upper Chicago-window rows, paired lower panes,
+physical terracotta frames/relief and inset storefront doors. Corrected
+oversized end piers and missing lower-aperture brick strips after first render.
+Second build8,844tri/8mats (PID126860 exit0); import/model review exit0/empty
+stderr (modelPID108404); front/roof inspected. Not integrated: route fit and
+geometry/menu/clipping/day-night checks next. Limits in chapin_gore-SOURCES.md.
+No executable export; preserved generated323unit UID from editor import.
