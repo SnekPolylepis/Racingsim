@@ -44,7 +44,16 @@ def orient(before,p,angle):
         obj.rotation_euler.z+=angle
 
 box('Mapped underground foundation',(0,0,-4),(W,D,8),granite)
-box('Inset opaque tower core',(0,0,46),(W-1.6,D-1.6,92),dark)
+box('Inset opaque upper tower core',(0,0,52.6),(W-1.6,D-1.6,78.8),dark)
+# Keep the west vestibule physically open through the opaque lower core.
+inner_x=-W/2+.8
+back_x=-W/2+2.5
+right_x=W/2-.8
+box('Lower core behind vestibule',((back_x+right_x)/2,0,6.6),(right_x-back_x,D-1.6,13.2),dark)
+for side in [-1,1]:
+    half_depth=(D-1.6)/2
+    box('Lower core beside entry',((inner_x+back_x)/2,side*(half_depth+1.75)/2,6.6),
+        (back_x-inner_x,half_depth-1.75,13.2),dark)
 flush()
 
 def facade(width,bays,p,angle,rear=False):
@@ -64,10 +73,15 @@ def facade(width,bays,p,angle,rear=False):
             box('Continuous projecting pier',(at-pitch/2,0,(lo+hi)/2),(pitch-pane_w,.65,h),facing)
             box('Decorative solid spandrel',(at,0,lo+h*.17),(pane_w+.12,.65,h*.34),green if floor==1 and not rear else facing)
             pane=night if (i*7+floor*11)%19 in [1,4,8] else glass
-            box('Separate recessed pane',(at,.29,lo+h*.66),(pane_w-.12,.04,h*.58),pane)
-            for side in [-1,1]:
-                box('Physical sash jamb',(at+side*(pane_w-.07)/2,.2,lo+h*.66),(.065,.14,h*.61),bronze)
-            box('Double hung meeting rail',(at,.17,lo+h*.66),(pane_w,.16,.07),bronze)
+            paired = i in [0,bays-1] and floor>0 and not rear
+            # Strengthened corner tiers contain two individual window openings.
+            panes=[(at-pane_w*.26,pane_w*.42),(at+pane_w*.26,pane_w*.42)] if paired else [(at,pane_w)]
+            for centre,pane_width in panes:
+                box('Separate recessed pane',(centre,.29,lo+h*.66),(pane_width-.12,.04,h*.58),pane)
+                for side in [-1,1]:
+                    box('Physical sash jamb',(centre+side*(pane_width-.07)/2,.2,lo+h*.66),(.065,.14,h*.61),bronze)
+                box('Double hung meeting rail',(centre,.17,lo+h*.66),(pane_width,.16,.07),bronze)
+            if paired:box('Corner paired window stone mullion',(at,0,lo+h*.66),(pane_w*.1,.65,h*.62),facing)
             box('Projecting stone sill',(at,-.25,lo+h*.36),(pane_w+.24,.55,.14),trim)
         if not rear:
             for lo,hi in [(1.22,13.05),(76,90.9)]:
@@ -105,6 +119,8 @@ box('Vestibule back',(0,1.65,5),(3.3,.2,10),dark)
 box('Recessed glass doors',(0,1.1,1.8),(2.6,.04,3.2),clear)
 for x in [-1.3,0,1.3]:box('Bronze door stiles',(x,1.02,1.8),(.08,.14,3.4),bronze)
 box('Entry transom',(0,.72,6.5),(2.94,.04,6.4),clear)
+arc_vertices=[(0,.72,spring)]+[(radius*math.cos(i*math.pi/32),.72,spring+radius*math.sin(i*math.pi/32)) for i in range(33)]
+mesh('Actual semicircular upper entry glazing',arc_vertices,[(0,i+1,i+2) for i in range(32)],clear)
 for x in [-.77,0,.77]:box('Transom metal mullion',(x,.6,6.55),(.065,.17,6.3),bronze)
 for z in [3.5,4.7,5.9,7.1,8.3,9.5]:box('Transom meeting rail',(0,.6,z),(3.02,.17,.07),bronze)
 for x in [-.77,0,.77]:

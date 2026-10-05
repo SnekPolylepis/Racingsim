@@ -4971,3 +4971,16 @@ completion unverified. Draft not integrated or visually accepted.
 Height discrepancy remains:report264ft vs CVU99m/currentmap100.5; documented.
 Next refine corner window grouping, chamfered southwest retail entry and
 arched upper glazing, then native model/actual track review. No EXE exported.
+## Old Republic physical entry/window refinement — 2026-10-04
+
+Added paired corner window openings with individual jambs/meeting rails and
+actual semicircular upper entrance glazing. Third native review exit0 showed
+lower core covering entry doors; corrected lower core into three volumes around
+real vestibule opening, retaining upper opaque backing. Fourth build PID86944,
+import89296 and native standalone review89368 all exit0, empty stderr. Fourth
+mesh129,808tri/11surfaces/materials,bounds22.54375x107.1x43.05 includes8m
+foundation and cornices. Inspected west/roof/upper/entry third captures and
+corrected fourth entry. These are standalone draft views, not track acceptance.
+Next refine three retail bays per side/Chicago second-floor windows, rounded
+upper engaged columns and southwest chamfered entry before runtime integration.
+No export. Broad building goal remains active; trackside-first direction.

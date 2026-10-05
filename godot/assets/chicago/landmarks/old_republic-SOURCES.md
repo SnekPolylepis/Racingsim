@@ -28,6 +28,9 @@ claiming an exact historical plan. Candidate centre(17.3,8,-254.85),yaw about
 Original simplified capitals/flutes, cartouche and cornice modillions;
 not exact replicas of all historic floral/lion ornament. Entry glazing and
 vestibule depth are physical; full lobby, historic furniture and mechanical
-interiors are outside this exterior model. Draft still needs correct corner
-window groupings, chamfered southwest retail entry, entrance upper-arch
-glazing and detail review before integration. No executable export.
+interiors are outside this exterior model. Fourth draft has paired corner windows and semicircular upper entry glazing.
+Native close review caught opaque core covering recessed doors; lower core now
+has an actual vestibule opening.129,808 triangles/11 materials. Fourth build,
+import and standalone native review exit0, empty stderr. Still needs chamfered
+southwest retail entry, base retail/Chicago-window grouping, round engaged
+upper columns and track placement review. No executable export.
