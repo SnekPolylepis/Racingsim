@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 138
+const CACHE_REVISION = 139
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -1028,6 +1028,23 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		asset, parent, "Michigan323", michigan_323, ChicagoCity.MICHIGAN_323_POSITION
 	)
 	michigan_323_node.rotation.y = ChicagoCity.MICHIGAN_323_YAW
+
+	var chapin_gore = PropMesh.mesh("res://assets/chicago/landmarks/chapin_gore.glb").duplicate()
+	for surface in chapin_gore.get_surface_count():
+		var mat = chapin_gore.surface_get_material(surface)
+		if not mat is StandardMaterial3D:
+			continue
+		mat = mat.duplicate()
+		mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Clear"):
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.albedo_color.a = .18
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		chapin_gore.surface_set_material(surface, mat)
+	var chapin_gore_node = mesh_node(
+		asset, parent, "ChapinGore", chapin_gore, ChicagoCity.CHAPIN_GORE_POSITION
+	)
+	chapin_gore_node.rotation.y = ChicagoCity.CHAPIN_GORE_YAW
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

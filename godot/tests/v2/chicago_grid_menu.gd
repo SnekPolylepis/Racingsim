@@ -167,6 +167,16 @@ func run() -> void:
 			if entry.osm_id == "w144710187" and entry.reason == "authored 323 North Michigan exterior":
 				excluded_michigan_323 += 1
 		check(excluded_michigan_323 == 1, "Mapped 323 North Michigan replaced exactly once")
+		var chapin_gore = app.track.get_node_or_null("Scenery/ChapinGore")
+		check(
+			chapin_gore != null and chapin_gore.mesh.get_surface_count() == 8,
+			"Chapin and Gore exterior beside route"
+		)
+		var excluded_chapin_gore = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w145493033" and entry.reason == "authored Chapin and Gore exterior":
+				excluded_chapin_gore += 1
+		check(excluded_chapin_gore == 1, "Mapped Chapin and Gore replaced exactly once")
 		var london = app.track.get_node_or_null("Scenery/LondonGuarantee")
 		check(
 			london is MeshInstance3D and london.mesh.get_surface_count() == 11,
@@ -337,6 +347,7 @@ func run() -> void:
 		check(
 			app.track.has_node("Scenery/Michigan323"), "Authored 323 North Michigan loads in original Chicago"
 		)
+		check(app.track.has_node("Scenery/ChapinGore"), "Authored Chapin and Gore loads in original Chicago")
 		check(
 			app.track.has_node("Scenery/Michigan333"), "Authored 333 North Michigan loads in original Chicago"
 		)

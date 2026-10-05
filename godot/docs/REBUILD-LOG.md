@@ -5239,3 +5239,19 @@ Second build8,844tri/8mats (PID126860 exit0); import/model review exit0/empty
 stderr (modelPID108404); front/roof inspected. Not integrated: route fit and
 geometry/menu/clipping/day-night checks next. Limits in chapin_gore-SOURCES.md.
 No executable export; preserved generated323unit UID from editor import.
+
+## Chapin & Gore integrated source review — 2026-10-05
+
+Integrated at(-87.5,8,608),Adams-facing yawPI+.026,cache139; mapped
+w145493033 explicitly replaced. Geometry17/menu92/coverage23/parse pass
+(gates/20261004-235823,99s); both clip scans and parse pass
+(gates/20261004-235944,88s), no new failures against111/101 baseline hits.
+Total134checks plus parse. Future six-track package verifiers expect8mats;
+no package/export run. Native finalreviewPID126696 exit0/CITY REVIEW PASS/
+empty stderr. Six street/entry/correctedcorner day-night views inspected;
+original offset corner camera landed inside adjoining scenery and is not
+acceptance evidence. Final frozen13.884ms/53.838M primitives is not a
+controlled driving benchmark. Dimensions/brick joints/sculpture/signs remain
+approximate or incomplete in SOURCES. Trackside work continues; next inspect
+243SouthWabash/Computing and Digital Media Center visibility and references.
+No EXE.

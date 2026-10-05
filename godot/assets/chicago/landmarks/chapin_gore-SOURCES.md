@@ -31,3 +31,15 @@ Recessed separate glazing, physical stiles/rails, opaque interior core,
 real portal openings and deep vestibule backing. Not integrated yet;
 route placement, both clips and runtime day/night acceptance pending.
 No EXE export.
+
+Integrated source review2026-10-05: centre(-87.5,8,608),yawPI+.026,
+cache139; explicitly replaces mappedw145493033 once on both layouts.
+Native geometry17/menu92/coverage23/parse pass in20261004-235823 (99s).
+Original/Grid clip scans and parse pass in20261004-235944 (88s), no new
+failures against111/101 baseline hits. Native game reviewPID126696 exit0,
+CITY REVIEW PASS/empty stderr. Street/entry day-night draft and corrected
+route-camera corner day-night final captures inspected; original offset
+corner camera was inside adjacent scenery and is not acceptance evidence.
+Frozen final13.884ms/53.838M primitives is not controlled drive performance.
+No EXE exported. Detailed brick joints/sculpture/signs and survey dimensions
+remain approximate/incomplete as above; prior draft notes are dated evidence.
