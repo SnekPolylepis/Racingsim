@@ -4956,3 +4956,18 @@ approximations documented in asset SOURCES; no historic exact-replica claim.
 No executable exported. Installed Monroe checkpoint remains the playable build.
 Old Republic is the next direct trackside candidate; broader exterior work,
 scenery placement/lighting/performance and owner audio listening remain open.
+## Old Republic authored draft — 2026-10-04
+
+Started next immediate Michigan frontage, mapped w127107033. Downloaded City
+2010 final designation report from Preservation Chicago into ignored logs;
+extracted description and inspected PDF16/35 (printed14/33) exterior/entry
+photos. Original CC0 Blender draft:121,820 triangles/11 materials, baked
+repeated physical panes/piers, three-story arched entry/recessed vestibule,
+base pilasters, upper colonnade, projecting cornices and setback penthouse.
+First build failed helper signature; corrected actual architecture.py API,
+second PID82708 terminal authored output/Blender quit, empty stderr, handle
+missing. Import command dispatched but .import is not yet present; import
+completion unverified. Draft not integrated or visually accepted.
+Height discrepancy remains:report264ft vs CVU99m/currentmap100.5; documented.
+Next refine corner window grouping, chamfered southwest retail entry and
+arched upper glazing, then native model/actual track review. No EXE exported.
