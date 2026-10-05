@@ -5063,3 +5063,17 @@ upper tower above lower slab and recessed vertical window bands; heights and
 setback floors still need verification. Images reference-only, not downloaded
 or redistributed. Old Republic final clearance runner remains live session69635
 (logs230103); wait for same handle before launching final source GUI review.
+## Old Republic final placement views and scans — 2026-10-04
+
+Final centre(19.1,8,-254.85),yaw.021 clears both source clipping scans:
+20261004-230103 unit24/parse/Originalclip/Gridclip ALL PASS; baseline totals
+111Original/101Grid,no new failures. Final native reviewPID101864exit0,empty
+stderr,CITY REVIEW PASS. Ten actual day/night views inold-republic-game-final
+inspected:street,entry,Michigan/SouthWatercorner,roof and chamfered doorway.
+No visible road/building overlap in those views. Physical projecting cornices,
+separate panes/paired corner windows, broad retail/Chicago panes, round upper
+columns, main vestibule and corner doorway retained. Snapshot12.1557ms/46.08M
+primitives not a controlled route performance benchmark. Final menu83/coverage
+rerun running20261004-230320,session79586,on current placement; collect same
+handle before acceptance/main merge. Previousmenu83passed priorplacement225758.
+No executable exported; installed Monroe playable remains unchanged.
