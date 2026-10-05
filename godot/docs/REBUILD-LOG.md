@@ -4791,3 +4791,34 @@ https://www.architecture.org/online-resources/buildings-of-chicago/333-west-wack
 Next session: inspect reference photos and mapped roof data, author the exterior,
 then review placement/day-night and verify the playable export. Research only
 so far; 333 Wacker is not implemented. Owner requests goal PAUSED overnight.
+
+## 2026-10-04 — RESUME / PROGRESS: trackside buildings and scenery first
+
+Owner resumed work and directed immediate trackside content ahead of distant
+buildings. Current native route_curve samples (5 m, both layouts) yield 242
+mapped footprint-boundary candidates within 50 m. TRACKSIDE-PRIORITY.csv and
+its companion note record metadata and limitations: horizontal proximity is
+not visibility, survey accuracy, renderer inclusion or authored completion.
+Names reuse prior inventory; current mapped heights are not newly verified.
+
+Four native day views reviewed using actual footprint centres. First ignored
+review was stopped after detecting guessed camera target coordinates; corrected
+centres before the final review. Final review terminal PASS, empty stderr,
+process finished; final exit code unavailable. Monroe and Peoples Gas dominate
+immediate car views. 333 Wacker's closest footprint distance (13.3 m) comes
+from the lower deck; its closest street-level camera at (-896.881,9.3,174.61)
+is distant and screened. Prioritize Monroe now, then Peoples Gas, before that
+full skyline exterior. Old Republic is also immediate and remains in this pass.
+
+Monroe original Blender draft: 67,328 triangles / eight material surfaces,
+separate paired panes, terracotta piers/spandrels and pitched roof/dormers.
+First build failed on reused line helper signature; corrected line/arch calls.
+Second build completed, first standalone native review rejected dark gaps
+between panes and tile-clad gable. Third build fills actual stone piers and
+spandrels and separates terracotta gables from tiled slopes. Third Blender,
+import and standalone review exit 0, empty stderr; three views inspected.
+This remains a draft, not an integrated/installed replacement: cast-iron
+entrances, gable fanlights, ornate relief and proper on-track day/night/clip
+review still required. Existing playable London/Wacker executable is untouched.
+Primary owner gallery/restoration references and approximation limits recorded
+in monroe_building-SOURCES.md. No facade photos embedded or redistributed.
