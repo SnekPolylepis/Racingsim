@@ -28,8 +28,11 @@ Mapped w144710192,x[5.9,25.5],z[-365.1,-305.2],currentdata127.5m.
 DraftW18.5m,D59.5m,H120.7m uses verified CVU height rather than mapped height.
 Long slab through level25, smaller north tower before level30; intermediate
 setback levels/sizes approximate from plan/photo references,not exact survey.
-First Blender build145,956triangles/11materials,exit0,empty stderr.
-Model not integrated or visually accepted yet. Native import/review required.
+Second Blender build:145,668 triangles/11 materials,exit0,empty stderr.
+Integrated draft at(16.4,8,-335.15),yaw.021; mapped fit is approximate.
+Native Grid main-game review completed with empty stderr; inspected street,
+entrance, southwest elevation and nighttime crown views. Native geometry23/23 and both route clip scans passed(111/101 existing
+baseline hits,no new failures); no claim of final visual acceptance.
 
 Separate recessed panes/physical jambs, dark spandrels, north chamfered corners,
 solid setback roof terraces, polished granite retail base and independently

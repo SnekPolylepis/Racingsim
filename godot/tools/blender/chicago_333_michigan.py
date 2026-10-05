@@ -67,14 +67,24 @@ for lo_floor,hi_floor,width,depth,centre in tiers:
         for i in range(bays):
             at=(i+.5)*pitch
             world_y=A[1]+dy*at/length
-            entrance=west and lo_floor==0 and abs(world_y-13)<2.1
+            entrance=west and lo_floor==0 and abs(world_y-13)<2.45+pitch/2
             for floor in range(lo_floor,hi_floor):
                 low,high=level(floor),level(floor+1);height=high-low
-                if entrance and floor<2:continue
+                if entrance and floor<2:
+                    # Clip the entire bay against the physical portal interval;
+                    # matching centres alone leaves adjacent glazing in its jambs.
+                    portal=A[1]-13
+                    for left,right in [(at-pitch/2,min(at+pitch/2,portal-2.45)),
+                                       (max(at-pitch/2,portal+2.45),at+pitch/2)]:
+                        if right>left:
+                            box('Granite beside restored entrance',((left+right)/2,0,(low+high)/2),
+                                (right-left,.65,height),granite)
+                    continue
                 pane_width=pitch*.58 if floor>=2 else pitch*.82
                 facing=granite if floor<2 else stone
                 box('Continuous limestone pier',(at-pitch/2,0,(low+high)/2),(pitch-pane_width,.6,height),facing)
-                box('Dark recessed vertical spandrel',(at,.16,low+height*.17),(pane_width,.27,height*.34),facing if floor<2 else band)
+                box('Dark recessed vertical spandrel',(at,.16,low+height*.17),(pane_width,.27,height*.34),
+                    granite if floor==0 else (iron if floor==1 else band))
                 pane=clear if floor<2 else (night if (floor*11+i*7+edge)%23 in [1,5,9] else glass)
                 box('Individual recessed window',(at,.25,low+height*.66),(pane_width-.12,.04,height*.59),pane)
                 box('Double hung meeting rail',(at,.15,low+height*.66),(pane_width,.16,.07),iron)

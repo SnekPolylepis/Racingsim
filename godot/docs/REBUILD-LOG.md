@@ -5107,3 +5107,32 @@ Draft entry overlaps adjacent bay near jamb; refine portal skip/fill and retail
 window grouping, facade/crown proportions before actualtrackintegration.
 Setbackintermediatelevels approximate,not surveyedfloor-elevationclaim.
 No executableexport. Model draft staysbranchonly; OldRepublicmain1abb406.
+## 333 North Michigan entrance and source integration — 2026-10-04
+
+Second authored build removes adjacent retail glazing from the entrance jambs
+by clipping complete bay intervals against the portal, rather than bay centres.
+145,668 triangles,11 materials; integrated centre(16.4,8,-335.15),yaw.021,
+cache137. Actual Grid main-game review completed,CITY REVIEW PASS,empty stderr;
+inspected street,entrance,southwest elevation and nighttime crown images.
+Frozen frame mean22.87034ms/88.715M primitives is a review observation,not a
+controlled driving benchmark. Corner view is southern corner,not north chamfer.
+Added native geometry gate chicago_333_michigan:23/23 PASS,empty stderr,
+logs20261004-231336; proves doorway backing depth,north/south setback height,
+11 physical materials and day/night toggle with no facade photo.
+Route clip/parse runner completed:3/3 PASS,logs20261004-231348,106s;
+Original111/Grid101 existing baseline hits,no new failures; parse clean.
+No EXE generated. Broad building scope active; final placement/visual acceptance
+and remaining integration verifiers still pending.
+
+## Resume and bridge queue — 2026-10-04
+
+Owner resumed building work and requested proper Chicago River bridges later;
+added open CHI-RIVER-BRIDGES task,retaining trackside-building priority.
+Source integration gates20261004-231555:menu86/coverage23/parse all PASS,
+empty stderr,88s. Both future package verifiers include Michigan333; no export.
+
+Final north-corner main-game review PID85404 completed,CITY REVIEW PASS,
+empty stderr; inspected corner-day view,road/fence remain clear there.
+Frozen observation15.94174ms/82.774M primitives,not driving benchmark.
+Captures visual-review/michigan333-game-final; remaining views and next
+trackside candidate selection are the next steps. Source changes saved to branch.

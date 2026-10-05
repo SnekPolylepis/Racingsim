@@ -633,6 +633,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/OldRepublic")
 	if track.has_node("Scenery/OldRepublic"):
 		ok = ok and track.get_node("Scenery/OldRepublic").mesh.get_surface_count() == 11
+	ok = ok and track.has_node("Scenery/Michigan333")
+	if track.has_node("Scenery/Michigan333"):
+		ok = ok and track.get_node("Scenery/Michigan333").mesh.get_surface_count() == 11
 	ok = ok and track.has_node("Scenery/LondonGuarantee")
 	if track.has_node("Scenery/LondonGuarantee"):
 		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11
@@ -685,6 +688,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/OldRepublic")
 	if track.has_node("Scenery/OldRepublic"):
 		ok = ok and track.get_node("Scenery/OldRepublic").mesh.get_surface_count() == 11
+	ok = ok and track.has_node("Scenery/Michigan333")
+	if track.has_node("Scenery/Michigan333"):
+		ok = ok and track.get_node("Scenery/Michigan333").mesh.get_surface_count() == 11
 	ok = ok and track.has_node("Scenery/LondonGuarantee")
 	if track.has_node("Scenery/LondonGuarantee"):
 		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11

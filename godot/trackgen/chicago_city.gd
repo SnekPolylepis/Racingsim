@@ -74,6 +74,8 @@ const PEOPLES_GAS_POSITION = Vector3(-45.2, STREET_Y, 544.15)
 const PEOPLES_GAS_YAW = .022
 const OLD_REPUBLIC_POSITION = Vector3(19.1, STREET_Y, -254.85)
 const OLD_REPUBLIC_YAW = .021
+const MICHIGAN_333_POSITION = Vector3(16.4, STREET_Y, -335.15)
+const MICHIGAN_333_YAW = .021
 const LONDON_POSITION = Vector3(-57.85, STREET_Y, -351.3)
 const WACKER_125_POSITION = Vector3(-998.175, STREET_Y, 564.75)
 const WACKER_125_YAW = .019009
@@ -161,6 +163,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "invalid footprint"
 		elif b.get("o", "") == "w145498713":
 			exclusion = "authored Monroe exterior"
+		elif b.get("o", "") == "w144710192":
+			exclusion = "authored 333 North Michigan exterior"
 		elif b.get("o", "") == "w127107033":
 			exclusion = "authored Old Republic exterior"
 		elif b.get("o", "") == "r15953438":
