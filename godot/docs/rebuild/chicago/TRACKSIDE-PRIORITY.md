@@ -23,3 +23,8 @@ Old Republic (6.6 m) and 333 North Michigan (8.8 m), alongside unnamed immediate
 frontages in the CSV. These are work candidates, not a claim that the rest of the
 trackside inventory is complete. Review actual driving views before choosing
 each exterior. Distant skyline work follows this pass.
+
+Monroe now has an integrated authored exterior: paired recessed panes, real
+gable apertures, roof/dormers and turquoise recessed entrances. Eight actual
+in-game day/night views reviewed; targeted checks pass. Peoples Gas is the next
+immediate frontage. The inventory remains a candidate list, not a completion tally.

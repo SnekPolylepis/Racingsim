@@ -285,3 +285,16 @@ remain open. See REBUILD-LOG for failed intermediate runs and validation limits.
 Packaged six-track/40-engine-bank verifier passes; matching Windows build
 installed with the prior Willis build backed up. Root Play Racing Sim.cmd
 launches it.
+
+## Trackside Monroe exterior checkpoint — 2026-10-04
+
+Monroe replaces mapped w145498713 with original Blender geometry: separate
+paired panes/stone piers, actual round-head gable holes, green tiled pitched
+roof/dormers and recessed turquoise entrances. Eight native day/night views
+in visual-review/monroe-game-first reviewed with no visible overlap there.
+Physical gable/vestibule depth probes pass. Source documentation records
+photo-derived proportions and the unverified east-entrance treatment.
+Final six targeted gates pass: Monroe 26, coverage 23, menu drive 77,
+both rendered clipping scans and clean parse. Full route art/performance and
+owner audio listening remain open. The next immediate frontage is Peoples Gas;
+the owner prioritizes all trackside buildings/scenery before distant skyline.

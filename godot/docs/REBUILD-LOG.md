@@ -4822,3 +4822,41 @@ entrances, gable fanlights, ornate relief and proper on-track day/night/clip
 review still required. Existing playable London/Wacker executable is untouched.
 Primary owner gallery/restoration references and approximation limits recorded
 in monroe_building-SOURCES.md. No facade photos embedded or redistributed.
+
+## DONE CHI-3D-BUILDINGS Monroe checkpoint — 2026-10-04
+
+Owner resumed and prioritizes buildings/scenery immediately beside both tracks.
+Monroe authored exterior now replaces w145498713 once, at (-46.45,8,466.15),
+yaw .02767; cache134 retains visual-only route identities @v4/@v2. Original
+CC0 Blender source, 133,002 triangles, 14 imported surfaces/12 distinct materials;
+native bounds (-27.71,-8,-14.21), size (55.42,82.11891,28.42). Separate paired
+panes, terracotta piers/spandrels, actual Boolean round-head gable apertures,
+dormers and green tiled slopes. Turquoise entry tiles, transparent separate
+doors/fanlights/ironwork and 1.6 m recessed vestibules follow owner gallery.
+East 104 entrance uses the north 77 treatment as an unverified approximation;
+exact height, carved figural relief and Rookwood lobby vault remain unmodeled.
+
+Intermediate reviews rejected dark facade gaps and roof-coloured gables;
+fixed actual piers/spandrels and separate stone gables. Final sixth Blender
+build/import exit0, empty stderr. Native gable probe shows .31055 m recess;
+unit independently checks gable and >1 m vestibule recess. Eight actual-game
+day/night street/entry/Michigan/crown views inspected, no visible overlap in
+those views. Native review terminal PASS, empty stderr, final exit unavailable.
+Its frozen crown mean16.90 ms/47.59M primitives is concurrent-run evidence,
+not a controlled route performance guarantee.
+
+First targeted run 20261004-215940: five gates pass, Monroe fixture fails on
+55.2 m expected envelope versus actual55.42 m. Corrected fixture to55.5 to
+include documented .51 m physical cornice; geometry unchanged. Final run
+20261004-220449: six gates ALL PASS,101s; Monroe26, coverage23, menu/real drive77,
+both rendered clipping scans1 each, parse clean (128 checks plus parse).
+
+Windows export exit0, empty stderr. Packaged checker PID61200 completed with
+V2 EXPORT PASS across six tracks/40 engine banks, peak .352741; empty stderr,
+observer final exit unavailable. Installed matching executable SHA256
+C1C497836909C0509E8BB73F508B877AE43B86655BF4129262E705295F8481BE;
+previous London executable backed up as RacingSim-before-monroe-20261004.exe.
+Normal installed launch PID61616 responsive, empty launch stderr. No GitHub
+binary release created. Broad building goal remains in progress; next Peoples
+Gas direct frontage, then other immediate buildings/props from priority inventory.
+No new full lap matrix or owner-device audio listening claim.

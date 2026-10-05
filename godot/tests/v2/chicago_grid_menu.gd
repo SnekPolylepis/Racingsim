@@ -117,6 +117,16 @@ func run() -> void:
 			if entry.osm_id == "w148544831" and entry.reason == "authored Carbide and Carbon exterior":
 				excluded_carbide += 1
 		check(excluded_carbide == 1, "Mapped Carbide and Carbon block is replaced exactly once")
+		var monroe = app.track.get_node_or_null("Scenery/MonroeBuilding")
+		check(
+			monroe is MeshInstance3D and monroe.mesh.get_surface_count() == 14,
+			"Monroe authored exterior loads beside the route"
+		)
+		var excluded_monroe = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w145498713" and entry.reason == "authored Monroe exterior":
+				excluded_monroe += 1
+		check(excluded_monroe == 1, "Mapped Monroe replaced exactly once")
 		var london = app.track.get_node_or_null("Scenery/LondonGuarantee")
 		check(
 			london is MeshInstance3D and london.mesh.get_surface_count() == 11,
@@ -281,6 +291,7 @@ func run() -> void:
 			"Authored Carbide and Carbon loads in original Chicago"
 		)
 		check(app.track.has_node("Scenery/RelianceBuilding"), "Authored Reliance loads in original Chicago")
+		check(app.track.has_node("Scenery/MonroeBuilding"), "Authored Monroe loads in original Chicago")
 		check(app.track.has_node("Scenery/MonadnockBuilding"), "Authored Monadnock loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker191"), "Authored 191 Wacker loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker155"), "Authored 155 Wacker loads in original Chicago")

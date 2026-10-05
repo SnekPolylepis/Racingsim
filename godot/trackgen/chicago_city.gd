@@ -68,6 +68,8 @@ const RELIANCE_YAW = .0074
 ## Full historic Monadnock block, mapped w73671128.
 const MONADNOCK_POSITION = Vector3(-426.9, STREET_Y, 808.275)
 const MONADNOCK_YAW = .0246
+const MONROE_POSITION = Vector3(-46.45, STREET_Y, 466.15)
+const MONROE_YAW = .02767
 const LONDON_POSITION = Vector3(-57.85, STREET_Y, -351.3)
 const WACKER_125_POSITION = Vector3(-998.175, STREET_Y, 564.75)
 const WACKER_125_YAW = .019009
@@ -153,6 +155,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var exclusion = ""
 		if ring.size() < 3:
 			exclusion = "invalid footprint"
+		elif b.get("o", "") == "w145498713":
+			exclusion = "authored Monroe exterior"
 		elif b.get("o", "") == "w147399567":
 			exclusion = "authored London Guarantee exterior"
 		elif b.get("o", "") == "w147350191":
