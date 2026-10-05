@@ -33,3 +33,11 @@ empty stderr. Front model view inspected. Source integrated draft centre
 approximate footprint centre to clear route and adjoining333 trim; fit is
 approximate. Actual game views and both route clipping scans still pending.
 No EXE. Earlier second-draft description above is historical build evidence.
+
+Integrated source review accepted2026-10-04: all six street/corner/entrance
+day/night captures inspected. Native geometry17/menu89/coverage23 and parse
+pass (gates/20261004-234458); Original/Grid clipping scans and parse pass
+(gates/20261004-234343), no new failures against111/101 baseline hits.
+Geometry tests check actual opaque backing depth through entrance, retail
+and upper pane apertures. No EXE exported; dimensions and details remain
+approximate as recorded above.

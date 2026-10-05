@@ -5199,3 +5199,15 @@ empty stderr. Inspected corner-day,entrance-night,street-day; doorway/windows
 visible behind race fence, no road overlap in these views. Frozen observation
 16.92551ms/41.715M primitives is not controlled driving performance.
 Both clipping scans and remaining views/geometry/menu checks next.
+
+## 323 North Michigan source review accepted — 2026-10-04
+
+All six native game captures inspected: street, corner and entrance, day/night.
+Geometry17/menu89/coverage23 and parse pass in gates/20261004-234458
+(89s); both Original/Grid clipping checks and parse pass in
+gates/20261004-234343 (110s), no new failures against111/101 baseline hits.
+Total131 checks plus parse. Added actual opaque-triangle aperture/recess
+checks and both-route menu replacement checks; future package verifiers
+expect8materials. No executable exported. Approximate dimensions/current
+storefront details remain documented in michigan_323-SOURCES.md.
+Brooks remains deferred for route clearance; inspect Sharp frontage next.

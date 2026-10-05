@@ -29,5 +29,5 @@ gable apertures, roof/dormers and turquoise recessed entrances. Eight actual
 in-game day/night views reviewed; targeted checks pass. Peoples Gas also has
 an integrated authored exterior and reviewed day/night views. Old Republic is
 now integrated and reviewed, with both clipping scans clear after its placement
-correction. 333 North Michigan is integrated with reviewed recessed entrance, real facade windows and stepped north tower; targeted source checks and both clipping scans pass. Brooks Building review confirmed its footprint is excluded for route clearance; retain its references for a later placement pass. Inspect323 North Michigan next,between333 andOldRepublic. The inventory remains a candidate list,
+correction. 333 North Michigan is integrated with reviewed recessed entrance, real facade windows and stepped north tower; targeted source checks and both clipping scans pass. Brooks Building review confirmed its footprint is excluded for route clearance; retain its references for a later placement pass. 323 North Michigan is now integrated and reviewed between333 andOldRepublic; geometry, menu, coverage, both clipping scans and parse pass. Inspect Sharp Building/37 South Wabash next, including actual visibility and route exclusion before authoring. The inventory remains a candidate list,
 not a completion tally.
