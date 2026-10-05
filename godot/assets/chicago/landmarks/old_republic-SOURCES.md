@@ -1,4 +1,4 @@
-# Old Republic / Bell Building: authored exterior draft
+# Old Republic / Bell Building: authored exterior
 
 Original Blender geometry by Codex, CC0. No reference photograph is embedded
 in the mesh or redistributed as a game texture. Authoring source:
@@ -17,35 +17,29 @@ pilasters, single recessed double-hung windows, four-story upper colonnade,
 deep projecting cornice and24th-floor penthouse set back15ft on three faces.
 Report says264ft/80.4672m; current CVU lists99m/24floors:
 https://www.skyscrapercenter.com/chicago/old-republic-building/9589/
-This discrepancy is unresolved, not proof of a surveyed height. Draft top99.1m
+This discrepancy is unresolved, not proof of a surveyed height. Model top99.1m
 uses current CVU height, not a claim that the report's264ft is wrong.
 
 Mapped w127107033: footprint x[6.3,28.3],z[-275.3,-234.4],mappedheight100.5.
-Draft W20.5m EW,D40.5m NS approximates current mapped dimensions rather than
-claiming an exact historical plan. Candidate centre(17.3,8,-254.85),yaw about
-.02rad requires runtime fit review. Model not integrated or visually accepted.
+W20.5m EW,D40.5m NS approximates mapped dimensions rather than an exact
+historical plan. Runtime centre(19.1,8,-254.85),yaw.021: shifted1.8m east
+from initial map-centred draft after road-edge scans caught cornice/column
+intrusion. Final both-route scans pass; fit remains approximate, not surveyed.
+Native bounds22.54375x107.1x43.05 include8m underground foundation/cornices.
 
-Original simplified capitals/flutes, cartouche and cornice modillions;
-not exact replicas of all historic floral/lion ornament. Entry glazing and
-vestibule depth are physical; full lobby, historic furniture and mechanical
-interiors are outside this exterior model. Fourth draft has paired corner windows and semicircular upper entry glazing.
-Native close review caught opaque core covering recessed doors; lower core now
-has an actual vestibule opening.129,808 triangles/11 materials. Fourth build,
-import and standalone native review exit0, empty stderr. Still needs chamfered
-southwest retail entry and track placement/verification. Fifth draft corrects
-three broad retail bays per side, Chicago upper glazing and round engaged
-upper shafts;128,212 triangles/11 materials. Runtime placement is a draft,
-not acceptance evidence. No executable export.
+125,976 triangles/11 material groups. Physical recessed single/paired corner
+panes, three broad retail bays per side of the main entry, divided Chicago
+upper windows, green spandrels, fluted base pilasters and round engaged upper
+columns. Deep cornices/modillions, setback penthouse/mechanical roof. Actual
+rounded main entrance and separate transparent doors/vestibule, semicircular
+upper glazing, physical southwest retail chamfer and recessed corner doors.
+Opaque lower core opens behind both entries; corner backing .840m behind
+face in native depth test. No full-building photographic facade panels.
 
-Eighth asset125,976 triangles/11materials. Physical southwest chamfer and
-recessed separate doors; opaque core cut1.2m farther inward behind vestibule.
-Native depth probe reaches backing .840m inward; 24 unit checks pass.
-Standalone corner review accepted; final source route review/gates pending.
-
-Initial map-centred placement clipped the north approach road-edge scans.
-Runtime centre adjusted east1.2m to(18.5,8,-254.85),yaw.021, to clear
-physical cornices/columns. Approximate map fit; clearance must be rescanned.
-
-First1.2m correction cleared street walls/columns but cornice91.9m still
-projected above road edge. Final draft centre19.1m east:1.8m total adjustment;
-repeat clearance and native placement review before acceptance.
+Original stylized capitals, cartouche and cornice details; exact historic
+floral/lion carving and rope/swags are not replicated. Retail corner cut,
+window proportions, floor elevations and mechanical volumes use photo/report
+approximations. Full lobby, furniture and mechanical interiors are outside
+this exterior model. Dated builds/tests/rendered review evidence is recorded
+in docs/REBUILD-LOG.md, including rejected drafts and placement corrections.
+No per-building executable export; review is from source.

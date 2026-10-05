@@ -315,3 +315,20 @@ approximations documented in asset SOURCES; no historic exact-replica claim.
 No executable exported. Installed Monroe checkpoint remains the playable build.
 Old Republic is the next direct trackside candidate; broader exterior work,
 scenery placement/lighting/performance and owner audio listening remain open.
+## Old Republic authored exterior verified — 2026-10-04
+
+Original Blender exterior integrated on both Chicago routes at(19.1,8,-254.85),
+yaw.021,cache136; mappedw127107033 replaced exactly once. Final model125,976
+triangles/11materialgroups. Main rounded entry and corner chamfer doors have
+actual recessed backing; separate windows/piers, Chicago retail panes, round
+upper colonnade, cornices and setback roof floors retained. Exact figural
+ornament and proportions remain approximations documented in SOURCES.
+Final source checks132plusparse:24building/23coverage/83realmenu-drive/both
+rendered clipping scans. Gates230103/230320 ALL PASS; corrected menu real
+engine peak .480357, automated evidence, not owner device listening acceptance.
+Final nativePID101864exit0,empty stderr; ten day/night captures inspected,
+no visible overlap in those views. Source-reference prose synchronized after
+checks; no geometry/runtime changes after final passing runs. No package or
+EXE exported. Installed Monroe playable unchanged. Next333NorthMichigan and
+unnamed immediate frontage; whole trackside scenery/remaining exteriors,
+lighting/performance and owner audio listening remain open.
