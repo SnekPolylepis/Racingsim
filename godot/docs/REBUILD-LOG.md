@@ -5181,3 +5181,21 @@ exit0,empty stderr. Front/entry/corner/roof captures inspected. Bounds
 25.138x22.5x18.953 including foundation/trim; current facade,ornament and
 route fit remain unverified. Not integrated; no EXE. Generated333 test UID
 preserved from editor import.
+
+## 323 Michigan later facade and integrated draft — 2026-10-04
+
+Current leasing gallery and embedded Street View actually inspected via
+LoopNet listing3966720; capture date unavailable. Low-rise besideOldRepublic
+has tall continuous upper openings/light screens and larger retail windows.
+Revised historical model accordingly:11,520tri/8mats,Blender/import/model
+reviewPID93172 exit0/empty stderr; front view inspected. Source integrated
+centre(17.8,8,-292.3),yaw-pi/2+.021,cache138; approximate east/south fit offset.
+Mappedw144710187 now explicitly replaced. Native game review PID119884 live,
+session65278,logs michigan323-game-draft. Placement/geometry/menu/clip checks
+not yet accepted. No EXE; broad goal active.
+
+323 native integrated draft reviewPID119884 completed,CITY REVIEW PASS,
+empty stderr. Inspected corner-day,entrance-night,street-day; doorway/windows
+visible behind race fence, no road overlap in these views. Frozen observation
+16.92551ms/41.715M primitives is not controlled driving performance.
+Both clipping scans and remaining views/geometry/menu checks next.

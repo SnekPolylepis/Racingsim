@@ -1,4 +1,4 @@
-"""323 Michigan historical exterior draft; primary Shriners photograph.
+"""323 Michigan exterior draft; historical and current listing imagery.
 Dimensions and current facade are unverified. Not integrated into the game.
 """
 import bpy, math, sys
@@ -25,39 +25,34 @@ for side in [-1,1]:
 box('Rear masonry',(0,D/2-.15,H/2),(W,.3,H),brick)
 # Front in local -Y; export becomes Godot +Z. Rotate at placement to Michigan.
 front=-D/2
-for floor in [1,2]:
-    low=5.3+(floor-1)*4.0
-    pitch=W/7
-    for bay in range(7):
-        x=-W/2+(bay+.5)*pitch
-        box('Continuous vertical stone pier',(x-pitch/2,front,low+2),(pitch*.28,.65,4),stone)
-        box('Stone spandrel',(x,front,low+.48),(pitch*.75,.5,.96),stone)
-        box('Inset individual window',(x,front+.26,low+2.35),(pitch*.68,.04,2.75),glass)
-        for dx in [-pitch*.34,0,pitch*.34]:
-            box('Raised sash stile',(x+dx,front+.13,low+2.35),(.055,.12,2.8),metal)
-        for z in [low+.96,low+2.35,low+3.72]:
-            box('Raised sash rail',(x,front+.13,z),(pitch*.7,.12,.055),metal)
-        box('Recessed sill',(x,front-.12,low+.94),(pitch*.76,.35,.12),stone)
+pitch=W/7
+for bay in range(7):
+    x=-W/2+(bay+.5)*pitch
+    box('Continuous tall stone pier',(x-pitch/2,front,9.3),(pitch*.28,.65,8),stone)
+    box('Inset continuous upper glazing',(x,front+.26,9.55),(pitch*.68,.04,7.5),glass)
+    for dx in [-pitch*.34,0,pitch*.34]:
+        box('Raised tall sash stile',(x+dx,front+.13,9.55),(.055,.12,7.6),metal)
+    for z in [5.8,7.7,9.55,11.4,13.3]:
+        box('Separate sash rail',(x,front+.13,z),(pitch*.7,.12,.055),metal)
+    box('Continuous aperture sill',(x,front-.12,5.72),(pitch*.76,.35,.16),stone)
+    if bay in [1,2,3]:
+        # Visible light horizontal screens in listing panorama; simplified slats.
+        for row in range(28):
+            box('Physical light window screen',(x,front+.08,5.95+row*.255),(pitch*.66,.08,.065),stone)
 box('End stone pier',(W/2,front,9.3),(.5,.65,8),stone)
 box('Solid upper frieze',(0,front,13.9),(W+.25,.55,1.2),stone)
 box('Parapet cap',(0,front-.08,14.45),(W+.4,.7,.1),roof)
 # Backing is farther inside than the clear doors; retain a real portal opening.
 for side in [-1,1]:
     left,right=(1.25,W/2) if side>0 else (-W/2,-1.25)
-    panes=sorted([side*W*.22,side*W*.39])
-    box('Base wall below apertures',((left+right)/2,front,.675),(right-left,.7,1.35),dark)
-    box('Base wall above apertures',((left+right)/2,front,3.975),(right-left,.7,2.65),dark)
-    cursor=left
-    for x in panes:
-        if x-.57>cursor:
-            box('Base wall between apertures',((cursor+x-.57)/2,front,2),
-                (x-.57-cursor,.7,1.3),dark)
-        box('Small recessed base pane',(x,front+.22,2.0),(1.05,.04,1.15),glass)
-        for dx in [-.57,.57]:box('Base window surround',(x+dx,front-.12,2),(.1,.2,1.4),stone)
-        for z in [1.35,2.65]:box('Base aperture sill or head',(x,front-.12,z),(1.24,.2,.1),stone)
-        cursor=x+.57
-    if cursor<right:
-        box('Base end wall',((cursor+right)/2,front,2),(right-cursor,.7,1.3),dark)
+    x=side*6.8; half=4.25
+    box('Storefront base',((left+right)/2,front,.35),(right-left,.7,.7),dark)
+    box('Storefront head',((left+right)/2,front,4.75),(right-left,.7,1.1),dark)
+    for low,high in [(left,x-half),(x+half,right)]:
+        if high>low:box('Storefront wall pier',((low+high)/2,front,2.45),(high-low,.7,3.5),dark)
+    box('Recessed retail display glass',(x,front+.22,2.45),(8.5,.04,3.5),clear)
+    for dx in [-4.25,-1.42,1.42,4.25]:
+        box('Physical retail mullion',(x+dx,front+.08,2.45),(.08,.14,3.5),metal)
 box('Entrance head',(0,front,4.7),(2.6,.7,1.2),dark)
 box('Vestibule back',(0,front+2,2.05),(2.5,.15,4.1),back)
 box('Clear separate doors',(0,front+1.1,1.95),(2.35,.04,3.9),clear)

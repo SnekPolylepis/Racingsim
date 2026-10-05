@@ -18,3 +18,18 @@ panes,not opaque walls behind superficial panels. Current facade/height and
 route placement still require verification. Separate panes,sash,sills,recessed doors
 and opaque vestibule backing. Full stone veining,sculptural emblems and
 current storefront signage not replicated. No executable export.
+
+Third draft revision: current listing gallery and embedded Street View inspected
+in browser2026-10-04,including low-rise next to Old Republic. Imagery capture
+date unavailable; do not claim contemporaneous2026 survey.
+https://www.loopnet.com/Listing/307-N-Michigan-Ave-Chicago-IL/3966720/
+Listing also explicitly offers second and third floors at323. Later imagery
+shows continuous tall upper apertures,light horizontal screens in some bays,
+and larger retail glazing. Replaced historical middle spandrel/small base
+windows accordingly. Current storefront signs/veining not replicated.
+Third build11,520triangles/8materials; build/import/model review exit0,
+empty stderr. Front model view inspected. Source integrated draft centre
+(17.8,8,-292.3),yaw-pi/2+.021,cache138. Offset east1.7m/south.9m from
+approximate footprint centre to clear route and adjoining333 trim; fit is
+approximate. Actual game views and both route clipping scans still pending.
+No EXE. Earlier second-draft description above is historical build evidence.
