@@ -26,5 +26,6 @@ each exterior. Distant skyline work follows this pass.
 
 Monroe now has an integrated authored exterior: paired recessed panes, real
 gable apertures, roof/dormers and turquoise recessed entrances. Eight actual
-in-game day/night views reviewed; targeted checks pass. Peoples Gas is the next
-immediate frontage. The inventory remains a candidate list, not a completion tally.
+in-game day/night views reviewed; targeted checks pass. Peoples Gas also has
+an integrated authored exterior and reviewed day/night views. Old Republic is
+the next immediate frontage. The inventory remains a candidate list, not a completion tally.

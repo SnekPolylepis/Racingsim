@@ -1,8 +1,8 @@
-# Peoples Gas — authored exterior work in progress
+# Peoples Gas — authored exterior
 
-Original Blender geometry intended as CC0, canonical source
+Original Blender geometry released as CC0, canonical source
 tools/blender/chicago_peoples_gas.py. No facade photographs or downloaded model
-embedded. Draft is not yet integrated or installed.
+embedded. Runtime replaces mapped r15953438 once.
 
 References inspected 2026-10-04:
 - https://www.skyscrapercenter.com/building/peoples-gas-building/26977 :
@@ -29,17 +29,18 @@ References inspected 2026-10-04:
   alternate with carved circular medallions; corrected earlier all-oculus draft.
   Contractor confirms ornamental lions at the top. Photograph not redistributed.
 
-Mapped r15953438, x[-71.8,-18.6], z[513.3,575.0]. Draft W51.0 EW/D60.0 NS,
-H92 above street, underground foundation8 m. Intended centre(-45.2,8,544.15),
-yaw .022 rad; remains to verify against actual driving views and footprint.
-Draft native asset:254,256 triangles /10 authored material groups. Model build
-and import exit0, empty stderr; third standalone native review exit0, empty
-stderr, east/roof/entry views inspected. Actual trackside day/night review
-still required. Imported bounds(-25.98,-8,-30.375), size(52.21,100,61.105).
-Box geometry is
+Mapped r15953438, x[-71.8,-18.6], z[513.3,575.0]. W51.0 EW/D60.0 NS,
+H92 above street, underground foundation8 m. Centre(-45.2,8,544.15),
+yaw .022 rad. Native asset304,480 triangles /10 authored material groups.
+Sixth model build exit0, empty stderr; solid terracotta frieze behind roof reliefs. Physical panes, open central
+and north light courts, Ionic columns, bronze doors/vestibules, oval corner
+portals and original stylized medallion/roof-lion reliefs. Box geometry is
 batched by material before creating scene objects, preserving individual geometry.
 Plan court dimensions converted from feet; roof outline/light-court positioning,
 story elevations and decorative proportions are approximations. North party
-wall and smaller shared light court are modeled; exact notch dimensions, bronze
-entry replicas and figural lion reliefs still require refinement. Draft upper parapet follows present restrained
+wall and smaller shared light court are modeled. Main Michigan entry spans two
+adjacent bay portals; centre entry is separate. Corner oval treatment extends
+the photographed southeast detail to other corners as an approximation.
+Exact notch dimensions, bronze ironwork and figural lion carving are not
+replicas. Upper parapet follows present restrained
 outline rather than reconstructing the removed historic overhanging cornice.

@@ -4,7 +4,7 @@ Blender +Y north, +Z up. Dimensions fitted to mapped r15953438.
 import bpy, math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from architecture import material, mesh, arch, text, finish
+from architecture import material, mesh, arch, line, text, finish
 OUT = Path(sys.argv[sys.argv.index('--')+1]).resolve()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 stone = material('Pale weathered terracotta masonry', (.61,.59,.53), roughness=.86)
@@ -19,6 +19,7 @@ roof = material('Dark roof and courtyard floor', (.17,.18,.17), roughness=.95)
 clear = material('Clear bronze entrance glazing', (.25,.30,.29), roughness=.5)
 clear.diffuse_color = (.25,.30,.29,.18)
 W,D,H = 51.0,60.0,92.0
+MICHIGAN_ENTRIES = [(D/2-D/13*1.5,3.65),(D/2-D/13*2.5,3.65),(0,3.0)]
 boxes = {}
 
 def box(name, p, size, mat):
@@ -136,23 +137,46 @@ def facade(width,p,angle,bays,public=True):
     # Street colonnade with open glazing behind round Ionic granite shafts.
     for n in range(bays):
         x = -width/2+(n+.5)*pitch
-        spans=[(x-pitch/2+.25,x+pitch/2-.25)]
-        entries=[D/2-D/13*2,0] if p[0] == W/2 else []
-        for entry in entries:
-            trimmed=[]
-            for left,right in spans:
-                if left < entry-1.55:trimmed.append((left,min(right,entry-1.55)))
-                if right > entry+1.55:trimmed.append((max(left,entry+1.55),right))
-            spans=trimmed
-        for left,right in spans:
-            if right>left:box('Recessed street glazing',((left+right)/2,.50,3.0),(right-left,.055,5.6),glass)
-        box('Upper storefront glazing',(x,.50,7.4),(pitch-.5,.055,3.1),glass)
-        for z in [1.1,3.9,7.5,9.0]:
-            if z>6 or not entries:
-                box('Bronze storefront transom',(x,.40,z),(pitch-.4,.16,.1),bronze)
-            else:
+        if public and n in [0,bays-1]:
+            # Street corner portals: a real oval aperture above a stone doorway.
+            for side in [-1,1]:
+                box('Corner portal stone jamb',(x+side*(pitch+1.8)/4,.12,2.65),((pitch-1.8)/2,.76,5.3),granite)
+            box('Recessed corner portal glass',(x,.32,2.2),(1.8,.04,4.3),clear)
+            for z in [.18,4.42,5.18]:box('Corner portal carved lintel',(x,-.22,z),(2.18,.46,.22),trim)
+            verts=[]
+            for j in range(40):
+                a=j*2*math.pi/40
+                c,s=math.cos(a),math.sin(a)
+                edge=min(pitch/2/max(abs(c),.00001),2.65/max(abs(s),.00001))
+                for y in [-.26,.52]:
+                    verts.extend([(x+.64*c,y,7.85+1.24*s),(x+edge*c,y,7.85+edge*s)])
+            faces=[]
+            for j in range(40):
+                a,b=j*4,((j+1)%40)*4
+                faces.extend([(a,b,b+1,a+1),(a+2,a+3,b+3,b+2),(a,a+2,b+2,b),(a+1,b+1,b+3,a+3)])
+            mesh('Granite portal panel with actual oval aperture',verts,faces,granite)
+            verts=[(x,.24,7.85)]+[(x+.63*math.cos(j*2*math.pi/40),.24,7.85+1.23*math.sin(j*2*math.pi/40)) for j in range(41)]
+            mesh('Recessed oval corner pane',verts,[tuple(range(len(verts)))],glass)
+            line_points=[(x+.75*math.cos(j*2*math.pi/40),-.40,7.85+1.36*math.sin(j*2*math.pi/40)) for j in range(41)]
+            line('Carved oval portal surround',line_points,.10,trim)
+        else:
+            spans=[(x-pitch/2+.25,x+pitch/2-.25)]
+            entries=MICHIGAN_ENTRIES if p[0] == W/2 else []
+            for entry,entry_width in entries:
+                trimmed=[]
                 for left,right in spans:
-                    if right>left:box('Bronze storefront transom',((left+right)/2,.40,z),(right-left,.16,.1),bronze)
+                    if left < entry-entry_width/2:trimmed.append((left,min(right,entry-entry_width/2)))
+                    if right > entry+entry_width/2:trimmed.append((max(left,entry+entry_width/2),right))
+                spans=trimmed
+            for left,right in spans:
+                if right>left:box('Recessed street glazing',((left+right)/2,.50,3.0),(right-left,.055,5.6),glass)
+            box('Upper storefront glazing',(x,.50,7.4),(pitch-.5,.055,3.1),glass)
+            for z in [1.1,3.9,7.5,9.0]:
+                if z>6 or not entries:
+                    box('Bronze storefront transom',(x,.40,z),(pitch-.4,.16,.1),bronze)
+                else:
+                    for left,right in spans:
+                        if right>left:box('Bronze storefront transom',((left+right)/2,.40,z),(right-left,.16,.1),bronze)
         if public:
             # Restoration photo: rectangular base windows alternate with
             # circular carved medallions on the piers, not an all-oculus row.
@@ -191,7 +215,19 @@ def facade(width,p,angle,bays,public=True):
             box('Upper carved capital',(x,-.32,87.75),(.9,.76,.46),trim)
             for edge in [-1,1]:
                 arch('Upper Ionic volute',.075,.17,(x+edge*.27,87.7),-.65,.22,trim,end=2*math.pi,segments=12)
+            # Original low-relief lion masks evoke the preserved roof ornament.
+            # Exact individual sculptural carving is not replicated.
+            for dx,dz,sx,sy,sz in [(0,0,.34,.19,.42),(-.23,.27,.12,.13,.12),(.23,.27,.12,.13,.12),(0,-.12,.23,.23,.15),(0,.03,.13,.22,.12)]:
+                bpy.ops.mesh.primitive_uv_sphere_add(segments=12,ring_count=6,radius=1,location=(x+dx,-.47,90.75+dz))
+                lion=bpy.context.object;lion.name='Physical carved roof lion mask';lion.scale=(sx,sy,sz);lion.data.materials.append(trim)
+            for j in range(14):
+                a=j*2*math.pi/14
+                bpy.ops.mesh.primitive_uv_sphere_add(segments=8,ring_count=4,radius=1,location=(x+.47*math.cos(a),-.39,90.75+.53*math.sin(a)))
+                mane=bpy.context.object;mane.name='Carved lion mane lobes';mane.scale=(.13,.12,.16);mane.data.materials.append(trim)
+            for side in [-1,1]:
+                box('Lion recessed eye',(x+side*.13,-.65,90.85),(.09,.045,.055),dark)
     # Present-day restrained parapet, not the removed historic giant cornice.
+    box('Solid terracotta lion frieze',(0,.015,90.9),(width,.49,2.2),stone)
     for z,height,depth in [(10.6,.42,.82),(14.7,.35,.74),(72.9,.4,.74),(89.6,.5,.9),(91.55,.9,.68)]:
         box('Continuous carved stone band',(0,-.03,z),(width+.12,depth,height),trim)
     orient(set(bpy.context.scene.objects)-before,p,angle)
@@ -206,17 +242,20 @@ box('North base party wall',(0,D/2-.16,7.25),(W,.36,14.5),stone)
 facade(14,(0,D/2-4.5),math.pi,5,False)
 
 # Bronze Michigan entries have separate transparent doors and physical recesses.
-for at in [D/2-D/13*2,0]:
+for at,entry_width in MICHIGAN_ENTRIES:
     flush()
     before=set(bpy.context.scene.objects)
     for side in [-1,1]:
-        box('Bronze entry jamb',(at+side*1.51,.22,3.0),(.13,.18,5.7),bronze)
-    box('Bronze entry lintel',(at,.22,5.78),(3.15,.18,.18),bronze)
+        box('Bronze entry jamb',(at+side*entry_width/2,.22,3.0),(.13,.18,5.7),bronze)
+    box('Bronze entry lintel',(at,.22,5.78),(entry_width+.15,.18,.18),bronze)
+    door_w=entry_width/2-.16
     for side in [-1,1]:
-        box('Separate clear entrance door',(at+side*.70,-.02,2.4),(1.28,.04,4.1),clear)
-        box('Door stile',(at+side*1.40,-.07,2.4),(.09,.12,4.2),bronze)
+        box('Separate clear entrance door',(at+side*(entry_width/4-.03),-.02,2.4),(door_w,.04,4.1),clear)
+        box('Door stile',(at+side*(entry_width/2-.08),-.07,2.4),(.09,.12,4.2),bronze)
         box('Physical bronze handle',(at+side*.18,-.18,2.2),(.055,.19,.6),bronze)
     box('Entry centre mullion',(at,-.07,2.4),(.08,.12,4.2),bronze)
+    box('Entry recessed vestibule rear',(at,1.6,3.0),(entry_width,.12,6),granite)
+    box('Entry recessed vestibule floor',(at,.8,.08),(entry_width,1.6,.16),granite)
     text('Raised entrance lettering','122 SOUTH MICHIGAN',(at,-.18,5.3),.19,bronze,depth=.012)
     orient(set(bpy.context.scene.objects)-before,(W/2,0),math.pi/2)
 flush()

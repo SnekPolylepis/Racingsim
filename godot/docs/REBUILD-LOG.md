@@ -4922,3 +4922,37 @@ holes. Unit24/parse pass (20261004-222859). Final source-native review started
 PID77952; inspect current handle/output and final views before proceeding.
 No Peoples Gas executable exported. Next continue source visual review and
 targeted menu/clip verification under the revised owner workflow.
+
+## Peoples Gas final roof geometry — 2026-10-04
+
+Continued trackside-first source work after generated-build cleanup. Sixth
+Blender build exit0, empty stderr:304,480 triangles/10 materials. Added solid
+terracotta frieze behind stylized roof lion reliefs. Source import exit0.
+Final geometry unit26 checks pass, including physical projecting upper-column
+and roof-mask depth rays. Six targeted source gates running in
+ tests/logs/gates/20261004-223805; observe the existing runner rather than
+restarting it. Prior fifth-asset six gates passed (129 checks plus parse),
+and eight actual day/night views were inspected. Sixth geometry still needs
+its final rendered review before declaring this exterior integrated/verified.
+No executable exported; current playable and fixed backup retained.
+Final sixth-asset targeted gates ALL PASS:26 Peoples Gas,23 authored coverage,
+80 menu-drive checks,both clipping scans,clean parse (131 checks plus parse).
+Logs tests/logs/gates/20261004-223805. Final native rendered review started PID31740,
+output tests/logs/peoples-game-sixth.out/.err; verify same process and images.
+
+## Peoples Gas source exterior verified — 2026-10-04
+
+Sixth model integrated at mapped r15953438, centre(-45.2,8,544.15),yaw.022;
+generic footprint excluded once on both routes.304,480 triangles/10 materials.
+Final six targeted gates ALL PASS in20261004-223805:26 physical/material/depth
+checks,23 coverage,80 real menu-drive,Original/Grid clipping scans and parse.
+Eight final in-game day/night views inspected: street columns, entrance,
+Michigan/Adams corner and open roof courts; no visible overlap in those views.
+Native review PID31740 terminal PEOPLES CITY REVIEW PASS, empty stderr, process
+missing; final exit unavailable. Bounds52.21x100x61.105 include8m foundation.
+Frozen frame snapshot13.65685ms/33,867,407 primitives is not a controlled route
+performance benchmark. Photo-derived ornaments/entrance details remain
+approximations documented in asset SOURCES; no historic exact-replica claim.
+No executable exported. Installed Monroe checkpoint remains the playable build.
+Old Republic is the next direct trackside candidate; broader exterior work,
+scenery placement/lighting/performance and owner audio listening remain open.

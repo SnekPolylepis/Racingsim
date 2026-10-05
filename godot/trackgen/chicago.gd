@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 134
+const CACHE_REVISION = 135
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -943,6 +943,25 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		monroe.surface_set_material(surface, mat)
 	var monroe_node = mesh_node(asset, parent, "MonroeBuilding", monroe, ChicagoCity.MONROE_POSITION)
 	monroe_node.rotation.y = ChicagoCity.MONROE_YAW
+	var peoples = PropMesh.mesh("res://assets/chicago/landmarks/peoples_gas.glb").duplicate()
+	for surface in peoples.get_surface_count():
+		var mat = peoples.surface_get_material(surface)
+		if not mat is StandardMaterial3D:
+			continue
+		mat = mat.duplicate()
+		mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Night"):
+			mat.set_meta("chicago_night", true)
+			mat.emission = Color(.65, .48, .25)
+			mat.emission_energy_multiplier = .3
+			mat.emission_enabled = false
+		elif mat.resource_name.begins_with("Clear"):
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.albedo_color.a = .18
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		peoples.surface_set_material(surface, mat)
+	var peoples_node = mesh_node(asset, parent, "PeoplesGas", peoples, ChicagoCity.PEOPLES_GAS_POSITION)
+	peoples_node.rotation.y = ChicagoCity.PEOPLES_GAS_YAW
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

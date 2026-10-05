@@ -70,6 +70,8 @@ const MONADNOCK_POSITION = Vector3(-426.9, STREET_Y, 808.275)
 const MONADNOCK_YAW = .0246
 const MONROE_POSITION = Vector3(-46.45, STREET_Y, 466.15)
 const MONROE_YAW = .02767
+const PEOPLES_GAS_POSITION = Vector3(-45.2, STREET_Y, 544.15)
+const PEOPLES_GAS_YAW = .022
 const LONDON_POSITION = Vector3(-57.85, STREET_Y, -351.3)
 const WACKER_125_POSITION = Vector3(-998.175, STREET_Y, 564.75)
 const WACKER_125_YAW = .019009
@@ -157,6 +159,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "invalid footprint"
 		elif b.get("o", "") == "w145498713":
 			exclusion = "authored Monroe exterior"
+		elif b.get("o", "") == "r15953438":
+			exclusion = "authored Peoples Gas exterior"
 		elif b.get("o", "") == "w147399567":
 			exclusion = "authored London Guarantee exterior"
 		elif b.get("o", "") == "w147350191":

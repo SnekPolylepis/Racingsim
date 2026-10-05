@@ -298,3 +298,20 @@ Final six targeted gates pass: Monroe 26, coverage 23, menu drive 77,
 both rendered clipping scans and clean parse. Full route art/performance and
 owner audio listening remain open. The next immediate frontage is Peoples Gas;
 the owner prioritizes all trackside buildings/scenery before distant skyline.
+
+## Peoples Gas source exterior verified — 2026-10-04
+
+Sixth model integrated at mapped r15953438, centre(-45.2,8,544.15),yaw.022;
+generic footprint excluded once on both routes.304,480 triangles/10 materials.
+Final six targeted gates ALL PASS in20261004-223805:26 physical/material/depth
+checks,23 coverage,80 real menu-drive,Original/Grid clipping scans and parse.
+Eight final in-game day/night views inspected: street columns, entrance,
+Michigan/Adams corner and open roof courts; no visible overlap in those views.
+Native review PID31740 terminal PEOPLES CITY REVIEW PASS, empty stderr, process
+missing; final exit unavailable. Bounds52.21x100x61.105 include8m foundation.
+Frozen frame snapshot13.65685ms/33,867,407 primitives is not a controlled route
+performance benchmark. Photo-derived ornaments/entrance details remain
+approximations documented in asset SOURCES; no historic exact-replica claim.
+No executable exported. Installed Monroe checkpoint remains the playable build.
+Old Republic is the next direct trackside candidate; broader exterior work,
+scenery placement/lighting/performance and owner audio listening remain open.
