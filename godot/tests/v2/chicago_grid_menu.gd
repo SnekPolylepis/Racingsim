@@ -137,6 +137,16 @@ func run() -> void:
 			if entry.osm_id == "r15953438" and entry.reason == "authored Peoples Gas exterior":
 				excluded_peoples += 1
 		check(excluded_peoples == 1, "Mapped Peoples Gas replaced exactly once")
+		var old_republic = app.track.get_node_or_null("Scenery/OldRepublic")
+		check(
+			old_republic != null and old_republic.mesh.get_surface_count() == 11,
+			"Old Republic exterior beside route"
+		)
+		var excluded_old_republic = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w127107033" and entry.reason == "authored Old Republic exterior":
+				excluded_old_republic += 1
+		check(excluded_old_republic == 1, "Mapped Old Republic replaced exactly once")
 		var london = app.track.get_node_or_null("Scenery/LondonGuarantee")
 		check(
 			london is MeshInstance3D and london.mesh.get_surface_count() == 11,
@@ -303,6 +313,7 @@ func run() -> void:
 		check(app.track.has_node("Scenery/RelianceBuilding"), "Authored Reliance loads in original Chicago")
 		check(app.track.has_node("Scenery/MonroeBuilding"), "Authored Monroe loads in original Chicago")
 		check(app.track.has_node("Scenery/PeoplesGas"), "Authored Peoples Gas loads in original Chicago")
+		check(app.track.has_node("Scenery/OldRepublic"), "Authored Old Republic loads in original Chicago")
 		check(app.track.has_node("Scenery/MonadnockBuilding"), "Authored Monadnock loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker191"), "Authored 191 Wacker loads in original Chicago")
 		check(app.track.has_node("Scenery/Wacker155"), "Authored 155 Wacker loads in original Chicago")

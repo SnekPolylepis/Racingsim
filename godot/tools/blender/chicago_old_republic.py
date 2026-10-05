@@ -190,6 +190,13 @@ cutter.location=(-W/2-offset/math.sqrt(2),-D/2-offset/math.sqrt(2),2.65)
 cutter.rotation_euler.z=-math.pi/4
 for obj in list(bpy.context.scene.objects):
     if obj==cutter or obj.type!='MESH':continue
+    # The facade chamfer alone leaves an opaque Boolean cap across the doors.
+    # Open the backing farther inward, behind the separate vestibule back wall.
+    cutter.location=(-W/2-offset/math.sqrt(2),-D/2-offset/math.sqrt(2),2.65)
+    if obj.data.materials and obj.data.materials[0]==dark:
+        cutter.location.x+=1.2/math.sqrt(2)
+        cutter.location.y+=1.2/math.sqrt(2)
+    bpy.context.view_layer.update()
     bpy.context.view_layer.objects.active=obj
     modifier=obj.modifiers.new('Actual southwest retail chamfer','BOOLEAN')
     modifier.operation='DIFFERENCE'

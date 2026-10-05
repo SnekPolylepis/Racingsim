@@ -36,3 +36,16 @@ southwest retail entry and track placement/verification. Fifth draft corrects
 three broad retail bays per side, Chicago upper glazing and round engaged
 upper shafts;128,212 triangles/11 materials. Runtime placement is a draft,
 not acceptance evidence. No executable export.
+
+Eighth asset125,976 triangles/11materials. Physical southwest chamfer and
+recessed separate doors; opaque core cut1.2m farther inward behind vestibule.
+Native depth probe reaches backing .840m inward; 24 unit checks pass.
+Standalone corner review accepted; final source route review/gates pending.
+
+Initial map-centred placement clipped the north approach road-edge scans.
+Runtime centre adjusted east1.2m to(18.5,8,-254.85),yaw.021, to clear
+physical cornices/columns. Approximate map fit; clearance must be rescanned.
+
+First1.2m correction cleared street walls/columns but cornice91.9m still
+projected above road edge. Final draft centre19.1m east:1.8m total adjustment;
+repeat clearance and native placement review before acceptance.

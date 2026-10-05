@@ -5010,3 +5010,56 @@ location, seventhbuildPID92264exit0,125,961tri/11mats. Import/native review
 exit0,empty stderr. Corrected corner/central entry captures inspected; lower
 frontage restored. Corner door still dark: inspect opaque core cap/recess before
 acceptance. No unit/menu/clip final acceptance yet. No executable export.
+## Old Republic corner backing and unit verification — 2026-10-04
+
+Eighth buildPID93572exit0,125,976tri/11mats; source importexit0. Opened dark
+opaque core1.2m farther behind facade chamfer, so separate corner doors are
+visible and vestibule remains physical. Native standalone reviewexit0; corrected
+corner image inspected. Unit24checks pass, pane/pier depth .595m, main vestibule
+>2m; corner backing .840m inward. First corner probe hit centre door stile;
+moved ray .6m into glazing panel, preserving expected backing-depth assertion.
+Added route/menu exclusion/Original-node checks and six-track verifier coverage
+(no package export). Six source gates running20261004-225644 session59923.
+Caught new menu metadata typo excluded_buildings (actual field excluded), fixed
+source while initial runner live; let existing suite terminate then rerun menu
+if first process loaded old script. No restart based on observation timeout.
+Final source-native day/night review and gates still required before main merge.
+No executable exported. Broader buildings and trackside goal remains active.
+## Old Republic source scans caught clearance — 2026-10-04
+
+20261004-225644 unit24/coverage23/parse pass; both source clipping scans fail
+with four OldRepublic hits each at north approach,including wallstation7890
+(Original)/8530(Grid),x6.5,z-275.4. Initial menu process failed metadata typo,
+corrected and separate rerun20261004-225758 running session97770. No passing
+claim for failed initial set. Shifted approximate mapped runtime centre east
+1.2m to(18.5,8,-254.85), preserving geometry, yaw and road width. Needs new
+unit/Original/Grid scans plus final native views on this new placement.
+## Next trackside reference: 333 North Michigan — 2026-10-04
+
+Mappedw144710192,x[5.9,25.5],z[-365.1,-305.2],height127.5 unverified.
+Priority CSV8.8mOriginalstation7860; next to Old Republic north approach.
+Primary city landmark page lanId1234 says1928,Holabird&Roche/Root; black/purple
+polished granite base,buff limestone/dark terracotta upper setback tower.
+Owner333michigan.com says1929 (date conflict recorded,not reconciled).
+Owner offers floor plans including current15th full floor image at
+https://333michigan.com/wp-content/themes/333Theme/images/fps/2024/15ff.jpg
+City photos available via phoId7175(Wacker) and7176(Michigan grade).
+Links discovered/text read; photos/plans still need actual visual inspection.
+No model authored yet; verify height/setback levels and route camera first.
+## Old Republic remaining cornice clearance — 2026-10-04
+
+Corrected menu83/parse pass20261004-225758. First adjusted scan set225902:
+unit24/parse pass,Original1/Grid2remaining hits alluppercornice worldY99.9
+(91.9m above street),no street-wall hit. Further east.6m:centre(19.1,8,-254.85),
+yaw.021; total1.8m offset from map-centred draft. Repeat gates and final native
+views needed, mapped fit remains approximate (not survey claim).
+## 333 North Michigan visual reference inspected — 2026-10-04
+
+In browser inspected city Wacker elevation(photo7175) and owner15th-floor
+full floor plan image2133x1423. Long narrow slab with chamfered Wacker-end
+corners; plan labels Upper East Wacker at north end and North Michigan along
+west long face. Not an open courtyard ring. City photo shows stepped narrow
+upper tower above lower slab and recessed vertical window bands; heights and
+setback floors still need verification. Images reference-only, not downloaded
+or redistributed. Old Republic final clearance runner remains live session69635
+(logs230103); wait for same handle before launching final source GUI review.
