@@ -5094,3 +5094,16 @@ checks; no geometry/runtime changes after final passing runs. No package or
 EXE exported. Installed Monroe playable unchanged. Next333NorthMichigan and
 unnamed immediate frontage; whole trackside scenery/remaining exteriors,
 lighting/performance and owner audio listening remain open.
+## 333 North Michigan original model draft — 2026-10-04
+
+Inspected architect Goettsch three-page project PDFpage1exteriors/page2restored
+bronze/granite entry. Owner floor25/30plans inspected in browser:25nearlyfull
+slab,30smalltower; corrected planned massing accordingly. CVU120.7m/34floors
+vsarchitect35recorded. Original CC0 Blender authored slab25/tower3tiers,
+chamferednorthcorners,recessedpanes/darkspandrels,bronzeentrygrille/oval/lamps.
+FirstbuildPID87572exit0,145,956tri/11mats; nativeimport/reviewexit0emptyerr.
+Bounds19.75613x128.7x60.61618incl8mfoundation; roof/entry/westcaptures inspected.
+Draft entry overlaps adjacent bay near jamb; refine portal skip/fill and retail
+window grouping, facade/crown proportions before actualtrackintegration.
+Setbackintermediatelevels approximate,not surveyedfloor-elevationclaim.
+No executableexport. Model draft staysbranchonly; OldRepublicmain1abb406.
