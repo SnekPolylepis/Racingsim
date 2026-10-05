@@ -8,8 +8,13 @@ recessed doorway. Historical image is reference only,not redistributed.
 Current facade and exact dimensions remain unverified; photo does not justify
 the mapped97.5m height. Current map w144710187 is excluded for route clearance.
 
-Initial standalone draft only,not integrated or visually accepted. Approximate
-dimensions18.5x24.4x14.5m; frontage orientation/width need correction to mapped
-Michigan frontage before placement. Separate panes,sash,sills,recessed doors
+Second standalone draft,not integrated into the game. Approximate dimensions
+24.4m frontage by18.5m depth by14.5m height. Local front exports Godot+Z;
+Michigan placement needs yaw around-pi/2. Bounds25.138x22.5x18.953 including
+8m foundation and projecting trim. Blender11,412 triangles/8 materials; build
+and native import/review exit0,empty stderr. Four model views inspected:
+front,entry,corner,roof. Ground windows have actual apertures and recessed
+panes,not opaque walls behind superficial panels. Current facade/height and
+route placement still require verification. Separate panes,sash,sills,recessed doors
 and opaque vestibule backing. Full stone veining,sculptural emblems and
 current storefront signage not replicated. No executable export.

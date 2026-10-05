@@ -16,7 +16,7 @@ clear.diffuse_color=(.25,.3,.32,.18)
 back=material('Opaque interior backing',(.05,.05,.045),roughness=.95)
 brick=material('Plain side and rear masonry',(.35,.29,.23),roughness=.95)
 roof=material('Flat roof and parapet cap',(.28,.28,.26),roughness=.95)
-W,D,H=18.5,24.4,14.5 # Approximate frontage fit; height is not surveyed.
+W,D,H=24.4,18.5,14.5 # Approximate frontage fit; height is not surveyed.
 box('Foundation',(0,0,-4),(W,D,8),dark)
 box('Upper interior',(0,.6,9.9),(W-1,D-1.2,9.2),back)
 box('Ground interior behind vestibule',(0,1.0,2.65),(W-1,D-3,5.3),back)
@@ -43,10 +43,21 @@ box('Solid upper frieze',(0,front,13.9),(W+.25,.55,1.2),stone)
 box('Parapet cap',(0,front-.08,14.45),(W+.4,.7,.1),roof)
 # Backing is farther inside than the clear doors; retain a real portal opening.
 for side in [-1,1]:
-    box('Ground flank',(side*5.25,front,2.65),(8,.7,5.3),dark)
-    for x in [side*4.1,side*7.0]:
-        box('Small base inset pane',(x,front-.36,2.0),(1.05,.04,1.15),glass)
-        for dx in [-.57,.57]:box('Base window surround',(x+dx,front-.42,2),(.1,.15,1.4),stone)
+    left,right=(1.25,W/2) if side>0 else (-W/2,-1.25)
+    panes=sorted([side*W*.22,side*W*.39])
+    box('Base wall below apertures',((left+right)/2,front,.675),(right-left,.7,1.35),dark)
+    box('Base wall above apertures',((left+right)/2,front,3.975),(right-left,.7,2.65),dark)
+    cursor=left
+    for x in panes:
+        if x-.57>cursor:
+            box('Base wall between apertures',((cursor+x-.57)/2,front,2),
+                (x-.57-cursor,.7,1.3),dark)
+        box('Small recessed base pane',(x,front+.22,2.0),(1.05,.04,1.15),glass)
+        for dx in [-.57,.57]:box('Base window surround',(x+dx,front-.12,2),(.1,.2,1.4),stone)
+        for z in [1.35,2.65]:box('Base aperture sill or head',(x,front-.12,z),(1.24,.2,.1),stone)
+        cursor=x+.57
+    if cursor<right:
+        box('Base end wall',((cursor+right)/2,front,2),(right-cursor,.7,1.3),dark)
 box('Entrance head',(0,front,4.7),(2.6,.7,1.2),dark)
 box('Vestibule back',(0,front+2,2.05),(2.5,.15,4.1),back)
 box('Clear separate doors',(0,front+1.1,1.95),(2.35,.04,3.9),clear)

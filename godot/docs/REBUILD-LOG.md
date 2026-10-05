@@ -5170,3 +5170,14 @@ Mapped97.5m conflicts with low-rise reference; current facade still unverified.
 Authored separate standalone Blender draft,PID81660 exit0/empty stderr.
 Not integrated; correct mapped frontage orientation/width and inspect native
 model before placement. References/limits in michigan_323-SOURCES.md. No EXE.
+
+## 323 Michigan draft width and real base apertures — 2026-10-04
+
+Corrected frontage width24.4m/depth18.5m for later Michigan-facing rotation,
+height14.5m approximate. Replaced solid walls behind base panes with strips
+around actual apertures; glass now recessed behind stone surrounds.
+Second Blender11,412tri/8materials exit0; native import/review PID119356
+exit0,empty stderr. Front/entry/corner/roof captures inspected. Bounds
+25.138x22.5x18.953 including foundation/trim; current facade,ornament and
+route fit remain unverified. Not integrated; no EXE. Generated333 test UID
+preserved from editor import.
