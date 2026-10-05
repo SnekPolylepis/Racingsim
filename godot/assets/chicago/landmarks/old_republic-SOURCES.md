@@ -32,5 +32,7 @@ interiors are outside this exterior model. Fourth draft has paired corner window
 Native close review caught opaque core covering recessed doors; lower core now
 has an actual vestibule opening.129,808 triangles/11 materials. Fourth build,
 import and standalone native review exit0, empty stderr. Still needs chamfered
-southwest retail entry, base retail/Chicago-window grouping, round engaged
-upper columns and track placement review. No executable export.
+southwest retail entry and track placement/verification. Fifth draft corrects
+three broad retail bays per side, Chicago upper glazing and round engaged
+upper shafts;128,212 triangles/11 materials. Runtime placement is a draft,
+not acceptance evidence. No executable export.

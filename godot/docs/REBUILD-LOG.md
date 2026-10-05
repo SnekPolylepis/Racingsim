@@ -4984,3 +4984,16 @@ corrected fourth entry. These are standalone draft views, not track acceptance.
 Next refine three retail bays per side/Chicago second-floor windows, rounded
 upper engaged columns and southwest chamfered entry before runtime integration.
 No export. Broad building goal remains active; trackside-first direction.
+## Old Republic retail/colonnade and source placement draft — 2026-10-04
+
+Replaced narrow repeated Michigan retail openings with three broad retail bays
+per side of central entry, divided Chicago-style second-floor panes/dark green
+spandrels and wider fluted base pilasters. Upper engaged shafts are now round
+16-sided geometry instead of rectangular base-pilaster reuse. Fifth Blender
+PID91924exit0,empty stderr,128,212tri/11materials; importPID83608exit0.
+Runtime draft placed(17.3,8,-254.85),yaw.021,cache136; mappedw127107033 generic
+exterior excluded. Corrected copied mesh filename before native launch.
+Actual source Grid day/night review startedPID91996, observation session30709;
+logs old-republic-game-first.out/.err, images old-republic-game-first.
+Observe same process/output. Still draft: runtime review/checks unfinished,
+southwest chamfered retail corner not yet authored. No EXE export.

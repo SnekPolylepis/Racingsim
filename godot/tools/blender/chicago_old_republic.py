@@ -43,6 +43,12 @@ def orient(before,p,angle):
         obj.location=(p[0]+x*c-y*s,p[1]+x*s+y*c,z)
         obj.rotation_euler.z+=angle
 
+def column(name,x,y,lo,hi,radius):
+    vertices=[(x+radius*math.cos(i*math.pi/8),y+radius*math.sin(i*math.pi/8),z)
+              for z in [lo,hi] for i in range(16)]
+    mesh(name,vertices,[tuple(reversed(range(16))),tuple(range(16,32))]+
+         [(i,(i+1)%16,(i+1)%16+16,i+16) for i in range(16)],trim)
+
 box('Mapped underground foundation',(0,0,-4),(W,D,8),granite)
 box('Inset opaque upper tower core',(0,0,52.6),(W-1.6,D-1.6,78.8),dark)
 # Keep the west vestibule physically open through the opaque lower core.
@@ -60,6 +66,7 @@ def facade(width,bays,p,angle,rear=False):
     before=set(bpy.context.scene.objects)
     pitch=width/bays
     facing=brick if rear else stone
+    west=not rear and width==D and angle==-math.pi/2
     for i in range(bays):
         at=-width/2+(i+.5)*pitch
         # Central west entry occupies three levels; glazing has a real void.
@@ -67,6 +74,7 @@ def facade(width,bays,p,angle,rear=False):
         for floor in range(23):
             lo,hi=(0,5.3) if floor==0 else (5.3+(floor-1)*3.91,5.3+floor*3.91)
             h=hi-lo; pane_w=pitch*.55
+            if west and floor<2:continue
             if entrance and floor<3:continue
             if floor==0:
                 pane_w=pitch*.82
@@ -85,17 +93,46 @@ def facade(width,bays,p,angle,rear=False):
             box('Projecting stone sill',(at,-.25,lo+h*.36),(pane_w+.24,.55,.14),trim)
         if not rear:
             for lo,hi in [(1.22,13.05),(76,90.9)]:
+                if west and lo<2:continue
                 x=at-pitch/2
-                box('Engaged pilaster shaft',(x,-.43,(lo+hi)/2),(.42,.44,hi-lo),trim)
+                if lo>70:
+                    column('Round engaged Corinthian upper shaft',x,-.28,lo,hi,.29)
+                else:box('Engaged pilaster shaft',(x,-.43,(lo+hi)/2),(.42,.44,hi-lo),trim)
                 # Physical fluting, stylized acanthus capitals and scrolls.
-                for flute in [-.12,0,.12]:
-                    box('Fluted pilaster ribs',(x+flute,-.7,(lo+hi)/2),(.04,.08,hi-lo-.4),stone)
+                if lo<70:
+                    for flute in [-.12,0,.12]:
+                        box('Fluted pilaster ribs',(x+flute,-.7,(lo+hi)/2),(.04,.08,hi-lo-.4),stone)
                 box('Corinthian abacus',(x,-.43,hi),(.88,.72,.22),trim)
                 for side in [-1,1]:
                     arch('Corinthian scroll',.07,.15,(x+side*.23,hi-.28),-.78,.12,trim,segments=10,start=0,end=2*math.pi)
                 for leaf in [-.24,0,.24]:
                     box('Acanthus capital leaves',(x+leaf,-.58,hi-.48),(.16,.28,.48),trim)
     box('End pier',(width/2,0,46),(.65,.65,92),facing)
+    if west:
+        # Three broad retail bays on either side, with Chicago-style upper panes.
+        retail_pitch=(width/2-2.05)/3
+        for side in [-1,1]:
+            for i in range(3):
+                at=side*(2.05+(i+.5)*retail_pitch)
+                pane_width=retail_pitch-.95
+                box('Granite retail plinth',(at,-.05,.6),(retail_pitch,.75,1.2),granite)
+                box('Recessed broad retail glazing',(at,.29,3.1),(pane_width,.04,3.8),glass)
+                box('Dark green retail spandrel',(at,0,5.0),(pane_width,.65,.65),green)
+                box('Chicago central upper pane',(at,.29,7.2),(pane_width*.56,.04,3.2),glass)
+                for small in [-1,1]:
+                    cx=at+small*pane_width*.39
+                    box('Chicago flanking sash pane',(cx,.29,7.2),(pane_width*.2,.04,3.2),glass)
+                    box('Chicago narrow sash rail',(cx,.17,7.2),(pane_width*.2,.15,.07),bronze)
+                for mullion in [-.28,.28]:
+                    box('Chicago pane divider',(at+mullion*pane_width,.17,7.2),(.08,.16,3.3),bronze)
+                box('Retail head',(at,0,8.95),(retail_pitch,.65,.5),stone)
+                for edge in [-1,1]:
+                    x=at+edge*retail_pitch/2
+                    box('Retail full height pier',(x,0,6.6),(.8,.7,13.2),stone)
+                    box('Retail Corinthian pilaster',(x,-.48,6.6),(.5,.4,11.8),trim)
+                    for flute in [-.14,0,.14]:box('Retail pilaster flute',(x+flute,-.72,6.6),(.04,.08,11.5),stone)
+                    box('Retail Corinthian abacus',(x,-.45,12.9),(.95,.8,.25),trim)
+                    for scroll in [-1,1]:arch('Retail capital scroll',.07,.17,(x+scroll*.25,12.58),-.85,.12,trim,start=0,end=2*math.pi,segments=10)
     if not rear:
         for z,depth,height in [(1.0,.75,.42),(13.3,.85,.45),(17.1,1.35,.5),(75.8,.95,.3),(91.5,1.7,.7),(92.15,2.05,.4)]:
             box('Projecting classical cornice',(0,-.25,z),(width+1.0,depth,height),trim)
