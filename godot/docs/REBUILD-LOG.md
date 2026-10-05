@@ -4860,3 +4860,37 @@ Normal installed launch PID61616 responsive, empty launch stderr. No GitHub
 binary release created. Broad building goal remains in progress; next Peoples
 Gas direct frontage, then other immediate buildings/props from priority inventory.
 No new full lap matrix or owner-device audio listening claim.
+
+## PROGRESS CHI-3D-BUILDINGS Peoples Gas draft — 2026-10-04
+
+Previous goal turn made authoritative progress: Monroe integrated, verified,
+installed and pushed to main76ab546. Continued immediate trackside-first scope
+with mapped r15953438 Peoples Gas. Original Blender exterior draft: paired
+recessed panes, smooth corner piers, granite Ionic street colonnade, physical
+upper engaged columns, actual central court enlarged above floor16, smaller
+north shared light-court notch and party wall. Primary historic typical floor
+plan and original photographer/restoration contractor images inspected in
+browser; source notes record dimensions, floor-count conflict and approximations.
+CVU current92 m used versus mapped93 m. No photos/models redistributed.
+
+First Blender PID39352 remained live with >130s CPU while source refinements
+superseded its geometry. Stopped that exact authored-build process explicitly,
+not because an observation expired. Batched boxes by material before object
+creation; second build exit0 in ~3s. First native standalone review exit0,
+empty stderr, five views inspected; mistakenly uniform oculus row rejected
+after native-size restoration photo shows rectangular base windows alternating
+with circular reliefs. Corrected that geometry and advanced previously buried
+upper columns. Third Blender/import/review exit0, empty stderr. Native
+254,256 triangles/10 surfaces; bounds(-25.98,-8,-30.375), size(52.21,100,61.105).
+Third east/roof/entry views inspected; open court and inset north notch visible.
+Inherited north-entry camera points at an unmodeled party-wall entrance and is
+not entry acceptance evidence. Draft clear panes need runtime transparency;
+standalone default importer appearance is not proof of vestibule transparency.
+
+Draft remains branch-only, not integrated or installed. Still refine actual
+bronze entrances (main two-bay entry), carved top lions, corner oval portal and
+base/corner proportions; verify actual trackside origin/yaw/clearance and
+day/night views, then targeted integration checks/package/install. Installed
+Monroe executable C1C497...F8481BE is unchanged. Broad goal remains active.
+TheChicagoLoop reference site certificate expired; did not bypass. Its error
+tab3 could not be closed through the bound browser API; temporary tab unmarked.
