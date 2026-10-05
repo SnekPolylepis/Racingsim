@@ -4997,3 +4997,16 @@ Actual source Grid day/night review startedPID91996, observation session30709;
 logs old-republic-game-first.out/.err, images old-republic-game-first.
 Observe same process/output. Still draft: runtime review/checks unfinished,
 southwest chamfered retail corner not yet authored. No EXE export.
+## Old Republic southwest chamfer draft — 2026-10-04
+
+First actual Grid reviewPID91996 completed CITY REVIEW PASS,empty stderr,
+process missing(final exit unavailable). Inspected four day views; closest
+street camera(-.02561,9.3,-252.9132). No visible road/building intersection
+in those views. Snapshot17.415ms/36.58Mprim not controlled route performance.
+Added physical southwest retail chamfer and separate corner door geometry.
+Sixth standalone preview rejected: cutter rotated baked off-origin centre and
+removed too much lower frontage. Fixed cutter to local-zero mesh with explicit
+location, seventhbuildPID92264exit0,125,961tri/11mats. Import/native review
+exit0,empty stderr. Corrected corner/central entry captures inspected; lower
+frontage restored. Corner door still dark: inspect opaque core cap/recess before
+acceptance. No unit/menu/clip final acceptance yet. No executable export.

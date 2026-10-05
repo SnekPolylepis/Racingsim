@@ -180,4 +180,31 @@ box('Penthouse flat roof',(2.28,0,96.6),(W-4.2,D-8.9,.25),roof)
 box('Mechanical penthouse',(4.3,3,97.8),(7.6,9,2.4),brick)
 box('Mechanical roof',(4.3,3,99.05),(7.9,9.3,.1),roof)
 flush()
+
+# 1975 southwest corner alteration: cut the lower exterior diagonally, then
+# place the separate retail doors on that recessed face. No texture illusion.
+cut_distance=2.35
+offset=50-cut_distance/math.sqrt(2)
+cutter=baked_box('Temporary southwest chamfer cutter',(0,0,0),(100,100,5.3),dark)
+cutter.location=(-W/2-offset/math.sqrt(2),-D/2-offset/math.sqrt(2),2.65)
+cutter.rotation_euler.z=-math.pi/4
+for obj in list(bpy.context.scene.objects):
+    if obj==cutter or obj.type!='MESH':continue
+    bpy.context.view_layer.objects.active=obj
+    modifier=obj.modifiers.new('Actual southwest retail chamfer','BOOLEAN')
+    modifier.operation='DIFFERENCE'
+    modifier.solver='EXACT'
+    modifier.object=cutter
+    bpy.ops.object.modifier_apply(modifier=modifier.name)
+bpy.data.objects.remove(cutter,do_unlink=True)
+before=set(bpy.context.scene.objects)
+chamfer_width=cut_distance*math.sqrt(2)
+box('Recessed southwest corner doors',(0,.32,2.1),(chamfer_width-.28,.04,3.8),clear)
+for x in [-(chamfer_width-.18)/2,0,(chamfer_width-.18)/2]:
+    box('Corner retail door stiles',(x,.2,2.1),(.08,.15,4),bronze)
+box('Corner retail transom',(0,.2,4.2),(chamfer_width,.15,.09),bronze)
+box('Corner entry back wall',(0,.9,2.5),(chamfer_width,.12,5),dark)
+box('Corner entry head',(0,0,4.85),(chamfer_width,.65,.9),stone)
+box('Corner threshold',(0,.4,.12),(chamfer_width,1.2,.24),granite)
+orient(before,(-W/2+cut_distance/2,-D/2+cut_distance/2),-math.pi/4)
 finish('old_republic',OUT)
