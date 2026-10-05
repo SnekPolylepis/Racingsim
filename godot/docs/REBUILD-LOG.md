@@ -5211,3 +5211,18 @@ checks and both-route menu replacement checks; future package verifiers
 expect8materials. No executable exported. Approximate dimensions/current
 storefront details remain documented in michigan_323-SOURCES.md.
 Brooks remains deferred for route clearance; inspect Sharp frontage next.
+
+## Sharp candidate visibility review — 2026-10-04
+
+Owner/restoration photos inspected; floor counts/dates conflict and remain
+documented in chicago/SHARP-REFERENCE.md. Native Grid reviewPID102152
+completed with CITY REVIEW PASS/empty stderr; metadata confirms Sharp
+excluded for authored route clearance. Daylight street/corner/entry views
+show surrounding skyline or neighboring geometry, not Sharp frontage.
+Deferred modeling pending legitimate placement. Chapin & Gore next native
+visibility reviewPID28348 completed, CITY REVIEW PASS/empty stderr.
+Mapped w145493033 is absent from the Grid exclusion list; nearest camera
+(-60.44034,9.3,584.9839). Day street/corner captures inspected; the offset
+corner camera shows neighboring walls and is not frontage acceptance.
+Inspect the north-facing Adams frontage and primary HABS drawings next.
+No executable export.
