@@ -5136,3 +5136,14 @@ empty stderr; inspected corner-day view,road/fence remain clear there.
 Frozen observation15.94174ms/82.774M primitives,not driving benchmark.
 Captures visual-review/michigan333-game-final; remaining views and next
 trackside candidate selection are the next steps. Source changes saved to branch.
+
+## 333 North Michigan source views completed; Brooks candidate — 2026-10-04
+
+All ten final day/night views inspected. No road/fence intersection in those
+views; both clipping scans pass. Six targeted source gates:134 checks plus
+parse across logs231336,231348,231555. Model proportions remain approximate.
+Next candidate Brooks w73766157:centre(-861.3,769.8),mapped height57m
+unverified. Boundary-distance0.4m does not prove visibility or clearance.
+City primary https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?lanId=1255
+records1909-1910,Holabird & Roche,orange-brown/green terracotta and large
+windows. Need native before views,photos and verified dimensions.

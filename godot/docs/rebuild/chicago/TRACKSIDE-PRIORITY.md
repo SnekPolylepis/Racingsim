@@ -29,5 +29,5 @@ gable apertures, roof/dormers and turquoise recessed entrances. Eight actual
 in-game day/night views reviewed; targeted checks pass. Peoples Gas also has
 an integrated authored exterior and reviewed day/night views. Old Republic is
 now integrated and reviewed, with both clipping scans clear after its placement
-correction. 333 North Michigan is next. The inventory remains a candidate list,
+correction. 333 North Michigan is integrated with reviewed recessed entrance, real facade windows and stepped north tower; targeted source checks and both clipping scans pass. Brooks Building is the next candidate under route-view review. The inventory remains a candidate list,
 not a completion tally.
