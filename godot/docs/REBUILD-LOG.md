@@ -5147,3 +5147,16 @@ unverified. Boundary-distance0.4m does not prove visibility or clearance.
 City primary https://webapps1.chicago.gov/landmarksweb/web/landmarkdetails.htm?lanId=1255
 records1909-1910,Holabird & Roche,orange-brown/green terracotta and large
 windows. Need native before views,photos and verified dimensions.
+
+Brooks initial native review PID84956 exit0/empty stderr. Street sampler
+incorrectly filtered road heights below7.5m,put camera133m away; removed
+that inherited filter before next review. Corner-day capture inspected: actual
+frontage visibly generic,with large near-road retaining/street structures.
+333 verified source and bridge queue pushed main6e256c3; current EXE unchanged.
+
+Brooks candidate review PID111068 exit0,empty stderr confirms city.excluded
+reason authored route clearance forw73766157 andw73763986,w74268219,w64391366.
+Brooks is deferred pending legitimate placement/route-fit decision; no model
+added over a driving corridor. Owner brochure photo actually inspected and
+references retained in chicago/BROOKS-REFERENCE.md. Next inspect323 North
+Michigan w144710187,between333 andOldRepublic,not distant skyline.
