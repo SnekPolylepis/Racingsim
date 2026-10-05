@@ -5160,3 +5160,13 @@ Brooks is deferred pending legitimate placement/route-fit decision; no model
 added over a driving corridor. Owner brochure photo actually inspected and
 references retained in chicago/BROOKS-REFERENCE.md. Next inspect323 North
 Michigan w144710187,between333 andOldRepublic,not distant skyline.
+
+## 323 Michigan historical model draft — 2026-10-04
+
+Native before review PID111020 exit0/empty stderr; mappedw144710187 excluded
+for route clearance. Shriners primary historical photo actually inspected:
+three floors,seven upper bays,pale stone/dark base,recessed doorway.
+Mapped97.5m conflicts with low-rise reference; current facade still unverified.
+Authored separate standalone Blender draft,PID81660 exit0/empty stderr.
+Not integrated; correct mapped frontage orientation/width and inspect native
+model before placement. References/limits in michigan_323-SOURCES.md. No EXE.
