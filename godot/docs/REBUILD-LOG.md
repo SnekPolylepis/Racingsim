@@ -5359,3 +5359,14 @@ primary north and carved-window photographs inspected; distinctive chamfer,
 Italianate surrounds, arched top openings and bracketed cornice identified.
 WASHINGTON-BLOCK-REFERENCE.md records footprint, evidence and remaining Wells
 photo inspection. No model or EXE generated yet. Next author this exterior.
+
+
+DRAFT CHI-3D Washington Block 2026-10-05
+City Wells photograph actually inspected; repeated arched top windows and
+fire escape partially visible behind elevated tracks. Blender draft31868tri,
+six materials, mapped chamfer, separate panes/surrounds and cornice.
+Import and standalone review completed DRAFT REVIEW PASS/empty stderr;
+front/corner images actually inspected. Top spandrel buried arch heads:
+moved cap and lowered top panes, regenerated successfully. Corrected model
+needs fresh review; triple top chamfer aperture, relief, fire escape and
+storefront recesses remain unfinished. Not installed; no EXE export.
