@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 140
+const CACHE_REVISION = 142
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -1060,6 +1060,14 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		depaul_cdm.surface_set_material(surface, mat)
 	var depaul_cdm_node = mesh_node(asset, parent, "DePaulCDM", depaul_cdm, ChicagoCity.DEPAUL_CDM_POSITION)
 	depaul_cdm_node.rotation.y = ChicagoCity.DEPAUL_CDM_YAW
+
+	var iam_temple = PropMesh.mesh("res://assets/chicago/landmarks/iam_temple.glb").duplicate()
+	for surface in iam_temple.get_surface_count():
+		var mat = iam_temple.surface_get_material(surface).duplicate()
+		mat.metallic_specular = .12
+		iam_temple.surface_set_material(surface, mat)
+	var iam_node = mesh_node(asset, parent, "IAMTemple", iam_temple, Vector3(-742.7, 8, 147.3))
+	iam_node.rotation.y = .004
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

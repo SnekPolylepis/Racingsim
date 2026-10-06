@@ -169,6 +169,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "invalid footprint"
 		elif b.get("o", "") == "w145498713":
 			exclusion = "authored Monroe exterior"
+		elif b.get("o", "") == "w147096409":
+			exclusion = "authored I AM Temple exterior"
 		elif b.get("o", "") == "w35601477":
 			exclusion = "authored DePaul CDM exterior"
 		elif b.get("o", "") == "w145493033":

@@ -177,6 +177,7 @@ func run() -> void:
 			if entry.osm_id == "w145493033" and entry.reason == "authored Chapin and Gore exterior":
 				excluded_chapin_gore += 1
 		check(excluded_chapin_gore == 1, "Mapped Chapin and Gore replaced exactly once")
+		check(app.track.has_node("Scenery/IAMTemple"), "I AM Temple loads in Grid")
 		var depaul_cdm = app.track.get_node_or_null("Scenery/DePaulCDM")
 		check(
 			depaul_cdm != null and depaul_cdm.mesh.get_surface_count() == 8,
@@ -358,6 +359,7 @@ func run() -> void:
 			app.track.has_node("Scenery/Michigan323"), "Authored 323 North Michigan loads in original Chicago"
 		)
 		check(app.track.has_node("Scenery/ChapinGore"), "Authored Chapin and Gore loads in original Chicago")
+		check(app.track.has_node("Scenery/IAMTemple"), "I AM Temple loads in Original")
 		check(app.track.has_node("Scenery/DePaulCDM"), "Authored DePaul CDM loads in original Chicago")
 		check(
 			app.track.has_node("Scenery/Michigan333"), "Authored 333 North Michigan loads in original Chicago"

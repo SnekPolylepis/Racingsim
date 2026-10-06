@@ -5285,3 +5285,21 @@ Preserved generated test UID. Approximate height39m vs unverified mapped58m,
 ornament and roof equipment limits remain in SOURCES. Broader trackside work
 continues; next inspect Washington Street immediate frontage candidates.
 No executable export.
+
+## I AM Temple source integration — 2026-10-05
+
+Washington inspection defers208/212WestWashington: both excluded for route
+clearance; owner/CVU references retained in WASHINGTON-REFERENCE.md.
+I AM Temple w147096409 replaced exactly once, centre(-742.7,8,147.3),yaw.004,
+cache142. Original CC0 geometry15,548tri/7mats; physical window surrounds,
+curved balcony rails, tall lower sashes and inset entrance. Height56m is
+photo-proportion estimate, mapped66m unverified; source counts conflict12/15
+stories. Owner lower-front and photographer2011 upper-front photos inspected.
+Geometry11 checks cover actual-triangle pane/door depth and absence of photos.
+Initial visual review exposed open gaps in lower bands; filled and reimported.
+Final native reviewPID41408 completed, CITY REVIEW PASS/empty stderr, four
+street/entrance day/night views inspected. Frozen12.034ms/33.396M primitives
+not controlled drive benchmark. Final geometry11/menu97/coverage23/parse pass in gates/20261005-210949
+(86s); finite-hit geometry rerun211113 passes11. Both clipping scans/parse pass in211013 (74s), no new failures against
+111/101 baseline hits. Total133 checks plus parse.
+No EXE export; remaining trackside work and owner audio listening stay open.
