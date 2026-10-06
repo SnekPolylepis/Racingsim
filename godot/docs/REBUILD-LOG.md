@@ -5415,3 +5415,14 @@ NEXT-FRONTAGES.md. Borg-Warner selected next; CVU83.5m architectural/89m tip/
 22floors verified against mapped91m unverified. Photographer curtain-wall detail
 actually seen: physical mullions/blue spandrels/transoms; ground/roof not shown.
 Next inspect full-height/entry before authoring. No EXE export.
+
+
+DRAFT CHI-3D Borg-Warner 2026-10-05
+Owner building gallery/full-height thumbnail and entrance photograph actually
+visually inspected. Authored north/east blue spandrels, separate recessed panes,
+projecting aluminum mullions/transoms, black ground piers, double-height retail
+and inset central Michigan entry. CVU83.5m architectural height; tip equipment
+unverified and omitted. Module counts estimated to mapped51.7x31.5m footprint.
+Blender completed56628tri/six materials, empty stderr. Not imported/reviewed
+or installed yet; next standalone source review and both-route integration.
+No EXE export.
