@@ -5405,3 +5405,13 @@ bays and rusticated ground retail identified. Native Grid PID35264 completed
 CITY REVIEW PASS/empty stderr; mapped w147095680 explicitly route-clearance
 excluded. Day/night street images actually inspected; defer installation and
 retain WASHINGTON-FRANKLIN-REFERENCE.md. No model or EXE generated.
+
+
+REFERENCE CHI-3D next rendered frontages 2026-10-05
+Batched native Grid PID77424 completed CANDIDATE REVIEW PASS/empty stderr;
+Borg-Warner/Mallers/HyattPlace/CityHall remain in mapped scenery. Four actual
+night-mode inherited street views inspected, camera positions/references in
+NEXT-FRONTAGES.md. Borg-Warner selected next; CVU83.5m architectural/89m tip/
+22floors verified against mapped91m unverified. Photographer curtain-wall detail
+actually seen: physical mullions/blue spandrels/transoms; ground/roof not shown.
+Next inspect full-height/entry before authoring. No EXE export.
