@@ -5303,3 +5303,25 @@ not controlled drive benchmark. Final geometry11/menu97/coverage23/parse pass in
 (86s); finite-hit geometry rerun211113 passes11. Both clipping scans/parse pass in211013 (74s), no new failures against
 111/101 baseline hits. Total133 checks plus parse.
 No EXE export; remaining trackside work and owner audio listening stay open.
+
+## Equitable Building source integration — 2026-10-05
+
+180WestWashington/w147096410 replaced exactly once, centre(-755.4,8,148.5),
+yaw.013/cache143. Primary owner and photographerVisviva2020south photos
+actually inspected: paired sides/triple-centre panes, dark bank frontage,
+spiral column ribs and curved crown. Original CC0 authored geometry46,480tri/
+7materials; physical recesses, surrounds, relief tablets, spiral ribs, crown
+arches/medallion frame and inset entrance. Tip50.62m photo-proportion estimate
+vs unverified mapped53m; exact figural carving/Medusa portrait omitted.
+Geometry11/menu99/coverage23/parse pass in gates/20261005-211555 (86s).
+Both clip scans/parse pass in211613 (97s), no new failures against111/101
+baseline hits. Total135checks plus parse. Native street/entrance day/night
+reviewPID61600 completed CITY REVIEW PASS/empty stderr; four views inspected.
+Frozen13.979ms/41.230M primitives not controlled drive performance.
+Additional crown-camera iterations initially reused old aerial preset,
+then east approach was occluded by Temple; those are not crown acceptance
+evidence. West approachPID62844 also completed but adjacent masonry screened the crown;
+not acceptance evidence. Crown shape inspected in standalone front model view,
+not fully visible in these close road views. No EXE export.
+Next inspect170/166WestWashington low-rise frontages: Visviva2020photo
+actually inspected;170fourstories conflicts with unverified mapped66m.
