@@ -5350,3 +5350,12 @@ Gates20261005-212526: menu99/coverage23/parse ALL PASS (85s).
 Gates20261005-212603: geometry20/both clip scans ALL PASS (72s), Grid101hits;
 no new failures against existing clip baselines. Total144checks plus parse.
 No EXE export. Continue remaining trackside buildings; river bridge task queued.
+
+
+REFERENCE CHI-3D Washington Block 2026-10-05
+Native Grid PID64844 completed CITY REVIEW PASS/empty stderr; actual street
+views day/night inspected, mapped w147013784 not excluded and visible. City
+primary north and carved-window photographs inspected; distinctive chamfer,
+Italianate surrounds, arched top openings and bracketed cornice identified.
+WASHINGTON-BLOCK-REFERENCE.md records footprint, evidence and remaining Wells
+photo inspection. No model or EXE generated yet. Next author this exterior.
