@@ -5426,3 +5426,22 @@ unverified and omitted. Module counts estimated to mapped51.7x31.5m footprint.
 Blender completed56628tri/six materials, empty stderr. Not imported/reviewed
 or installed yet; next standalone source review and both-route integration.
 No EXE export.
+
+
+DONE CHI-3D Borg-Warner 2026-10-05
+Standalone corner/entry images actually inspected; initial interior backing
+hid inset doors. Corrected core setback and entry pier, regenerated/imported,
+corrected standalone entry inspected; ray check verifies inset doors.
+Installed(-43.75,8,610.9)/yaw.022/cache146; w124873918 shell explicitly excluded.
+Original CC0 geometry56616tri/six materials,83.5m architectural height; omitted
+unverified tip equipment/plain unverified rear/south, estimated module counts.
+Native GridPID69008 completed CITY REVIEW PASS/empty stderr, north facade and
+base four day/night images inspected; these are not main-entry evidence.
+Native OriginalPID85832 completed CITY REVIEW PASS/empty stderr, east facade
+and main-entry four day/night images actually inspected from(0,9.3,610).
+Frozen Grid6.001ms/29.185M and Original14.038ms/41.753M not controlled benchmarks.
+Gates20261005-214433 geometry10/menu101/coverage23/parse ALL PASS (88s).
+Gates20261005-214449 both clip scans ALL PASS (99s),111/101 existing baseline
+hits, no new failures. Total136checks plus parse. No EXE export.
+Next rendered frontage candidates: Mallers, Hyatt Place and City Hall; source
+priority remains all trackside buildings before distant skyline.

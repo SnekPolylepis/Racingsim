@@ -13,7 +13,7 @@ back=material('Opaque recessed interior',(.035,.045,.05),roughness=1)
 roof=material('Roof and unsurveyed rear masonry',(.34,.35,.33),roughness=.95)
 W,D,H=51.7,31.5,83.5
 box('Foundation',(0,0,-4),(W,D,8),roof)
-box('Inset opaque interior',(0,0,41),(W-1.4,D-1.4,82),back)
+box('Inset opaque interior',(0,0,41),(W-4.0,D-4.0,82),back)
 box('Roof slab',(0,0,83.2),(W,D,.6),roof)
 # Photo shows repeated narrow modules; exact bay widths are footprint-fit estimates.
 for side,length,origin,angle,cols in [('north',W,(0,D/2,0),math.pi,40),('east',D,(W/2,0,0),math.pi/2,24)]:
@@ -30,7 +30,9 @@ for side,length,origin,angle,cols in [('north',W,(0,D/2,0),math.pi,40),('east',D
    x=(col-(cols-1)/2)*pitch
    part('Physically recessed glazing',x,bottom+2.45,pitch-.08,2.62,.28,.035,glass)
    part('Narrow operable transom rail',x,bottom+step-.40,pitch-.06,.045,.12,.12,metal)
- for col in range(0,cols+1,4):part('Black structural base pier',-length/2+col*pitch,3.5,.48,7,-.03,.75,black)
+ for col in range(0,cols+1,4):
+  x=-length/2+col*pitch
+  if side!='east' or abs(x)>3.3:part('Black structural base pier',x,3.5,.48,7,-.03,.75,black)
  for z in [.25,3.15,6.85]:part('Ground aluminum fascia',0,z,length,.20,-.08,.6,metal)
  for col in range(cols):
   x=(col-(cols-1)/2)*pitch
@@ -45,7 +47,7 @@ for side,length,origin,angle,cols in [('north',W,(0,D/2,0),math.pi,40),('east',D
    part('Door handle',x+.45,1.65,.055,.5,.94,.10,metal)
   # Text is actual raised geometry; preserve its local transform before placing the face.
   label=text('Raised entrance address','200 SOUTH MICHIGAN',(0,-.78,3.3),.38,metal)
-  label.location=(W/2+.78,0,3.3);label.rotation_euler.z=math.pi/2
+  label.location=(W/2+1.10,0,3.3);label.rotation_euler.z=math.pi/2
 for x in [-W/2+.15]:box('Unsurveyed rear wall',(x,0,41.5),(.3,D,83),roof)
 box('Unsurveyed south wall',(0,-D/2+.15,41.5),(W,.3,83),roof)
 # ponytail: measured curtain-wall profiles/roof equipment unavailable; replace estimated modules when surveyed.

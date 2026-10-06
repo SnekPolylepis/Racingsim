@@ -1,4 +1,4 @@
-# Borg-Warner/200 South Michigan — authored draft
+# Borg-Warner/200 South Michigan — authored exterior
 Original CC0 Blender geometry; no external photo textures included.
 Primary CVU measurements:83.5m architectural/89m tip/22floors/1958:
 https://www.skyscrapercenter.com/building/borg-warner-building/18617
@@ -13,5 +13,7 @@ double-height ground storefront/lobby and recessed central main entry.
 Owner image names suggest historical photography; not a current condition survey.
 North/east physical exterior; rear/south plain and unverified. Bay counts40/24
 fit mapped lengths, not measured survey.20upper rows over two ground levels,
-roof equipment and precise panel profiles omitted.56,628tri/six materials.
-Not integrated or source-reviewed yet. Generator chicago_borg_warner.py.
+roof equipment and precise panel profiles omitted.56,616tri/six materials.
+Integrated at(-43.75,8,610.9),yaw.022 in both Chicago generators; mapped
+w124873918 shell explicitly excluded. Standalone corrected entrance inspected;
+Grid north facade and Original east facade/entry day/night visually reviewed. Generator chicago_borg_warner.py.
