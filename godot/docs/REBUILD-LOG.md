@@ -5445,3 +5445,72 @@ Gates20261005-214449 both clip scans ALL PASS (99s),111/101 existing baseline
 hits, no new failures. Total136checks plus parse. No EXE export.
 Next rendered frontage candidates: Mallers, Hyatt Place and City Hall; source
 priority remains all trackside buildings before distant skyline.
+
+
+REFERENCE CHI-3D Mallers 2026-10-05
+CVU primary page confirms87m architectural/tip,21floors,ChristianA.Eckstorm.
+Owner identifies1912; its building image actually inspected and found to be a
+stylized logo, not a photograph. ChadDavis October2019 actual sign photograph
+inspected: projecting neon sign/diamond cap, mounting brackets, decorative
+bands and recessed street openings. Full tower facade remains unverified;
+MALLERS-REFERENCE.md records next full-height photo step. No asset or EXE.
+
+REFERENCE CHI-3D Mallers original drawing/map 2026-10-05
+Archived1911Tribune preconstruction exterior perspective and1927insurance map
+actually inspected. Four-level base/repetitive shaft/upper band/bracketed cornice
+identified; original172ftMadison/97.5ftWabash dimensions recorded. Southeast
+corner orientation requires mapped coordinate verification before sign placement.
+Current full-height photograph still needed; no model/EXE generated.
+
+REFERENCE CHI-3D Mallers orientation resolved 2026-10-05
+Checked raw building/road extracts: Wabashx-148.5..-144.2, Madisonz301.6..302.4.
+Mapped Mallers north face isMadison, WEST faceWabash; previouseast assumption
+incorrect. Candidateeastcamera only proves rendered rear shell, not mainentry.
+Authoring/review reference corrected before asset placement; no EXE.
+
+DRAFT CHI-3D Mallers 2026-10-05
+Created original Blender geometry with exact mapped irregular footprint,87m
+height,20upperwindowrows+ground retail,physical insetpanes/piers/sills/bands,
+projectingbracketedcornice and westWabash sign/raisedletters/neon/brackets.
+Historicalperspectivebaycounts/currentcondition estimates documented. Blender
+completed45204triangles/ninematerials; not imported/reviewed/integrated yet.
+Next standalone native geometry/render check then modern facade refinement. No EXE.
+
+REVIEW CHI-3D Mallers draft 2026-10-05
+Standalone Godot import/render completedDRAFTREVIEWPASS/empty stderr; actual
+corner/sign closeup inspected. Found outward panes/hidden sign caused by
+reversed mapped-ring facade rotation; fixed common placement angle, rebuilt
+45204tri/ninematerials, fresh import/renderPASS, corrected sign/windows
+closeup actually inspected. Still needs diamondcap geometry, letter spacing,
+modern facade refinement and native track integration. No EXE export.
+
+DRAFT CHI-3D Mallers sign refinement 2026-10-05
+Replaced rectangular cap with physical pentagonal diamond/facet lines and
+reduced lettering pitch to fit cabinet. Blender45304tri/ninemats. Fresh import
+completed. Native geometry check13/13PASS/empty stderr verifies87mheight,
+actual ray pane recess vs pier, west sign projection and no facade textures.
+Track integration and updated visual review pending; no EXE export.
+
+INTEGRATE CHI-3D Mallers draft 2026-10-05
+Refined sign actual standalone closeup inspected after nativeDRAFTREVIEWPASS.
+Installed exact mapped origin(-106.6,8,327), no rotation/cache147; excludes
+w147478105 generic shell; registered13check geometry gate. Grid source native
+review PID92004 launched and confirmed live during cache bake. Street day/night
+acceptance and both-route clipping gates still pending. No EXE export.
+
+REVIEW CHI-3D Mallers Grid 2026-10-05
+PID92004 terminalCITYREVIEWPASS/empty stderr. Four actual day/night north
+facade/west sign images inspected. Elevated railway screens sign top/diamond
+from selectedwestcamera; these views do not prove mainentry or complete sign
+visibility. Add approachview. Frozen10.5718ms/46.823Mprimitives concurrentchecks
+is not controlledbenchmark. Gates215716fourchecks and215731bothclips running;
+no final acceptance or GitHub push yet. No EXE.
+
+REVIEW CHI-3D Mallers approach/gates 2026-10-05
+PID98372 terminalCITYREVIEWPASS/empty stderr. Actual Madison/Wabashapproach
+day/night images inspected; fullsign/diamond visible in obliqueview besideEl.
+Gates20261005-215716 geometry13/menu101/coverage23/parseALLPASS85s.
+Gates20261005-215731 bothclipsALLPASS73s; Grid101baselinehits.
+139checks plusparse. Current fullheight facade photo still outstanding;
+keep this integrated draft distinct from final historicallyverified exterior.
+No EXE export.
