@@ -5370,3 +5370,14 @@ front/corner images actually inspected. Top spandrel buried arch heads:
 moved cap and lowered top panes, regenerated successfully. Corrected model
 needs fresh review; triple top chamfer aperture, relief, fire escape and
 storefront recesses remain unfinished. Not installed; no EXE export.
+
+
+REFINE CHI-3D Washington Block 2026-10-05
+Corrected local transform for raised lettering (previous placement reset it),
+triple top chamfer apertures, visible arched transoms, recessed ground doors
+and physical approximate Wells fire escape. First refinement imported and
+review completed DRAFT REVIEW PASS/empty stderr; actual corner/entry images
+inspected. Corner second-floor central mullion then removed in favor of one
+arched aperture and curved pane. Final Blender generation33344tri/six materials
+completed, empty stderr. Latest asset requires import/review before installation.
+Photo-based carving/escape routing approximate. No EXE export.

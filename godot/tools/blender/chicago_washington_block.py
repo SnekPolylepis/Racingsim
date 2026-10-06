@@ -1,5 +1,6 @@
 """Washington Block: authored limestone frontage and chamfer from city photos."""
 import bpy,sys,math
+from mathutils import Vector,Matrix
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from architecture import material,box,mesh,arch,text,line,finish
@@ -24,18 +25,29 @@ for edge in range(5):
  a,b=ring[edge],ring[(edge+1)%6]
  length=math.dist(a,b);angle=math.atan2(b[1]-a[1],b[0]-a[0])+math.pi
  origin=((a[0]+b[0])/2,(a[1]+b[1])/2,0)
- def placed(obj):obj.rotation_euler.z=angle;obj.location=origin;return obj
+ def placed(obj):
+  obj.location=Vector(origin)+Matrix.Rotation(angle,3,"Z")@obj.location
+  obj.rotation_euler.z+=angle
+  return obj
  def part(name,x,z,w,h,depth,t,mat):return placed(box(name,(x,depth,z),(w,t,h),mat))
  if edge not in [0,1,2]:
   part('Plain party wall',0,H/2,length,H,0,.35,rear);continue
  cols=3 if edge==0 else (2 if edge==1 else 9)
  pitch=length/cols;w=min(1.55,pitch-.58)
- for i in range(cols+1):part('Full limestone pier',-length/2+i*pitch,12,pitch-w,24,0,.55,stone)
+ for i in range(cols+1):
+  if edge!=1 or i in [0,cols]:part("Full limestone pier",-length/2+i*pitch,12,pitch-w,24,0,.55,stone)
  for z,h in [(.3,.6),(4.35,1.3),(9.5,1.0),(14.0,1.0),(18.5,1.0),(23.25,.55)]:part('Solid limestone spandrel',0,z,length,h,0,.55,stone)
  for row,z in enumerate([6.85,11.75,16.25,20.4]):
-  for col in range(cols):
-   x=(col-(cols-1)/2)*pitch
+  row_cols=(3 if row==3 else (1 if row==0 else 2)) if edge==1 else cols
+  row_pitch=length/row_cols
+  row_w=2.8 if edge==1 and row==0 else min(1.55,row_pitch-.58)
+  if edge==1:
+   for i in range(1,row_cols):part("Corner row mullion",-length/2+i*row_pitch,z,row_pitch-row_w,4.15,0,.55,stone)
+  for col in range(row_cols):
+   x=(col-(row_cols-1)/2)*row_pitch
+   w=row_w
    wh=3.3 if row==0 else 3.35
+   if edge==1 and row==0:z=6.2;wh=2.2
    part('Inset opaque pane',x,z,w,wh,.42,.035,glass)
    for dx in [-w/2,w/2]:
     part('Separate stone jamb',x+dx,z,.13,wh+.2,-.05,.45,trim)
@@ -55,11 +67,26 @@ for edge in range(5):
   part('Cornice bracket',x,23.25,.20,.55,-.30,.8,metal)
  for col in range(cols):
   x=(col-(cols-1)/2)*pitch
-  part('Ground storefront pane',x,2.15,pitch-.5,3.2,.55,.04,glass)
+  part('Ground storefront pane',x,2.15,pitch-.5,3.2,1.0 if edge==1 else .55,.04,glass)
+  if edge==1:
+   part('Inset doorway rail',x,1.6,pitch-.5,.08,.87,.12,metal)
+   part('Deep entrance reveal',x,3.65,pitch-.5,.18,.55,1.0,stone)
   for dx in [-(pitch-.5)/2,0,(pitch-.5)/2]:part('Storefront frame',x+dx,2.15,.08,3.3,.35,.15,metal)
  if edge==1:
   placed(text('Raised Washington Block lettering','WASHINGTON BLOCK',(0,-.35,18.3),.27,trim))
+  points=[(0,.4,7.3)]+[(1.4*math.cos(i*math.pi/24),.4,7.3+1.4*math.sin(i*math.pi/24)) for i in range(25)]
+  placed(mesh('Corner entrance curved transom',points,[(0,i,i+1) for i in range(1,25)],glass))
   placed(arch('Second floor corner entrance arch',1.4,1.65,(0,7.3),-.45,.65,trim))
   for x in [-1.55,1.55]:part('Corner entrance column',x,6.0,.25,2.6,-.35,.70,trim)
-# ponytail: relief profiles approximate; surveyed carving and fire escape routing need better references.
+ if edge==2:
+  # Photo shows a projecting escape near the north end; routing is approximate.
+  for z in [9.6,14.1,18.6]:
+   part('Fire escape platform',9,z,2.2,.10,-.95,1.3,metal)
+   part('Escape front rail',9,z+1.0,2.2,.07,-1.57,.07,metal)
+   for x in [8.0+i*.25 for i in range(9)]:part('Escape baluster',x,z+.5,.035,1.0,-1.57,.035,metal)
+   for side in [-.8,.8]:
+    placed(line('Escape stair stringer',[(8.1,-.95+side/2,z),(9.9,-.95+side/2,z-4.5)],.035,metal))
+   for step in range(16):
+    part('Escape stair tread',8.1+1.8*step/15,z-4.5*step/15,.16,.045,-.95,.8,metal)
+# ponytail: relief profiles and escape routing approximate; replace with measured detail when available.
 finish('washington_block',OUT)
