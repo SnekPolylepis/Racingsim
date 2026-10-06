@@ -58,6 +58,7 @@
     {"name": "chicago_333_michigan", "script": "tests/v2/chicago_333_michigan.gd", "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "assets/chicago/landmarks/michigan_333", "scripts/track/chicago_night.gd"]},
     {"name": "chicago_323_michigan", "script": "tests/v2/chicago_323_michigan.gd", "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "assets/chicago/landmarks/michigan_323", "scripts/track/chicago_night.gd"]},
     {"name": "chicago_chapin_gore", "script": "tests/v2/chicago_chapin_gore.gd", "groups": ["track"], "deps": ["trackgen/chicago.gd", "trackgen/chicago_city.gd", "assets/chicago/landmarks/chapin_gore", "scripts/track/chicago_night.gd"]},
+    {"name": "chicago_washington_block", "script": "tests/v2/chicago_washington_block.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/washington_block", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},
     {"name": "chicago_west_washington", "script": "tests/v2/chicago_west_washington.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/west_washington_", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},
     {"name": "chicago_equitable", "script": "tests/v2/chicago_equitable.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/equitable.glb"]},
     {"name": "chicago_iam_temple", "script": "tests/v2/chicago_iam_temple.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/iam_temple.glb"]},

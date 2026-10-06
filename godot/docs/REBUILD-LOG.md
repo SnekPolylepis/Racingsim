@@ -5381,3 +5381,19 @@ inspected. Corner second-floor central mullion then removed in favor of one
 arched aperture and curved pane. Final Blender generation33344tri/six materials
 completed, empty stderr. Latest asset requires import/review before installation.
 Photo-based carving/escape routing approximate. No EXE export.
+
+
+DONE CHI-3D Washington Block 2026-10-05
+Final standalone corner actually inspected after fresh import/review PASS.
+Installed at(-802.7,8,203.85), no rotation, mapped chamfer retained/cache145;
+w147013784 shell explicitly excluded. Original CC0 geometry33344tri/six materials,
+physical panes/surrounds/arched transoms, raised lettering, inset corner doors,
+projecting cornice and approximate fire escape. Exact carving/escape routing
+unverified; mapped24m height retained, not independently surveyed.
+Native Grid PID81700 completed CITY REVIEW PASS/empty stderr; four street/entrance
+day/night images actually inspected. Frozen24.483ms/44.231M primitives while
+checks ran concurrently is not controlled drive performance.
+Gates20261005-213434 geometry9/menu101/coverage23/parse ALL PASS (101s).
+Gates20261005-213448 both clip scans ALL PASS (111s);111/101 existing baseline
+hits, no new failures. Total135checks plus parse. No EXE export; two fixed slots
+confirmed. Continue remaining trackside buildings and queued river bridges.

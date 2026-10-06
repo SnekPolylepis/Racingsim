@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 144
+const CACHE_REVISION = 145
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -1076,6 +1076,13 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		equitable.surface_set_material(surface, mat)
 	var equitable_node = mesh_node(asset, parent, "Equitable", equitable, Vector3(-755.4, 8, 148.5))
 	equitable_node.rotation.y = .013
+
+	var washington_block = PropMesh.mesh("res://assets/chicago/landmarks/washington_block.glb").duplicate()
+	for surface in washington_block.get_surface_count():
+		var mat = washington_block.surface_get_material(surface).duplicate()
+		mat.metallic_specular = .12
+		washington_block.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "WashingtonBlock", washington_block, Vector3(-802.7, 8, 203.85))
 
 	for frontage in [[170, Vector3(-730.15, 8, 149.75), .018], [166, Vector3(-717.9, 8, 147.8), .016]]:
 		var exterior = (
