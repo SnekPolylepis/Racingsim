@@ -5397,3 +5397,11 @@ Gates20261005-213434 geometry9/menu101/coverage23/parse ALL PASS (101s).
 Gates20261005-213448 both clip scans ALL PASS (111s);111/101 existing baseline
 hits, no new failures. Total135checks plus parse. No EXE export; two fixed slots
 confirmed. Continue remaining trackside buildings and queued river bridges.
+
+
+REFERENCE CHI-3D Washington-Franklin garage 2026-10-05
+Operator three entrance/facade photos actually inspected; real open parking
+bays and rusticated ground retail identified. Native Grid PID35264 completed
+CITY REVIEW PASS/empty stderr; mapped w147095680 explicitly route-clearance
+excluded. Day/night street images actually inspected; defer installation and
+retain WASHINGTON-FRANKLIN-REFERENCE.md. No model or EXE generated.
