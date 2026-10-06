@@ -5336,3 +5336,17 @@ thereafter. Corrected assets need fresh import/review. Heights17/29m approximate
 not surveyed; mapped17066m contradicts photographed four-story facade.
 Not integrated; next native footprint/exclusion and day/night reviews, both
 routes placement checks. No EXE export; broader building work remains open.
+
+
+DONE CHI-3D West Washington low-rises 2026-10-05
+170/166 integrated at(-730.15,8,149.75)/(-717.9,8,147.8), yaw.018/.016,
+cache144. Exact mapped shells w147095656/w147095644 explicitly excluded;
+physical windows total1065703. Original CC0 geometry4200/2364tri, six materials.
+Photo-based heights17/29m approximate; surveyed dimensions and exact rear/side
+ornament remain unverified. Native Grid PID66168 completed CITY REVIEW PASS,
+empty stderr; street/entrance daylight/night four images actually inspected.
+Frozen12.110ms/38.858M primitives not controlled drive performance.
+Gates20261005-212526: menu99/coverage23/parse ALL PASS (85s).
+Gates20261005-212603: geometry20/both clip scans ALL PASS (72s), Grid101hits;
+no new failures against existing clip baselines. Total144checks plus parse.
+No EXE export. Continue remaining trackside buildings; river bridge task queued.

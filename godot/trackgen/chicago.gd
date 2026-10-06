@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 143
+const CACHE_REVISION = 144
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -1076,6 +1076,17 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		equitable.surface_set_material(surface, mat)
 	var equitable_node = mesh_node(asset, parent, "Equitable", equitable, Vector3(-755.4, 8, 148.5))
 	equitable_node.rotation.y = .013
+
+	for frontage in [[170, Vector3(-730.15, 8, 149.75), .018], [166, Vector3(-717.9, 8, 147.8), .016]]:
+		var exterior = (
+			PropMesh.mesh("res://assets/chicago/landmarks/west_washington_%d.glb" % frontage[0]).duplicate()
+		)
+		for surface in exterior.get_surface_count():
+			var mat = exterior.surface_get_material(surface).duplicate()
+			mat.metallic_specular = .12
+			exterior.surface_set_material(surface, mat)
+		var frontage_node = mesh_node(asset, parent, "WestWashington%d" % frontage[0], exterior, frontage[1])
+		frontage_node.rotation.y = frontage[2]
 
 
 static func add_river_bridges(asset: Node3D, parent: Node) -> void:

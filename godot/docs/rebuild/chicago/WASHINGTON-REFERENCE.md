@@ -30,4 +30,5 @@ three broad paired window groups, red brick/plain projecting sills and inset
 entry. Heights not independently surveyed; current170mapped66m is inconsistent
 with photographed four-story facade. Photo EXIF GPS flagged ambiguous; mapped
 footprints determine game position. Owner tenant logos in2020not current survey.
-No model installed for170/166yet.
+170/166 now installed at mapped footprints with photo-estimated17/29m heights,
+replacing mapped generic shells. Grid day/night street/entrance views inspected.

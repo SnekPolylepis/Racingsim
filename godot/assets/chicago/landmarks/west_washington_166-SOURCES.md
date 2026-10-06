@@ -12,5 +12,6 @@ Physical panes, sash, piers, spandrels, projecting sills/panel ribs and inset
 storefront doors; plain unverified party/rear walls. Historical tenant signage,
 brick joints and exact moulding profiles omitted. 2364 triangles, six materials.
 
-Draft only: not yet integrated or accepted in either Chicago route.
+Integrated in both Chicago generators; Grid street/entrance day/night views
+visually inspected 2026-10-05. Exact rear/side ornament remains unverified.
 Generator: tools/blender/chicago_west_washington.py.
