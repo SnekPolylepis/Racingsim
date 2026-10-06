@@ -5325,3 +5325,14 @@ not acceptance evidence. Crown shape inspected in standalone front model view,
 not fully visible in these close road views. No EXE export.
 Next inspect170/166WestWashington low-rise frontages: Visviva2020photo
 actually inspected;170fourstories conflicts with unverified mapped66m.
+
+
+DRAFT CHI-3D Washington neighbors 2026-10-05
+170/166 West Washington authored from actually inspected Visviva2020 photograph.
+Blender completed with empty stderr: 4200/2364tri, six materials each.
+170 initial standalone front view inspected (PID65684, DRAFT REVIEW PASS,
+empty stderr); corrected rib placement to spandrel panels and filled row bands
+thereafter. Corrected assets need fresh import/review. Heights17/29m approximate,
+not surveyed; mapped17066m contradicts photographed four-story facade.
+Not integrated; next native footprint/exclusion and day/night reviews, both
+routes placement checks. No EXE export; broader building work remains open.
