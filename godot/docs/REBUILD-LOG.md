@@ -5268,3 +5268,20 @@ no survey claim. Second BlenderPID134088 exit0,58,800tri/8mats; import/model
 reviewPID138224 exit0/empty stderr; four model captures inspected. Standalone
 draft only; integration/fit/checks/day-night review next. Sources/limits in
 depaul_cdm-SOURCES.md. No executable export.
+
+## DePaul CDM integrated source review — 2026-10-05
+
+South/west exterior integrated centre(-99.85,8,702.45),yaw.022,cache140;
+explicit mappedw35601477 replacement. Meaningful actual-triangle geometry
+checks17/menu95/coverage23/parse pass in gates/20261005-205956 (88s).
+Original/Grid clipping scans and parse pass in20261005-210031 (77s),no new
+failures against111/101 baseline hits. Total137checks plus parse. Eight
+street/corner/south-retail/west-entry day/night views inspected. Corrected
+initial south close-up camera inside neighboring building across the road;
+that view is not acceptance evidence. Final reviewPID43248 exit0,CITY REVIEW
+PASS/empty stderr. Frozen9.407ms/33.247M primitives not controlled drive
+benchmark. Future package verifiers expect8mats; no package/export run.
+Preserved generated test UID. Approximate height39m vs unverified mapped58m,
+ornament and roof equipment limits remain in SOURCES. Broader trackside work
+continues; next inspect Washington Street immediate frontage candidates.
+No executable export.

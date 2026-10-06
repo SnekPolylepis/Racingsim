@@ -36,3 +36,15 @@ roof captures inspected. Bounds53.078x47x29.878 including foundation/trim/signs.
 Corrected clear full-bay glazing in front of deep entry,filled roof-head strip,
 added raised lettering. Not integrated; placement,geometry/menu/both clipping
 scans and runtime day/night review pending. No EXE export.
+
+Integrated source review2026-10-05: centre(-99.85,8,702.45),yaw.022,
+cache140; mappedw35601477 replaced explicitly once. Geometry17/menu95/
+coverage23/parse pass (gates/20261005-205956,88s); Original/Grid clipping
+scans and parse pass (gates/20261005-210031,77s), no new failures against
+111/101 baseline hits. Eight street/corner/south-retail/west-entry day/night
+views inspected. Initial south close-up camera was inside a building across
+the road; excluded from acceptance and corrected to the route camera.
+Final native reviewPID43248 exit0,CITY REVIEW PASS/empty stderr. Frozen
+9.407ms/33.247M primitives is not controlled drive performance. No EXE.
+Approximate dimensions,ornament and roof service equipment limits remain
+as recorded above; earlier draft notes are historical build evidence.
