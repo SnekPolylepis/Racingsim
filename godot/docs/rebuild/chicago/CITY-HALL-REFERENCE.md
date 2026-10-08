@@ -60,6 +60,11 @@ colonnade/deep window strips and rusticated base visible; doorway small/obscured
 Photo date unknown. Municipal [sculpture7347](https://webapps1.chicago.gov/landmarksweb/web/photodetails.htm?phoId=7347)
 actual image inspected: Cook County seal flanked by two figures and COUNTY
 BUILDING plaque. This is County entrance evidence, not the west City Hall door.
-Do not copy that seal to City Hall. East County half w108240968 still generic
-75m; paired physical exterior and height correction are next before accepting
-the entire building. Draft west half is not complete block representation.
+Do not copy that seal to City Hall. East County half w108240968 now has a paired physical draft at the same
+62.484m coping, replacing its generic75m shell (cache150). The exact mapped
+ring and west court notches are retained, with seven south/north and eighteen
+east column bays. County185228tri/sixmaterials. Combined Blender front/roof
+review shows matching heights and open paired courts; corrected native Grid
+south approach/southeast corner day/night reviewed. Neither entrance doors
+nor sculptures are complete. Court glazing, roof garden and detailed entrance
+fidelity remain pending; this is not a completed block representation.

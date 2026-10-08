@@ -1,5 +1,5 @@
 """City Hall west half: original geometry from HABS dimensions and municipal photos."""
-import bpy, math, sys
+import bpy, math, sys, json
 from pathlib import Path
 from mathutils import Vector, Matrix
 sys.path.insert(0,str(Path(__file__).resolve().parent))
@@ -13,8 +13,11 @@ glass=material('Separate recessed blue grey sash panes',(.17,.24,.27),roughness=
 back=material('Opaque recessed backing and unsurveyed courts',(.26,.25,.23),roughness=.95)
 roof=material('Roof slab and coping',(.31,.32,.30),roughness=.95)
 H=62.484 # HABS205ft coping; WJE rounded200ft differs. See reference limits.
-foot=[(-648,162.6),(-606,162),(-604,162.3),(-604.4,134.5),(-629.3,135),(-629.4,127.7),(-622.9,127.6),(-623.1,114),(-612.3,113.8),(-612.2,117.5),(-602.4,117.2),(-602.7,94.6),(-611.8,94.6),(-611.7,97.8),(-623.3,98),(-623.5,84.6),(-629.4,84.7),(-629.5,77.7),(-602.1,77.2),(-602.4,50.1),(-649.6,50.6),(-648.5,129.2)]
-ring=[(x+626,106.35-z) for x,z in foot]
+county='--county' in sys.argv
+cx,cz=(-579.65,106.8) if county else (-626,106.35)
+data=json.loads((Path(__file__).resolve().parents[2]/'trackgen/data/chicago/city.json').read_text(encoding='utf-8'))
+foot=next(b['f'] for b in data['buildings'] if b.get('o')==('w108240968' if county else 'w108240964'))
+ring=[(x-cx,cz-z) for x,z in foot]
 def prism(name,z,h,mat,scale=1):
  r=[(x*scale,y*scale) for x,y in ring];n=len(r)
  return mesh(name,[(x,y,z-h/2) for x,y in r]+[(x,y,z+h/2) for x,y in r],
@@ -23,9 +26,10 @@ prism('Exact mapped foundation',-4,8,back)
 prism('Inset irregular opaque backing',H/2,H-.6,back,.90)
 prism('Mapped roof retaining eastern court notches',H-.25,.5,roof)
 # Three continuous public elevations; eastern reentrant walls retain mapped geometry.
-faces=[('south',foot[0],foot[2],7),('north',foot[19],foot[20],7),('west',foot[20],foot[0],18)]
+faces=([('south',foot[21],foot[0],7),('north',foot[1],foot[2],7),('east',foot[0],foot[1],18)]
+ if county else [('south',foot[0],foot[2],7),('north',foot[19],foot[20],7),('west',foot[20],foot[0],18)])
 for name,aa,bb,cols in faces:
- a=(aa[0]+626,106.35-aa[1]);b=(bb[0]+626,106.35-bb[1])
+ a=(aa[0]-cx,cz-aa[1]);b=(bb[0]-cx,cz-bb[1])
  length=math.dist(a,b);origin=((a[0]+b[0])/2,(a[1]+b[1])/2,0);angle=math.atan2(b[1]-a[1],b[0]-a[0])
  def placed(obj):
   obj.location=Vector(origin)+Matrix.Rotation(angle,3,'Z')@obj.location
@@ -100,8 +104,8 @@ for name,aa,bb,cols in faces:
   for dx in [-.6,.6]:part('Small separate attic pane',x+dx,59.9,.75,1.6,.55,.035,glass)
  for c in range(cols+1):part('Attic pier',-length/2+c*pitch,59.9,pitch-2.1,1.9,0,.5,stone)
  part('Coping without removed historic cornice',0,62.25,length,.468,-.06,.7,trim)
-for i in range(2,19):
+for i in range(2,21 if county else 19):
  a,b=ring[i],ring[i+1];length=math.dist(a,b)
  obj=box('Unsurveyed mapped courtyard wall',(0,0,H/2),(length,.30,H),back)
  obj.rotation_euler.z=math.atan2(b[1]-a[1],b[0]-a[0]);obj.location=((a[0]+b[0])/2,(a[1]+b[1])/2,0)
-finish('city_hall',OUT)
+finish('county_building' if county else 'city_hall',OUT)

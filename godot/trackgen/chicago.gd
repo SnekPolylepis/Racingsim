@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 149
+const CACHE_REVISION = 150
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -1097,6 +1097,13 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		mat.metallic_specular = .12
 		city_hall.surface_set_material(surface, mat)
 	mesh_node(asset, parent, "CityHall", city_hall, Vector3(-626, 8, 106.35))
+
+	var county_building = PropMesh.mesh("res://assets/chicago/landmarks/county_building.glb").duplicate()
+	for surface in county_building.get_surface_count():
+		var mat = county_building.surface_get_material(surface).duplicate()
+		mat.metallic_specular = .12
+		county_building.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "CountyBuilding", county_building, Vector3(-579.65, 8, 106.8))
 
 	var borg_warner = PropMesh.mesh("res://assets/chicago/landmarks/borg_warner.glb").duplicate()
 	for surface in borg_warner.get_surface_count():

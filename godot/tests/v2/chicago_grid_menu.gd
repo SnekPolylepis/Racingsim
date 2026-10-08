@@ -180,6 +180,7 @@ func run() -> void:
 		check(app.track.has_node("Scenery/Equitable"), "Equitable loads in Grid")
 		check(app.track.has_node("Scenery/HyattPlace"), "Authored Hyatt Place loads in Grid")
 		check(app.track.has_node("Scenery/CityHall"), "Authored City Hall west half loads in Grid")
+		check(app.track.has_node("Scenery/CountyBuilding"), "Authored County east half loads in Grid")
 		check(app.track.has_node("Scenery/WashingtonBlock"), "Washington Block loads in Grid")
 		check(app.track.has_node("Scenery/IAMTemple"), "I AM Temple loads in Grid")
 		var depaul_cdm = app.track.get_node_or_null("Scenery/DePaulCDM")
@@ -350,6 +351,10 @@ func run() -> void:
 		check(app.track.has_node("Scenery/HyattPlace"), "Authored Hyatt Place loads in Original Chicago")
 		check(
 			app.track.has_node("Scenery/CityHall"), "Authored City Hall west half loads in Original Chicago"
+		)
+		check(
+			app.track.has_node("Scenery/CountyBuilding"),
+			"Authored County east half loads in Original Chicago"
 		)
 		check(app.track.has_node("Scenery/TribuneTower"), "Authored Tribune Tower loads in original Chicago")
 		check(app.track.has_node("Scenery/WrigleyBuilding"), "Authored Wrigley loads in original Chicago")

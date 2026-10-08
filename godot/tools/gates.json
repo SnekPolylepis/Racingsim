@@ -61,6 +61,7 @@
     {"name": "chicago_mallers", "script": "tests/v2/chicago_mallers.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/mallers", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},
     {"name": "chicago_hyatt_place", "script": "tests/v2/chicago_hyatt_place.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/hyatt_place", "tools/blender/chicago_hyatt_place.py"]},
     {"name": "chicago_city_hall", "script": "tests/v2/chicago_city_hall.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/city_hall", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},
+    {"name": "chicago_county_building", "script": "tests/v2/chicago_county_building.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/county_building", "assets/chicago/landmarks/city_hall.glb", "tools/blender/chicago_city_hall.py", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},
     {"name": "chicago_borg_warner", "script": "tests/v2/chicago_borg_warner.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/borg_warner", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},
     {"name": "chicago_washington_block", "script": "tests/v2/chicago_washington_block.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/washington_block", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},
     {"name": "chicago_west_washington", "script": "tests/v2/chicago_west_washington.gd", "groups": ["track"], "deps": ["assets/chicago/landmarks/west_washington_", "trackgen/chicago.gd", "trackgen/chicago_city.gd"]},

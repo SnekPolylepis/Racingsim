@@ -5606,3 +5606,20 @@ onto City Hall. West main doors/sculptures, court windows and rooftop garden
 remain pending. East County w108240968 remains generic75m and needs paired
 physical exterior/height correction before accepting fullblock. Draft kept
 on working branch; no EXE export.
+
+DRAFT/INTEGRATE CHI-3D County east half 2026-10-07
+Shared original Blender authoring adds --county and reads exact mapped rings
+from city.json. County w108240968 origin(-579.65,8,106.8),no rotation/cache150;
+generic75m shell excluded. Same HABS62.484m coping as west, with physical
+triple sash panes, fluted columns, stylized capitals and attic windows.
+185228tri/sixmaterials; west court notches remain open. Standalone paired
+front/roof images actually inspected, matching roof heights/open courts.
+Gates20261007-232157 all sevenPASS101s: County11/City10/menu107/coverage23/
+both clips oneeach/parse (153checks plusparse); baseline Original111/Grid101.
+Initial native cameras were inside opposite scenery; those images rejected.
+Corrected native PID106376 terminalCOUNTY PAIR CITY REVIEW PASS/empty stderr;
+four south approach/southeast corner day/night images actually inspected.
+Entrance filename is a corner view, not door proof. Frozen14.33ms is not a
+driving benchmark. County gate includes west GLB for paired height check.
+Actual entry sculptures/doors, court glazing, roof garden and equipment still
+pending; paired exterior remains draft. Source only, no executable export.
