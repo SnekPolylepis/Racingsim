@@ -212,3 +212,27 @@ is visible and remains to investigate. Western green roof visible in reference
 is not yet modeled. Files chicago_grid-roof-{day,night}.png. Last full native
 clip scans remain cache192 evidence; no changed ground/envelope placement, no
 current full-suite/menu/lap/performance/export/Intel acceptance claim.
+
+
+## Western office planted roof —cache194, 2026-10-08
+
+Previously inspected Google Maps overhead image shows a western planted
+rectangle beside the service zone. Added original raised20x28m bed, pale service
+border and560 low varied clumps using one additional matte green material;
+footprint/plant species/height remain photo-fit, not surveyed.199848tri/nine
+materials. Both game/cache validators updated; no ground/envelope or road/timing
+change. Building32/parse pass2.7s, raised vegetation material ray and generator
+clump-count assertion included. Blender/editor import exit0/empty stderr.
+
+Two actual High Grid elevated green-roof day/night source renders inspected,
+cache194 newly saved, capture exit0/empty stderr; files
+chicago_grid-green-roof-{day,night}.png. Green bed/border and equipment are
+visible in both states. Night still shows isolated roof dots. Controlled native
+night capture with only directional shadows disabled removes those dots; this
+supports directional shadow sampling as their cause rather than duplicate roof
+geometry. Diagnostic image chicago_grid-roof-no-shadow-night.png is diagnostic
+only, not production lighting acceptance; source capture exit0/empty stderr.
+Production shadows retained. Broad lighting adjustment/calibration remains open.
+Serial menu/cache115 checks pass67.3s, empty stderr. Last full native clips remain cache192; no new
+full-suite/lap/performance/export/Intel acceptance claim. Atrium/main portals/
+residential crown and measured proportions remain open.

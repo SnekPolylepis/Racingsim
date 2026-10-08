@@ -1,5 +1,5 @@
 """Block 37 draft: retained compound base, roof-raster tiers and physical woven podium."""
-import bpy,math,sys,json
+import bpy,math,sys,json,random
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from architecture import material,box,mesh,line,finish
@@ -118,6 +118,26 @@ for a,b in zip(office,office[1:]+office[:1]):
  width=math.dist(a,b)
  part('Office broad dark projecting roof fascia',(width/2,.18,78.55),(width,.70,2.90),roof,a,b)
  part('Office silver coping edge',(width/2,.18,79.95),(width,.74,.10),metal,a,b)
+# shortcut: planted roof boundary follows the overhead photo; replace with a measured landscape plan when available.
+meadow=material('Block37 office planted roof',(.25,.32,.12),roughness=1)
+box('Office western planted roof bed',(-33.8,-38.75,80.12),(20,28,.24),meadow)
+for y in (-53.25,-24.25):box('Office planted roof service border',(-33.8,y,80.08),(21,.65,.16),stone)
+for x in (-44.3,-23.3):box('Office planted roof service border',(x,-38.75,80.08),(.65,29,.16),stone)
+rng=random.Random(37)
+bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=1)
+shape=bpy.context.object
+points=[tuple(v.co) for v in shape.data.vertices];polys=[tuple(p.vertices) for p in shape.data.polygons]
+bpy.data.objects.remove(shape,do_unlink=True)
+vertices=[];faces=[]
+for ix in range(20):
+ for iy in range(28):
+  x=-43.3+ix+rng.uniform(-.25,.25);y=-52.25+iy+rng.uniform(-.25,.25)
+  sx,sy,sz=rng.uniform(.30,.55),rng.uniform(.30,.55),rng.uniform(.08,.20)
+  offset=len(vertices)
+  vertices.extend((x+u*sx,y+v*sy,80.30+w*sz) for u,v,w in points)
+  faces.extend(tuple(offset+j for j in p) for p in polys)
+assert len(vertices)==560*len(points) and len(faces)==560*len(polys)
+mesh('Office low planted roof clumps',vertices,faces,meadow)
 # shortcut: rooftop unit positions/heights are overhead-photo fits; replace with surveyed equipment sections when available.
 for wx in (-366,-358,-350,-342):
  for wz in (130,147):

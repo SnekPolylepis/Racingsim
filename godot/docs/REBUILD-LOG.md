@@ -6396,3 +6396,18 @@ roof day/night images inspected, cache193 saved, capture exit0/empty stderr.
 Minor night roof speckling and western green roof remain open, along with atrium/
 main mall portals/crown. Last full clips at192; no new road/timing changes or
 full-suite/menu/lap/performance/export/Intel claim. See BLOCK-37-REFERENCE.md.
+
+### DRAFTED Block37 western office planted roof —2026-10-08
+
+
+2026-10-08 Block37 western planted roof/cache194: overhead-photo-fit20x28m
+raised bed/pale service borders/560 low clumps,199848tri/nine materials. Both
+cache validators updated. Building32/parse pass2.7s, raised planting ray and
+generator count assertion included; Blender/editor import clean. Two actual
+High Grid elevated day/night source images inspected/cache194 saved/capture
+exit0/empty stderr. Controlled night capture with directional shadows disabled
+removes isolated roof dots, supporting shadow sampling as cause; production
+shadows retained and lighting calibration remains open. Exact landscape plan,
+atrium/main mall portals/crown remain open. No road/timing/export/newlaps or
+current full-suite/performance/Intel claim; full clips last recorded at192.
+Serial menu/cache115 checks pass67.3s, empty stderr. See BLOCK-37-REFERENCE.md.

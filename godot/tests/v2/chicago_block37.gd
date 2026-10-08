@@ -50,7 +50,7 @@ func run():
 	check(fixture.position.distance_to(Vector3(-357.2, 8, 104.25)) < .01, "Mapped compound origin")
 	var bounds = exterior.get_aabb()
 	print("BLOCK37 BOUNDS ", bounds)
-	check(exterior.get_surface_count() == 8, "Eight physical exterior materials")
+	check(exterior.get_surface_count() == 9, "Nine physical exterior materials")
 	check(bounds.position.x > -52 and bounds.end.x < 52, "Retained east west envelope")
 	check(bounds.position.z > -61 and bounds.end.z < 61, "Retained north south envelope")
 	check(absf(bounds.position.y + 8) < .01, "Retained buried foundation")
@@ -76,6 +76,10 @@ func run():
 		exterior, Vector3(30, 78.5, 40), Vector3(15, 78.5, 40), "Block37 dark backing and roof"
 	)
 	check(fascia != Vector3.INF and fascia.x > 21.6, "Physical dark office fascia projects beyond panes")
+	var planted = first_hit(
+		exterior, Vector3(-33.8, 90, 38.75), Vector3(-33.8, 79, 38.75), "Block37 office planted roof"
+	)
+	check(planted != Vector3.INF and planted.y > 80.2, "Western office roof has raised physical planting")
 	var roof_unit = first_hit(exterior, Vector3(-8.8, 90, 25.75), Vector3(-8.8, 79, 25.75))
 	check(
 		roof_unit != Vector3.INF and roof_unit.y > 82.3, "Office rooftop housing has raised physical intake"
