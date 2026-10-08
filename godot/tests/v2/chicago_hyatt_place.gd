@@ -58,4 +58,3 @@ func run():
 		check(exterior.surface_get_material(surface).albedo_texture == null, "No photographic facade")
 	print("HYATT RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))
 	quit(0 if failures.is_empty() else 1)
-
