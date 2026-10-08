@@ -185,6 +185,9 @@ func run():
 
 
 static func _overhead(path: String, clearance: float = 0.0, road_y: float = 8.0) -> bool:
+	# Only Morton's isolated curved balcony mesh can overhang Washington, above its first balcony slab.
+	if path == "Scenery/MortonBalconies" and clearance >= 22.8 and road_y + clearance >= 30.8:
+		return true
 	# Upper Wacker guardrails sit above the lower carriageway with the concrete deck.
 	if (
 		(path.begins_with("Scenery/LeftBarrierFence") or path.begins_with("Scenery/RightBarrierFence"))

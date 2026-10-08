@@ -517,3 +517,42 @@ Still open: precise balcony widths/floor coverage, facade bay counts, festoons,
 carved capitals/crown proportions and measured roof equipment. Morton208 next;
 no full-fidelity acceptance claim for Bell and no app export. Existing lap
 evidence remains dated; no new lap/manual-wheel/Intel/performance claim.
+
+## Morton working integration — Mac2026-10-08
+
+Morton166,938tri/eight authored materials integrated at(-813.5,8,136.65),
+retained mapped seven-point foundation, generic w147095676 excluded. Wall
+fixture MortonBuilding has seven surfaces; isolated MortonBalconies one iron
+surface. Both game cache validators require both nodes; cache187/original@v7/
+Grid@v5. Warm occupied panes use normal Chicago night flag/color/energy.
+Road geometry/timing unchanged; no per-building app export.
+
+New gate28checks: materials/no photos/day-night, envelope, north-wing roof,
+open court down to17.4m, curved projecting slab and balcony minimum height,
+both complete route foundation distances206.250061original/8.842769Grid.
+Initial roof ray hit the raised southern attic; moved it to north wing to test
+the lower roof specifically. Initial Grid clip flagged a curved balcony at
+worldy30.9m (22.9m above pavement). Preserve the photographed shape: isolate
+only the balcony material into a separate mesh; overhead acceptance requires
+exact MortonBalconies path, clearance>=22.8 and worldheight>=30.8. Main building
+walls are never exempt. Low/lowered balcony cases remain rejected by tests.
+Both final full native clip scans pass Grid104/original120 accepted overhead
+hits, zero failures/empty stderr; warm cache loads confirmed.
+
+Headless41Chicago suites passed in174.7s before the balcony split. After split,
+parse/Morton28/Wacker20029 pass; concurrent menu/native rendering had a menu
+timeout and a Metal fence timeout. Final serial menu115 passes in68.9s. Final
+four High native Metal source day/night images on both layouts reviewed in
+screenshots/chicago-morton-mac. Camera moved east of Morton after Bell occluded
+initial west-camera views. Final renders load caches, exit0 and no Metal errors;
+stderr retains ObjectDB exit warnings. Verbose run identifies AudioStreamWAV/
+AudioStreamPlaybackWAV references (and RGB8-to-RGBA8 conversion warnings).
+Stopping capture audio before scene disposal did not eliminate exit warnings.
+This is recorded capture behavior, not a claim about interactive memory/performance.
+Native editor import exits0/empty stderr.
+
+Still work in progress: actual ground entrance/storefront authoring, narrower
+central panel/window rhythm, measured upper court/balcony proportions, carved
+base/crown/wreath profiles and roof services. These checks establish source
+integration/clearance, not full architectural fidelity. No new lap/manual-wheel/
+Intel/performance validation claimed; source-only full trackside goal continues.

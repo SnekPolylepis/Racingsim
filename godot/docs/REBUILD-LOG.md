@@ -6288,3 +6288,19 @@ Godot4.6.2 import and isolated day/low-light plus balcony-close captures pass
 exit0/empty stderr; all viewed. Entry reference/authoring and precise panel
 spacing/court/ornament still open before integration and production checks.
 No cache/road/export change; detailed evidence in WASHINGTON-208-212-REFERENCE.md.
+
+### INTEGRATED Morton working exterior —2026-10-08
+
+Morton166938tri/eight materials integrated/cache187 at mapped seven-point base;
+wall fixture7surfaces and isolated curved balcony fixture1surface. First Grid
+clip flagged high balcony projection; exact isolated-node/height overhead rule
+preserves shape, keeps walls and low balconies failing. Both final native full
+clip scans pass Grid104/original120 accepted overhead hits, empty stderr.
+Foundation206.250061original/8.842769Grid; new building28/parse/Wacker20029
+pass.41Chicago suites passed before balcony split; concurrent final menu and
+Metal run failed/timeouts, serial menu115 then passed68.9s. Four final High
+native day/night views on both layouts inspected; renders exit0 without Metal
+errors but retain audio ObjectDB exit warnings. Native import clean. Full
+evidence/limits in WASHINGTON-208-212-REFERENCE.md. Actual ground entrance,
+measured court/bay rhythm and fine carving remain. Road/timing versions unchanged,
+no export or new lap/performance claim; full trackside objective active.

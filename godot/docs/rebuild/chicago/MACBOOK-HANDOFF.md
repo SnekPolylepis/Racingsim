@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache185. See latest dated evidence below. Continue trackside building
+Grid@v5/cache187. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -451,3 +451,15 @@ Morton refinement2026-10-08: closer south photo corrected balconies to curved
 reddish stacks; inset stone panels and stylized capital fans added.166938tri/
 eight materials, isolated day/low-light and close balcony review passes. Still
 staged; establish entrance then integrate/material/production/clip checks.
+
+## Morton working integration2026-10-08
+
+Morton exterior integrated/cache187,166938tri/eightmaterials, wall7/balcony1
+fixtures. Dedicated28/parse/Wacker20029/serialmenu115 and both full clip scans
+pass; four native production day/night views inspected. Balcony overhead
+acceptance is exact isolated-node and >=22.8m clearance/>=30.8worldheight,
+never building walls or low balconies. Serial rendering avoids observed Metal
+fence timeout under concurrent validation; capture exits retain audio ObjectDB
+warnings, documented in WASHINGTON-208-212-REFERENCE.md. Entrance/storefront,
+central bay rhythm, measured court/balconies and carving remain next. Full goal
+active; roads unchanged; no export.
