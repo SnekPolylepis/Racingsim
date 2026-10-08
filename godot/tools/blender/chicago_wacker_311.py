@@ -105,10 +105,22 @@ cylinder(0,0,10.2,262,290)
 for x in (-12,12):
  for y in (-12,12):
   cylinder(x,y,6.2,262,279)
-  for angle in (0,math.pi/2):
-   px=x+5.6*math.cos(angle);py=y+5.6*math.sin(angle)
-   box('Open granite crown frame pier',(px,py,267),(.9,.9,25),stone)
-  box('Granite crown frame tie',(x,y,278),(10.5,.8,.6),strap)
+  # The outward granite portals remain open around the smaller glazed cylinders.
+  for axis,sign in ((0,math.copysign(1,x)),(1,math.copysign(1,y))):
+   for offset in (-4.2,4.2):
+    pos=(x+sign*6.35,y+offset,270) if axis==0 else (x+offset,y+sign*6.35,270)
+    box('Corner crown granite portal pier',pos,(1.0,1.0,19),stone)
+   pos=(x+sign*6.35,y,279) if axis==0 else (x,y+sign*6.35,279)
+   size=(1.05,9.4,1.0) if axis==0 else (9.4,1.05,1.0)
+   box('Corner crown open portal architrave',pos,size,strap)
+for side in (-1,1):
+ for axis in (0,1):
+  for offset in (-4.2,4.2):
+   pos=(side*10.35,offset,274.0) if axis==0 else (offset,side*10.35,274.0)
+   box('Central crown projecting granite portal pier',pos,(1.0,1.0,24),stone)
+  pos=(side*10.35,0,285.5) if axis==0 else (0,side*10.35,285.5)
+  size=(1.05,9.4,1.0) if axis==0 else (9.4,1.05,1.0)
+  box('Central crown open portal architrave',pos,size,strap)
 # Western winter garden wing stays within the mapped nine-by-forty-metre half-span corridor.
 WEST,EAST,Y0,HALF=-70.5,-30.5,-1.0,9.5
 for y in (Y0-HALF,Y0+HALF):

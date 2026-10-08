@@ -18,11 +18,13 @@ func _initialize():
 	call_deferred("run")
 
 
-func first_hit(exterior: Mesh, start: Vector3, end: Vector3) -> Vector3:
+func first_hit(exterior: Mesh, start: Vector3, end: Vector3, material_name: String = "") -> Vector3:
 	var nearest = INF
 	var result = Vector3.INF
 	for surface in exterior.get_surface_count():
 		var mat = exterior.surface_get_material(surface)
+		if material_name != "" and mat.resource_name != material_name:
+			continue
 		var arrays = exterior.surface_get_arrays(surface)
 		var vertices = arrays[Mesh.ARRAY_VERTEX]
 		var indices = arrays[Mesh.ARRAY_INDEX]
@@ -72,6 +74,12 @@ func run():
 			check(not mat.emission_enabled, "Day extinguishes 311 South Wacker fixtures")
 			Night.set_night(holder, true)
 			check(mat.emission_enabled, "Night enables recessed 311 South Wacker fixtures")
+	var pier = first_hit(exterior, Vector3(-25, 270, 7.8), Vector3(-17, 270, 7.8), "Flamed Texas red granite")
+	check(pier != Vector3.INF and pier.x < -18, "Crown portal contains projecting physical granite pier")
+	var opening = first_hit(
+		exterior, Vector3(-25, 270, 12), Vector3(-17, 270, 12), "Flamed Texas red granite"
+	)
+	check(opening == Vector3.INF, "Granite crown portal leaves the cylinder opening clear")
 	var roof = first_hit(exterior, Vector3(-50, 30, 1), Vector3(-50, 21, 1))
 	print("WACKER311 WINTER GARDEN ROOF ", roof)
 	check(roof != Vector3.INF and roof.y > 25.5 and roof.y < 26.2, "Physical curved winter garden roof")

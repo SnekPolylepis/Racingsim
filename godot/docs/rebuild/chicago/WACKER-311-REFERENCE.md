@@ -61,3 +61,27 @@ Final broader run: all38headless Chicago suites pass148.8s, including both
 road geometry49checks, menu115, building37 and authoredcoverage23. Parse passed
 separately. Windowed clipping/capture evidence is recorded above. Full game
 suites and lap baselines were not rerun for this scenery-only integration.
+
+### Crown portal fidelity pass — 2026-10-08
+
+Replaced asymmetric crown piers with physically open granite portals on the
+outward faces of all four smaller cylinders and all four central-cylinder faces,
+using the architect's exterior photo as shape reference. Physical architraves,
+projecting piers and exposed glazing remain distinct geometry. Current original
+Blender source and GLB:569,284triangles/13materials; cache183. Foundation, road
+and record versions unchanged. Detailed crown proportions remain photo-fit.
+
+Generation assertions/import pass. Mac Godot4.6.2/M4 Metal Forward+ building39
+checks and parse pass; two new granite-only ray probes prove a projecting pier
+and clear portal opening. Four actual final High production images inspected:
+Grid full tower and close crown, day/night, under screenshots/chicago-wacker311-
+crown-mac. Both two-view jobs exit0/empty stderr. Filenames ending river are
+close crown cameras in this folder, not river-level views. Previous full38suite,
+both-layout clip scans and driver-height images remain dated pre-portal evidence;
+not rerun for this roof-only change. No export/manual-driving/performance claim.
+
+Facade band calibration, base/entrance connections and winter-garden sculpture
+remain open. Next close unmodeled named candidate:200SouthWacker w64888042,
+8.5m from Grid station6445 in the current inventory; verify references, mapped
+foundation and both-layout placement before modeling. Remaining whole-track
+building objective is active, including unnamed trackside footprints.
