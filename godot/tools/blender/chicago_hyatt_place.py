@@ -76,6 +76,12 @@ for a,b in zip(ring,ring[1:]+ring[:1]):
    if not entry:part('Individual recessed curtain pane',x,low+.9+(step-.9)/2,pitch-.075,step-.96,.24,.035,glass)
  part('Ground wing lobby glazing',wing_center,2.6,wing-.2,5.0,.50,.04,glass)
  for x in [-wing/2,0,wing/2]:part('Ground wing pier',wing_center+x,2.6,.20,5.2,0,.45,stone)
+ if north:
+  # The same photographed canopy wraps the glass corner; extend to meet the east projection.
+  part('North corner canopy return',tower_center-1.5,4.35,tower+3,.30,-1.45,3.0,metal)
+  for c in range(1,cols):
+   part('Return soffit panel joint',tower_center-tower/2+c*pitch,4.18,.035,.025,-1.45,2.85,dark)
+  for d in [-.65,-1.6,-2.5]:part('Return transverse panel joint',tower_center-1.5,4.18,tower+3,.025,d,.035,dark)
  if east:
   # Firsthand July2017 street photographs establish the broad metal canopy,
   # lettered fascia, panelled soffit and glazed entry near the north glass corner.

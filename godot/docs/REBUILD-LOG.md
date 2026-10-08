@@ -5427,6 +5427,17 @@ Blender completed56628tri/six materials, empty stderr. Not imported/reviewed
 or installed yet; next standalone source review and both-route integration.
 No EXE export.
 
+REFINE CHI-3D Hyatt canopy corner 2026-10-07
+Added physical north canopy return and soffit seams joining east projection;
+Blender25768tri/sixmaterials. Geometry13 includes finite triangle hit verifying
+return beyond north glass wall. Gates20261007-230711 all sixPASS98s:
+geometry13/menu103/coverage23/bothclipsoneeach/parse (141checks plusparse).
+NativePID99632 terminalCITYREVIEWPASS/empty stderr; actual updated north entry
+approach day/night inspected. Fence still partly screens doors; no wider visual
+completion claim. Source-only, no EXE. City Hall HABS exterior specifications
+and WJE restoration project read; conflicting205ft/200ft heights recorded for
+next model rather than using mapped73.5m. Roof logo/rear fidelity still pending.
+
 
 DONE CHI-3D Borg-Warner 2026-10-05
 Standalone corner/entry images actually inspected; initial interior backing

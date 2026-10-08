@@ -36,9 +36,10 @@ HYATT PLACE lettering, panel joints on underside, and wraps the glass corner.
 Glazed entrance doors visible below near the north corner; exact door operation,
 profiles and dimensions not established by these small oblique photographs.
 Draft adds straight metal canopy, panel seams, raised fascia text, recessed
-glazing/stiles/rails/pull handles. North corner canopy return remains pending.
+glazing/stiles/rails/pull handles. North corner canopy return added and reviewed.
 Owner exterior photograph also inspected; same upper view as architect photo,
 ground cropped. Owner prose18stories differs from CVU17floors; retain both
 source claims without asserting a measured floor survey.
 Integrated no rotation at(-932,8,230.4),cache148; mapped shell explicitly
-excluded. Initial source placement gates pass; entrance revision review pending.
+excluded. Source placement gates pass; Grid day/night entry approaches reviewed.
+Fence screens some lower door details. Colored roof logo/rear fidelity pending.

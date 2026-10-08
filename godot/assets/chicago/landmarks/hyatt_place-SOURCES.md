@@ -13,6 +13,7 @@ July2017 Lsyambot street/entrance photographs actually inspected2026-10-07:
 https://www.tripadvisor.com/LocationPhotoDirectLink-g35805-d7905734-i264999479-Hyatt_Place_Chicago_Downtown_the_Loop-Chicago_Illinois.html
 https://media-cdn.tripadvisor.com/media/photo-s/0f/cb/92/45/outside.jpg
 Broad metal canopy, panelled soffit, raised fascia text and physical recessed
-door glazing/rails/handles added. Dimensions fitted, corner return pending.
+door glazing/rails/handles added. Dimensions fitted; canopy wraps north corner.
 Integrated at mapped origin/cache148 in both routes, exact mapped shell excluded.
-25,648tri/sixmaterials. Final entrance/placement visual review pending.
+25,768tri/sixmaterials. Grid entry approach day/night reviewed; six source gates
+pass, including both clips. Fence partly screens doors. Logo/rear fidelity pending.

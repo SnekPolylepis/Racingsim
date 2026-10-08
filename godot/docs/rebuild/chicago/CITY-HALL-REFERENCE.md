@@ -22,4 +22,21 @@ Photo dates not established. No asset created and no exterior completion claim.
 
 [Library of Congress HABS IL-1128](https://www.loc.gov/item/il0439/)
 is a primary survey candidate for measured geometry/historical roof changes;
-not yet read or used as modeling evidence. Entrance/NW municipal photos pending.
+Entrance/NW municipal photos pending.
+
+## Primary dimensions read2026-10-07
+
+[HABS descriptive PDF](https://tile.loc.gov/storage-services/master/pnp/habshaer/il/il0400/il0439/data/il0439data.pdf),
+PDFpage14 (zero-based13), exterior description:11full stories, three-story
+base70ft(21.336m); Corinthian order118ft(35.9664m):base6ft(1.8288m),
+shaft75.5ft(23.0124m),capital12.5ft(3.81m),entablature24ft(7.3152m).
+Column diameter9ft(2.7432m),attic17ft(5.1816m),total205ft(62.484m) sidewalk
+to coping. PDFpage16 says cornice removed in1940s. Historic specifications
+need comparison with current photos before recreating the former cornice.
+
+[WJE facade inspection/restoration project](https://www.wje.com/projects/detail/chicago-city-hall)
+read2026-10-07:11stories,200ft(60.96m) above street,entire block373ft
+(113.6904m) in both directions,west City/east County. Granite lower3floors
+and columns fourth–ninth; terra cotta above. Its rounded height differs from
+HABS62.484m and mapped73.5m. Do not treat mapped height as authoritative;
+model choice and retained uncertainty must be explicit. No geometry authored yet.
