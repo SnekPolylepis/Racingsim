@@ -136,3 +136,23 @@ profile and roof services need refinement. Court width/depth/wing heights need
 roof-reference confirmation. Integration, game material switching, source
 production views and both-layout footprint/clip checks remain next.
 Cache185/original@v7/Grid@v5 unchanged; no app export; full goal active.
+
+## Morton curved balcony correction — Mac2026-10-08
+
+Inspected original Visviva2020-01-10 street photo, CC0:
+https://commons.wikimedia.org/wiki/File:208_West_Washington_south_jpg.jpg .
+This closer reference shows two rounded reddish balcony stacks, inset rectangular
+stone spandrel panels and fan-like base capital relief. Replaced draft straight
+slabs/rails with half-ellipse slab noses, curved physical rails and25 uprights
+per balcony. Original stylized fan relief and inset stone panel mouldings added.
+166,938tri/eightmaterials, editable Blender/GLB regenerated. Balcony outline
+assertions verify25points and2.45m maximum projection. Exact photographed
+carving, dimensions and narrower central window/panel rhythm remain photo-fit.
+
+Blender4.5.3 generation, Godot4.6.2 import, isolated daylight/low-light and close
+balcony views pass exit0/empty stderr; all three images visually inspected in
+chicago-morton-draft-mac. Ground entry is not sufficiently established by this
+upward photograph. Further street-level reference/entrance authoring remains
+before integration/material-contract and production track validation. The
+reference changed the next action from integrating straight balconies to
+correcting their photographed shape. Cache185/road versions unchanged.

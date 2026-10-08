@@ -8,6 +8,11 @@ https://npgallery.nps.gov/GetAsset/d489a6ed-fbcc-41b5-8804-7351b2bbb6a4
 Original Visviva2020-01-06 southeast photograph, CC0, inspected as reference only:
 https://commons.wikimedia.org/wiki/File:208_West_Washington_southeast.jpg
 
-144500tri/eight materials, staged. Court proportions, storefront/entrance and
+166938tri/eight materials, staged. Court proportions, storefront/entrance and
 fine relief need further authoring; no full fidelity/integration acceptance.
 See docs/rebuild/chicago/WASHINGTON-208-212-REFERENCE.md for dated evidence.
+
+Closer original Visviva2020-01-10 street photo, CC0, inspected:
+https://commons.wikimedia.org/wiki/File:208_West_Washington_south_jpg.jpg
+Curved balcony outlines and original stylized stone panels/capital fans
+are authored geometry; no photo texture included. Fine carving remains provisional.

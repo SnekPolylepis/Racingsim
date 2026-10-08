@@ -2,7 +2,7 @@
 import bpy,math,sys,json
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from architecture import material,box,mesh,arch,finish
+from architecture import material,box,mesh,line,arch,finish
 OUT=Path(sys.argv[sys.argv.index('--')+1]).resolve()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 stone=material('Morton pale stone base and attic',(.60,.56,.46),roughness=.9)
@@ -12,7 +12,7 @@ metal=material('Morton dark window sashes',(.13,.14,.13),roughness=.8)
 glass=material('Morton recessed blue grey panes',(.14,.21,.25),roughness=.55)
 night=material('Night occupied Morton panes',(.14,.21,.25),roughness=.55,glow=.2)
 roof=material('Morton dark roof and interior',(.095,.09,.085),roughness=.95)
-iron=material('Morton dark hung balcony iron',(.115,.13,.12),roughness=.85)
+iron=material('Morton dark hung balcony iron',(.29,.17,.14),roughness=.85)
 cx,cz=-813.5,136.65
 city=json.loads((Path(__file__).resolve().parents[2]/'trackgen/data/chicago/city.json').read_text())
 b=next(b for b in city['buildings'] if b.get('o')=='w147095676')
@@ -69,9 +69,14 @@ for ring,start,end in [(plan,0,4),(upper,4,21)]:
     for zz in (z+1.22,z+4.08):part('Physical sill or lintel',(x,.03,zz),(2.5,.38,.16),stone if row<4 else brick,a,b)
     part('Continuous facade pier',(j*bay,.02,z+2.175),(.58,.38,4.35),stone if row<4 else brick,a,b)
     if front and row>=5 and j in [1,bays-2]:
-     part('Dark hung balcony slab',(x,.8,z+1.15),(2.9,1.8,.16),iron,a,b)
-     part('Physical balcony top rail',(x,1.6,z+2.25),(2.9,.05,.05),iron,a,b)
-     for k in range(13):part('Open iron balcony picket',(x-1.38+k*.23,1.6,z+1.7),(.03,.03,1.1),iron,a,b)
+     # Rounded balcony noses are visible in the south street photograph.
+     outline=[(x+2.35*math.cos(t*math.pi/24),.25+2.2*math.sin(t*math.pi/24)) for t in range(25)]
+     assert len(outline)==25 and max(y for _,y in outline)==2.45
+     orient(prism('Curved hung balcony slab',outline,z+1.15,z+1.31,iron),a,b)
+     tx,ty=b[0]-a[0],b[1]-a[1];d=math.hypot(tx,ty);tx/=d;ty/=d
+     railing=[(a[0]+u*tx+v*ty,a[1]+u*ty-v*tx,z+2.25) for u,v in outline]
+     line('Curved physical balcony top rail',railing,.035,iron)
+     for u,v in outline:part('Curved balcony upright',(u,v,z+1.78),(.035,.035,1.05),iron,a,b)
    part('Facade end pier',(width,.02,z+2.175),(.58,.38,4.35),stone if row<4 else brick,a,b)
   if start==0:
    for zz in (4.4,17.1):part('Wrapping base stone cornice',(width/2,.38,zz),(width,.60,.36),stone,a,b)
@@ -79,6 +84,16 @@ for ring,start,end in [(plan,0,4),(upper,4,21)]:
     x=j*bay
     for zz in (7,10,13,16):part('Banded base pier',(x,.30,zz),(.72,.24,.16),stone,a,b)
     part('Base Egyptian capital block',(x,.32,16.6),(.96,.55,.45),stone,a,b)
+    # shortcut: lotus fan relief is an original stylized fit; measured carving profiles remain future fidelity work.
+    for dx in (-.26,-.13,0,.13,.26):
+     leaf=[(x+dx*.4,.63,15.70),(x+dx-.065,.65,16.35),(x+dx,.69,16.65),(x+dx+.065,.65,16.35)]
+     orient(mesh('Physical lotus capital fan',leaf,[(0,1,2),(0,2,3)],stone),a,b)
+   for row in (1,2):
+    for j in range(bays):
+     x=(j+.5)*bay;zz=row*PITCH+.52
+     part('Inset stone base spandrel panel',(x,.22,zz),(2.35,.06,.72),stone,a,b)
+     for dx in (-1.18,1.18):part('Raised panel side moulding',(x+dx,.28,zz),(.06,.11,.80),stone,a,b)
+     for dz in (-.40,.40):part('Raised panel horizontal moulding',(x,.28,zz+dz),(2.42,.11,.06),stone,a,b)
   if start==4:part('Wing parapet cornice',(width/2,.28,91.35),(width,.55,.30),stone,a,b)
 # Raised southern attic visible in the reference photo, with physical circular stone surrounds.
 box('Raised attic red brick',(0,-23,94.5),(24,9,6),brick)

@@ -446,3 +446,8 @@ NPS/Visviva photo. Two native isolated views checked, not production acceptance.
 Refine storefront/entry and ornament/court/bay/balcony proportions, then integrate
 and validate materials/footprint/production day-night/clip scans. Cache185 unchanged.
 Details in WASHINGTON-208-212-REFERENCE.md; full trackside goal active.
+
+Morton refinement2026-10-08: closer south photo corrected balconies to curved
+reddish stacks; inset stone panels and stylized capital fans added.166938tri/
+eight materials, isolated day/low-light and close balcony review passes. Still
+staged; establish entrance then integrate/material/production/clip checks.

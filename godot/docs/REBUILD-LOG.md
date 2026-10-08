@@ -6277,3 +6277,14 @@ Godot4.6.2 import and two native isolated day/low-light captures exit0/empty
 stderr, images viewed. Storefront/entry, ornament and measured court/bay/balcony
 refinement pending, then integration/production night contract/both-layout checks.
 See WASHINGTON-208-212-REFERENCE.md. No cache/road/export changes.
+
+### REFINED Morton curved balconies and stone base —2026-10-08
+
+Closer Visviva south street original shows rounded reddish balcony stacks,
+not straight dark slabs. Rebuilt curved noses/rails/25physical uprights, added
+inset rectangular stone panels and original stylized capital fan relief.
+Blender/GLB166938tri/eightmaterials regenerated with outline/envelope asserts.
+Godot4.6.2 import and isolated day/low-light plus balcony-close captures pass
+exit0/empty stderr; all viewed. Entry reference/authoring and precise panel
+spacing/court/ornament still open before integration and production checks.
+No cache/road/export change; detailed evidence in WASHINGTON-208-212-REFERENCE.md.
