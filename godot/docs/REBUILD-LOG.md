@@ -6341,3 +6341,17 @@ High Grid production frontage day/night views inspected; both capture jobs
 load current cache and exit0/empty stderr, editor import clean. Entries/atrium/
 crown/module coverage and measured proportions remain open in BLOCK-37-REFERENCE.md.
 Original@v7/Grid@v5 unchanged; no export or new lap/performance claim.
+
+### REFINED Block37 State Street storefront —2026-10-08
+
+Primary Gensler retail photo guides physical paired door/showcase panes, silver
+frames/pulls/transoms,16fascia ventilation slats and continuous shallow soffit
+with night fixtures.192936tri/eight materials/cache190. Exact tenant-door bays
+and dimensions remain photo-fit. Dedicated27/parse pass2.8s (door ray/exposure
+checks included); final menu115 pass249.7s. Both full native clips pass104Grid/
+120original accepted hits/empty stderr, two current-cache High storefront day/
+night source renders inspected/exit0/empty stderr. Blender/import clean.
+Operator2022brochure level1/3 plans and Gensler atrium photo inspected to guide
+next roof/main-passage placement; not roof acceptance. Actual main mall entries,
+atrium/crown and other ground faces remain open. Roads/timing unchanged; no
+export/newlaps/performance claim. See BLOCK-37-REFERENCE.md for evidence/limits.

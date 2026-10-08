@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache189. See latest dated evidence below. Continue trackside building
+Grid@v5/cache190. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -481,3 +481,12 @@ Detailed evidence in BLOCK-37-REFERENCE.md. Next refine actual entrance portals/
 canopies/signage, atrium glazing/roof, asymmetric warm tower inset shapes/crown
 and podium strip coverage against primary photos. Keep remaining City/County
 reliefs and other trackside fidelity work open. No route change/export/newlaps.
+
+Block37 State Street storefront refined/cache190:192936tri/eight materials,
+physical clear paired doors/showcases/transoms/pulls, ventilation fascia and
+night soffit fixtures.27/parse/menu115 and both full native clips pass; two
+current-cache storefront day/night images reviewed. Actual mall portals/signage,
+other ground faces and exact tenant-door bays remain open. Primary Gensler
+atrium photo and operator2022level1/3 floor plans now inspected; use these
+relationships plus roof photos to author the atrium glazing, not a guessed
+rectangular hole. Source links/evidence in BLOCK-37-REFERENCE.md. No export.

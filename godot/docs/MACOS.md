@@ -600,3 +600,12 @@ editor import exit0/empty stderr. Architectural entries/atrium/crown remain
 incomplete; northeast image crops crown and day glare limits upper detail review.
 No new laps, performance/Intel/manual-drive claim or app export. Evidence:
 rebuild/chicago/BLOCK-37-REFERENCE.md and screenshots/chicago-block37-mac.
+
+2026-10-08 Block37 storefront refinement/cache190:192936tri/eight materials.
+Dedicated27/parse pass2.8s, final serial menu115 pass249.7s. Both full native
+clip scans pass104Grid/120original accepted hits/empty stderr. Two actual High
+Grid storefront day/night renders inspected/current cache loaded/exit0/empty
+stderr; Blender regeneration/editor import clean. Race fence and cabinet limit
+some storefront detail visibility. Actual mall portals/atrium/crown and exact
+bay placement remain open. Roads/timing unchanged; no export/newlaps/performance
+or Intel/manual-drive claim. Detailed evidence in BLOCK-37-REFERENCE.md.

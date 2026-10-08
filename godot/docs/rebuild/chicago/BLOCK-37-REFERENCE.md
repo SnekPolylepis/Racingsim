@@ -82,3 +82,52 @@ capture jobs load cache189 and finish exit0/empty stderr; native editor import
 also clean. Northeast framing crops upper crown and daylight has direct sun
 glare; these views establish frontage/night operation, not crown fidelity.
 No new laps, manual drive, performance, Intel validation or app export claimed.
+
+## Additional primary geometry evidence —2026-10-08
+
+Gensler street-retail photograph actually inspected:
+https://static2.gensler.com/uploads/hero_element/3910/thumb_desktop/thumbs/project_block-37_03_1025x576_1404850061_1024x576.jpg
+Shows transparent storefronts, silver door/transom framing, continuous dark
+horizontal ventilation fascia and projecting soffit. Capture date not stated;
+asset upload timestamp is not evidence of capture date. Tenant branding is not
+embedded in the model. Door placement/count remains photo-fit.
+
+Gensler atrium photograph actually inspected:
+https://static2.gensler.com/uploads/hero_element/3912/thumb_desktop/thumbs/project_block-37_05_1399481244_1024x576.jpg
+Shows physical roof glazing/white cross beams and curved gallery edges. It does
+not establish the exact outside roof plan or street alignment.
+
+Operator/CIM leasing brochure read; level-one/level-three diagrams visually
+inspected (PDF pages6/8, one-based):
+https://cdn.placewise.com/CIM/block37/files/Block37LeasingBrochure8.5.22-compressed.pdf.pdf
+Its street-labeled plans identify the southern22WestWashington office block,
+northern residential lobby and branching central retail passages/atrium. The
+upper lobby footprint is not proof of the tower footprint. Use the diagrams to
+fit atrium relationships before authoring roof openings; confirm roof geometry
+against overhead photos. Brochure filename indicates2022version; tenant layout
+is historical evidence, not a current tenant guarantee. No brochure/photo
+embedded or redistributed.
+
+## State Street storefront refinement —cache190
+
+192936tri/eight materials, editable Blender regenerated. Street-retail photo
+guides separate clear showcase/door panes, paired1m door leaves, transoms,
+silver frames/pulls, continuous shallow soffit and16physical dark ventilation
+slats. Ground storefront lights share the existing Night material/switching.
+Only the State Street face is refined here. Exact tenant-door bay positions
+and fascia dimensions remain photo-fit; actual main mall entries/signage,
+other ground faces, atrium roof and crown remain open.
+
+Dedicated27checks and parse pass2.8s: eight-material contract/clear alpha.18,
+night switching, roof tiers/retained foundation and two physical door rays
+confirm panes are recessed and exposed rather than blocked by opaque backing.
+Native editor import/Blender exit0/empty stderr. Both full native clipping scans
+pass104Grid/120original accepted hits/empty stderr. No Block37 exemption.
+Two actual High Grid storefront day/night source renders inspected at
+(-294,10.3,100), current cache loaded, exit0/empty stderr; race fence partially
+screens glazing/pulls and existing cabinet screens right showcase. Files:
+screenshots/chicago-block37-mac/chicago_grid-storefront-{day,night}.png.
+This is exterior/recess evidence, not a modeled retail-interior acceptance.
+Roads/timing remain original@v7/Grid@v5; no new laps/performance/export claim.
+Earlier all43suite result is cache189 evidence; final current menu115 checks
+pass249.7s, serialized. No current full43 rerun claimed.

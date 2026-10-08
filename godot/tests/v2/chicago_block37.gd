@@ -50,7 +50,7 @@ func run():
 	check(fixture.position.distance_to(Vector3(-357.2, 8, 104.25)) < .01, "Mapped compound origin")
 	var bounds = exterior.get_aabb()
 	print("BLOCK37 BOUNDS ", bounds)
-	check(exterior.get_surface_count() == 7, "Seven physical exterior materials")
+	check(exterior.get_surface_count() == 8, "Eight physical exterior materials")
 	check(bounds.position.x > -52 and bounds.end.x < 52, "Retained east west envelope")
 	check(bounds.position.z > -61 and bounds.end.z < 61, "Retained north south envelope")
 	check(absf(bounds.position.y + 8) < .01, "Retained buried foundation")
@@ -58,12 +58,32 @@ func run():
 	for surface in exterior.get_surface_count():
 		var mat = exterior.surface_get_material(surface)
 		check(mat.albedo_texture == null, "Original physical geometry: " + mat.resource_name)
+		if mat.resource_name.begins_with("Clear"):
+			check(
+				(
+					mat.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA
+					and absf(mat.albedo_color.a - .18) < .001
+				),
+				"Storefront exposes physical recess"
+			)
 		if mat.resource_name.begins_with("Night"):
 			check(mat.has_meta("chicago_night"), "Occupied panes carry night flag")
 			Night.set_night(holder, false)
 			check(not mat.emission_enabled, "Day extinguishes occupied panes")
 			Night.set_night(holder, true)
 			check(mat.emission_enabled, "Night enables occupied panes")
+	var door = first_hit(
+		exterior,
+		Vector3(60, 1.5, -5.654),
+		Vector3(45, 1.5, -5.654),
+		"Clear Block37 recessed storefront glazing"
+	)
+	check(door != Vector3.INF and door.x < 49.6 and door.x > 49.3, "Retail door glazing physically recessed")
+	var visible = first_hit(exterior, Vector3(60, 1.5, -5.654), Vector3(45, 1.5, -5.654))
+	check(
+		visible != Vector3.INF and visible.distance_to(door) < .01,
+		"Opaque backing leaves retail door exposed"
+	)
 	for probe in [[Vector3(0, 150, -44), 130.0], [Vector3(-10, 100, 40), 80.0], [Vector3(25, 40, 15), 26.0]]:
 		var hit = first_hit(exterior, probe[0], probe[0] - Vector3.UP * 150)
 		check(hit != Vector3.INF and absf(hit.y - probe[1]) < .02, "Separate roof tier " + str(probe[1]))

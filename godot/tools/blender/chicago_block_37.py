@@ -10,6 +10,8 @@ metal=material('Block37 silver curtain wall frames',(.49,.54,.57),metallic=.2,ro
 panel=material('Block37 woven silver steel panels',(.57,.60,.61),metallic=.3,roughness=.8)
 glass=material('Block37 recessed blue grey panes',(.15,.24,.31),roughness=.38)
 night=material('Night occupied Block37 panes',(.15,.24,.31),roughness=.38,glow=.2)
+clear=material('Clear Block37 recessed storefront glazing',(.29,.37,.40),roughness=.5)
+clear.node_tree.nodes.get('Principled BSDF').inputs['Alpha'].default_value=.18
 roof=material('Block37 dark backing and roof',(.07,.08,.09),roughness=.9)
 bronze=material('Block37 warm tower inset panels',(.45,.27,.13),metallic=.3,roughness=.6)
 cx,cz=-357.2,104.25
@@ -54,15 +56,40 @@ def facade(poly,bottom,top,rows,woven=False):
  assert pitch>2.5
  for a,b in zip(poly,poly[1:]+poly[:1]):
   width=math.dist(a,b);bays=max(1,round(width/(4.8 if woven else 2.4)));bay=width/bays
+  state_front=woven and a[0]>48 and b[0]>48
   for row in range(rows):
    z=bottom+row*pitch
    part('Floor spandrel',(width/2,-.12,z+.28),(width,.16,.56),metal,a,b)
    for j in range(bays):
     x=(j+.5)*bay
-    part('Separate physical curtain pane',(x,-.25,z+pitch/2+.28),(bay-.09,.05,pitch-.65),night if (row*19+j*7)%37==3 else glass,a,b)
+    if state_front and row==0:
+     # shortcut: tenant-door spacing is photo-fit; calibrate bays against a complete State Street elevation.
+     entrance=j in (2,7,13,20)
+     if entrance:
+      flank=(bay-2.2)/2
+      assert flank>.8
+      for dx in (-.54,.54):part('Individual recessed retail door pane',(x+dx,-.45,1.50),(1.0,.05,2.72),clear,a,b)
+      for dx in (-1.1-flank/2,1.1+flank/2):part('Door flanking showcase pane',(x+dx,-.45,1.80),(flank-.10,.05,3.35),clear,a,b)
+      part('Separate paired door transom pane',(x,-.45,3.19),(2.10,.05,.52),clear,a,b)
+     else:
+      for dx in (-bay/4,bay/4):part('Clear individual storefront pane',(x+dx,-.45,1.80),(bay/2-.10,.05,3.35),clear,a,b)
+     for dx in ((-bay/2+.04,-1.08,0,1.08,bay/2-.04) if entrance else (-bay/2+.04,0,bay/2-.04)):
+      part('Shopfront silver ground jamb',(x+dx,-.32,1.80),(.065,.20,3.55),metal,a,b)
+     part('Shopfront door transom rail',(x,-.32,2.85),(bay-.07,.20,.07),metal,a,b)
+     part('Shopfront lower rail',(x,-.32,.13),(bay-.07,.20,.07),metal,a,b)
+     if entrance:
+      for dx in (-.16,.16):part('Paired recessed door pull',(x+dx,-.18,1.50),(.035,.08,.55),metal,a,b)
+     part('Shopfront display ceiling',(x,-.67,3.65),(bay-.10,.50,.10),roof,a,b)
+     part('Night shopfront soffit fixture',(x,-.57,3.58),(.35,.20,.035),night,a,b)
+    else:
+     part('Separate physical curtain pane',(x,-.25,z+pitch/2+.28),(bay-.09,.05,pitch-.65),night if (row*19+j*7)%37==3 else glass,a,b)
     part('Vertical curtain mullion',(j*bay,-.10,z+pitch/2),(.065,.22,pitch),metal,a,b)
    part('End curtain mullion',(width,-.10,z+pitch/2),(.065,.22,pitch),metal,a,b)
    part('Horizontal curtain rail',(width/2,-.08,z+pitch-.04),(width,.23,.08),metal,a,b)
+  if state_front:
+   part('Continuous shallow storefront soffit',(width/2,.12,3.85),(width,.70,.18),metal,a,b)
+   for k in range(16):part('Individual horizontal ground ventilation louvre',(width/2,.01,4.05+k*.085),(width,.16,.035),roof,a,b)
+   part('Ventilation fascia upper rail',(width/2,.02,5.40),(width,.20,.09),metal,a,b)
   if woven:
    for j in range(bays+1):part('Tall stone podium pier',(j*bay,.04,(bottom+top)/2),(.36,.42,top-bottom),stone,a,b)
    # Photo shows alternating bowed strips with gaps, not a flat metal texture.
