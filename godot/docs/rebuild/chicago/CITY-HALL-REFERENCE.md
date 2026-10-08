@@ -39,4 +39,27 @@ read2026-10-07:11stories,200ft(60.96m) above street,entire block373ft
 (113.6904m) in both directions,west City/east County. Granite lower3floors
 and columns fourth–ninth; terra cotta above. Its rounded height differs from
 HABS62.484m and mapped73.5m. Do not treat mapped height as authoritative;
-model choice and retained uncertainty must be explicit. No geometry authored yet.
+model choice and retained uncertainty must be explicit.
+
+## Draft source exterior2026-10-07
+
+Original Blender geometry chooses HABS62.484m coping, retaining the WJE
+height discrepancy as uncertainty. Exact west-half ring, origin(-626,8,106.35),
+no rotation/cache149. South/north/west physical triple sash panes/rails,
+rusticated base, tapered fluted columns, stylized capital leaves, wreath
+spandrels, frieze rings and small attic panes. Bay counts7/7/18 fitted to mapped
+faces; not surveyed elevations. East reentrant wall and roof retain notches;
+court windows, roof garden and actual entrances still pending.185192tri/sixmats.
+Mapped w108240964 shell excluded. Both routes load the exterior; native Grid
+south/west day/night views inspected. Filenames "entrance" show west columns
+and window bays, not proof of main entrance. Six targeted checks pass; draft.
+
+Municipal [NW4856](https://webapps1.chicago.gov/landmarksweb/web/photodetails.htm?phoId=4856)
+actual Hedrich-Blessing monochrome photograph inspected2026-10-07. Upper
+colonnade/deep window strips and rusticated base visible; doorway small/obscured.
+Photo date unknown. Municipal [sculpture7347](https://webapps1.chicago.gov/landmarksweb/web/photodetails.htm?phoId=7347)
+actual image inspected: Cook County seal flanked by two figures and COUNTY
+BUILDING plaque. This is County entrance evidence, not the west City Hall door.
+Do not copy that seal to City Hall. East County half w108240968 still generic
+75m; paired physical exterior and height correction are next before accepting
+the entire building. Draft west half is not complete block representation.

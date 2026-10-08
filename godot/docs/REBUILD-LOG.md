@@ -5583,3 +5583,26 @@ approach day/night inspected. Fence still partly screens doors; no wider visual
 completion claim. Source-only, no EXE. City Hall HABS exterior specifications
 and WJE restoration project read; conflicting205ft/200ft heights recorded for
 next model rather than using mapped73.5m. Roof logo/rear fidelity still pending.
+
+DRAFT/INTEGRATE CHI-3D City Hall west half 2026-10-07
+Original Blender exterior uses exact w108240964 irregular footprint; origin
+(-626,8,106.35),no rotation/cache149. HABS205ft(62.484m) coping and measured
+column component dimensions chosen; WJE rounded200ft discrepancy retained.
+Three public facades have rusticated base, physical triple sash panes/rails,
+tapered fluted shafts, stylized capital leaves, wreath spandrels/frieze rings
+and attic panes. Eastern court notches retained; no historic removed cornice.
+Blender185192tri/sixmaterials. StandaloneDRAFTREVIEWPASS/empty stderr, actual
+corner and roof images inspected. Geometry10/10PASS verifies height, finite
+triangle pane recess against column and open mapped court notch, no photos.
+Placed shared by both routes; mapped west shell excluded(city3786).
+Gates20261007-231457 all sixPASS96s: geometry10/menu105/coverage23/bothclips
+oneeach/parse (140checks plusparse); baseline Original111/Grid101hits.
+NativePID102208 terminalCITYREVIEWPASS/empty stderr; four actual south/west
+day/night images inspected. "Entrance" filename shows columns/windows, not
+main door proof. Concurrent frozen12.9812ms is not driving/performance benchmark.
+Municipal NW4856 actually inspected. Municipal entry7347 actually inspected:
+Cook County seal/COUNTY BUILDING plaque identifies east entrance, do not copy
+onto City Hall. West main doors/sculptures, court windows and rooftop garden
+remain pending. East County w108240968 remains generic75m and needs paired
+physical exterior/height correction before accepting fullblock. Draft kept
+on working branch; no EXE export.

@@ -173,6 +173,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "authored Mallers exterior"
 		elif b.get("o", "") == "w147397556":
 			exclusion = "authored Hyatt Place exterior"
+		elif b.get("o", "") == "w108240964":
+			exclusion = "authored City Hall west exterior"
 		elif b.get("o", "") == "w124873918":
 			exclusion = "authored Borg-Warner exterior"
 		elif b.get("o", "") == "w147013784":
