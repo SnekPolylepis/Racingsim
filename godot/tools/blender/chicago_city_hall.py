@@ -19,6 +19,11 @@ cx,cz=(-579.65,106.8) if county else (-626,106.35)
 data=json.loads((Path(__file__).resolve().parents[2]/'trackgen/data/chicago/city.json').read_text(encoding='utf-8'))
 foot=next(b['f'] for b in data['buildings'] if b.get('o')==('w108240968' if county else 'w108240964'))
 ring=[(x-cx,cz-z) for x,z in foot]
+def inside(px,py):
+ result=False
+ for a,b in zip(ring,ring[1:]+ring[:1]):
+  if (a[1]>py)!=(b[1]>py) and px<(b[0]-a[0])*(py-a[1])/(b[1]-a[1])+a[0]:result=not result
+ return result
 def prism(name,z,h,mat,scale=1):
  r=[(x*scale,y*scale) for x,y in ring];n=len(r)
  return mesh(name,[(x,y,z-h/2) for x,y in r]+[(x,y,z+h/2) for x,y in r],
@@ -299,11 +304,6 @@ if not county:
  metal=material('City roof galvanized ducts and rails',(.48,.51,.51),metallic=.55,roughness=.72)
  deck=H-.8
  prism('City pale service walk surface',deck+.035,.07,trim)
- def inside(px,py):
-  result=False
-  for a,b in zip(ring,ring[1:]+ring[:1]):
-   if (a[1]>py)!=(b[1]>py) and px<(b[0]-a[0])*(py-a[1])/(b[1]-a[1])+a[0]:result=not result
-  return result
  rng=random.Random(1911)
  bed_vertices=[];bed_faces=[];herb_vertices=[];herb_faces=[]
  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=1)
@@ -348,4 +348,37 @@ if not county:
   for dx in [-3,3]:
    for dy in [-2.8,2.8]:line('City roof service railing upright',[(px+dx,py+dy,top),(px+dx,py+dy,top+1.1)],.035,metal)
   line('City roof service perimeter rail',[(px-3,py-2.8,top+1.1),(px+3,py-2.8,top+1.1),(px+3,py+2.8,top+1.1),(px-3,py+2.8,top+1.1),(px-3,py-2.8,top+1.1)],.035,metal)
+if county:
+ # County side of the Pyszka paired aerial: dark unplanted deck, raised rooms and twin-fan equipment.
+ metal=material('County roof galvanized equipment and pipes',(.48,.50,.49),metallic=.55,roughness=.72)
+ deck=H
+ for px,py,w,d,h in [(-6,0,16,13,5),(-4,-38,10,11,3.8),(-4,40,10,11,3.8),(-12,-3,4,4,7)]:
+  assert all(inside(px+dx,py+dy) for dx in [-(w+.24)/2,(w+.24)/2] for dy in [-(d+.24)/2,(d+.24)/2]), 'County room extends into mapped court'
+  box('County raised mechanical room',(px,py,deck+h/2),(w,d,h),court_stone)
+  box('County mechanical coping',(px,py,deck+h+.12),(w+.24,d+.24,.24),trim)
+  for side in [-1,1]:
+   box('County room separate sash window',(px+side*w*.25,py-d/2-.02,deck+2),(1.1,.04,1.45),glass)
+   for dx in [-.55,.55]:box('County room sash stile',(px+side*w*.25+dx,py-d/2-.05,deck+2),(.07,.10,1.5),dark)
+   box('County room sash meeting rail',(px+side*w*.25,py-d/2-.05,deck+2),(1.15,.10,.075),dark)
+ for px,py,top in [(-6,0,deck+5),(-4,-38,deck+3.8),(-4,40,deck+3.8)]:
+  box('County cooling fan housing',(px,py,top+1.25),(4.7,8.5 if py==0 else 4.5,2.5),metal)
+  for k in range(12):box('County cooling unit physical louver',(px+2.4,py,top+.15+k*.19),(.14,8 if py==0 else 4,.065),dark)
+  for dy in ([-2.15,2.15] if py==0 else [0]):
+   bpy.ops.mesh.primitive_cylinder_add(vertices=32,radius=1.65,depth=.14,location=(px,py+dy,top+2.57))
+   obj=bpy.context.object;obj.name='County dark fan well';obj.data.materials.append(dark)
+   verts=[(px+r*math.cos(k*math.tau/32),py+dy+r*math.sin(k*math.tau/32),top+2.68) for r in [1.68,1.52] for k in range(32)]
+   mesh('County fan raised circular rim',verts,[(k,(k+1)%32,(k+1)%32+32,k+32) for k in range(32)],metal)
+   for k in range(8):
+    theta=k*math.tau/8
+    line('County fan protective radial grille',[(px,py+dy,top+2.70),(px+1.58*math.cos(theta),py+dy+1.58*math.sin(theta),top+2.70)],.025,metal)
+   for k in range(5):
+    theta=k*math.tau/5
+    mesh('County physical cooling fan blade',[(px+.18*math.cos(theta),py+dy+.18*math.sin(theta),top+2.62),(px+1.38*math.cos(theta+.12),py+dy+1.38*math.sin(theta+.12),top+2.62),(px+1.35*math.cos(theta+.40),py+dy+1.35*math.sin(theta+.40),top+2.62)],[(0,1,2)],metal)
+  for dx in [-3.1,3.1]:
+   for dy in [-5,5]:line('County cooling service guardrail post',[(px+dx,py+dy,top),(px+dx,py+dy,top+1.1)],.035,metal)
+  line('County cooling service guardrail',[(px-3.1,py-5,top+1.1),(px+3.1,py-5,top+1.1),(px+3.1,py+5,top+1.1),(px-3.1,py+5,top+1.1),(px-3.1,py-5,top+1.1)],.035,metal)
+  line('County exposed service pipe',[(px+3.6,py-5,top+.4),(px+3.6,py,top+.4),(px+3.6,py,deck+.4),(px+6,py,deck+.4)],.12,metal)
+ for py in [-22,22]:
+  box('County low roof vent housing',(18,py,deck+.45),(1.8,2.5,.9),metal)
+  for k in range(5):box('County vent louver',(18.92,py,deck+.12+k*.15),(.08,2.2,.06),dark)
 finish('county_building' if county else 'city_hall',OUT)

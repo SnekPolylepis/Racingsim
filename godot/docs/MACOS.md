@@ -147,3 +147,14 @@ day/night captures exit0/empty stderr; six images inspected. Five targeted
 suites pass70.6s,172assertions plusparse, including physical pane/pier recess
 on both halves. No export/full-lap/performance acceptance. Exact court details
 and County roof remain provisional. REBUILD-LOG records evidence.
+
+
+### 2026-10-08 County roof continuation
+
+Mac M4/Metal Godot4.6.2 source County286800tri/ninematerials/cache164.
+Import and final four actual High Grid day/night roof/equipment captures exit0,
+empty stderr; images inspected after wing-fan/tower placement refinement.
+Five targeted suites pass69.1s,175assertions plusparse. Coping, raised fans,
+unplanted deck and existing court/entry checks pass. No export/full-lap or
+performance acceptance; roof dimensions/configuration remain photo-fit draft.
+Evidence REBUILD-LOG/screenshots/chicago-county-roof-mac/.

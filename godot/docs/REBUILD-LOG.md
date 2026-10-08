@@ -5805,3 +5805,29 @@ an earlier separate public scratch run had an ObjectDB exit warning. Public
 header transitions still simplified and relief contrast/fidelity remain draft.
 All final captured images in chicago-civic-courts-mac/ replace unpublished
 intermediate captures; earlier committed checkpoint images remain historical.
+
+
+DRAFT CHI-3D County roof equipment 2026-10-08
+Reinspected actual Pyszka/City paired roof aerial published by USGS2019-09-25.
+County original Blender roof now has raised rooms with separate sash panes,
+central twin-fan and shorter single-fan wing housings, physical fan wells/
+blades/rims/radial grilles, louvers, service pipes/guardrails and low vents.
+Unplanted deck retained. First actual render showed repeated twin units;
+refined wing fans. Room-corner footprint check then caught small tower overhang
+into court; relocated tower to central roof and added authoring assertion for
+County room coping corners. Layout, heights and equipment remain photo-fit
+draft; exact configuration/service details not established by the aerial.
+County286800tri/ninematerials/cache164; City unchanged477312tri/elevenmats.
+Mac M4/Metal Godot4.6.2 import exit0/empty stderr. Final five suites PASS69.1s:
+County22/City23/menu107/coverage23 =175assertions plusparse. County coping
+checked by public-parapet ray separately from raised model bounds, with new
+fan-height and unplanted-deck checks; existing court/portal/relief checks pass.
+Four final actual High Grid roof/equipment day/night renders inspected after
+fan/tower refinements in screenshots/chicago-county-roof-mac/. Review exit0,
+empty stderr; night retains source rain. No export/full gates/clipping scan,
+full-lap or performance acceptance. Fine civic sculpture/public transitions,
+exact court/roof configuration remain provisional.
+Next trackside priority225WestWacker (inventory grid boundary distance0.2m,
+not visibility proof). Official owner and KPF/Valerio Dewalt Train pages found;
+need inspect full exterior photos and real route clearance before authoring.
+All remaining trackside buildings remain active; river bridges still queued.

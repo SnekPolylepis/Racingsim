@@ -61,3 +61,25 @@ Removed scaled concave backing that projected into light courts. Shared
 spine/narrow piers retained. 284156tri/8materials/cache161. No photo
 texture. Mac City23/County19/menu107/coverage23 plusparse pass70.6s.
 Exact court fenestration and service details remain draft.
+
+
+County roof continuation2026-10-08: original physical raised service rooms
+with separate sash panes, cooling housings, recessed fan wells, blades/rims/
+radial grilles, louvers, service pipes, rails and low vents. Paired Pyszka
+USGS/City aerial reinspected; unplanted County deck retained. First actual
+Grid render showed overly repeated twin-fan housings; refined wing units to
+shorter single-fan housings while retaining central twin fans. Room dimensions,
+positions, equipment configuration and small services remain photo-fit draft.
+County286800tri/ninematerials/cache164; City unchanged477312tri/elevenmats.
+No photograph imported as a texture. County coping now checked by a ray at
+public parapet, separately from raised equipment bounds.
+Primary paired roof reference: https://www.usgs.gov/media/images/chicago-city-hall-aerial
+
+Room-corner footprint check caught a service-tower overhang into a court;
+relocated tower onto the central roof. Authoring now asserts all County room
+coping corners fall inside the mapped footprint. Fine equipment positions and
+configuration remain inferred.
+
+Final Mac175assertions plusparse pass69.1s; import and four actual High Grid
+day/night roof captures exit0/empty stderr. Photos inspected after refinement.
+No export/full-lap/performance claim. Exact roof configuration remains draft.

@@ -139,3 +139,20 @@ Final cache161 also retains three recessed public-only backing strips; actual
 street review caught/closed holes above portal roofs. Ten final High court
 and public day/night images inspected,combined review exit0/empty stderr.
 Public header transitions and fine relief shading remain simplified.
+
+
+## Current continuation checkpoint — County roof draft
+
+County286800tri/ninematerials/cache164,City477312tri/elevenmaterials.
+Physical service rooms, twin central/single wing fans, louvers, pipes and
+guardrails; deck remains unplanted. Actual render iteration reduced repeated
+fan units; footprint check corrected tower overhang and is now asserted.
+Four final High Grid day/night roof/equipment renders inspected,exit0/empty
+stderr. Mac175assertions plusparse pass69.1s; import exit0/empty stderr.
+Exact equipment/court layout, fine civic reliefs and header transitions stay
+provisional. Next225WestWacker, inventory0.2m from Grid boundary; actual
+visibility/clearance must be checked. Primary owner www.225westwacker.org,
+KPF renovation and Valerio Dewalt Train225W Wacker pages found this pass.
+Continue remaining trackside buildings; bridges later. No export/performance
+claim. Ignored capture visual-review/civic-county-roof.gd, logs mac-civic/.
+Committed evidence screenshots/chicago-county-roof-mac/.

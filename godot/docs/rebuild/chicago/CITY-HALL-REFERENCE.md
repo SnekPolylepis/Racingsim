@@ -187,3 +187,20 @@ exposed small holes above entrance portal roofs. Recessed backing strips now
 follow the three public facades only; court sash recess tests remain clear.
 Public header transitions remain simplified. Final cache161: City477312tri,
 County284156tri; ten actual High Grid day/night court/public views inspected.
+
+
+County roof continuation2026-10-08: original physical raised service rooms
+with separate sash panes, cooling housings, recessed fan wells, blades/rims/
+radial grilles, louvers, service pipes, rails and low vents. Paired Pyszka
+USGS/City aerial reinspected; unplanted County deck retained. First actual
+Grid render showed overly repeated twin-fan housings; refined wing units to
+shorter single-fan housings while retaining central twin fans. Room dimensions,
+positions, equipment configuration and small services remain photo-fit draft.
+County286800tri/ninematerials/cache164; City unchanged477312tri/elevenmats.
+No photograph imported as a texture. County coping now checked by a ray at
+public parapet, separately from raised equipment bounds.
+
+Room-corner footprint check caught a service-tower overhang into a court;
+relocated tower onto the central roof. Authoring now asserts all County room
+coping corners fall inside the mapped footprint. Fine equipment positions and
+configuration remain inferred.

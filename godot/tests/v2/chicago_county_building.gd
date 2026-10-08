@@ -38,13 +38,18 @@ func run():
 	var exterior = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/county_building.glb"
 	)
-	check(exterior.get_surface_count() == 8, "Physical materials including court masonry")
-	check(absf(exterior.get_aabb().end.y - 62.484) < .03, "HABS205ft coping height")
+	check(exterior.get_surface_count() == 9, "Physical materials including court masonry")
+	var coping = first_hit(exterior, Vector3(24.05, 80, -1.25), Vector3(24.05, 0, -1.25))
+	check(absf(coping.y - 62.484) < .03, "HABS205ft coping height")
+	var fan = first_hit(exterior, Vector3(-6, 80, -2.15), Vector3(-6, 0, -2.15))
+	check(fan.y > 70, "Raised County twin fan equipment")
+	var deck = first_hit(exterior, Vector3(18, 80, 40), Vector3(18, 0, 40))
+	check(absf(deck.y - 62.484) < .03, "County unplanted east deck retained")
 	var city_hall = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/city_hall.glb"
 	)
 	var city_coping = first_hit(city_hall, Vector3(-22.8, 80, .25), Vector3(-22.8, 0, .25))
-	check(absf(exterior.get_aabb().end.y - city_coping.y) < .01, "Paired halves share coping height")
+	check(absf(coping.y - city_coping.y) < .01, "Paired halves share coping height")
 	var pane = first_hit(exterior, Vector3(.7, 30.6, 80), Vector3(.7, 30.6, 0))
 	var column = first_hit(exterior, Vector3(3.707, 30.6, 80), Vector3(3.707, 30.6, 0))
 	print("COUNTY SOUTH HITS ", pane, " ", column)
