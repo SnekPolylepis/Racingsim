@@ -437,3 +437,12 @@ Parse/all40Chicago suites and both full clip scans pass; ten actual High source
 day/night images reviewed. See WASHINGTON-208-212-REFERENCE.md for recorded
 checks and remaining ornament/balcony/crown calibration. Morton208 next.
 Road versions/timing unchanged; source-only, full trackside goal continues.
+
+## Morton staged checkpoint2026-10-08
+
+Morton208 original editable Blender/GLB144500tri/eightmaterials staged.
+Upper court and green-panel/red-brick facade with raised attic modeled from
+NPS/Visviva photo. Two native isolated views checked, not production acceptance.
+Refine storefront/entry and ornament/court/bay/balcony proportions, then integrate
+and validate materials/footprint/production day-night/clip scans. Cache185 unchanged.
+Details in WASHINGTON-208-212-REFERENCE.md; full trackside goal active.

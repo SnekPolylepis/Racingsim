@@ -6265,3 +6265,15 @@ final serial capture/clip jobs exit0/empty stderr, warm-cache loads confirmed.
 Foundation clearance163.349991original/8.841562Grid; portal opening/recess rays
 pass. Detailed evidence/limits in WASHINGTON-208-212-REFERENCE.md. Fine ornament
 and surveyed balcony/crown dimensions remain; Morton next. No export/newlaps.
+
+### DRAFT Morton upper court and physical facade —2026-10-08
+
+Morton208WestWashington original Blender/GLB144500tri/eightmaterials staged.
+Retained mapped base, U upper court abovefloor4, redbrick/greenpanelgroups,
+physical panes/balconies and raised attic circular surrounds/cornice. Visviva
+2020 southeast original photo inspected; NPS floor/plan details reread.
+Generator orientation/envelope/finite/batch assertions pass; Blender generation,
+Godot4.6.2 import and two native isolated day/low-light captures exit0/empty
+stderr, images viewed. Storefront/entry, ornament and measured court/bay/balcony
+refinement pending, then integration/production night contract/both-layout checks.
+See WASHINGTON-208-212-REFERENCE.md. No cache/road/export changes.

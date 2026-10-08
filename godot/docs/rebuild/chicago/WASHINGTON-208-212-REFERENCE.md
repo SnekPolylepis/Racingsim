@@ -104,3 +104,35 @@ Still open: precise balcony widths/floor coverage, facade bay counts, festoons,
 carved capitals/crown proportions and measured roof equipment. Morton208 next;
 no full-fidelity acceptance claim for Bell and no app export. Existing lap
 evidence remains dated; no new lap/manual-wheel/Intel/performance claim.
+
+## Morton authored draft — Mac2026-10-08
+
+Inspected Visviva2020-01-06 original southeast photograph, CC0:
+https://commons.wikimedia.org/wiki/File:208_West_Washington_southeast.jpg .
+The photograph shows red brick, grouped green vertical/spandrel panels, dark
+hung balcony stacks, a raised southern attic with circular ornament and a
+recess along the Wells frontage. NPS establishes the U shaft above floor4;
+court dimensions/orientation remain photo-fit rather than surveyed.
+No reference photograph or third-party mesh embedded/redistributed.
+
+Added original generator tools/blender/chicago_morton_building.py, editable
+tools/blender/authored/morton_building.blend and assets/chicago/landmarks/morton_building.glb.
+144,500tri/eight materials: retained seven-point mapped foundation, four-storey
+stone base, open Wells-side court above17.4m,21level red-brick wings/green panels,
+separate physical panes/sashes/sills, dark hung balconies and raised southern
+attic with five modeled circular stone surrounds and projecting cornice.
+Main roof91.5m/attic cornice99.5m are provisional fits to raster/photograph.
+Generator asserts ring orientation, finite vertices, envelope and box topology.
+
+Blender4.5.3 regeneration and Godot4.6.2 import pass. Two isolated native Metal
+daylight/low-light views exit0/empty stderr and were visually inspected:
+screenshots/chicago-morton-draft-mac/. These show below-pavement foundation
+and use draft imported lighting; they do not establish production day/night
+acceptance.
+
+Still staged: storefront/entry geometry, precise panel grouping/window bay count,
+balcony proportions, carved base capital/cornice relief, attic wreath/Egyptian
+profile and roof services need refinement. Court width/depth/wing heights need
+roof-reference confirmation. Integration, game material switching, source
+production views and both-layout footprint/clip checks remain next.
+Cache185/original@v7/Grid@v5 unchanged; no app export; full goal active.
