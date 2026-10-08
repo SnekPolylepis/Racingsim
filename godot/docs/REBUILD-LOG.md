@@ -5514,3 +5514,11 @@ Gates20261005-215731 bothclipsALLPASS73s; Grid101baselinehits.
 139checks plusparse. Current fullheight facade photo still outstanding;
 keep this integrated draft distinct from final historicallyverified exterior.
 No EXE export.
+
+REFINE CHI-3D Mallers 2026-10-07
+Modern photographerL1590/L1591 actual previews inspected. Paired windowbays/
+broadcontinuouspiers and upperband refined; rearplain smallapertures visible
+in photo remain pending. Blender47320tri/ninemats; fresh nativegeometry13PASS
+and standaloneDRAFTREVIEWPASS/empty stderr. Updatedcorner actually inspected.
+Currentdoors/plainrearwindow refinement and refreshed trackreview pending.
+No EXE export.

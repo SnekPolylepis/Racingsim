@@ -54,3 +54,17 @@ main entrance. Review north and west street cameras for the replacement.
 Raw OSM accessibility text names an alternate entrance at67EastMadison and
 revolving doors at the main entrance. This is map metadata, not an inspected
 current entrance photograph; use visual evidence before reproducing doors.
+
+## Modern photographer references inspected 2026-10-07
+
+[ChiStockImages L-1590](https://chistockimages.com/downloads/l-1590-mallers-building-chicago-5-south-wabash-avenue-historic-loop-architecture/)
+and [L-1591](https://chistockimages.com/downloads/l-1591-mallers-building-chicago-loop-with-elevated-cta-tracks/)
+were opened via the library's building filter; both actual watermarked preview
+photographs visually inspected. The upper/full-height oblique views show paired
+windows between broad continuous pale piers, narrow intermediate mullions,
+projecting horizontal bands, a pronounced upper transition and bracketed cornice.
+The adjacent side elevation is much plainer, with separate small sash apertures;
+the lower frontage is cropped/obscured, so these do not establish current doors.
+Photograph capture dates are not inferred from upload path dates. No image is
+copied into the game. Draft updated to paired bays and upper band at72.85m;
+module widths/heights remain footprint-fit estimates rather than surveyed counts.

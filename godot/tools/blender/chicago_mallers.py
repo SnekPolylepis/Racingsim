@@ -37,8 +37,8 @@ for edge in range(len(ring)):
  if not public:
   part('Unsurveyed rear wall',0,43,length,86,0,.35,back)
   continue
- # ponytail: bay counts are historical-image estimates; refine against a modern full-height photo.
- cols=max(1,round(length/2.65));pitch=length/cols
+ # ponytail: bay dimensions fit mapped footprint; refine if measured facade drawings become available.
+ cols=max(2,2*round(length/5.3));pitch=length/cols
  for row in range(20):
   low=4+row*4.05;wh=2.65 if row>2 else 2.8
   part('Solid spandrel',0,low+3.42,length,1.25,0,.42,stone)
@@ -48,8 +48,8 @@ for edge in range(len(ring)):
    part('Sill projecting beyond pane',x,low+.3,pitch-.35,.16,-.12,.65,trim)
    part('Sash centre rail',x,low+1.7,pitch-.65,.065,.35,.12,sash)
   for c in range(cols+1):
-   part('Continuous facade pier',-length/2+c*pitch,low+2.025,.58,4.05,0,.52,stone)
- for z,w,h in [(4,.75,.35),(16.1,.8,.5),(76.9,.85,.55),(84.8,1.1,.45),(86.25,1.5,.5),(86.8,1.7,.4)]:
+   part('Paired bay pier' if c%2==0 else 'Narrow paired window mullion',-length/2+c*pitch,low+2.025,.58 if c%2==0 else .14,4.05,0,.52 if c%2==0 else .22,stone if c%2==0 else sash)
+ for z,w,h in [(4,.75,.35),(16.1,.8,.5),(72.85,1.0,.65),(84.8,1.1,.45),(86.25,1.5,.5),(86.8,1.7,.4)]:
   part('Projecting facade belt and cornice',0,z,length+w,h,-.15,w,trim)
  for c in range(cols):
   x=(c-(cols-1)/2)*pitch

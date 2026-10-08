@@ -38,8 +38,8 @@ func run():
 	var exterior = load("res://scripts/track/prop_mesh.gd").mesh("res://assets/chicago/landmarks/mallers.glb")
 	check(exterior.get_surface_count() == 9, "Nine physical materials")
 	check(absf(exterior.get_aabb().end.y - 87) < .02, "87 metre architectural height")
-	var pane = first_hit(exterior, Vector3(-.3, 25.95, -35), Vector3(-.3, 25.95, 0))
-	var pier = first_hit(exterior, Vector3(1.058, 25.95, -35), Vector3(1.058, 25.95, 0))
+	var pane = first_hit(exterior, Vector3(2.2, 25.95, -35), Vector3(2.2, 25.95, 0))
+	var pier = first_hit(exterior, Vector3(-.3, 25.95, -35), Vector3(-.3, 25.95, 0))
 	check(
 		pane != Vector3.INF and pier != Vector3.INF and pane.z - pier.z > .25,
 		"North pane physically behind masonry pier"

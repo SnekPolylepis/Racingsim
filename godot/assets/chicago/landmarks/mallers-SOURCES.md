@@ -12,5 +12,7 @@ Public facades north/west; rear plain. Bay counts, window dimensions, sign size
 and current facade condition remain estimates pending modern full-height review.
 This draft is integrated at(-106.6,8,327), cache147. Native Grid north/west
 and approach day/night views inspected; geometry and both clip scans pass.
-Modern full-height facade photographic confirmation remains outstanding.
-Blender2026-10-05 completed45304triangles/nine materials. No EXE export.
+Modern ChiStockImages L-1590/L-1591 exterior previews inspected2026-10-07;
+paired bay piers and upper band refined. Current entrance geometry still
+requires a clear ground photograph; dimensions remain estimates.
+Blender2026-10-05 completed47320triangles/nine materials. No EXE export.
