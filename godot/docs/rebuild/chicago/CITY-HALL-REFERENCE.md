@@ -163,3 +163,27 @@ edges and sparse planting. Refined authoring to half-metre bed boundaries and
 denser seeded varied physical vegetation; planting is joined into two meshes
 before export. The initial separate-object build exceeded180s; joined authoring
 completed. Paths/plant species and equipment remain approximate.
+
+
+## Paired court reference inspected2026-10-08
+
+[USGS paired City Hall aerial](https://www.usgs.gov/media/images/chicago-city-hall-aerial),
+published2019-09-25; Patrick L.Pyszka, City of Chicago; page public domain.
+Downloaded original001 cityhall roof.jpg for visual study, no game texture.
+Actual view shows both deep open light courts, pale utilitarian walls with
+repeated dark sash openings and projecting sills, distinct from public
+colonnades. Most lower floors are shadowed/occluded. Model bays, sill sizes
+and floor heights are photo-fit inference, not a measured court elevation.
+HABS descriptive text rechecked: public floor levels/materials documented,
+but no court fenestration dimensions established.
+Court authoring removes the scaled concave backing because its reentrant
+edges projected solid geometry into courts. Physical masonry bands/piers,
+separate recessed panes, sash stiles/meeting rails and sills replace blank
+wall sheets. Shared spine and narrow piers retained. Exact openings and
+small court services remain provisional. County roof equipment is still open.
+
+Public closure refinement: actual street review after removing concave backing
+exposed small holes above entrance portal roofs. Recessed backing strips now
+follow the three public facades only; court sash recess tests remain clear.
+Public header transitions remain simplified. Final cache161: City477312tri,
+County284156tri; ten actual High Grid day/night court/public views inspected.

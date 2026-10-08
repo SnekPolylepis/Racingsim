@@ -47,3 +47,14 @@ aerial.436344tri/tenmaterials/cache159. County remains240024tri/sevenmaterials.
 Photo-fit equipment/layout, not a current survey; plant species and fine garden
 contours remain approximate. County roof and court glazing still open. No
 photographic texture or per-building export.
+
+
+2026-10-08 light-court draft: physical pale masonry bands/piers, recessed
+sash panes/stiles/meeting rails and projecting sills from actually inspected
+Pyszka/City paired aerial published by USGS2019-09-25:
+https://www.usgs.gov/media/images/chicago-city-hall-aerial
+Bay/floor/sill dimensions are photo-fit inference; lower floors shadowed.
+Removed scaled concave backing that projected into light courts. Shared
+spine/narrow piers retained. 477312tri/11materials/cache161. No photo
+texture. Mac City23/County19/menu107/coverage23 plusparse pass70.6s.
+Exact court fenestration and service details remain draft.

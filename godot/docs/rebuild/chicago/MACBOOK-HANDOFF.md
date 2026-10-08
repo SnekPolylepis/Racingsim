@@ -119,3 +119,23 @@ Next: court glazing, County roof, finer sculpture/garden fidelity, then
 remaining trackside buildings. Photo-fit equipment/layout remain provisional.
 No export/performance claim. Ignored capture visual-review/civic-roof.gd,
 logs mac-civic/; committed screenshots/chicago-city-roof-mac/.
+
+
+## Current continuation checkpoint — paired light-court draft
+
+City477312tri/elevenmaterials,County284156tri/eightmaterials/cache161.
+Physical pale masonry with recessed sash panes, frames and sills replaces
+blank court walls; scaled concave backing removed because it filled recesses.
+Second actually inspected USGS/City paired aerial linked in reference doc.
+Final Mac172assertions plusparse pass70.6s; import/court review exit0,empty
+stderr. Six actual High Grid court day/night views inspected. Bay/floor/sill
+dimensions are photo-fit draft; exact fenestration/services unresolved.
+Next County roof equipment from paired aerial, finer civic details, then all
+remaining trackside buildings. No export/performance claim. Ignored captures
+visual-review/civic-courts.gd and civic-courts-public.gd, logs mac-civic/.
+Committed evidence screenshots/chicago-civic-courts-mac/.
+
+Final cache161 also retains three recessed public-only backing strips; actual
+street review caught/closed holes above portal roofs. Ten final High court
+and public day/night images inspected,combined review exit0/empty stderr.
+Public header transitions and fine relief shading remain simplified.

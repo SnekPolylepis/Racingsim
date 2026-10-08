@@ -38,7 +38,7 @@ func run():
 	var exterior = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/city_hall.glb"
 	)
-	check(exterior.get_surface_count() == 10, "Ten physical materials including roof planting and metal")
+	check(exterior.get_surface_count() == 11, "Physical materials including court masonry")
 	var coping = first_hit(exterior, Vector3(-22.8, 80, .25), Vector3(-22.8, 0, .25))
 	check(absf(coping.y - 62.484) < .03, "HABS205ft coping height")
 	var equipment = first_hit(exterior, Vector3(-1, 80, 0), Vector3(-1, 0, 0))
@@ -69,6 +69,21 @@ func run():
 	var court = first_hit(exterior, Vector3(12, 80, -22), Vector3(12, 0, -22))
 	print("CITY HALL COURT HIT ", court)
 	check(court == Vector3.INF, "Mapped eastern courtyard notch remains open")
+	var court_middle = Vector3(9.15, 29, 28.45)
+	var court_along = Vector3(-24.9, 0, .5).normalized()
+	var court_out = Vector3(court_along.z, 0, -court_along.x) * -1
+	var court_pane = first_hit(exterior, court_middle + court_out * 5, court_middle - court_out * 2)
+	var pier_center = court_middle + court_along * (24.90502 / 14)
+	var court_pier = first_hit(exterior, pier_center + court_out * 5, pier_center - court_out * 2)
+	print("COURT PANE/PIER HITS ", court_pane, " ", court_pier)
+	check(
+		(
+			court_pane != Vector3.INF
+			and court_pier != Vector3.INF
+			and (court_pier - court_pane).dot(court_out) > .20
+		),
+		"Court sash physically recessed behind masonry pier"
+	)
 	var middle = Vector3(-22.8, 0, .25)
 	var along = Vector3(1.6, 0, 112).normalized()
 	var outward = Vector3(-along.z, 0, along.x)

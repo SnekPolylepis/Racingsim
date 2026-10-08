@@ -38,7 +38,7 @@ func run():
 	var exterior = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/county_building.glb"
 	)
-	check(exterior.get_surface_count() == 7, "Seven original physical materials including bronze entrance")
+	check(exterior.get_surface_count() == 8, "Physical materials including court masonry")
 	check(absf(exterior.get_aabb().end.y - 62.484) < .03, "HABS205ft coping height")
 	var city_hall = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/city_hall.glb"
@@ -70,6 +70,21 @@ func run():
 	print("COUNTY COURT HIT ", court)
 	check(court == Vector3.INF, "Mapped western courtyard notch remains open")
 	# Cast at both outer seals using the mapped Clark face, independent of mesh names.
+	var court_middle = Vector3(-8.45, 29, -29.75)
+	var court_along = Vector3(28, 0, -.3).normalized()
+	var court_out = Vector3(-court_along.z, 0, court_along.x)
+	var pane_center = court_middle + court_along * (28.00161 / 16)
+	var court_pane = first_hit(exterior, pane_center + court_out * 5, pane_center - court_out * 2)
+	var court_pier = first_hit(exterior, court_middle + court_out * 5, court_middle - court_out * 2)
+	print("COURT PANE/PIER HITS ", court_pane, " ", court_pier)
+	check(
+		(
+			court_pane != Vector3.INF
+			and court_pier != Vector3.INF
+			and (court_pier - court_pane).dot(court_out) > .20
+		),
+		"County court sash physically recessed behind masonry pier"
+	)
 	var middle = Vector3(24.05, 0, -1.25)
 	var along = Vector3(-1.4, 0, -112.1).normalized()
 	var outward = Vector3(-along.z, 0, along.x)

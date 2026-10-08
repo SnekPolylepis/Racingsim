@@ -50,3 +50,14 @@ geometry, no image texture. County240024tri/sevenmaterials/cache157. County17
 and paired City16 geometry pass; four actual High-quality Grid day/night views
 inspected with empty stderr. Full evidence/limits in REBUILD-LOG2026-10-08.
 Court glazing/roof details and fine sculpture remain open. No export.
+
+
+2026-10-08 light-court draft: physical pale masonry bands/piers, recessed
+sash panes/stiles/meeting rails and projecting sills from actually inspected
+Pyszka/City paired aerial published by USGS2019-09-25:
+https://www.usgs.gov/media/images/chicago-city-hall-aerial
+Bay/floor/sill dimensions are photo-fit inference; lower floors shadowed.
+Removed scaled concave backing that projected into light courts. Shared
+spine/narrow piers retained. 284156tri/8materials/cache161. No photo
+texture. Mac City23/County19/menu107/coverage23 plusparse pass70.6s.
+Exact court fenestration and service details remain draft.

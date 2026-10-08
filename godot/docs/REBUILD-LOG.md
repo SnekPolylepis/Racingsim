@@ -5769,3 +5769,39 @@ captures retain current source weather; no synthetic rooftop illumination.
 No export, full gates, clipping rerun or performance/full-lap acceptance.
 Previous driving/presentation evidence remains dated cache156. Remaining
 trackside building work stays active; river bridges follow buildings.
+
+
+DRAFT CHI-3D paired civic light-court windows 2026-10-08
+Actually inspected second USGS/City Pyszka paired aerial, published2019-09-25,
+showing pale court walls, repeated dark sash windows and projecting sills.
+Original Blender court masonry bands/piers with true window openings,
+recessed separate panes, sash stiles/meeting rails and projecting sills.
+Removed scaled concave backing: its reentrant edges projected opaque geometry
+into courts and would mask new fenestration. Shared spine/narrow piers remain.
+City477276tri/elevenmaterials,County284120tri/eightmaterials/cache160.
+Bay/floor/sill dimensions are inferred; lower floors obscured in reference.
+Not a measured court elevation or full detail acceptance.
+Mac Godot4.6.2 Metal/M4 import exit0/empty stderr. Final five suites PASS14.0s:
+City23/County19/menu107/coverage23 =172assertions plusparse. Initial new
+depth rays sampled sash meeting rails; corrected to pane interiors and both
+pane/pier depth tests pass. Existing court openness, portals, reliefs, public
+pane/column depth and coping/roof tests retained.
+Six actual final High Grid paired/City/County court day/night captures inspected
+in screenshots/chicago-civic-courts-mac/. Review exit0/empty stderr; night
+retains current source rain. Public entrances additionally reviewed after
+backing removal; result recorded below.
+No export, full gates, clipping scan, full-lap or performance acceptance.
+Fine civic sculpture/court details and County rooftop equipment remain open;
+then remaining trackside buildings, with river bridges still queued.
+
+Final court checkpoint refinement/cache161: public entrance renders after
+backing removal exposed small unbacked gaps above portal roofs. Three recessed
+public-only backing strips restore closure without filling court recesses.
+City477312tri/elevenmaterials,County284156tri/eightmaterials. Final import
+exit0/empty stderr; five suites PASS70.6s,172assertions plusparse.
+All ten final High Grid court and public entrance day/night images actually
+inspected. Combined review exit0/empty stderr after allowing10cleanupframes;
+an earlier separate public scratch run had an ObjectDB exit warning. Public
+header transitions still simplified and relief contrast/fidelity remain draft.
+All final captured images in chicago-civic-courts-mac/ replace unpublished
+intermediate captures; earlier committed checkpoint images remain historical.

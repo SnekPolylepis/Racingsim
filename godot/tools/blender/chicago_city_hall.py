@@ -24,7 +24,7 @@ def prism(name,z,h,mat,scale=1):
  return mesh(name,[(x,y,z-h/2) for x,y in r]+[(x,y,z+h/2) for x,y in r],
   [tuple(range(n-1,-1,-1)),tuple(range(n,2*n))]+[(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)],mat)
 prism('Exact mapped foundation',-4,8,back)
-prism('Inset irregular opaque backing',H/2 if county else (H-1)/2,H-.6 if county else H-1,back,.90)
+# Reentrant walls are physical masonry and panes; scaled concave backing would fill their window recesses.
 prism('Mapped roof retaining eastern court notches',H-.25,.5,roof) if county else prism('City roof deck below coping',H-1,.4,roof)
 # Three continuous public elevations; eastern reentrant walls retain mapped geometry.
 faces=([('south',foot[21],foot[0],7),('north',foot[1],foot[2],7),('east',foot[0],foot[1],18)]
@@ -45,6 +45,7 @@ for name,aa,bb,cols in faces:
     theta=2*math.pi*i/count;radius=r*(1-.075*(1+math.cos(theta*20))/2 if fluted else 1)
     verts.append((x+radius*math.cos(theta),d+radius*math.sin(theta),z))
   return placed(mesh(label,verts,[tuple(range(count-1,-1,-1)),tuple(range(count,2*count))]+[(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)],mat))
+ part('Recessed backing behind public facade only',0,H/2,length,H-.6,2.2,.20,back)
  pitch=length/cols;ww=pitch*.66
  # ponytail: public bay counts and horizontal spacing are photo-fit estimates, not measured elevations.
  for row in range(3):
@@ -264,10 +265,33 @@ for name,aa,bb,cols in faces:
   for dx in [-.6,.6]:part('Small separate attic pane',x+dx,59.9,.75,1.6,.55,.035,glass)
  for c in range(cols+1):part('Attic pier',-length/2+c*pitch,59.9,pitch-2.1,1.9,0,.5,stone)
  part('Coping without removed historic cornice',0,62.25,length,.468,-.06,.7,trim)
+court_stone=material('Pale utilitarian light court masonry',(.62,.59,.50),roughness=.95)
+# ponytail: court bays and floor spacing are photo-fit from the Pyszka paired aerial; seek measured elevations for final fidelity.
 for i in range(2,21 if county else 19):
  a,b=ring[i],ring[i+1];length=math.dist(a,b)
- obj=box('Unsurveyed mapped courtyard wall',(0,0,H/2),(length,.30,H),back)
- obj.rotation_euler.z=math.atan2(b[1]-a[1],b[0]-a[0]);obj.location=((a[0]+b[0])/2,(a[1]+b[1])/2,0)
+ origin=((a[0]+b[0])/2,(a[1]+b[1])/2,0);angle=math.atan2(b[1]-a[1],b[0]-a[0])
+ if i in [2,10,20 if county else 18] or length<3:
+  part('Mapped shared spine or narrow court pier',0,H/2,length,H,0,.30,court_stone)
+  continue
+ cols=max(1,round(length/3.5));pitch=length/cols;ww=min(1.65,pitch*.55)
+ levels=[0,7.112,14.224,21.336,26,30.6,35.2,39.8,44.4,49,55.7,H]
+ for lo,hi in zip(levels,levels[1:]):
+  wh=min(3.6,hi-lo-1.8);z=(lo+hi)/2
+  for sign in [-1,1]:
+   h=(hi-lo-wh)/2
+   part('Court masonry below and above opening',0,z+sign*(wh+h)/2,length,h,0,.30,court_stone)
+  for c in range(cols):
+   x=(c-(cols-1)/2)*pitch
+   part('Court separate recessed sash glazing',x,z,ww,wh,.12,.035,glass)
+   for dx in [-ww/2,ww/2]:part('Court physical sash stile',x+dx,z,.07,wh,.04,.10,dark)
+   part('Court sash meeting rail',x,z,ww,.075,.04,.10,dark)
+   part('Court projecting stone sill',x,z-wh/2-.07,ww+.22,.14,-.16,.55,trim)
+  for c in range(cols+1):
+   x=-length/2+c*pitch
+   width=(pitch-ww)/2 if c in [0,cols] else pitch-ww
+   if c==0:x+=width/2
+   elif c==cols:x-=width/2
+   part('Court masonry window pier',x,z,width,wh,0,.30,court_stone)
 if not county:
  # Pyszka/City aerial published by USGS2019; dimensions/configuration are photo-fit, not surveyed.
  meadow=material('City roof sedum meadow',(.24,.34,.10),roughness=1)

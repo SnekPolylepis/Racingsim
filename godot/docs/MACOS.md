@@ -137,3 +137,13 @@ roof/equipment captures exit0,empty stderr; images actually inspected after
 plant/path refinement. Five targeted suites pass71.3s,168assertions plusparse.
 No export/full-lap/performance validation; courtyard/County roof fidelity open.
 Evidence: REBUILD-LOG and rebuild/screenshots/chicago-city-roof-mac/.
+
+
+### 2026-10-08 paired light-court continuation
+
+Mac M4/Metal Godot4.6.2 source: City477312tri/elevenmaterials and
+County284156tri/eightmaterials/cache161. Import and actual High Grid court
+day/night captures exit0/empty stderr; six images inspected. Five targeted
+suites pass70.6s,172assertions plusparse, including physical pane/pier recess
+on both halves. No export/full-lap/performance acceptance. Exact court details
+and County roof remain provisional. REBUILD-LOG records evidence.
