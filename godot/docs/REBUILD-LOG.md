@@ -6240,3 +6240,15 @@ raster shows Bell main roof near82m below91.5maximum; tall southern L wing must
 not become the adjacent garage. Recorded mapped envelopes and floor/ornament
 requirements in chicago/WASHINGTON-208-212-REFERENCE.md. Models/integration
 and actual day/night review remain next; no route/cache/export changes.
+
+### DRAFT Bell Building physical exterior —2026-10-08
+
+Authored editable Bell212WestWashington Blender/GLB draft,127,404tri/nine
+materials, retained L foundation,20-level stone/brick tripartite facade, physical
+paired windows, crown piers/triglyphs, double portal and balcony stacks. Visviva
+2020 facade photograph corrected sparse balconies and solid stone cap. Finite
+vertex/envelope/batch assertions pass; Blender regeneration, Godot4.6.2 import
+and native isolated day/low-light captures exit0/empty stderr; both viewed.
+See WASHINGTON-208-212-REFERENCE.md and chicago-bell-draft-mac screenshots.
+Still staged: closer photo-fit, fine ornament, production material contract,
+integration/track captures/rays/clip checks remain. No route/cache/export change.

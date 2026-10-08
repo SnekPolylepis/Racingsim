@@ -42,3 +42,33 @@ panels. Preserve mapped foundations and added physical balconies. Integrate and
 review native day/night on both layouts, footprint rays and full clip scans.
 No model integrated yet, no cache/road/timing change, no app export. Full goal
 continues; this reference closes ambiguity about identity, style and roof tags.
+
+## Bell authored draft — Mac2026-10-08
+
+Added `tools/blender/chicago_bell_building.py`, original editable
+`tools/blender/authored/bell_building.blend` and `assets/chicago/landmarks/bell_building.glb`.
+Nine materials/127,404 triangles. Retains the six-point L foundation;20 storeys
+with82m main roof, rusticated stone base, brick shaft, fluted stone crown piers
+and triglyph/cornice strips. Physical paired panes/reveals, recessed double
+arches, bracket balconies and open iron residential balcony stacks. Generator
+asserts finite vertices, envelope, floor height and batched box topology. Ground
+stone bands/spandrels and intermediate piers stop before the entrance zone.
+
+Inspected original photograph by Visviva,2020-01-10, CC0:
+https://commons.wikimedia.org/wiki/File:212_West_Washington_southeast.jpg .
+It shows dark continuous balcony stacks and pale upper piers with brick
+spandrels; revised sparse draft balconies and solid stone cap accordingly.
+Reference only: no external image embedded in the asset/repository.
+
+Blender4.5.3 regeneration, Godot4.6.2 headless import and two native Metal
+standalone daylight/low-light captures exited0 with empty stderr. Images in
+`docs/rebuild/screenshots/chicago-bell-draft-mac/` were visually inspected.
+These isolated views show the foundation below nominal pavement; they are
+not production day/night review or track acceptance. Night emission still
+uses draft imported material settings, not the game time-of-day contract.
+
+Remaining: closer photo-fit balcony dimensions/coverage, facade bay counts,
+true entrance recess/arch clearance, festoons, carved capitals/crown proportions
+and surveyed rooftop services. Integration, material day/night switching,
+production views on both layouts, foundation probes and clip scans still pending.
+Original@v7/Grid@v5/cache184 unchanged. Morton remains next; full goal active.

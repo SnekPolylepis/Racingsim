@@ -421,3 +421,11 @@ references remain within unchanged2% tolerance; four original Formula cases
 still have no timing baseline. No baseline rewritten. Logs mac-civic/wacker300-*.
 These runs validate the corrected route, not visual-only screenshots or manual
 wheel driving. The full trackside-model objective remains active.
+
+## Bell draft checkpoint2026-10-08
+
+Bell212WestWashington editable Blender/GLB draft staged,127,404tri/nine
+materials; source import and isolated native day/low-light views checked.
+Not integrated/accepted: photo-fit balconies/entry/crown, production day/night
+materials and both-layout checks remain next. See WASHINGTON-208-212-REFERENCE.md.
+Morton208 next; cache184 and road versions unchanged; no app export.
