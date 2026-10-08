@@ -5642,3 +5642,23 @@ Native PID110408 terminalCITYREVIEWPASS/empty stderr; final bronze entrance
 day/night images actually inspected. Frozen17.25ms is not a driving benchmark.
 County portals/sculptures, City relief figures, courtyard glazing and roof
 garden/equipment still pending. Source-only; no executable exported.
+
+REFINE / OWNER PAUSE CHI-3D County Clark entrance 2026-10-07
+Primary Ian Abbott2014-08-01 frontage actually inspected: three projecting
+stone portals, recessed bronze doors/transoms and distinct County reliefs.
+Shared original authoring creates east portals, reveals, nested jambs and
+bronze panes/rails/pulls.190184tri/sevenmaterials/cache154. Photo-fit sizes,
+no photographs used as game textures. Four relief fields still empty.
+Standalone PID112156 terminalDRAFTREVIEWPASS/empty stderr; entry image
+inspected. County geometry13 includes finite recessed door/transom hits
+x22.6791 versus lintel25.2293. Final gates20261007-233858 sevenPASS98s:
+County13/City12/menu107/coverage23/both clips oneeach/parse (157checks plus
+parse); Original111/Grid101baseline unchanged. Native PID107720 terminal
+COUNTY PAIR CITY REVIEW PASS/empty stderr; actual entry day/night inspected.
+Frozen14.59ms is not driving performance evidence. Four current City/County
+entry screenshots saved under rebuild/screenshots/chicago-civic-entrances.
+Owner asked pause, push all current work and MacBook handoff. Goal paused.
+No export; all authoring/GLB/source/checks/docs committed on working branch.
+City/County relief figures/seals, court glazing, roof garden/equipment still
+pending, then remaining trackside exteriors. River bridges queued later.
+Handoff: rebuild/chicago/MACBOOK-HANDOFF.md. No pending Godot/Blender process.

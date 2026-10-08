@@ -38,7 +38,7 @@ func run():
 	var exterior = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/county_building.glb"
 	)
-	check(exterior.get_surface_count() == 6, "Six original physical materials")
+	check(exterior.get_surface_count() == 7, "Seven original physical materials including bronze entrance")
 	check(absf(exterior.get_aabb().end.y - 62.484) < .03, "HABS205ft coping height")
 	var city_hall = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/city_hall.glb"
@@ -53,6 +53,20 @@ func run():
 	check(
 		pane != Vector3.INF and column != Vector3.INF and column.z - pane.z > 1,
 		"South triple sash glazing physically behind fluted column"
+	)
+	var door = first_hit(exterior, Vector3(60, 1.65, -.5), Vector3(0, 1.65, -.5))
+	var transom = first_hit(exterior, Vector3(60, 4.6, -.5), Vector3(0, 4.6, -.5))
+	var lintel = first_hit(exterior, Vector3(60, 6.74, -.5), Vector3(0, 6.74, -.5))
+	print("COUNTY ENTRY HITS ", door, " ", transom, " ", lintel)
+	check(
+		(
+			door != Vector3.INF
+			and transom != Vector3.INF
+			and lintel != Vector3.INF
+			and lintel.x - door.x > 1.5
+			and lintel.x - transom.x > 1.5
+		),
+		"Clark doors and transoms physically recessed behind portal lintel"
 	)
 	var court = first_hit(exterior, Vector3(-12, 80, -22), Vector3(-12, 0, -22))
 	print("COUNTY COURT HIT ", court)

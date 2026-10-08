@@ -82,3 +82,14 @@ Original west geometry now has three physical recessed entrances with separate
 panes, rails, pulls, nested jambs, lintel ornaments and stone reveals. Placement
 and dimensions are photo-fit estimates. Four relief frames are empty until
 figures are authored; this refinement does not complete entrance fidelity.
+
+## Clark County entrance2026-10-07
+
+Primary photographer [Ian Abbott2014 frontage](https://www.flickr.com/photos/ian_e_abbott/14982757782)
+actually inspected, photo taken2014-08-01: three stone portals with recessed
+metal doors and tall transoms. Outer reliefs show County seals with paired
+standing figures; inner panels differ from City water-supply figure.
+Shared authoring now creates physical east portals using photo-fit dimensions.
+190184tri/sevenmaterials/cache154. Four relief fields remain empty pending
+sculpting; court glazing and roof fidelity remain unfinished. Native Clark
+entry day/night images inspected. References viewed only, not game textures.

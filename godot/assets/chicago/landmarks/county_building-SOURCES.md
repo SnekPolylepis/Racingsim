@@ -13,3 +13,17 @@ No external photo textures, no EXE export. Integrated source draft. Geometry11/C
 checks and parse pass (20261007-232157). Corrected native Grid south approach
 and southeast corner day/night actually inspected; doors are not shown/proven.
 Original camera was inside opposite scenery and rejected as visual evidence.
+
+Clark entrance refinement2026-10-07: shared original geometry now creates
+three physical stone portals, nested jamb mouldings, layered projecting heads,
+recessed door/transom panes and separate bronze frames/pulls on the east face.
+190184tri/sevenmaterials/cache154. Portal sizes/placement are photo-fit.
+Primary photographer Ian Abbott, taken2014-08-01, actually inspected:
+https://www.flickr.com/photos/ian_e_abbott/14982757782
+Full frontage shows three portals and different County reliefs. Photo viewed
+only, not copied as a game texture. Four relief frames remain empty; figures
+and seals are still pending, as are court glazing/roof equipment.
+
+Final20261007-233858 seven targeted gates PASS98s (157checks plusparse).
+Native PID107720 terminalCITYREVIEWPASS/empty stderr; Clark entrance
+day/night actually inspected. Geometry13 checks recessed doors/transoms.

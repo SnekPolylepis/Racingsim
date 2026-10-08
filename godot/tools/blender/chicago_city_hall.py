@@ -14,7 +14,7 @@ back=material('Opaque recessed backing and unsurveyed courts',(.26,.25,.23),roug
 roof=material('Roof slab and coping',(.31,.32,.30),roughness=.95)
 H=62.484 # HABS205ft coping; WJE rounded200ft differs. See reference limits.
 county='--county' in sys.argv
-bronze=material('LaSalle bronze door and transom frames',(.37,.27,.13),metallic=.45,roughness=.55) if not county else dark
+bronze=material('Clark bronze door and transom frames' if county else 'LaSalle bronze door and transom frames',(.37,.27,.13),metallic=.45,roughness=.55)
 cx,cz=(-579.65,106.8) if county else (-626,106.35)
 data=json.loads((Path(__file__).resolve().parents[2]/'trackgen/data/chicago/city.json').read_text(encoding='utf-8'))
 foot=next(b['f'] for b in data['buildings'] if b.get('o')==('w108240968' if county else 'w108240964'))
@@ -49,7 +49,7 @@ for name,aa,bb,cols in faces:
  # ponytail: public bay counts and horizontal spacing are photo-fit estimates, not measured elevations.
  for row in range(3):
   low=row*7.112
-  entry_row=not county and name=='west' and row==0
+  entry_row=name==('east' if county else 'west') and row==0
   if entry_row:
    for sign in [-1,1]:part('Base band outside LaSalle entrances',sign*(length/4+pitch),low+.95,length/2-2*pitch,1.9,0,.6,stone)
   else:part('Rusticated base solid band',0,low+.95,length,1.9,0,.6,stone)
@@ -68,8 +68,8 @@ for name,aa,bb,cols in faces:
    if entry_row and abs(x)<2*pitch:continue
    part('Rusticated base pier',x,low+4.35,pitch-ww,4.9,0,.65,stone)
    for z in [low+2.2,low+3.4,low+4.6,low+5.8]:part('Physical shallow rustication joint',x,z,pitch-ww,.025,-.34,.025,dark)
- if not county and name=='west':
-  # LaSalle photo by Ajay Suresh (2021): three portals, recessed bronze doors/transoms.
+ if name==('east' if county else 'west'):
+  # LaSalle Ajay Suresh2021 / Clark Ian Abbott2014: three stone portals and bronze glazing.
   # ponytail: portal sizes photo-fit; relief figures remain unmodeled pending sculpting.
   for sign in [-1,1]:part('Solid outer entrance masonry',sign*1.84*pitch,3.15,.32*pitch,6.3,0,.65,stone)
   for x in [-pitch,0,pitch]:
