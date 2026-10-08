@@ -50,5 +50,19 @@ func run():
 		check(mat.albedo_texture == null, "Sharp original geometry: " + mat.resource_name)
 	var pane = first_hit(exterior, Vector3(-35, 18, 3), Vector3(-20, 18, 3), "Sharp recessed blue grey panes")
 	check(pane != Vector3.INF, "Sharp west facade physical recessed pane")
+	var arch_top = first_hit(
+		exterior,
+		Vector3(-35, 70.9, -.1203125),
+		Vector3(-20, 70.9, -.1203125),
+		"Sharp pale terracotta surrounds"
+	)
+	check(arch_top != Vector3.INF, "Sharp upper parapet arch has physical terracotta ring")
+	var opening = first_hit(
+		exterior,
+		Vector3(-35, 70.7, -.1203125),
+		Vector3(-20, 70.7, -.1203125),
+		"Sharp dark recessed interior and roof"
+	)
+	check(opening != Vector3.INF and opening.x > -26.0, "Sharp upper parapet opening physically recessed")
 	print("SHARP DRAFT RESULTS ", {"checks": checks, "failures": failures})
 	quit(0 if failures.is_empty() else 1)

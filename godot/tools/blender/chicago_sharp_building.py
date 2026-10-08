@@ -2,7 +2,7 @@
 import bpy,math,sys,json
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from architecture import material,box,mesh,line,finish
+from architecture import material,box,mesh,line,arch,finish
 OUT=Path(sys.argv[sys.argv.index('--')+1]).resolve()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 brick=material('Sharp warm tan brick',(.45,.38,.28),roughness=.9)
@@ -70,9 +70,17 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
   part('Sharp end masonry pier',(width,.02,z),(.62,.4,top-bottom),brick,a,b)
  for z,h,depth in [(10,.55,.70),(H-1.1,.45,.85),(H-.25,.50,1.0)]:
   part('Sharp continuous projecting belt/cornice',(width/2,.15,z),(width,depth,h),trim,a,b)
- for j in range(max(1,round(width/.65))):
-  x=(j+.5)*width/max(1,round(width/.65))
-  part('Sharp cornice individual corbel',(x,.12,H-1.8),(.28,.6,.65),trim,a,b)
+ # shortcut: two-tier arch size/spacing are photo-fit; replace with measured parapet sections when available.
+ count=max(1,round(width/.75));pitch=width/count
+ assert pitch>.6
+ for tier in range(2):
+  z=H-1.65+tier*.75
+  for j in range(count):
+   x=(j+.5)*pitch
+   part('Sharp dark recessed parapet opening',(x,-.12,z+.04),(.40,.05,.48),roof,a,b)
+   orient(arch('Sharp physical terracotta parapet arch',.20,.31,(x,z+.05),.10,.32,trim,segments=16),a,b)
+   for dx in (-.255,.255):part('Sharp parapet arch jamb',(x+dx,.10,z-.12),(.11,.32,.34),trim,a,b)
+   part('Sharp parapet arch sill',(x,.10,z-.32),(.62,.32,.10),trim,a,b)
 for name,(vertices,faces) in facade_batches.items():
  assert len(vertices)%8==0 and len(faces)*4==len(vertices)*3,name
  mesh('Batched '+name,vertices,faces,bpy.data.materials[name])

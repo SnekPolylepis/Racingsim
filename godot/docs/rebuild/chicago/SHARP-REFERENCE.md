@@ -64,3 +64,18 @@ Files screenshots/chicago-sharp-draft-mac/chicago_grid-full-{day,night}.png.
 No integration/cache revision/road identity/export/lap/performance/full-suite
 claim. Next refine masonry/window proportions and arched parapet, inspect
 uncropped crown/base, integrate only after both full clipping scans.
+
+
+2026-10-08 Sharp staged parapet refinement: replaced simple corbels with two
+rows of original physical terracotta arch rings/jambs/sills and dark recessed
+openings, following the previously inspected restoration-architect photograph.
+135456tri/six materials, dimensions/spacing/unseen faces remain photo-fit.
+Standalone draft14 geometry checks pass, including upper ring/recess rays;
+generator pitch/batch assertions pass. Blender/editor import exit0/empty stderr.
+Two actual High Grid close crown day/night source renders inspected at
+(-150,78,461), looking(-118,77,427), FOV55; crown is now uncropped and
+arch rows visible, though daylight glare and shadows affect readability.
+Capture exit0/empty stderr. Files chicago-sharp-draft-mac/chicago_grid-crown-
+{day,night}.png. Still staged; monumental base/entrance/roof/skylight, masonry
+proportions/height and full placement/integration clipping remain open. No
+cache revision/road/timing/export/newlaps/full-suite/performance/Intel claim.
