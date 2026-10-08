@@ -56,5 +56,9 @@ func run():
 	)
 	for surface in exterior.get_surface_count():
 		check(exterior.surface_get_material(surface).albedo_texture == null, "No photographic facade")
+	var canopy = first_hit(exterior, Vector3(40, 4.35, 0), Vector3(0, 4.35, 0))
+	check(canopy != Vector3.INF and canopy.x > 15.5, "Solid entrance canopy projects over sidewalk")
+	var doorway = first_hit(exterior, Vector3(40, 1.7, -10.4), Vector3(0, 1.7, -10.4))
+	check(doorway != Vector3.INF and doorway.x < 12.5, "Entrance glazing and rails recessed behind facade")
 	print("HYATT RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))
 	quit(0 if failures.is_empty() else 1)

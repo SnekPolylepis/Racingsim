@@ -178,6 +178,7 @@ func run() -> void:
 				excluded_chapin_gore += 1
 		check(excluded_chapin_gore == 1, "Mapped Chapin and Gore replaced exactly once")
 		check(app.track.has_node("Scenery/Equitable"), "Equitable loads in Grid")
+		check(app.track.has_node("Scenery/HyattPlace"), "Authored Hyatt Place loads in Grid")
 		check(app.track.has_node("Scenery/WashingtonBlock"), "Washington Block loads in Grid")
 		check(app.track.has_node("Scenery/IAMTemple"), "I AM Temple loads in Grid")
 		var depaul_cdm = app.track.get_node_or_null("Scenery/DePaulCDM")
@@ -345,6 +346,7 @@ func run() -> void:
 			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v4",
 			"Original Chicago remains available with its record identity"
 		)
+		check(app.track.has_node("Scenery/HyattPlace"), "Authored Hyatt Place loads in Original Chicago")
 		check(app.track.has_node("Scenery/TribuneTower"), "Authored Tribune Tower loads in original Chicago")
 		check(app.track.has_node("Scenery/WrigleyBuilding"), "Authored Wrigley loads in original Chicago")
 		check(app.track.has_node("Scenery/BoardOfTrade"), "Authored Board of Trade loads in original Chicago")

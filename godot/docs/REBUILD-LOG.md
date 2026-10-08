@@ -5552,3 +5552,24 @@ frame; corrected probe to actual mapped/aligned mullion coordinate, unchanged
 mesh passes. Entrance, colored roof logo, rear and exact facade modules still
 unverified; draft not placed into either track yet. No EXE export.
 Registered Hyatt draft gate20261007-225339:10checks plusparse ALLPASS1s. Next: entrance/logo reference, facade refinement, both-track placement and native day/night clearance review.
+
+INTEGRATE/REFINE CHI-3D Hyatt Place 2026-10-07
+Mapped origin(-932,8,230.4),no rotation/cache148 shared by both Chicago routes;
+explicitly excludes w147397556 shell. Menu checks added for both route loads.
+Initial six source gates20261007-225706 ALLPASS94s; nativePID72932 terminal
+CITYREVIEWPASS/empty stderr; actual street day/night images inspected.
+Lsyambot's July2017 firsthand Franklin/Outside photos actually inspected:
+metal canopy/panelled soffit/raised lettering and glazed entrance near corner.
+Added physical canopy/joints/text and recessed door glazing/rails/pull handles;
+removed blue plinth/panes blocking doorway. Blender25648tri/sixmaterials.
+Final gates20261007-230148 ALLPASS94s: geometry12/menu103/coverage23/bothclips
+one each/parse clean (140checks plusparse); Original111/Grid101 baselinehits,
+no new authored facade hits. NativePID92696 terminalCITYREVIEWPASS/empty stderr;
+four actual updated street/canopy day/night images inspected. Native96616
+terminalPASS/empty stderr; north entry approach day/night actually inspected.
+Fence screens some ground details; no claim of complete door visual acceptance.
+Frozen concurrent frames15.0252/15.4034ms are not driving/performance benchmarks.
+North canopy return/colored hotel logo/precise module fidelity and rear still
+pending; retain refined draft status. City Hall municipal Washington/window
+photos actually inspected, next reference recorded, measured height pending.
+No EXE export.

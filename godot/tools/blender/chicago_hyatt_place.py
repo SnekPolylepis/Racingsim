@@ -63,14 +63,32 @@ for a,b in zip(ring,ring[1:]+ring[:1]):
   part('Continuous curtain wall mullion',tower_center-tower/2+c*pitch,H/2,.065,H,-.035,.23,metal)
  for row in range(18):
   low=row*H/18; step=H/18
-  part('Blue opaque spandrel',tower_center,low+.45,tower,.9,.10,.12,spandrel)
+  if east and row==0:
+   door_x=length/2-3.2
+   left=tower_center-tower/2; right=tower_center+tower/2
+   for lo,hi in [(left,door_x-1.5),(door_x+1.5,right)]:
+    if hi>lo:part('Ground blue plinth beside entry',(lo+hi)/2,.45,hi-lo,.9,.10,.12,spandrel)
+  else:part('Blue opaque spandrel',tower_center,low+.45,tower,.9,.10,.12,spandrel)
   for z in [low,low+.9]:part('Curtain wall horizontal rail',tower_center,z,tower,.065,-.025,.2,metal)
   for c in range(cols):
    x=tower_center+(c-(cols-1)/2)*pitch
-   part('Individual recessed curtain pane',x,low+.9+(step-.9)/2,pitch-.075,step-.96,.24,.035,glass)
+   entry=east and row==0 and abs(x-(length/2-3.2))<1.5
+   if not entry:part('Individual recessed curtain pane',x,low+.9+(step-.9)/2,pitch-.075,step-.96,.24,.035,glass)
  part('Ground wing lobby glazing',wing_center,2.6,wing-.2,5.0,.50,.04,glass)
  for x in [-wing/2,0,wing/2]:part('Ground wing pier',wing_center+x,2.6,.20,5.2,0,.45,stone)
  if east:
-  # Raised lettering is visible in the architect photo; current entrance detail remains unverified.
+  # Firsthand July2017 street photographs establish the broad metal canopy,
+  # lettered fascia, panelled soffit and glazed entry near the north glass corner.
+  part('Projecting entry canopy',tower_center,4.35,tower,.30,-1.45,3.0,metal)
+  for c in range(1,cols):
+   part('Canopy soffit panel joint',tower_center-tower/2+c*pitch,4.18,.035,.025,-1.45,2.85,dark)
+  for d in [-.65,-1.6,-2.5]:part('Canopy transverse panel joint',tower_center,4.18,tower,.025,d,.035,dark)
+  placed(text('Raised canopy name','HYATT PLACE',(tower_center,-3.0,4.37),.38,white,depth=.025))
+  door_x=length/2-3.2
+  part('Separate inset entrance glazing',door_x,1.6,2.9,3.15,.95,.035,glass)
+  for dx in [-1.1,0,1.1]:part('Recessed glazed entry stile',door_x+dx,1.6,.075,3.1,.78,.14,metal)
+  for z in [.10,1.3,3.12]:part('Recessed glazed entry rail',door_x,z,2.2,.075,.78,.14,metal)
+  for dx in [-.16,.16]:part('Entrance vertical pull handle',door_x+dx,1.55,.055,.7,.66,.1,metal)
+  # Raised roof lettering is visible in the architect photo; colored logo remains pending.
   placed(text('Raised hotel name','HYATT\nPLACE',(tower_center+tower*.16,-.22,61.7),1.1,white))
 finish('hyatt_place',OUT)
