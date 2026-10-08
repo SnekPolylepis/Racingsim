@@ -76,6 +76,10 @@ func run():
 		exterior, Vector3(30, 78.5, 40), Vector3(15, 78.5, 40), "Block37 dark backing and roof"
 	)
 	check(fascia != Vector3.INF and fascia.x > 21.6, "Physical dark office fascia projects beyond panes")
+	var roof_unit = first_hit(exterior, Vector3(-8.8, 90, 25.75), Vector3(-8.8, 79, 25.75))
+	check(
+		roof_unit != Vector3.INF and roof_unit.y > 82.3, "Office rooftop housing has raised physical intake"
+	)
 	var office_pane = first_hit(
 		exterior, Vector3(30, 29.5, 40), Vector3(15, 29.5, 40), "Block37 recessed blue grey panes"
 	)

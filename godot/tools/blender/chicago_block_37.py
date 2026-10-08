@@ -118,6 +118,20 @@ for a,b in zip(office,office[1:]+office[:1]):
  width=math.dist(a,b)
  part('Office broad dark projecting roof fascia',(width/2,.18,78.55),(width,.70,2.90),roof,a,b)
  part('Office silver coping edge',(width/2,.18,79.95),(width,.74,.10),metal,a,b)
+# shortcut: rooftop unit positions/heights are overhead-photo fits; replace with surveyed equipment sections when available.
+for wx in (-366,-358,-350,-342):
+ for wz in (130,147):
+  x,y=wx-cx,-(wz-cz)
+  box('Office rooftop unit plinth',(x,y,80.25),(5.4,5.4,.5),roof)
+  bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=2.3,depth=1.8,location=(x,y,81.4))
+  obj=bpy.context.object;obj.name='Office circular rooftop housing';obj.data.materials.append(stone)
+  bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=1.8,depth=.05,location=(x,y,82.325))
+  obj=bpy.context.object;obj.name='Office dark circular intake';obj.data.materials.append(roof)
+  line('Office intake rim',[(x+1.9*math.cos(k*math.tau/24),y+1.9*math.sin(k*math.tau/24),82.35) for k in range(25)],.08,metal)
+  for d in (-.9,-.45,0,.45,.9):
+   box('Office intake grille',(x+d,y,82.38),(.05,2*math.sqrt(1.7**2-d*d),.05),metal)
+for wx,wz,sx,sy in [(-374,140,5,12),(-361,138,5,5),(-347,138,5,5)]:
+ box('Office rectangular roof service housing',(wx-cx,-(wz-cz),81.1),(sx,sy,2.2),metal)
 # SCB photograph shows warm elongated inset panels across the long northern tower face.
 a,b=tower[2],tower[3]
 width=math.dist(a,b)

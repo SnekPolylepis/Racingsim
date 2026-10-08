@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache192. See latest dated evidence below. Continue trackside building
+Grid@v5/cache193. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -511,3 +511,14 @@ fascia day/night source images inspected, current cache loaded, capture/Blender/
 editor import exit0/empty stderr. Roads/timing remain original@v7/Grid@v5.
 No current full-suite/menu/laps/performance/export/Intel validation claim.
 See BLOCK-37-REFERENCE.md and chicago-block37-mac/chicago_grid-fascia-{day,night}.png.
+
+
+2026-10-08 Block37 office rooftop service forms/cache193: public overhead
+imagery inspected; eight circular housings/intakes/grilles and three rectangular
+service volumes authored,188588tri/eight materials. Sizes/spacing/heights remain
+photo-fit and mechanical function unconfirmed. Building30/parse pass2.8s, raised
+intake ray included; Blender/editor import clean. Two actual High Grid elevated
+roof day/night images inspected, cache193 saved, capture exit0/empty stderr.
+Minor night roof speckling and western green roof remain open, along with atrium/
+main mall portals/crown. Last full clips at192; no new road/timing changes or
+full-suite/menu/lap/performance/export/Intel claim. See BLOCK-37-REFERENCE.md.

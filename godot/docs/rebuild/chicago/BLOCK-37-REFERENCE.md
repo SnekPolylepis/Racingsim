@@ -186,3 +186,29 @@ elevated fascia day/night views inspected: projecting dark band and silver copin
 remain visible in both lighting states; these are roof-detail views, not driving
 acceptance. Current cache loaded, capture exit0/empty stderr, files
 chicago_grid-fascia-{day,night}.png. No full-suite/menu/lap/performance/export claim.
+
+
+## Office rooftop service forms —cache193, 2026-10-08
+
+Public Google Maps satellite view of108NState inspected directly in browser:
+https://www.google.com/maps/place/108+N+State+St,+Chicago,+IL+60602/
+At the southwestern office roof, two rows of four pale circular housings and
+intervening rectangular service forms are visible on the eastern portion;
+western portion appears largely green. Imagery attribution Airbus/Maxar/Vexcel,
+capture date unspecified (copyright2026 is not a capture date). No satellite
+pixels copied into game assets. Atrium region remains shaded/ambiguous; this
+view does not establish an external skylight plan.
+
+Original geometry adds eight raised cylindrical service housings with dark
+intakes, silver rims/grilles and three rectangular service volumes using the
+existing material contract. Equipment dimensions/spacing/height are photo-fit,
+not surveyed, and mechanical function is not established from imagery.
+188588tri/eight materials/cache193. Building30/parse pass2.8s, including raised
+physical intake ray; Blender/editor import exit0/empty stderr. Roads and timing
+identities unchanged. Two actual High Grid elevated roof day/night renders inspected, newly saved
+cache193, source capture exit0/empty stderr. Circular housings, intake grilles
+and service blocks are visible in both states; minor distant night roof speckling
+is visible and remains to investigate. Western green roof visible in reference
+is not yet modeled. Files chicago_grid-roof-{day,night}.png. Last full native
+clip scans remain cache192 evidence; no changed ground/envelope placement, no
+current full-suite/menu/lap/performance/export/Intel acceptance claim.
