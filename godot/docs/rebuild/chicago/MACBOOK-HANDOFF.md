@@ -535,3 +535,15 @@ shadows retained and lighting calibration remains open. Exact landscape plan,
 atrium/main mall portals/crown remain open. No road/timing/export/newlaps or
 current full-suite/performance/Intel claim; full clips last recorded at192.
 Serial menu/cache115 checks pass67.3s, empty stderr. See BLOCK-37-REFERENCE.md.
+
+
+2026-10-08 Sharp/Champlain staged Blender draft: retained footprint rechecked
+against current original@v7/Grid@v5 at1m intervals,78.199997/9.157592m clearance.
+Earlier generic exclusion still present, not a current integration blocker.
+61392tri/six materials, provisional mapped71.5m height; physical tripartite
+panes/frames/masonry/sills/belts/corbels. Standalone geometry12 checks and
+generator assertions pass, Blender/import clean. Two actual High Grid staged
+day/night views inspected/capture exit0/empty stderr; base screened by elevated
+rail and crown cropped. Arched parapet/monumental base/entrance/roof remain,
+not integrated. No cache/road/timing/export/newlaps/performance claim.
+See chicago/SHARP-REFERENCE.md; continue refinement and full integration clips.
