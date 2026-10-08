@@ -79,6 +79,15 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
   mesh('Physical angled lobby pane',vertices,[(0,1,3,2),(2,3,5,4)],clear)
   part('Lobby mullion',(j*bay,-.30,8.5),(.08,.14,3),metal,a,b)
   part('Entrance soffit light',(x,-1.0,9.75),(1,.5,.04),light,a,b)
+# Existing developer entrance photo: suspended glass canopy and extruded corner number.
+box('Recessed corner address plaque',(24.88,22.6,3.2),(.10,3.9,1.5),dark)
+text('Physical corner entrance number','200',(24.96,22.6,3.15),1.10,stone,rotate=(math.pi/2,0,math.pi/2),depth=.06)
+for j in range(4):
+ y=18.7+j*1.5
+ box('Separate suspended canopy glass pane',(25.05,y+.7,4.25),(1.0,1.38,.065),clear)
+ box('Canopy cross steel arm',(25.05,y,4.16),(1.15,.09,.16),metal)
+ line('Canopy suspension rod',[(24.65,y,8.6),(25.5,y,4.3)],.028,metal)
+box('Canopy outer fascia',(25.57,21.7,4.16),(.10,6.1,.16),metal)
 prism('Podium pale soffit',plan,9.8,10,stone)
 for name,(vertices,faces) in facade_batches.items():
  assert len(vertices)%8==0 and len(faces)*4==len(vertices)*3,name

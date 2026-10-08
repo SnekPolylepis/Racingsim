@@ -6191,3 +6191,12 @@ exit0/empty stderr. Upper raster-derived roof interpretation remains provisional
 and must be photo-fit before integration. Existing entrance and proposed owner
 redevelopment images distinguished; no production day/night or placement claim.
 See chicago/WACKER-200-REFERENCE.md. No app export, route edit or save changes.
+
+### REFINE 200 South Wacker entrance draft — 2026-10-08
+
+Suspended glass canopy with physical arms/rods and raised200numerals added from
+existing developer reference. Additional original west/street photographs
+inspected; misleading Willis filename identified as street view. Generation
+assertions/import and actual neutral-light native entrance capture pass, exit0/
+empty stderr. Still staged; roof join proportions, production integration and
+both-layout day/night/clip checks remain. See WACKER-200-REFERENCE.md.

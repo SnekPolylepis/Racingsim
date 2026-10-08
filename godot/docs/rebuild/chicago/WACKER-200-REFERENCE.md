@@ -28,3 +28,25 @@ route edit, app export or user-save change. Next: resolve full-tower proportions
 author distinct entrance canopy/sign, then integrate and inspect both-layout
 source day/night with foundation and full clipping checks. Full trackside goal
 continues;311base/sculpture and other building fidelity work remain open.
+
+## Entrance reference pass — 2026-10-08
+
+Added physical suspended glass canopy panels, steel arms/fascia, diagonal
+suspension rods, dark corner plaque and extruded200numerals. Existing developer
+photo supports this entrance concept; exact dimensions and corner location are
+photo-fit, not surveyed. Canopy projects only about0.8m past the mapped eastern
+wall to preserve close roadway clearance pending full production checks.
+
+Additional original photographs inspected in the browser:
+- [Mike Oropeza, west view,2011](https://commons.wikimedia.org/wiki/File:200_S._Wacker_West_View.jpg), CC BY-SA3.0: pale horizontal facade and flat full-height western roof edge. This view does not establish the diagonal roof join dimensions.
+- [Ken Lund street view,2013](https://commons.wikimedia.org/wiki/File:200_South_Wacker_Drive_from_Willis_Tower,_Chicago,_Illinois_(9179392553).jpg), CC BY-SA2.0: pale panels, narrow pane mullions and tall podium columns. Despite its filename, the actual image is a street view; do not treat it as roof/overhead evidence.
+No reference photographs copied into runtime materials or redistributed here.
+
+Generation assertions/import pass. Actual standalone Godot4.6.2/M4 Metal
+neutral-light entrance capture inspected, exit0/empty stderr, under rebuild/
+screenshots/chicago-wacker200-draft-mac/entrance-neutral.png. Number reads200;
+glass canopy, individual support rods and lobby recess are visible. No
+production integration/day-night/roadway-clearance acceptance yet. Retained roof
+tiers are still provisional pending a photograph that exposes the diagonal join.
+Next: check paired tower/roof join, integrate at mapped origin and inspect both
+layouts day/night with foundation probes and full clip scans. Goal remains active.
