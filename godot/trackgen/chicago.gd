@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 175
+const CACHE_REVISION = 180
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -73,6 +73,8 @@ static func world(row: Array) -> Vector3:
 			p.z = 887.1
 			if p.x > -1000:
 				p.x = -896.5
+			else:
+				p.x = -1028.0
 		elif row[3] == "South connector ramp":
 			p.x = -898.0
 	return p
@@ -87,6 +89,10 @@ static func points(grid: bool = false) -> Array[Vector3]:
 		if row[3] == "Lower Michigan crossing":
 			out.append(Vector3(-61.3, row[2], -381.5))
 			out.append(Vector3(-79.3, row[2], -375.6))
+		elif row[3] == "Lower Wacker south" and out[-1].z > 300:
+			# Mapped South Wacker bends east beside 300 Wacker; the former straight crossed its foundation.
+			for p in [Vector3(-1038.4, row[2], 747.8), Vector3(-1031.1, row[2], 811.5)]:
+				out.append(p)
 		elif row[3] == "Lower Wacker west":
 			# Mapped westbound carriageway bends north of 225 Wacker, not through its foundation.
 			out.append(Vector3(-919.3, row[2], -228.6))
@@ -202,7 +208,7 @@ static func build_asset(grid: bool = false) -> Node3D:
 	asset.name = "Chicago"
 	asset.id = "chicago_grid" if grid else "chicago"
 	asset.display_name = "Chicago — Loop Grid" if grid else "Chicago — River & Lake"
-	asset.version = 4 if grid else 6
+	asset.version = 5 if grid else 7
 	asset.set_meta("wacker_floor_y", ChicagoCity.LOW_ROAD_Y)
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
@@ -920,6 +926,18 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		wacker125.surface_set_material(surface, mat)
 	var wacker125_node = mesh_node(asset, parent, "Wacker125", wacker125, ChicagoCity.WACKER_125_POSITION)
 	wacker125_node.rotation.y = ChicagoCity.WACKER_125_YAW
+	var wacker300 = PropMesh.mesh("res://assets/chicago/landmarks/wacker_300.glb").duplicate()
+	for surface in wacker300.get_surface_count():
+		var mat = wacker300.surface_get_material(surface).duplicate()
+		mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Night"):
+			mat.set_meta("chicago_night", true)
+			mat.emission_energy_multiplier = .25
+		if "lobby glazing" in mat.resource_name:
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.albedo_color.a = .18
+		wacker300.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "Wacker300", wacker300, ChicagoCity.WACKER_300_POSITION)
 	var brooks = PropMesh.mesh("res://assets/chicago/landmarks/brooks_building.glb").duplicate()
 	for surface in brooks.get_surface_count():
 		var mat = brooks.surface_get_material(surface).duplicate()

@@ -1,147 +1,147 @@
 osm_id,name,street,number,height,distance_m,layout,station_m
-w1175853281,,,,15.0,0.0,grid,450
 r15910908,,,,15.5,0.0,grid,1010
+w1175853281,,,,15.0,0.0,grid,450
 w1175853280,,,,18.5,2.8,grid,460
 w765257247,,,,6.5,3.6,original,725
-w147350178,300 South Wacker,South Wacker Drive,300,133.0,6.4,grid,5895
 w127107033,Old Republic Building,North Michigan Avenue,307,100.5,6.6,original,7850
 w147399567,London Guarantee Building,North Michigan Avenue,360,109.0,6.7,grid,3880
-w147350208,311 South Wacker Drive,South Wacker Drive,311,292.5,7.6,grid,6170
-w144710187,,North Michigan Avenue,323,97.5,7.8,original,7825
+w147350208,311 South Wacker Drive,South Wacker Drive,311,292.5,7.7,grid,6170
+w144710187,,North Michigan Avenue,323,97.5,7.8,grid,8455
 w64888042,200 South Wacker,South Wacker Drive,200,155.5,8.5,grid,6445
-w144710192,333 North Michigan,North Michigan Avenue,333,127.5,8.7,original,7800
+w144710192,333 North Michigan,North Michigan Avenue,333,127.5,8.7,grid,8430
 w234052883,,,,4.0,8.8,grid,250
-w147095658,212 West Washington Condominium Association,West Washington Street,212,91.5,8.8,grid,7085
-w147095676,Concord City Centre,West Washington Street,208,99.5,8.8,grid,7085
+w147095658,212 West Washington Condominium Association,West Washington Street,212,91.5,8.9,grid,7085
+w147095676,Concord City Centre,West Washington Street,208,99.5,8.9,grid,7090
 w147478374,Sharp Building,South Wabash Avenue,37,71.5,9.2,grid,590
+w124865494,Block 37 Shops,North State Street,108,138.5,9.3,grid,7510
 w126982632,University Club of Chicago,East Monroe Street,76,69.0,9.3,grid,695
 w145498713,Monroe Building,South Michigan Avenue,104,74.0,9.3,grid,705
 w147095680,Washington Franklin Self Park,West Washington Street,230,49.0,9.3,grid,7040
-w124865494,Block 37 Shops,North State Street,108,138.5,9.3,grid,7510
 w64389514,Kemper Building,East Wacker Drive,1,164.5,9.4,grid,8010
-w147096404,,North Wells Street,101-103,6.0,9.5,grid,7140
+w147096404,,North Wells Street,101-103,6.0,9.5,grid,7145
 r15953438,122 South Michigan,South Michigan Avenue,122,93.0,9.6,grid,855
-w35601477,Computing and Digital Media Center,South Wabash Avenue,243,58.0,9.6,grid,1120
 w124873931,Railway Exchange Building,South Michigan Avenue,224-226,82.0,9.6,grid,1230
-w147095666,Lawyers Building,North LaSalle Street,100,144.5,9.6,grid,7205
-w147096410,,West Washington Street,180,53.0,9.7,grid,7155
+w147095666,Lawyers Building,North LaSalle Street,100,144.5,9.6,grid,7210
+w147096410,,West Washington Street,180,53.0,9.6,grid,7155
+w35601477,Computing and Digital Media Center,South Wabash Avenue,243,58.0,9.6,grid,1120
 w147096409,I Am Temple,West Washington Street,176,66.0,9.7,grid,7165
-w147095656,,West Washington Street,170,66.0,9.9,grid,7180
+w147095656,,West Washington Street,170,66.0,9.8,grid,7180
 w145493033,Chapin & Gore Building,East Adams Street,63-67,36.5,10.1,grid,915
 w147095644,,West Washington Street,166,33.5,10.2,grid,7190
 w124873918,Borg-Warner Building,South Michigan Avenue,200,91.0,10.3,grid,910
+w147350188,Harris Trust,West Monroe Street,311,210.0,10.4,grid,6675
 w64887962,111 South Wacker,South Wacker Drive,111,212.5,10.4,grid,6670
-w147350188,Harris Trust,West Monroe Street,311,210.0,10.4,grid,6670
-w124865451,100 South Wacker,South Wacker Drive,100,79.0,10.5,grid,6540
-w148685510,71 South Wacker,South Wacker Drive,71,210.5,10.5,grid,6675
+w124865451,100 South Wacker,South Wacker Drive,100,79.0,10.5,grid,6545
+w147013356,,West Washington Street,309,84.5,10.6,grid,6995
 w147478105,Mallers Building,South Wabash Avenue,5,87.5,10.6,grid,440
-w147013356,,West Washington Street,309,84.5,10.6,grid,6990
-w108240964,Chicago City Hall,North LaSalle Street,121,73.5,10.7,grid,7265
-w147397556,Hyatt Place Chicago/Downtown - The Loop,North Franklin Street,29,64.0,10.8,grid,6965
-w127107026,Millennium Park Plaza,North Michigan Avenue,151-155,126.5,11.0,grid,0
-w126982631,Six North Michigan,North Michigan Avenue,6,86.5,11.0,grid,320
-w147078399,55 East Jackson,East Jackson Boulevard,55,105.5,11.0,grid,1130
-w147350207,250 South Wacker,South Wacker Drive,250,65.5,11.0,grid,6375
+w148685510,71 South Wacker,South Wacker Drive,71,210.5,10.6,grid,6675
+w147350207,250 South Wacker,South Wacker Drive,250,65.5,10.7,grid,5805
+w108240964,Chicago City Hall,North LaSalle Street,121,73.5,10.8,grid,7270
+w147397556,Hyatt Place Chicago/Downtown - The Loop,North Franklin Street,29,64.0,10.8,grid,6970
 w108240968,Cook County Building,North Clark Street,118,75.0,11.0,grid,7310
+w126982631,Six North Michigan,North Michigan Avenue,6,86.5,11.0,grid,320
+w127107026,Millennium Park Plaza,North Michigan Avenue,151-155,126.5,11.0,grid,0
+w147078399,55 East Jackson,East Jackson Boulevard,55,105.5,11.0,grid,1130
 w124873939,Willoughby Tower,South Michigan Avenue,8,135.5,11.3,grid,355
-w228971614,Bye Bye Chicago,North Michigan Avenue,155,118.0,11.4,original,0
 r17414022,Metropolitan Tower,South Michigan Avenue,310,138.5,11.4,grid,1185
 w1268337032,,,,4.0,11.4,original,2515
-w147013355,191 North Wacker,North Wacker Drive,191,155.0,11.4,original,6575
 w145890499,303 West Madison,West Madison Street,303,113.5,11.4,grid,6855
+w228971614,Bye Bye Chicago,North Michigan Avenue,155,118.0,11.4,original,0
+w147013355,191 North Wacker,North Wacker Drive,191,155.0,11.5,original,4410
 w147476156,Chicago Athletic Association,East Madison Street,71-73,85.0,11.5,grid,375
+w147350178,300 South Wacker,South Wacker Drive,300,133.0,11.6,grid,5895
 w510011094,,,,19.0,12.2,grid,945
 w234499258,Millennium Station/Pedway,North Michigan Avenue,151,167.0,13.0,original,45
 r1870546,The Art Institute of Chicago,South Michigan Avenue,111,26.5,13.1,original,905
 w1268337031,,,,2.5,13.1,grid,3100
-w147476135,,North Wabash Avenue,5,70.5,13.4,grid,385
 w147095673,La Quinta Inn & Suites by Wyndham Chicago Downtown,South Franklin Street,1,39.5,13.4,grid,6800
+w147476135,,North Wabash Avenue,5,70.5,13.4,grid,385
 w64889199,Marmon Building,West Washington Street,225,120.5,13.4,grid,6945
-w145890500,230 West Monroe,West Monroe Street,230,112.0,13.7,grid,6740
-w64889208,PNC Centre,North Franklin Street,1,151.5,13.7,grid,6880
-w124865461,"Staypineapple, An Iconic Hotel, The Loop",West Washington Street,1,63.0,14.0,grid,7605
-w74268298,,South Franklin Street,321,23.0,14.2,original,5585
+w145890500,230 West Monroe,West Monroe Street,230,112.0,13.7,grid,6745
+w64889208,PNC Centre,North Franklin Street,1,151.5,13.7,grid,6885
+w124865461,"Staypineapple, An Iconic Hotel, The Loop",West Washington Street,1,63.0,14.0,grid,7610
+w144846553,The Wit Hotel,North State Street,201,97.5,14.2,grid,7955
 w145625877,Reliance Building,North State Street,20,102.0,14.2,grid,7580
-w144846553,The Wit Hotel,North State Street,201,97.5,14.2,grid,7950
-w124873920,Burnham Center,West Washington Street,111,96.5,14.3,grid,7355
+w74268298,,South Franklin Street,321,23.0,14.2,grid,6155
+w124873920,Burnham Center,West Washington Street,111,96.5,14.3,grid,7360
 w1268337033,,,,4.5,14.4,original,2550
-w64391366,225 West Wacker,West Wacker Drive,225,126.5,14.4,original,6765
+w145625876,33 North Dearborn Building,North Dearborn Street,33,104.0,14.4,grid,7535
 w148164116,Sullivan Center,South Wabash Avenue,36,74.0,14.5,grid,565
-w116017092,333 Wacker Drive,West Wacker Drive,333,147.5,14.5,original,6670
-w145625876,33 North Dearborn Building,North Dearborn Street,33,104.0,14.5,grid,7530
+w64391366,225 West Wacker,West Wacker Drive,225,126.5,14.5,original,6765
+w116017092,333 Wacker Drive,West Wacker Drive,333,147.5,14.6,original,6670
+w136662656,155 North Wacker,North Wacker Drive,155,199.5,14.6,original,4485
 w148164102,,South Wabash Avenue,30,77.5,14.6,grid,550
 w74268219,Franklin-Van Buren Parking Garage,South Franklin Street,321-337,49.0,14.6,grid,6135
-w136662656,155 North Wacker,North Wacker Drive,155,199.5,14.6,original,6500
-w73766157,Brooks Building,West Jackson Boulevard,223,57.0,14.7,grid,6160
 w124865434,George W. Dunne Cook County Administration Building,West Washington Street,69,149.0,14.7,grid,7480
-w148164105,Silversmith Hotel Chicago Downtown,South Wabash Avenue,10,86.0,14.8,grid,500
-w148164098,Haskell Building,South Wabash Avenue,18,46.0,14.8,grid,505
-w147013784,Washington Block,North Wells Street,40,24.0,14.8,grid,7110
+w147013784,Washington Block,North Wells Street,40,24.0,14.7,grid,7115
 w137060374,First United Methodist Church of Chicago,West Washington Street,77,169.0,14.8,grid,7410
+w148164098,Haskell Building,South Wabash Avenue,18,46.0,14.8,grid,505
+w148164105,Silversmith Hotel Chicago Downtown,South Wabash Avenue,10,86.0,14.8,grid,500
+w73766157,Brooks Building,West Jackson Boulevard,223,57.0,14.8,grid,6160
 w148164123,Barker Building,South Wabash Avenue,22,29.0,14.9,grid,515
 w148164127,J.P. Atwater,South Wabash Avenue,28,52.5,14.9,grid,535
 w148164130,Heyworth Building,East Madison Street,29,86.5,15.0,grid,460
 w144846554,Seventeenth Church of Christ Scientist,East Wacker Drive,55,110.0,15.1,original,7535
-w145625873,33 North LaSalle,North LaSalle Street,33,148.5,15.2,grid,7295
-w147478106,Jewelers Building,South Wabash Avenue,15,52.0,15.3,grid,490
-w147478372,Legacy at Millennium Park,South Wabash Avenue,21-39,252.0,15.3,grid,550
+w145625873,33 North LaSalle,North LaSalle Street,33,148.5,15.2,grid,7300
 w145498711,Lakeview Buidling,South Michigan Avenue,116,76.5,15.3,grid,780
 w147095665,,West Washington Street,173-175,48.0,15.3,grid,7175
+w147478106,Jewelers Building,South Wabash Avenue,15,52.0,15.3,grid,490
+w147478372,Legacy at Millennium Park,South Wabash Avenue,21-39,252.0,15.3,grid,550
+w1175442342,,West Washington Street,117,51.5,15.4,grid,7165
+w136662655,,North Wacker Drive,123,142.0,15.4,original,6435
+w147399561,The Royal Sonesta Chicago Downtown,East Wacker Drive,71,117.0,15.4,original,7545
 w148043643,,South Wabash Avenue,214-216,42.0,15.4,grid,1025
 w148043648,McClurg Building,South Wabash Avenue,218-224,46.0,15.4,grid,1035
-w136662655,,North Wacker Drive,123,142.0,15.4,grid,5120
-w1175442342,,West Washington Street,117,51.5,15.4,grid,7165
-w147399561,The Royal Sonesta Chicago Downtown,East Wacker Drive,71,117.0,15.4,grid,8170
 w145498712,Macclean Center,South Michigan Avenue,112,78.0,15.5,grid,765
 w148043647,Wabash Food And Liquor,South Wabash Avenue,234,40.5,15.5,grid,1085
 w148043650,Steger Building,East Jackson Boulevard,28,85.5,15.5,grid,1095
 w145498709,Adams-Wabash Self Park,East Adams Street,17,47.0,15.6,grid,1020
 w148043657,,South Wabash Avenue,228,44.0,15.6,grid,1085
 w148043640,,South Wabash Avenue,226,45.5,15.7,grid,1060
-w147095646,215 West Apartments,West Washington Street,215,155.5,15.9,grid,7100
-w126982634,20 North Michigan,North Michigan Avenue,20,58.5,16.0,grid,280
+w147095646,215 West Apartments,West Washington Street,215,155.5,15.9,grid,7105
 w114824291,Macy's,North State Street,101-137,88.0,16.0,grid,7640
-w330535225,London House Chicago,East Wacker Drive,85,92.5,16.0,grid,8255
-w751520413,,,,4.0,16.3,grid,3780
+w126982634,20 North Michigan,North Michigan Avenue,20,58.5,16.0,grid,280
+w330535225,London House Chicago,East Wacker Drive,85,92.5,16.0,original,7630
 w136662653,,North Wacker Drive,101,102.5,16.3,grid,5180
-w147399564,"Club Quarters Hotel, Wacker at Michigan",East Wacker Drive,75,161.5,16.3,original,7610
-w231382219,,,,4.0,16.6,grid,90
+w147399564,"Club Quarters Hotel, Wacker at Michigan",East Wacker Drive,75,161.5,16.3,grid,8240
+w751520413,,,,4.0,16.3,grid,3780
 w1425661250,,South Columbus Drive,280,21.5,16.6,original,915
+w231382219,,,,4.0,16.6,grid,90
 w124873919,Chicago Theatre,North State Street,175,37.5,16.8,grid,7835
-w124873943,Joffrey Tower,East Randolph Street,8,127.0,16.9,grid,7770
-w64391613,Mid-Continental Plaza,East Monroe Street,55,181.0,17.0,grid,930
 w124865443,Civic Opera House,North Wacker Dr,20,191.5,17.0,grid,5375
-w145493030,Symphony Center,South Michigan Avenue,220,84.0,17.1,original,660
-w144710189,One Illinois Center,East Wacker Drive,111,132.0,17.1,grid,3730
+w124873943,Joffrey Tower,East Randolph Street,8,127.0,17.0,grid,7770
+w64391613,Mid-Continental Plaza,East Monroe Street,55,181.0,17.0,grid,930
 w1177404968,,,,3.5,17.1,original,4200
-w124873930,Page Brothers Building,North State Street,177-191,36.0,17.1,grid,7850
+w124873930,Page Brothers Building,North State Street,177-191,36.0,17.1,grid,7855
+w144710189,One Illinois Center,East Wacker Drive,111,132.0,17.1,grid,3730
+w145493030,Symphony Center,South Michigan Avenue,220,84.0,17.1,original,660
 w126982630,Michigan Boulevard Building,North Michigan Avenue,30,91.5,17.5,grid,235
 w124865484,,North Wacker Drive,29,45.0,17.6,grid,5260
 w199560762,Metra Jackson Substation,East Jackson Drive,144,5.0,17.9,original,840
 w751520441,,,,8.0,18.0,grid,3580
+w217881356,Chicago Mercantile Exchange Center,South Wacker Drive,10-30,165.0,18.1,original,4945
 w147476134,,North Wacker Drive,180,33.0,18.7,original,4430
 w1175442370,,,,26.0,18.8,grid,7300
 w859922724,,,,9.0,18.9,original,2595
-w217881356,Chicago Mercantile Exchange Center,South Wacker Drive,10-30,165.0,18.9,original,4945
 w147350199,150 South Wacker,South Wacker Drive,150,129.0,19.2,grid,6480
 w1175866417,55 East Monroe Self Park,,,172.5,19.5,grid,915
-w147013360,UBS Tower,North Wacker Drive,1,204.5,19.5,original,4780
+w147013360,UBS Tower,North Wacker Drive,1,204.5,19.5,original,6205
 w144846552,Renaissance Chicago Downtown Hotel,West Wacker Drive,1,129.0,19.7,original,3635
-w380868216,Willis Tower,South Wacker Drive,233,526.5,19.7,original,5720
 w145208576,Butler Building,North State Street,162,74.5,19.7,grid,7825
-w859922723,,,,10.0,19.8,original,2605
+w380868216,Willis Tower,South Wacker Drive,233,526.5,19.7,original,5720
 w509026425,DuSable Bridgehouse,North Michigan Avenue,,20.5,19.8,grid,3805
+w859922723,,,,10.0,19.8,original,2605
 r15899437,Chicago Cultural Center,East Washington Street,78,39.5,19.9,grid,175
-w145208574,Art Institute Dormitory,North State Street,150,84.0,19.9,grid,7800
 w145208573,ABC Building,North State Street,190,61.0,19.9,grid,7870
+w145208574,Art Institute Dormitory,North State Street,150,84.0,19.9,grid,7805
 w751499087,Coco Bar,,,14.0,20.1,original,3480
 w1178793325,,,,0.5,20.2,original,3060
 w124873924,LaSalle - Wacker Building,North LaSalle Street,221,161.0,20.3,grid,4490
+w147397539,,West Wacker Drive,211,88.5,20.3,original,6820
+w124865436,Builders Building,North LaSalle Street,222,104.0,20.4,original,6980
 w124873921,Engineering Building,West Wacker Drive,205,91.5,20.4,grid,4715
-w147397539,,West Wacker Drive,211,88.5,20.4,original,6820
-w124865436,Builders Building,North LaSalle Street,222,104.0,20.4,original,6930
 w124865490,55 West Wacker,West Wacker Drive,55,83.5,20.5,original,3785
-w64391028,77 West Wacker,West Wacker Drive,77,205.5,20.7,original,3800
+w64391028,77 West Wacker,West Wacker Drive,77,205.5,20.7,original,7185
 w124865463,OneEleven,West Wacker Drive,111,192.0,20.9,original,3895
 w126982639,,South Michigan Avenue,30,56.0,21.2,original,410
 w124865450,Gage Building,South Michigan Avenue,18,58.0,21.3,original,380
@@ -155,11 +155,11 @@ w144710193,Columbus Plaza,East Wacker Drive,233,151.5,23.2,grid,3525
 w235920251,Hyatt Regency Chicago,East Wacker Drive,151,123.0,23.3,original,3095
 w464802811,St. Regis Chicago,East Wacker Drive,375,99.0,23.7,original,2655
 w1177354741,,West Wacker Drive,,8.5,24.0,grid,4960
-w147350191,Northern Trust Bank,South Wacker Drive,125,141.5,24.0,grid,5605
-w147476141,,North Wacker Drive,160,31.0,24.3,grid,5040
+w147350191,Northern Trust Bank,South Wacker Drive,125,141.5,24.0,original,5950
+w147476141,,North Wacker Drive,160,31.0,24.3,original,6515
 w124865488,35 East Wacker,East Wacker Drive,35,163.5,24.4,grid,4110
+w64398410,Franklin Center North Tower,West Monroe Street,227,302.5,25.0,grid,6730
 w95486958,303 East Wacker,East Wacker Drive,303,127.5,25.1,grid,3450
-w64398410,Franklin Center North Tower,West Monroe Street,227,302.5,25.2,grid,6730
 w751165455,DuSable Bridgehouse,North Michigan Avenue,376,20.5,25.3,original,3270
 w526820387,,East Wacker Drive,355,154.5,25.4,original,2710
 w147489620,Goddard Building,East Monroe Street,27,84.0,25.5,grid,580
@@ -170,9 +170,9 @@ w863106027,,,,15.5,25.9,original,7135
 w747184039,Clark Street Bridgehouse,North Clark Street,,15.5,26.0,grid,4415
 w147489621,The Alfred,East Adams Street,30,61.0,26.1,grid,980
 w95486966,Swissotel Chicago,East Wacker Drive,323,143.0,26.8,original,2840
-w1175801195,,,,14.5,26.8,grid,7135
-w147013359,One South Wacker,South Wacker Drive,1,162.0,26.9,grid,5430
-w1175801196,,,,22.5,26.9,grid,7125
+w1175801195,,,,14.5,26.9,grid,7135
+w147013359,One South Wacker,South Wacker Drive,1,162.0,26.9,original,6125
+w1175801196,,,,22.5,27.0,grid,7125
 w210671717,Crain Communications Building,North Michigan Avenue,150,177.5,27.1,grid,40
 w35601479,Lewis Center,East Jackson Boulevard,25,76.5,27.2,grid,1110
 w235391301,The Coast at Lakeshore East,East Wacker Drive,345,155.0,27.5,grid,3310
@@ -183,43 +183,43 @@ w747171898,LaSalle Street Bridgehouse,North LaSalle Street,,17.5,27.9,grid,4535
 w863106029,,,,17.5,27.9,grid,4535
 w768577586,,,,4.0,28.4,original,1535
 w765296570,World's Congress Auxiliary Building,,,26.5,28.6,original,570
-w147399568,,North Michigan Avenue,336,26.5,28.9,grid,8400
-w638332166,Franklin Street Bridgehouse,North Franklin Street,,10.5,29.2,original,4220
+w147399568,,North Michigan Avenue,336,26.5,28.9,original,7775
 w236770798,,,,173.0,29.2,grid,8400
+w638332166,Franklin Street Bridgehouse,North Franklin Street,,10.5,29.2,original,4220
 w147476136,,North Wabash Avenue,9,39.0,29.3,grid,385
-w147399565,,North Michigan Avenue,332,26.5,29.4,original,7780
+w147399565,,North Michigan Avenue,332,26.5,29.4,grid,8410
+w210671725,Van Buren Street Bridgehouse,West Van Buren Street,,9.5,29.6,original,5385
 w747184051,Dearborn Street Bridgehouse,North Dearborn Street,,13.0,29.6,original,7260
-w147399562,,North Michigan Avenue,326,21.5,29.8,grid,8415
+w147399562,,North Michigan Avenue,326,21.5,29.8,original,7790
 w147399566,,North Michigan Avenue,320,84.0,30.6,grid,8430
 w1554602672,Bridge Powerhouse,,,24.5,30.7,original,2410
+w147776392,Primark,North State Street,35,22.5,30.9,grid,7625
 w210671685,Arlo Chicago,North Michigan Avenue,168,52.0,30.9,grid,0
-w147776392,Primark,North State Street,35,22.5,31.0,grid,7620
-w147399571,,North Michigan Avenue,316,51.0,31.2,grid,8460
-w731167841,citizenM Chicago,East Wacker Place,80,36.5,31.2,grid,8460
-w210671725,Van Buren Street Bridgehouse,West Van Buren Street,,9.5,32.2,grid,5950
+w147399571,,North Michigan Avenue,316,51.0,31.2,original,7820
+w731167841,citizenM Chicago,East Wacker Place,80,36.5,31.2,original,7835
 w1554602670,,,,9.5,33.3,original,2425
 w1554602681,,,,24.5,33.9,grid,2985
 w144846550,CTA East Lake Substation,East Lake Street,10,96.0,34.3,grid,7955
 w747184084,Bataan-Corregidor Memorial Bridgehouse,North State Street,,11.0,34.5,grid,4160
-w750299461,Lake Street Bridgehouse,West Lake Street,,9.0,34.8,original,6585
+w750299461,Lake Street Bridgehouse,West Lake Street,,9.0,34.9,original,4400
 w509026426,William P. Fahey Bridgehouse,North Columbus Drive,,13.0,35.1,original,2920
 w231253695,Millennium Monument,,,14.0,35.8,original,90
 w95486952,Harbor Point,North Harbor Drive,155,172.5,36.6,original,2100
 w95486959,The Parkshore,North Harbor Drive,195,174.0,36.8,original,2160
 w95486968,The Regatta,East Wacker Drive,425,159.0,37.5,grid,3170
 w147489619,The Palmer House Hilton,East Monroe Street,17,102.0,38.0,grid,585
-w74267847,235 West Van Buren Street,West Van Buren Street,235,150.5,38.2,original,5505
+w74267847,235 West Van Buren Street,West Van Buren Street,235,150.5,38.1,grid,6075
 w210671690,,North Michigan Avenue,172,34.5,38.5,grid,0
 w210671695,James C. Petrillo Music Shell,South Columbus Drive,251,12.0,39.0,grid,1605
-w147013357,120 North LaSalle,North LaSalle Street,120,152.5,39.3,grid,7205
+w147013357,120 North LaSalle,North LaSalle Street,120,152.5,39.4,grid,7205
 w542088682,F.D.R. Memorial SW Bridgehouse,North Lake Shore Drive,,24.5,40.1,original,2415
-w124865474,AT&T,West Washington Street,311,94.5,40.5,grid,6990
+w124865474,AT&T,West Washington Street,311,94.5,40.5,grid,6995
 w751499071,Irv Kupcinet Bridgehouse,North Wabash Avenue,,15.0,40.8,grid,4040
+w1177963192,ABC TV Studios,North State Street,190,36.5,41.5,grid,7870
 w723250169,Cirrus,North Harbor Drive,211,3.0,41.5,original,2225
-w1177963192,ABC TV Studios,North State Street,190,36.5,41.5,grid,7865
-w73751803,Hilton Garden Inn Chicago Central Loop,West Jackson Boulevard,226,69.0,41.7,grid,6185
+w73751803,Hilton Garden Inn Chicago Central Loop,West Jackson Boulevard,226,69.0,41.7,original,5620
 w1176482826,,,,61.5,41.8,grid,7825
-w305717626,Hilton Garden Inn Chicago / North Loop,East Wacker Place,66,81.0,42.5,original,7545
+w305717626,Hilton Garden Inn Chicago / North Loop,East Wacker Place,66,81.0,42.4,original,7545
 w124865493,The Poetry Garage,West Madison Street,201-223,39.5,42.8,grid,6805
 w147476140,,North Wabash Avenue,11,41.5,43.0,grid,385
 w210671691,,North Michigan Avenue,174,84.0,43.9,grid,0
@@ -227,12 +227,11 @@ w1425669058,Ryan Lerning Center,,,25.5,44.3,grid,1800
 w1182086850,HERO Coffee Bar,East Jackson Boulevard,22,71.5,45.4,grid,1085
 w95486951,The Chandler,East Wacker Drive,455,134.0,45.4,grid,3065
 w765296577,Fullerton Hall,,,21.5,46.3,original,550
-w148544831,Pendry Chicago,North Michigan Avenue,230,158.0,46.3,grid,8485
 w1175442363,120 North LaSalle,,,131.0,46.5,grid,7140
-w1176482819,,West Randolph Street,16,84.5,46.8,grid,7775
+w1176482819,,West Randolph Street,16,84.5,46.8,grid,7780
 w765296578,Ryerson & Burnham Libraries,South Michigan Avenue,111,24.0,47.0,original,590
+w148544831,Pendry Chicago,North Michigan Avenue,230,158.0,47.4,grid,8485
 w127107034,One Prudential Plaza,East Randolph Street,130,257.5,47.5,grid,0
 w1554602680,,,,24.5,47.6,original,2395
 w1554602671,,,,11.5,48.6,original,2390
-w148788179,Thermal Chicago District Cooling Plant #2,South Franklin Street,400,22.5,49.0,grid,6040
-w127107023,,North Michigan Avenue,225,107.0,49.3,grid,8485
+w148788179,Thermal Chicago District Cooling Plant #2,South Franklin Street,400,22.5,49.1,grid,6040

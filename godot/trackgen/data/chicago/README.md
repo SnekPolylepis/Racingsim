@@ -158,3 +158,16 @@ See latest REBUILD-LOG and FRANKLIN-GARAGE-SOURCES.md for validation and limits.
 2026-10-08: cache175 adds authored Brooks exterior at retained w73766157
 foundation; route versions and candidate distances unchanged. See BROOKS-SOURCES
 and the MacBook handoff for provisional height/details and actual validation.
+
+### Mapped South Wacker approach — 2026-10-08
+
+Current points() inserts mapped road controls(-1038.4,747.8) and(-1031.1,811.5)
+after the last Lower Wacker south source row. Shared world(row) places the
+western South connector at(-1028,887.1), keeping its geographic source index
+and the other connector/ramp coordinates intact. The former straight racing
+line was too far west beside w147350178300SouthWacker. Native mapped-road
+plan alignment, authored heights/widths/easing; not a surveyed drivable route.
+Centreline lengths7859.992m/original and8488.778m/Grid. Drivable surface changed,
+so original@v7/Grid@v5 select separate records/ghosts; existing saves stay intact.
+Cache180 also adds physical300SouthWacker and retains all nine foundation points.
+Candidate CSV now236within50m; see latest MacBook handoff for actual validation.

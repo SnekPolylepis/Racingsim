@@ -185,6 +185,13 @@ func run():
 
 
 static func _overhead(path: String, clearance: float = 0.0, road_y: float = 8.0) -> bool:
+	# Upper Wacker guardrails sit above the lower carriageway with the concrete deck.
+	if (
+		(path.begins_with("Scenery/LeftBarrierFence") or path.begins_with("Scenery/RightBarrierFence"))
+		and road_y < 3.6
+		and road_y + clearance >= 7.9
+	):
+		return true
 	# Upper-street furniture is separated from Lower Wacker by the concrete deck.
 	if path.begins_with("Scenery/Prop_") and road_y < 3.6 and road_y + clearance >= 7.9:
 		return true

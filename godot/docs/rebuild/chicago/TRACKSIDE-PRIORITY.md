@@ -4,10 +4,10 @@ Owner direction 2026-10-04: prioritize all buildings and scenery beside the
 driving route before distant buildings. Existing individual exteriors stay in
 place; the next work targets generic frontage, entrances, roofs and nearby props.
 
-TRACKSIDE-PRIORITY.csv now lists 237 mapped building footprints whose boundary
+TRACKSIDE-PRIORITY.csv now lists 236 mapped building footprints whose boundary
 is within 50 m of either current route, refreshed 2026-10-08 from chicago.gd
-route_curve at 5 m intervals (original @v6 / Grid @v4, cache174). The preceding
-2026-10-08 @v5/@v3 snapshot had241; the previous
+route_curve at 5 m intervals (original @v7 / Grid @v5, cache180). The preceding
+2026-10-08 @v6/@v4 snapshot had237; the @v5/@v3 snapshot had241; the previous
 2026-10-04 @v4/@v2 snapshot had 242 candidates. Distance is horizontal centreline-to-footprint-edge,
 not car-to-facade distance, surveyed clearance, proof of visibility or proof that
 a building is rendered. Names/address fields reuse route-inventory.csv metadata;
