@@ -79,3 +79,46 @@ Capture exit0/empty stderr. Files chicago-sharp-draft-mac/chicago_grid-crown-
 {day,night}.png. Still staged; monumental base/entrance/roof/skylight, masonry
 proportions/height and full placement/integration clipping remain open. No
 cache revision/road/timing/export/newlaps/full-suite/performance/Intel claim.
+
+
+## Working integration and west base —2026-10-08/cache195
+
+Owner frontage photograph actually inspected in browser:
+https://www.saic.edu/sites/default/files/styles/16_9_768x432/public/2023-06/00263_006_0.jpg.jpeg?itok=egq20wux
+Shows northern west-face recessed entrance, molded surround/plaque/transom,
+broad adjacent storefront panes and heavier monumental second-floor frames.
+Elevated railway partly screens upper/lower facade. Photo date unspecified;
+URL upload directory is not capture-date evidence.
+
+Added original paired recessed door leaves/dark jambs/transom/door pulls,
+projecting molded entrance surround/plaque, separate ground shopfront glazing/
+frames/transoms, second-floor heavy outer frames/meeting rails. Bay order was
+verified from mapped vertex orientation; northern entrance is bay0. Exact
+ornament/sign lettering, opening dimensions and floor heights remain photo-fit.
+135660tri/six materials. Installed Scenery/SharpBuilding at(-105,8,423),
+explicit mapped generic replacement, both cache validators updated/cache195.
+No Clear-material branch because the six-material asset has no transparent
+material. Geometry19/parse pass2.4s, including mapped fixture, both1m retained
+foundation clearances and physically recessed northern entrance ray. Blender/
+editor import exit0/empty stderr. Both full native clipping scans pass104Grid/120original accepted hits, empty
+stderr, no Sharp clipping exemption. Serial menu115 checks pass; runner records
+2543.9s, not performance evidence. Six production day/night frontage/crown/
+entrance views captured; close entry exposed a lower door obstruction from the generic bay spandrel;
+removed in final cache196 refinement below. Frontage
+capture exits0 with ObjectDB cleanup warning; crown/initial entry capture
+exit0/empty stderr. Final source geometry unchanged after removing the unused
+Clear-material branch.
+Road/timing identities unchanged original@v7/Grid@v5. No export/newlaps/
+performance/Intel/full-suite claim. Fine ornament, roof/skylight, measured
+height and wider facade proportions remain open.
+
+
+Final entrance exposure correction/cache196: removed only the northern entry
+bay ground spandrel that blocked the bottom1m of the door leaves.135648tri/
+six materials; no envelope expansion/placement/material contract change.
+Dedicated20/parse pass2.6s, including first-hit lower-door exposure assertion;
+Blender/import exit0/empty stderr. Earlier full native clips/menu/frontage/crown
+are cache195 evidence; no repeat claimed for196. Two actual current-cache196 close door day/night
+renders inspected: leaves exposed to threshold, recess/pulls/transom visible,
+source capture exit0/empty stderr. Camera(-134.5,10.5,414.4), FOV110, inside
+race fence; static architectural review, not a drivable camera claim. Production route/timing identities unchanged.

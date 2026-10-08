@@ -83,6 +83,7 @@ const DEPAUL_CDM_YAW = .022
 const MICHIGAN_333_POSITION = Vector3(16.4, STREET_Y, -335.15)
 const MICHIGAN_333_YAW = .021
 const LONDON_POSITION = Vector3(-57.85, STREET_Y, -351.3)
+const SHARP_POSITION = Vector3(-105, STREET_Y, 423)
 const BLOCK37_POSITION = Vector3(-357.2, STREET_Y, 104.25)
 const MORTON_POSITION = Vector3(-813.5, STREET_Y, 136.65)
 const BELL_POSITION = Vector3(-850.25, STREET_Y, 136.7)
@@ -210,6 +211,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "authored Peoples Gas exterior"
 		elif b.get("o", "") == "w147399567":
 			exclusion = "authored London Guarantee exterior"
+		elif b.get("o", "") == "w147478374":
+			exclusion = "authored Sharp Building exterior"
 		elif b.get("o", "") == "w124865494":
 			exclusion = "authored Block 37 exterior"
 		elif b.get("o", "") == "w147095676":

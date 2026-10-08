@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache194. See latest dated evidence below. Continue trackside building
+Grid@v5/cache196. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -562,3 +562,21 @@ Capture exit0/empty stderr. Files chicago-sharp-draft-mac/chicago_grid-crown-
 {day,night}.png. Still staged; monumental base/entrance/roof/skylight, masonry
 proportions/height and full placement/integration clipping remain open. No
 cache revision/road/timing/export/newlaps/full-suite/performance/Intel claim.
+
+
+2026-10-08 Sharp/Champlain working exterior integrated/cache195:135660tri/
+six materials. Owner frontage image guides physical northern paired entrance,
+transom/molded surround/plaque/pulls, separate storefront panes/rails and heavy
+second-story frames. Exact ornament/height/dimensions remain photo-fit. Generic
+mapped footprint explicitly replaced, both cache validators updated. Dedicated
+19 geometry/placement checks plusparse pass2.4s; both full native clip scans
+pass104Grid/120original accepted hits, empty stderr/no exemption. Serial menu
+115 checks pass; recorded2543.9s is not performance acceptance. Actual production
+High Grid frontage/crown day/night views inspected; frontage capture exit0 with
+ObjectDB cleanup warning, crown capture exit0/empty stderr. Close entrance
+review revealed lower door obstruction; removed bay spandrel/cache196,135648tri/
+six materials. Dedicated20/parse pass2.6s and two actual cache196 close entry day/night
+images inspected, clean capture exit0/empty stderr, leaves open to threshold.
+Earlier clip/menu/crown evidence is cache195, not a current196 repeat. Roads/timing original@v7/Grid@v5 unchanged; no export/newlaps/
+full-suite/performance/Intel claim. Roof/skylight/fine ornament and measured
+height remain open. See SHARP-REFERENCE.md.

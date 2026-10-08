@@ -57,7 +57,29 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
   for j in range(bays):
    x=(j+.5)*bay
    part('Sharp brick bay pier',(j*bay,.02,z),(.62,.40,top-bottom),brick,a,b)
-   part('Sharp masonry floor spandrel',(x,.02,bottom+.5),(bay,.40,1.0),brick,a,b)
+   if not (row==0 and a[0]<-25 and b[0]<-25 and j==0):
+    part('Sharp masonry floor spandrel',(x,.02,bottom+.5),(bay,.40,1.0),brick,a,b)
+   west=a[0]<-25 and b[0]<-25
+   if west and row==0:
+    # shortcut: northern entrance bay and moldings follow the owner photo; refine against measured frontage before acceptance.
+    entry=j==0
+    if entry:
+     for dx in (-.65,.65):part('Sharp recessed paired entrance door',(x+dx,-.55,1.55),(1.20,.06,2.85),glass,a,b)
+     part('Sharp separate entrance transom',(x,-.55,3.45),(2.55,.06,.65),glass,a,b)
+     for dx in (-1.36,0,1.36):part('Sharp entrance dark jamb',(x+dx,-.32,1.90),(.12,.32,3.70),metal,a,b)
+     for zrail in (.15,3.05,3.85):part('Sharp entrance transom rail',(x,-.32,zrail),(2.8,.32,.12),metal,a,b)
+     for dx in (-1.65,1.65):part('Sharp molded entrance surround pier',(x+dx,.20,2.40),(.40,.70,4.80),trim,a,b)
+     for zrail in (4.65,4.85):part('Sharp molded portal lintel',(x,.24,zrail),(3.75,.80,.18),trim,a,b)
+     part('Sharp physical entry plaque',(x,.03,4.22),(2.50,.12,.50),trim,a,b)
+     for dx in (-.16,.16):part('Sharp paired door pull',(x+dx,-.12,1.60),(.04,.10,.60),metal,a,b)
+    else:
+     for k in range(3):
+      u=x+(k-1)*(bay-.8)/3
+      part('Sharp ground storefront pane',(u,-.30,1.90),((bay-.8)/3-.10,.06,3.40),glass,a,b)
+     part('Sharp broad storefront transom',(x,-.30,4.15),(bay-.80,.06,.70),glass,a,b)
+     for dx in (-.5,-1/6,1/6,.5):part('Sharp ground silver frame',(x+dx*(bay-.8),-.10,2.45),(.10,.28,4.65),metal,a,b)
+     for zrail in (.15,3.65,4.65):part('Sharp ground storefront rail',(x,-.10,zrail),(bay-.70,.28,.14),metal,a,b)
+    continue
    for k in range(3):
     u=x+(k-1)*(bay-.8)/3
     part('Sharp separate tripartite recessed pane',(u,-.24,z+.10),((bay-.8)/3-.08,.04,wh),night if (row*13+j*5+k)%43==4 else glass,a,b)
@@ -67,6 +89,9 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
     part('Sharp window frame rail',(x,-.08,zz),(bay-.72,.24,.09),metal,a,b)
    part('Sharp projecting terracotta window sill',(x,.16,z+.10-wh/2-.10),(bay-.55,.60,.15),trim,a,b)
    part('Sharp terracotta window head',(x,.08,z+.10+wh/2+.14),(bay-.55,.42,.20),trim,a,b)
+   if west and row==1:
+    part('Sharp monumental second floor meeting rail',(x,-.02,z+.45),(bay-.72,.34,.14),metal,a,b)
+    for dx in (-.5,.5):part('Sharp monumental cast iron outer upright',(x+dx*(bay-.8),.01,z+.10),(.16,.36,wh+.35),metal,a,b)
   part('Sharp end masonry pier',(width,.02,z),(.62,.4,top-bottom),brick,a,b)
  for z,h,depth in [(10,.55,.70),(H-1.1,.45,.85),(H-.25,.50,1.0)]:
   part('Sharp continuous projecting belt/cornice',(width/2,.15,z),(width,depth,h),trim,a,b)

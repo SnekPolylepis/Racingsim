@@ -648,6 +648,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/LondonGuarantee")
 	if track.has_node("Scenery/LondonGuarantee"):
 		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11
+	ok = ok and track.has_node("Scenery/SharpBuilding")
+	if track.has_node("Scenery/SharpBuilding"):
+		ok = ok and track.get_node("Scenery/SharpBuilding").mesh.get_surface_count() == 6
 	ok = ok and track.has_node("Scenery/Block37")
 	if track.has_node("Scenery/Block37"):
 		ok = ok and track.get_node("Scenery/Block37").mesh.get_surface_count() == 9
@@ -730,6 +733,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/LondonGuarantee")
 	if track.has_node("Scenery/LondonGuarantee"):
 		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11
+	ok = ok and track.has_node("Scenery/SharpBuilding")
+	if track.has_node("Scenery/SharpBuilding"):
+		ok = ok and track.get_node("Scenery/SharpBuilding").mesh.get_surface_count() == 6
 	ok = ok and track.has_node("Scenery/Block37")
 	if track.has_node("Scenery/Block37"):
 		ok = ok and track.get_node("Scenery/Block37").mesh.get_surface_count() == 9
