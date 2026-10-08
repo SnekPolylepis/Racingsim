@@ -5529,3 +5529,26 @@ to plain east elevation visible in modernreferences. Counts/spacing estimated.
 Blender56644tri/ninemats; freshimport/nativegeometry14PASS/empty stderr.
 StandaloneDRAFTREVIEWPASS/empty stderr; actualnortheast image inspected.
 Current mainentry and refreshednative trackreview remain pending. No EXE.
+
+REVIEW CHI-3D Mallers refreshed Grid 2026-10-07
+Native PID85660 terminalCITYREVIEWPASS/empty stderr; four updated north facade/
+west sign day/night images actually inspected. Paired public bays and plain
+east sash refinement now rendered in track. Elevated railway still partly
+screens sign from west camera; these views do not establish current main doors.
+Gates20261007-224645 all sixPASS85s: geometry14/menu101/coverage23, both clips
+one check each, parse clean (140checks plusparse). Final door/crown fidelity
+still pending; retain draft status. No EXE export.
+
+DRAFT CHI-3D Hyatt Place Loop 2026-10-07
+Primary architect exterior photograph actually inspected; CVU64.4m/17floors/
+2015 verified. Exact mapped w147397556 footprint authored with physical blue
+curtain panes/frames, pale punched-window wings and raised hotel lettering.
+First standalone review exposed an incorrect full-footprint high roof; replaced
+with lower wing roof and separate higher glass tower. Updated corner actually
+inspected after nativeDRAFTREVIEWPASS/empty stderr. Blender19820tri/sixmaterials.
+Geometry10/10PASS/empty stderr includes finite triangle rays proving recessed
+curtain panes and physical wing apertures. First curtain probe missed slender
+frame; corrected probe to actual mapped/aligned mullion coordinate, unchanged
+mesh passes. Entrance, colored roof logo, rear and exact facade modules still
+unverified; draft not placed into either track yet. No EXE export.
+Registered Hyatt draft gate20261007-225339:10checks plusparse ALLPASS1s. Next: entrance/logo reference, facade refinement, both-track placement and native day/night clearance review.
