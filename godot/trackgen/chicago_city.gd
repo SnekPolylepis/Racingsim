@@ -83,6 +83,7 @@ const DEPAUL_CDM_YAW = .022
 const MICHIGAN_333_POSITION = Vector3(16.4, STREET_Y, -335.15)
 const MICHIGAN_333_YAW = .021
 const LONDON_POSITION = Vector3(-57.85, STREET_Y, -351.3)
+const BELL_POSITION = Vector3(-850.25, STREET_Y, 136.7)
 const WACKER_200_POSITION = Vector3(-1076.05, STREET_Y, 641.75)
 const WACKER_311_POSITION = Vector3(-928, STREET_Y, 817)
 const WACKER_300_POSITION = Vector3(-1055.4, STREET_Y, 793.45)
@@ -207,6 +208,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "authored Peoples Gas exterior"
 		elif b.get("o", "") == "w147399567":
 			exclusion = "authored London Guarantee exterior"
+		elif b.get("o", "") == "w147095658":
+			exclusion = "authored Bell Building exterior"
 		elif b.get("o", "") == "w64888042":
 			exclusion = "authored 200 South Wacker exterior"
 		elif b.get("o", "") == "w147350208":

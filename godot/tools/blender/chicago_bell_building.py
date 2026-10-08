@@ -59,6 +59,7 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
    x=(j+.5)*bay
    portal=front and row==0 and x>width-10
    if not portal:
+    part('Dark interior behind paired glazing',(x,-.35,z+2.4),(2.4,.055,2.85),roof,a,b)
     for k in (-1,1):
      part('Separate recessed paired window',(x+k*.56,-.24,z+2.4),(1.02,.055,2.70),night if (row*11+j*7)%29==2 else glass,a,b)
     part('Window central sash',(x,-.12,z+2.4),(.065,.14,2.80),metal,a,b)
@@ -68,9 +69,11 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
     part('Tripartite bay pier',(j*bay,.02,z+2.05),(.66,.40,4.1),pier_mat,a,b)
   part('Tripartite end pier',(width,.02,z+2.05),(.66,.40,4.1),pier_mat,a,b)
   if row<3:
-   for zz in [z+.32+i*.44 for i in range(9)]:part('Rusticated base projecting band',(solid_width/2,.22,zz),(solid_width,.08,.055),stone,a,b)
+   for zz in [z+.32+i*.44 for i in range(9)]:
+    for j in range(bays+1):
+     if j*bay<=solid_width:part('Rusticated stone pier band',(j*bay,.22,zz),(.70,.08,.055),stone,a,b)
   if 3<=row<16:
-   for zz in [z+1.1+i*.28 for i in range(11)]:part('Fine brick bed joint',(width/2,.18,zz),(width,.015,.018),roof,a,b)
+   for zz in [z+.12+i*.28 for i in range(4)]:part('Fine brick spandrel bed joint',(width/2,.18,zz),(width,.015,.018),roof,a,b)
  for j in range(bays+1):
   x=j*bay
   for dx in (-.20,0,.20):
@@ -83,6 +86,8 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
   for x in (width-7.8,width-4.0):
    orient(arch('Recessed double entrance stone arch',1.4,1.78,(x,2.35),.08,.34,stone),a,b)
    for dx in (-1.59,1.59):part('Portal banded stone jamb',(x+dx,.15,1.17),(.36,.50,2.35),stone,a,b)
+   part('Dark recessed portal interior',(x,-1.40,1.95),(2.8,.055,3.9),roof,a,b)
+   for dx in (-1.42,1.42):part('Entrance recess side wall',(x+dx,-.55,1.9),(.12,1.65,3.8),stone,a,b)
    part('Deep recessed double portal glazing',(x,-1.25,1.85),(2.7,.07,3.65),clear,a,b)
    part('Portal central bronze door stile',(x,-1.16,1.5),(.08,.15,3),metal,a,b)
    for zz in (4.4,8.5):

@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 184
+const CACHE_REVISION = 185
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -952,6 +952,20 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		wacker200.surface_set_material(surface, mat)
 	mesh_node(asset, parent, "Wacker200", wacker200, ChicagoCity.WACKER_200_POSITION)
+	var bell = PropMesh.mesh("res://assets/chicago/landmarks/bell_building.glb").duplicate()
+	for surface in bell.get_surface_count():
+		var mat = bell.surface_get_material(surface).duplicate()
+		mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Night"):
+			mat.set_meta("chicago_night", true)
+			mat.emission = Color(.65, .48, .25)
+			mat.emission_energy_multiplier = .25
+		if mat.resource_name.begins_with("Clear"):
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.albedo_color.a = .18
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		bell.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "BellBuilding", bell, ChicagoCity.BELL_POSITION)
 	var wacker311 = PropMesh.mesh("res://assets/chicago/landmarks/wacker_311.glb").duplicate()
 	for surface in wacker311.get_surface_count():
 		var mat = wacker311.surface_get_material(surface).duplicate()

@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache184. See latest dated evidence below. Continue trackside building
+Grid@v5/cache185. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -429,3 +429,11 @@ materials; source import and isolated native day/low-light views checked.
 Not integrated/accepted: photo-fit balconies/entry/crown, production day/night
 materials and both-layout checks remain next. See WASHINGTON-208-212-REFERENCE.md.
 Morton208 next; cache184 and road versions unchanged; no app export.
+
+## Bell integrated checkpoint2026-10-08
+
+Bell mapped physical exterior integrated/cache185,148,776tri/nine materials.
+Parse/all40Chicago suites and both full clip scans pass; ten actual High source
+day/night images reviewed. See WASHINGTON-208-212-REFERENCE.md for recorded
+checks and remaining ornament/balcony/crown calibration. Morton208 next.
+Road versions/timing unchanged; source-only, full trackside goal continues.

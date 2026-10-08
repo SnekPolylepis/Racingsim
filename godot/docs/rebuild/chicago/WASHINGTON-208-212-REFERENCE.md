@@ -72,3 +72,35 @@ true entrance recess/arch clearance, festoons, carved capitals/crown proportions
 and surveyed rooftop services. Integration, material day/night switching,
 production views on both layouts, foundation probes and clip scans still pending.
 Original@v7/Grid@v5/cache184 unchanged. Morton remains next; full goal active.
+
+## Bell integration — Mac2026-10-08
+
+Final authored Bell exterior148,776tri/nine materials at(-850.25,8,136.7).
+Physical masonry now stays on stone piers/brick spandrels instead of crossing
+glass. Paired panes have dark interior backing; portal glass has physical side
+recess walls and dark interior. Generic mapped w147095658 excluded, BellBuilding
+fixture added to both cache validators; cache185/original@v7/Grid@v5. Standard
+Night flag switches warm occupied panes; clear entrance alpha.18/double-sided.
+Road/timing unchanged.
+
+Godot4.6.2 AppleM4 Metal source evidence: parse pass; all40 Chicago suites pass
+(199.0s), including Bell28, menu115, both-layout geometry49 each. New Bell gate
+checks mapped foundation/envelope, material/no-photo/night contract, L-wing roof,
+stone-only entrance ray openings and physically recessed glass. Full-route1m
+foundation clearance163.349991original/8.841562Grid. Initial gate's local search
+region had no original-route samples; fixed to measure both complete routes.
+Both native full clip scans pass:Grid103/original120 deliberate accepted hits,
+zero failures; no Bell exemption.
+
+Ten actual High source images viewed in screenshots/chicago-bell-mac:
+shaft frontage and street entrance on both layouts/day/night, plus Grid full
+exterior/day/night. Filenames containing river show Washington entrance, not
+river frontage; street images are close shaft views, full images show roof/base.
+Initial blocked camera was replaced; final bounded jobs ran serially and exited0
+with empty stderr. Final reruns loaded native track caches successfully. These
+frozen source captures do not establish manual-driving/performance validation.
+
+Still open: precise balcony widths/floor coverage, facade bay counts, festoons,
+carved capitals/crown proportions and measured roof equipment. Morton208 next;
+no full-fidelity acceptance claim for Bell and no app export. Existing lap
+evidence remains dated; no new lap/manual-wheel/Intel/performance claim.

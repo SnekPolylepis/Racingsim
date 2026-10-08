@@ -6252,3 +6252,16 @@ and native isolated day/low-light captures exit0/empty stderr; both viewed.
 See WASHINGTON-208-212-REFERENCE.md and chicago-bell-draft-mac screenshots.
 Still staged: closer photo-fit, fine ornament, production material contract,
 integration/track captures/rays/clip checks remain. No route/cache/export change.
+
+### INTEGRATED Bell trackside exterior —2026-10-08
+
+Bell148,776tri/nine materials integrated at mapped L foundation; repaired
+masonry crossing glazing and see-through entrance. Standard day/night contract,
+generic exclusion and both cache validators updated/cache185; original@v7 and
+Grid@v5 unchanged. Parse/all40Chicago suites pass (199.0s;Bell28/menu115/both
+geometry49); both native full clip scans pass Grid103/original120 accepted hits
+without Bell exemption. Ten High native production day/night images viewed;
+final serial capture/clip jobs exit0/empty stderr, warm-cache loads confirmed.
+Foundation clearance163.349991original/8.841562Grid; portal opening/recess rays
+pass. Detailed evidence/limits in WASHINGTON-208-212-REFERENCE.md. Fine ornament
+and surveyed balcony/crown dimensions remain; Morton next. No export/newlaps.
