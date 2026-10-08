@@ -96,3 +96,13 @@ Local ignored City capture: godot/visual-review/civic-city.gd; logs mac-civic/.
 
 Final City checkpoint source Grid driving/presentation:72/72PASS,exit0,
 empty stderr (city-drive logs). No export or full-lap/performance acceptance.
+
+
+## Current continuation checkpoint — County inner seated drafts
+
+County inner Clark fields now have two physical seated draft figures;
+240024tri/sevenmaterials/cache157. Actual High-quality Grid day/night frontage
+and oblique views inspected,exit0,empty stderr. Fine sculpture and unresolved
+held attributes remain open. Next court glazing and roof garden/equipment from
+recorded primary references, then all remaining trackside buildings. No export.
+Ignored local capture: visual-review/civic-county-inner.gd; logs mac-civic/.

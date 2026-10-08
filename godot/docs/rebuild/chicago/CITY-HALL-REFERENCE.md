@@ -142,3 +142,10 @@ Both inner fields contain single seated figures on plinths, separate from the
 paired seal compositions in the outer fields. Oblique/vehicle occlusion and
 image resolution limit small handheld attributes; seek detail before naming
 or inventing them. No additional County geometry added in this checkpoint.
+
+
+County inner fields modeled as seated silhouette drafts2026-10-08 after actual
+Abbott2014 frontage reinspection. Posed legs/arms, mantle/drapery and projecting
+plinths; unresolved held attributes not invented. County240024tri/cache157;
+fine sculpture remains provisional, courts/roofs still pending. Four actual
+High-quality Grid day/night views inspected. Detailed checks in REBUILD-LOG.

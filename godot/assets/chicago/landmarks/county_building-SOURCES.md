@@ -41,3 +41,12 @@ inner County fields/City reliefs and court/roof fidelity remain open.
 County233320tri/sevenmaterials/cache155; coping/footprint unchanged.
 Mac source checks and day/night evidence recorded in REBUILD-LOG2026-10-08;
 this is a draft, not full sculptural fidelity. No export.
+
+
+2026-10-08 inner Clark draft: re-inspected Ian Abbott2014 frontage. Added two
+single seated figures, mirrored photo-fit poses, mantle/drapery and plinths;
+small held attributes unresolved, fine anatomy provisional. Original physical
+geometry, no image texture. County240024tri/sevenmaterials/cache157. County17
+and paired City16 geometry pass; four actual High-quality Grid day/night views
+inspected with empty stderr. Full evidence/limits in REBUILD-LOG2026-10-08.
+Court glazing/roof details and fine sculpture remain open. No export.

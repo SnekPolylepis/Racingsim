@@ -120,3 +120,10 @@ Source City16/County15/menu107/coverage23 plusparse pass on Apple M4/Metal
 --v2-look driving/presentation72/72PASS,exit0,empty stderr. Figures remain
 photo-fit drafts; courts/roofs and full trackside fidelity are unfinished.
 No export/full-lap benchmark/Intel hardware run. See REBUILD-LOG for scope.
+
+### 2026-10-08 County inner relief continuation
+
+Source County17/City16/menu107/coverage23 plusparse pass on Apple M4/Metal
+(163assertions). Four actual High-quality Grid day/night views inspected;
+capture/import exit0,empty stderr. Fine sculpture remains draft. No new
+export, driving/presentation repeat, full gate matrix or Intel validation.

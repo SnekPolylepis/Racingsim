@@ -86,6 +86,16 @@ func run():
 			seal != Vector3.INF and field != Vector3.INF and (seal - field).dot(outward) > .12,
 			"County outer oval seal projects physically beyond recessed relief field %s" % sign
 		)
+	for panel in [-.5, .5]:
+		var center = middle + along * panel * 112.10874 / 18.0
+		center.y = 4.12
+		var torso = first_hit(exterior, center + outward * 8, center - outward * 2)
+		var field_center = center + Vector3.DOWN * 2.30
+		var field = first_hit(exterior, field_center + outward * 8, field_center - outward * 2)
+		check(
+			torso != Vector3.INF and field != Vector3.INF and (torso - field).dot(outward) > .15,
+			"County inner seated figure projects beyond backing %s" % panel
+		)
 	for surface in exterior.get_surface_count():
 		check(exterior.surface_get_material(surface).albedo_texture == null, "No photographic facade")
 	print("COUNTY RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))

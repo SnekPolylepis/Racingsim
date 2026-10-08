@@ -5724,3 +5724,25 @@ recorded in CITY-HALL-REFERENCE.md. No garden/equipment authored yet.
 Final source Chicago Grid --v2-look driving/presentation exits0:72checks,
 zero failures,empty stderr. Logs city-drive.out/.err in tests/logs/mac-civic/.
 No full lap/performance claim. All temporary Godot processes finished.
+
+
+DRAFT CHI-3D County inner Clark seated reliefs 2026-10-08
+Reinspected actual Abbott2014 frontage: two single seated figures on inner
+piers, distinct from outer paired County seal compositions. Original Blender
+geometry adds posed thighs/knees/calves, neck/head contours, bent arms, mantle
+and drapery folds, and projecting plinths. Small held attributes remain
+unresolved; anatomy/precise sculpture remain draft, not full fidelity.
+County240024tri/sevenmaterials/cache157. Import exits0/empty stderr;
+County17/City16/coverage23/parse pass; final both-route menu result below.
+Four actual High-quality Grid front/oblique day/night views inspected under
+screenshots/chicago-county-inner-mac/. Capture exits0/empty stderr. Portal
+recess, paired coping height, open court and outer seal depth checks retained;
+two new seated-depth checks pass. No photographic textures or new dependency.
+No export. Driving/presentation was not repeated after this ornament-only
+change; previous72check run remains dated evidence for cache156. Full gates
+and clipping scans skipped; new detail stays inside existing entrance bounds.
+Court glazing, roof garden/equipment, fine sculpture and remaining trackside
+exteriors remain open; river bridges follow buildings. Goal remains active.
+
+Final five suites PASS69.3s: County17/City16/menu107/coverage23 =163assertions
+plusparse. No script errors. Source and actual render evidence committed.

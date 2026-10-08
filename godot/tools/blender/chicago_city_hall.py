@@ -137,6 +137,29 @@ for name,aa,bb,cols in faces:
     for sign in [-1,1]:stroke('County seal lower curled ornament',[(sign*.38,3.1),(sign*.51,2.82),(sign*.27,2.48),(0,2.55)],.085)
     part('County Building plaque backing',x,1.43,width*.70,.38,-.41,.10,dark)
     placed(text('County Building plaque lettering','COUNTY\nBUILDING',(x,-.49,1.43),.17,bronze,depth=.012))
+   if county and abs(x)<pitch:
+    # Abbott2014 Clark frontage: two single seated figures, not the outer paired seals.
+    # ponytail: small held attributes are unresolved in the oblique reference; refine with a closeup.
+    sign=-1 if x<0 else 1
+    part('County seated relief backing',x,3.65,width-.22,3.65,-.35,.08,stone)
+    part('County seated figure projecting plinth',x,2.03,width*.72,.26,-.55,.42,trim)
+    relief('County seated head',x+sign*.17,4.90,.36,.45,.18,-.59)
+    relief('County seated hair',x+sign*.18,5.03,.40,.23,.15,-.56)
+    relief('County seated nose in profile',x+sign*.32,4.86,.13,.14,.08,-.77)
+    relief('County seated neck',x+sign*.10,4.62,.21,.21,.17,-.54)
+    relief('County seated shoulder mantle',x,4.46,.73,.35,.21,-.57)
+    relief('County seated chest',x,4.12,.59,.72,.23,-.57)
+    relief('County seated folded lap',x-sign*.08,3.50,.68,.47,.23,-.60)
+    relief('County seated bent thigh',x+sign*.30,3.38,.73,.36,.27,-.66)
+    relief('County seated knee',x+sign*.53,3.23,.33,.36,.26,-.66)
+    relief('County seated foreground shin',x+sign*.47,2.75,.24,.90,.24,-.61)
+    relief('County seated rear calf',x-sign*.12,2.67,.28,.99,.18,-.53)
+    for dx in [-.12,.47]:relief('County seated foot',x+sign*dx,2.15,.32,.15,.26,-.61)
+    relief('County seated chair drapery',x-sign*.29,2.93,.41,1.29,.16,-.52)
+    stroke('County seated bent inner arm',[(sign*.29,4.47),(sign*.49,4.05),(sign*.13,3.84)],.095)
+    stroke('County seated lowered outer arm',[(-sign*.29,4.42),(-sign*.47,4.05),(-sign*.40,3.66)],.095)
+    for fold in [-.22,-.05,.13]:stroke('County seated robe fold',[(sign*fold,3.60),(sign*(fold-.05),3.00),(sign*(fold+.06),2.20)],.026)
+    for fold in [-.18,0,.18]:stroke('County shoulder mantle fold',[(fold,4.51),(fold-.08,4.22),(fold-.05,4.03)],.023)
    if not county:
     # Suresh2021 full frontage and Diesterheft2007 water figure: four distinct compositions.
     # ponytail: photo-fit bas-relief anatomy; finer faces and occluded attributes remain provisional.
