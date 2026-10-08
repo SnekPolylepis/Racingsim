@@ -6181,3 +6181,13 @@ remain open. Next close unmodeled named candidate:200SouthWacker w64888042,
 8.5m from Grid station6445 in the current inventory; verify references, mapped
 foundation and both-layout placement before modeling. Remaining whole-track
 building objective is active, including unnamed trackside footprints.
+
+### DRAFT 200 South Wacker — 2026-10-08
+
+Staged original Blender exterior73,760triangles/sevenmaterials; retained mapped
+six-point footprint, physical panes/frames and angled glazed lobby. Generation
+assertions/import pass; actual standalone M4 Metal draft capture inspected,
+exit0/empty stderr. Upper raster-derived roof interpretation remains provisional
+and must be photo-fit before integration. Existing entrance and proposed owner
+redevelopment images distinguished; no production day/night or placement claim.
+See chicago/WACKER-200-REFERENCE.md. No app export, route edit or save changes.
