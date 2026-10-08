@@ -5623,3 +5623,22 @@ Entrance filename is a corner view, not door proof. Frozen14.33ms is not a
 driving benchmark. County gate includes west GLB for paired height check.
 Actual entry sculptures/doors, court glazing, roof garden and equipment still
 pending; paired exterior remains draft. Source only, no executable export.
+
+REFINE CHI-3D City Hall LaSalle entrance 2026-10-07
+Actually inspected Ajay Suresh2021 full entrance frontage and Richie
+Diesterheft2007 uncropped detail (links in CITY-HALL-REFERENCE.md). Three
+physical portals replace generic ground windows: nested stone jambs, layered
+projecting lintels/cornices, pendants, separate recessed doors/transoms and
+bronze rails/pulls. Four relief fields framed but sculptures still absent.
+Portal placement/dimensions photo-fit; no facade photographs used as textures.
+Original Blender190148tri/sevenmaterials/cache153. Standalone PID109380
+terminalDRAFTREVIEWPASS/empty stderr; actual entry image inspected. Outer
+portal masonry gaps found in initial visual check were closed before final
+review. City geometry12 verifies finite door/transom hits at x=-21.4096
+versus projecting lintel x=-23.9296. County11 paired height still passes.
+Final gates20261007-233512 sevenPASS98s: City12/County11/menu107/coverage23/
+both clips oneeach/parse (155checks plusparse), Original111/Grid101baseline.
+Native PID110408 terminalCITYREVIEWPASS/empty stderr; final bronze entrance
+day/night images actually inspected. Frozen17.25ms is not a driving benchmark.
+County portals/sculptures, City relief figures, courtyard glazing and roof
+garden/equipment still pending. Source-only; no executable exported.

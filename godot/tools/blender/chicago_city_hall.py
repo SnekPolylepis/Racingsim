@@ -1,4 +1,4 @@
-"""City Hall west half: original geometry from HABS dimensions and municipal photos."""
+"""City Hall / County paired halves: original geometry from HABS dimensions and municipal photos."""
 import bpy, math, sys, json
 from pathlib import Path
 from mathutils import Vector, Matrix
@@ -14,6 +14,7 @@ back=material('Opaque recessed backing and unsurveyed courts',(.26,.25,.23),roug
 roof=material('Roof slab and coping',(.31,.32,.30),roughness=.95)
 H=62.484 # HABS205ft coping; WJE rounded200ft differs. See reference limits.
 county='--county' in sys.argv
+bronze=material('LaSalle bronze door and transom frames',(.37,.27,.13),metallic=.45,roughness=.55) if not county else dark
 cx,cz=(-579.65,106.8) if county else (-626,106.35)
 data=json.loads((Path(__file__).resolve().parents[2]/'trackgen/data/chicago/city.json').read_text(encoding='utf-8'))
 foot=next(b['f'] for b in data['buildings'] if b.get('o')==('w108240968' if county else 'w108240964'))
@@ -48,9 +49,13 @@ for name,aa,bb,cols in faces:
  # ponytail: public bay counts and horizontal spacing are photo-fit estimates, not measured elevations.
  for row in range(3):
   low=row*7.112
-  part('Rusticated base solid band',0,low+.95,length,1.9,0,.6,stone)
+  entry_row=not county and name=='west' and row==0
+  if entry_row:
+   for sign in [-1,1]:part('Base band outside LaSalle entrances',sign*(length/4+pitch),low+.95,length/2-2*pitch,1.9,0,.6,stone)
+  else:part('Rusticated base solid band',0,low+.95,length,1.9,0,.6,stone)
   for c in range(cols):
    x=(c-(cols-1)/2)*pitch
+   if entry_row and abs(x)<2*pitch:continue
    for s in range(3):
     px=x+(s-1)*ww/3
     part('Individual base sash glazing',px,low+4.15,ww/3-.10,4.30,1.08,.035,glass)
@@ -60,8 +65,38 @@ for name,aa,bb,cols in faces:
    part('Base window stone lintel',x,low+6.55,ww+.64,.35,.12,.55,trim)
   for c in range(cols+1):
    x=-length/2+c*pitch
+   if entry_row and abs(x)<2*pitch:continue
    part('Rusticated base pier',x,low+4.35,pitch-ww,4.9,0,.65,stone)
    for z in [low+2.2,low+3.4,low+4.6,low+5.8]:part('Physical shallow rustication joint',x,z,pitch-ww,.025,-.34,.025,dark)
+ if not county and name=='west':
+  # LaSalle photo by Ajay Suresh (2021): three portals, recessed bronze doors/transoms.
+  # ponytail: portal sizes photo-fit; relief figures remain unmodeled pending sculpting.
+  for sign in [-1,1]:part('Solid outer entrance masonry',sign*1.84*pitch,3.15,.32*pitch,6.3,0,.65,stone)
+  for x in [-pitch,0,pitch]:
+   opening=pitch*.64
+   for dx in [-opening/2-.34,opening/2+.34]:
+    part('LaSalle portal outer stone jamb',x+dx,3.15,.68,6.3,-.38,.95,trim)
+    for offset in [0,.16]:part('Nested portal jamb moulding',x+dx+(.20-offset)*(1 if dx<0 else -1),3.1,.075,6.2,-.92-offset*.5,.12,trim)
+   for z,w,h,d,t in [(6.35,opening+1.4,.5,-.38,.95),(6.73,opening+1.65,.25,-.54,1.20),(7.02,opening+1.8,.24,-.62,1.3)]:
+    part('Layered portal lintel and projecting cornice',x,z,w,h,d,t,trim)
+   for dx in [-opening/2+.12,opening/2-.12]:part('Recessed portal stone reveal',x+dx,3.15,.24,6.3,.63,1.5,stone)
+   part('Deep portal ceiling',x,6.10,opening,.25,.63,1.5,stone)
+   part('Portal threshold',x,.10,opening,.20,.63,1.5,stone)
+   for c in range(4):
+    px=x+(c-1.5)*opening/4
+    part('Recessed bronze entry door glazing',px,1.65,opening/4-.09,3.1,1.40,.04,glass)
+    part('Tall separate entrance transom glazing',px,4.62,opening/4-.09,2.4,1.40,.04,glass)
+    part('Entrance transom vertical bronze bar',px+opening/8,4.62,.06,2.5,1.18,.14,bronze)
+   for dx in [-opening/2,-opening/4,0,opening/4,opening/2]:part('Bronze entrance door stile',x+dx,1.65,.075,3.2,1.18,.16,bronze)
+   for z in [.13,3.2,3.4,5.87]:part('Entrance bronze horizontal rail',x,z,opening,.12,1.18,.16,bronze)
+   for dx in [-.15,.15]:part('Physical door pull',x+dx,1.55,.055,.65,1.03,.08,bronze)
+   part('Portal central stone pendant',x,6.28,.52,1.25,-.94,.3,trim)
+   for c in range(15):placed(arch('Portal lintel repeated circular ornament',.065,.10,(x+(c-7)*(opening+1.1)/15,6.74),-1.17,.04,trim,0,2*math.pi,12))
+  for x in [-1.5*pitch,-.5*pitch,.5*pitch,1.5*pitch]:
+   width=pitch*.36-.1
+   part('Stone pier between LaSalle portals',x,3.15,width,6.3,0,.65,stone)
+   for dx in [-width/2+.06,width/2-.06]:part('Relief panel outer border',x+dx,3.65,.12,3.9,-.36,.15,trim)
+   for z in [1.70,5.60]:part('Relief panel horizontal border',x,z,width,.14,-.36,.15,trim)
  for z,w in [(20.9,.35),(21.336,.55),(22.5,.22)]:part('Base projecting continuous belt',0,z,length,w,-.14,.95,trim)
  for row in range(6):
   low=22.5+row*4.58

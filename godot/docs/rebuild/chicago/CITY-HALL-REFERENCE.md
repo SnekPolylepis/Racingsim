@@ -68,3 +68,17 @@ review shows matching heights and open paired courts; corrected native Grid
 south approach/southeast corner day/night reviewed. Neither entrance doors
 nor sculptures are complete. Court glazing, roof garden and detailed entrance
 fidelity remain pending; this is not a completed block representation.
+
+## LaSalle entrance refinement2026-10-07
+
+Primary photographer [Ajay Suresh2021 frontage](https://commons.wikimedia.org/wiki/File:Chicago_City_Hall_(51575574600).jpg)
+actually inspected: three portals with layered projecting stone heads, recessed
+metal doors, tall glazed transoms and four relief panels between/beside them.
+[Richie Diesterheft2007 closeup](https://commons.wikimedia.org/wiki/File:Entrance_To_Chicago%27s_City_Hall_(2130003764).jpg)
+actually inspected uncropped: nested jamb mouldings, projecting cornice and
+central pendant; seated water-supply figure differs from County standing pair.
+Reference photographs viewed only; no photographs used as game textures.
+Original west geometry now has three physical recessed entrances with separate
+panes, rails, pulls, nested jambs, lintel ornaments and stone reveals. Placement
+and dimensions are photo-fit estimates. Four relief frames are empty until
+figures are authored; this refinement does not complete entrance fidelity.

@@ -12,4 +12,19 @@ Integrated at(-626,8,106.35),no rotation/cache149; mapped west shell excluded.
 185192tri/sixmaterials. Geometry10/menu105/coverage23/bothclips/parse pass;
 Grid south/west day/night inspected. Main entrance remains unverified;
 municipal entry photo7347 belongs to County, not west City Hall. East County
-half still generic and must receive its paired exterior. No EXE export.
+half received a paired draft in cache150. No EXE export.
+
+LaSalle entrance refinement2026-10-07: three original stone portals with
+nested jamb mouldings, projecting lintels/cornices, bronze door stiles/pulls
+and separate recessed door/transom glazing.190148tri/sevenmaterials/cache153.
+Portal sizes are photo-fit,
+not surveyed. Four framed relief fields remain empty; figures not modeled.
+Primary photographer Ajay Suresh2021 frontage actually inspected:
+https://commons.wikimedia.org/wiki/File:Chicago_City_Hall_(51575574600).jpg
+Richie Diesterheft2007 closeup actually inspected for jambs/pendant/cornice:
+https://commons.wikimedia.org/wiki/File:Entrance_To_Chicago%27s_City_Hall_(2130003764).jpg
+References viewed only; no photographs copied as game textures.
+
+Final20261007-233512 seven targeted gates pass98s: City12/County11/menu107/
+coverage23/both clips and parse. Native PID110408 terminalCITYREVIEWPASS,
+empty stderr; final entrance day/night actually inspected. Source-only.
