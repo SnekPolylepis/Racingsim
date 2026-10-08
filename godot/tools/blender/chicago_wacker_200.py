@@ -40,7 +40,7 @@ def part(name,pos,size,mat,a,b):
  faces.extend(tuple(offset+i for i in reversed(face)) for face in [(0,3,2,1),(4,5,6,7),(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)])
 
 prism('Retained six vertex mapped foundation',plan,-8,0,stone)
-# shortcut: upper tier follows the 2m roof raster, replace its photo-fit edge after a full-tower reference fit.
+# shortcut: upper tier follows the 2m roof raster, refine the diagonal join and corners when measured rooftop dimensions are available.
 upper=[(x-cx,-(z-cz)) for x,z in [(-1100.0,625.8),(-1051.6,617.0),(-1051.6,620.0),(-1090.0,665.8),(-1092.9,666.4)]]
 if sum(x*v-y*u for (x,y),(u,v) in zip(upper,upper[1:]+upper[:1]))<0:upper.reverse()
 def facade(poly,bottom,top):
@@ -62,8 +62,15 @@ facade(upper,122,146.5)
 prism('Lower service roof',plan,121.7,122,dark)
 prism('Upper service roof',upper,146.2,146.5,dark)
 # Published152.3m and mapped155.5m differ; this roof-service envelope remains provisional.
-box('Roof mechanical enclosure',(-7,8,150.4),(12,14,7.8),dark)
-for z in [147+i*.45 for i in range(17)]:box('Physical roof enclosure louvre',(-.94,8,z),(.16,14,.10),metal)
+mechanical=[(x-cx,-(z-cz)) for x,z in [(-1083,651),(-1063,629),(-1072,625),(-1090,647)]]
+if sum(x*v-y*u for (x,y),(u,v) in zip(mechanical,mechanical[1:]+mechanical[:1]))<0:mechanical.reverse()
+prism('Long diagonal rooftop mechanical enclosure',mechanical,146.5,154.3,dark)
+for a,b in zip(mechanical,mechanical[1:]+mechanical[:1]):
+ width=math.dist(a,b)
+ for z in [147+i*.45 for i in range(17)]:part('Physical diagonal roof enclosure louvre',(width/2,.04,z),(width,.12,.10),metal,a,b)
+for x,y in [(12,-13),(15,-9),(9,-16)]:
+ box('Lower triangular roof service cabinet',(x,y,122.6),(1.8,1.6,1.2),dark)
+ for z in [122.1+i*.18 for i in range(6)]:box('Lower roof cabinet physical louvre',(x+.93,y,z),(.07,1.6,.07),metal)
 for a,b in zip(plan,plan[1:]+plan[:1]):
  width=math.dist(a,b);bays=max(1,round(width/5));bay=width/bays
  for j in range(bays+1):part('Tall pale podium column',(j*bay,0,5),(.65,.65,10),stone,a,b)

@@ -6200,3 +6200,33 @@ inspected; misleading Willis filename identified as street view. Generation
 assertions/import and actual neutral-light native entrance capture pass, exit0/
 empty stderr. Still staged; roof join proportions, production integration and
 both-layout day/night/clip checks remain. See WACKER-200-REFERENCE.md.
+
+## Paired roof and production integration — 2026-10-08
+
+[Vincent Desjardins's actual roof-facing photograph,2010](https://commons.wikimedia.org/wiki/File:View_down_from_the_Sears-Willis_Tower_Skydeck.jpg), CC BY2.0, inspected in the browser. It confirms the two triangular masses meeting along a diagonal and the long enclosure on the taller roof. Revised the generic rooftop box into a diagonal enclosure with physical louvres; added three photo-fit lower-roof service cabinets. Exact join/corner/enclosure dimensions remain provisional rather than measured. Current original Blender source/GLB81,532triangles/sevenmaterials; no photo textures.
+
+`Scenery/Wacker200` integrated at(-1076.05,8,641.75); mapped w64888042 fallback
+excluded. Both packed-cache validators require the node/seven materials. Cache184,
+original@v7/Grid@v5 unchanged; no road/timing changes. Clear lobby/canopy alpha.18,
+explicit warm night fixtures/selected office panes and day-off toggles.
+
+Mac Godot4.6.2/M4 Metal Forward+: building29checks and parse pass; all39headless
+Chicago suites pass208.1s, including menu115, both roadway geometry49 and
+all other authored exteriors. Both full native5m/five-offset clipping scans pass:
+Grid103/original120 accepted overhead hits, zero failures, exit0/empty stderr.
+Wacker200 is explicitly not exempt from building clipping. Native1m foundation
+clearance12.808571original/8.469823Grid; roof/canopy ray probes pass.
+
+Eight actual High source views inspected: Grid full tower and street entrance,
+plus driver-height frontage on each layout, each day/night. Image filenames
+ending river are street entrance cameras in this folder. Final evidence in
+screenshots/chicago-wacker200-mac. Two-view jobs completed exit0; first night
+job reported shared-cache load errors during concurrent rebuild and fell back
+to source generation. Final night job ran alone, rebuilt the source cache and completed exit0/empty stderr; both resulting images inspected. This confirms clean source rendering, not a warm-cache-load guarantee.
+No broad day/night acceptance based on neutral-light staged screenshots.
+
+Fine lobby interior, river base, precise diagonal join/corners, entrance placement
+and equipment remain fidelity work. The roof-facing photo resolves topology;
+physical dimensions and published152.3m versus mapped155.5m discrepancy remain.
+No app export or new lap/manual-wheel/Intel/performance claim. Prior laps remain
+dated evidence; no baseline rewrite. Full trackside-building goal continues.

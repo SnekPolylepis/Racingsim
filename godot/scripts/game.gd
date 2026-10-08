@@ -648,6 +648,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/LondonGuarantee")
 	if track.has_node("Scenery/LondonGuarantee"):
 		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11
+	ok = ok and track.has_node("Scenery/Wacker200")
+	if track.has_node("Scenery/Wacker200"):
+		ok = ok and track.get_node("Scenery/Wacker200").mesh.get_surface_count() == 7
 	ok = ok and track.has_node("Scenery/Wacker311")
 	if track.has_node("Scenery/Wacker311"):
 		ok = ok and track.get_node("Scenery/Wacker311").mesh.get_surface_count() == 13
@@ -715,6 +718,9 @@ func check_exported_v2_assets() -> void:
 	ok = ok and track.has_node("Scenery/LondonGuarantee")
 	if track.has_node("Scenery/LondonGuarantee"):
 		ok = ok and track.get_node("Scenery/LondonGuarantee").mesh.get_surface_count() == 11
+	ok = ok and track.has_node("Scenery/Wacker200")
+	if track.has_node("Scenery/Wacker200"):
+		ok = ok and track.get_node("Scenery/Wacker200").mesh.get_surface_count() == 7
 	ok = ok and track.has_node("Scenery/Wacker311")
 	if track.has_node("Scenery/Wacker311"):
 		ok = ok and track.get_node("Scenery/Wacker311").mesh.get_surface_count() == 13
