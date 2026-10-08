@@ -16,7 +16,10 @@ const ALLOWED = ["Road", "Walls", "LeftBarrierFence", "RightBarrierFence", "Ligh
 ## Deliberate structures over the road (Upper Wacker over Lower Wacker, the elevated L, signal mast arms, the
 ## start gantry).
 const OVERHEAD = [
-	"Scenery/Wacker",
+	"Scenery/WackerDeckAndColumns",
+	"Scenery/WackerBeams",
+	"Scenery/WackerRoundColumns",
+	"Scenery/WackerCeilingLuminaires",
 	"Scenery/City/ElevatedL",
 	"Scenery/LaneMarkings",
 	"Scenery/StreetFurniture",
@@ -181,7 +184,7 @@ func run():
 	call_deferred("quit", 0 if failures.is_empty() else 1)
 
 
-func _overhead(path: String, clearance: float = 0.0, road_y: float = 8.0) -> bool:
+static func _overhead(path: String, clearance: float = 0.0, road_y: float = 8.0) -> bool:
 	# Upper-street furniture is separated from Lower Wacker by the concrete deck.
 	if path.begins_with("Scenery/Prop_") and road_y < 3.6 and road_y + clearance >= 7.9:
 		return true

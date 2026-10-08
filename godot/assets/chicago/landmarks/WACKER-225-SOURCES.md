@@ -41,3 +41,23 @@ is evidence of a clearance/review issue, not proof of complete trackside
 visibility or safe vehicle clearance. Do not shift/hide the building based
 only on the distance ranking. Check neighboring stations and physical road
 clearance before calling this model finished.
+
+## Clearance correction — 2026-10-08
+
+The earlier cache169 observation above is retained as dated evidence. Native
+full-course scans confirmed wall intersections in both layouts. Route controls
+now follow the mapped bend north of the foundation. `osm-roads.json` way
+124538336 supplies the Lower Wacker westbound point(-919.3,-228.6); way
+253716332 supplies the other mapped carriageway. Upper control(-917.9,-225.3)
+is an authored centre between these split carriageways, not a surveyed line.
+Building geometry/footprint was retained. New identities chicago@v5 and
+chicago_grid@v3 separate records after this geometry change, cache171.
+
+One-metre route samples give approximately17.1m(Grid) and14.4m(original)
+centreline-to-footprint minimums; both full-course 5m/five-lateral-ray clipping
+scans pass after removing the broad Wacker-building overhead exemption. Ten
+High day/night source captures inspected in chicago-wacker225-clearance-mac:
+Grid approach/corner/exit and original Upper Wacker forward/building views.
+The deck screens the upper building from Lower Wacker as expected; upper view
+shows its actual frontage behind the race fence. Sampled checks are recorded
+evidence, not proof of surveyed road dimensions or every possible vehicle path.

@@ -182,3 +182,32 @@ make the problem disappear. Preserve geometry and inspect neighboring
 stations/road envelope. Refine225 frontage/crown proportions, then continue
 remaining trackside buildings (Franklin–Van Buren garage is next close
 candidate). Fine civic detail remains open. Bridges stay queued.
+
+### Latest checkpoint — 225 Wacker clearance fixed, 2026-10-08
+
+Cache171, record identities original@v5/Grid@v3. Retained225 building geometry;
+route now follows bend north of foundation via Lower(-919.3,-228.6),
+Upper(-917.9,-225.3) controls. Sources in WACKER-225-SOURCES.md. Sampled minima
+17.1m/Grid,14.4m/original; full-course clipping scans pass after correcting
+broad Wacker overhead exemption. Ten actual source High day/night driving
+views inspected in screenshots/chicago-wacker225-clearance-mac, exit0/empty
+stderr. Lower deck still screens upper façade naturally. Prior occluded
+screenshots remain dated evidence. No surveyed-clearance claim.
+
+35 headless Chicago/parse suites passed (919 assertions plusparse),160.2s;
+final menu109/building34/Grid formula4/parse pass131.0s, then final footprint
+check building35/parse pass1.9s. All five cars/both modes completed clean on
+both layouts; zero off-road/wall/prop ticks (no lap-harness props). Grid passes
+existing timings. Original new bend changed road-car times beyond2%; compared
+old GT route, then recorded six clean new original-layout references. Full original allfivecars/twomodes rerun passes10 assertions,
+exit0/empty stderr; formula-original timings have no stored reference.
+See REBUILD-LOG for new values;2% tolerance unchanged. Bounded Grid all-car timeout resolved with
+individual completed runs. Saved old records/ghosts retained separately.
+
+Refreshed TRACKSIDE-PRIORITY.csv:241 candidates within50m,225 now14.4m/original
+6840. Candidate/exclusion status and actual views must be checked before each
+model. Next refine225 frontage/crown proportions and remaining trackside
+buildings, including Franklin–Van Buren garage after placement/visibility
+inspection. Fine civic reliefs/configuration remain open. Bridges queued.
+Ignored render script visual-review/wacker225-clearance-render.gd; logs
+mac-civic/225-clearance-*. No export/performance/hardware acceptance claim.

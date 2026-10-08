@@ -174,3 +174,31 @@ partly occluded. This records an open route/clearance issue, not proven
 visibility or vehicle clearance. Model dimensions/current frontage remain
 photo-fit; owner375ft/mapped126.5m/photographer433ft unresolved.
 No exported app, full gates, full lap, clips, performance, Intel or wheel run.
+
+## 225 Wacker bend clearance — 2026-10-08
+
+Official Godot4.6.2/M4/Metal, cache171. Added mapped/authored bend controls
+north of the retained225 foundation. Originalchicago@v5/Gridchicago_grid@v3
+separate records from earlier layouts. No user laps/ghost files deleted.
+Full-course windowed5m/five-lateral clipping scans pass107/114 accepted hits,
+zero failures after narrowing Wacker overhead exemptions to deck structures.
+Ten actual High day/night views inspected, render exit0/empty stderr;
+screenshots/chicago-wacker225-clearance-mac. Lower approach/corner/exit
+carriageway now clear; original Upper driving/frontage also reviewed.
+
+35 selected headless Chicago/parse suites passed160.2s before identity bump
+(919 assertions plusparse). Cache171 menu109, building34, Grid formula4 and
+parse passed131.0s; final footprint-present guard gives building35/parse,
+1.9s. All five cars completed both handling modes on both layouts with zero
+off-road/wall/prop ticks; prop count0 in lap harness. Original six road-car
+old timing references exceeded2% after corrected bend; before-route GT still
+passed, isolating geometry effect. Updated only those six original references
+from clean new-layout laps; Grid's ten existing references still passed.
+Combined Grid all-car invocation timed out180s; completed per-car runs supply
+the evidence. Full original allfivecars/twomodes verification rerun passes10 assertions,
+exit0/empty stderr; original formula timings have no stored references.
+Original road-car references only updated;2% tolerance unchanged.
+
+These are sampled/native automated results and frozen captures. No manual
+wheel driving, performance/Intel validation, complete game gates or app export.
+Bend is authored from mapped road geometry; building fidelity remains open.

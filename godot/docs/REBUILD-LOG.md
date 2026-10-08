@@ -5865,3 +5865,55 @@ safe driving clearance. No route/foundation shift justified by this alone.
 Next inspect neighboring stations/physical Lower Wacker clearance, refine
 225 frontage/crown proportions, then remaining trackside candidates including
 Franklin–Van Buren garage. Bridges remain queued; overall goal remains open.
+
+## 2026-10-08  FIX  CHI-3D-BUILDINGS — 225 Wacker route clearance (Codex)
+
+Native full-course clip scans confirmed cache169 wall intersections with the
+retained225 foundation: Grid4775 and original4205/6820. The broad
+Scenery/Wacker overhead prefix also incorrectly exempted building roofs.
+Named actual deck/beams/columns/luminaires now replace that prefix; regression
+checks reject Wacker225/125/191 as overhead. Building geometry was retained.
+
+Checked-in OSM road ways124538336/253716332 show the split-carriageway bend
+north of the foundation. Added Lower westbound control(-919.3,-228.6) and
+an authored Upper centre control(-917.9,-225.3) within that mapped bend.
+Raw data-point names/indices retained; these are still authored roads, not a
+surveyed reconstruction. One-metre route sample regressions require >10m
+centreline-to-footprint clearance; measured minima roughly17.1m Grid/14.4m
+original. Cache171 and new record keys chicago@v5/chicago_grid@v3 preserve
+old user laps/ghosts under the previous identities; no save files deleted.
+
+Both full-course windowed 5m/five-lateral clip scans pass,107/114 accepted
+hits,zero failures. Ten actual High source M4/Metal day/night captures
+inspected: Grid approach/corner/exit; original Upper forward/building view.
+Clear carriageway replaces foundation-filled views; Lower deck naturally
+screens upper frontage. Render exit0/empty stderr, screenshots/
+chicago-wacker225-clearance-mac. All35 selected headless Chicago/parse suites
+passed160.2s (919 assertions plusparse) before the identity bump; cache171
+menu109, building34, Grid formula laps4 andparse pass131.0s. Final added
+footprint-present guard makes building35, plusparse pass1.9s.
+
+Original GT before/after experiment: old route198.629/196.096s vs corrected
+203.021/200.592s,Simulation/Simcade. Before still within old timing tolerance;
+new route about3% above stored baselines, both physically clean. All five cars
+then completed both original handling modes with zero off-road/wall/prop
+ticks (no props in lap harness). Combined Grid all-car run hit bounded180s
+limit; split remaining road-car runs and retain only completed evidence.
+Completed split Grid runs: allfivecars/twomodes pass existing timing
+references,zero off-road/wall/prop ticks. Updated six original road-car
+references for new@v5 geometry from clean runs. Full original allfivecars/
+twomodes rerun passes10 assertions,exit0/empty stderr. Original formula
+cars have no stored timing reference; their clean-lap assertions pass.
+Existing timing tolerance unchanged; no non-Chicago reference changed.
+
+Original references in seconds,Simcade/Simulation:
+roadster255.429/259.475 ->263.187/266.942;GT194.375/196.917 ->200.592/203.021;
+F296191.242/195.337 ->197.954/202.121. Earlier dated evidence retained.
+Verified final building35/parse after footprint-present guard; both layout
+clip scans and all20 car/mode combinations have completed evidence.
+
+Refreshed trackside CSV from native5m curves:241 within50m, down from dated
+242 snapshot;225 now14.4m/original6840 rather than obsolete0.2m/Grid4785.
+Candidates are not rendered coverage or a completion tally. Broader trackside
+models, finer225/civic fidelity and bridges remain queued. No app export,
+manual driving, performance, Intel or physical-wheel validation.

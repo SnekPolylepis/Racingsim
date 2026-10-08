@@ -1,5 +1,6 @@
 extends SceneTree
 const Chicago = preload("res://trackgen/chicago.gd")
+const Clip = preload("res://tests/visual/clip_scan.gd")
 const Night = preload("res://scripts/track/chicago_night.gd")
 var checks = 0
 var failures = []
@@ -93,6 +94,45 @@ func run():
 	)
 	var entrance = first_hit(exterior, Vector3(1, 4, -60), Vector3(1, 4, 0))
 	check(entrance != Vector3.INF and entrance.z > -48, "North entrance has real recessed interior")
+	for name in ["Wacker225", "Wacker125", "Wacker191"]:
+		check(
+			not Clip._overhead("Scenery/" + name, 120, 3.4288),
+			"Building is not exempt as a Wacker deck: " + name
+		)
+	check(
+		Clip._overhead("Scenery/WackerDeckAndColumns", 4.5, 3.4288), "Actual Upper Wacker deck stays overhead"
+	)
+	var city = JSON.parse_string(FileAccess.get_file_as_string("res://trackgen/data/chicago/city.json"))
+	var footprint = PackedVector2Array()
+	for entry in city.buildings:
+		if entry.get("o", "") == "w64391366":
+			for point in entry.f:
+				footprint.append(Vector2(point[0], point[1]))
+	check(footprint.size() == 7, "Retained mapped foundation available for clearance checks")
+	for grid in [false, true]:
+		var curve = Chicago.route_curve(grid)
+		var nearest = INF
+		for station in range(0, ceili(curve.get_baked_length())):
+			var point = curve.sample_baked(station, true)
+			var horizontal = Vector2(point.x, point.z)
+			if horizontal.distance_to(Vector2(-886, -164.75)) > 150:
+				continue
+			if Geometry2D.is_point_in_polygon(horizontal, footprint):
+				nearest = 0
+			for i in footprint.size():
+				nearest = minf(
+					nearest,
+					horizontal.distance_to(
+						Geometry2D.get_closest_point_to_segment(
+							horizontal, footprint[i], footprint[(i + 1) % footprint.size()]
+						)
+					)
+				)
+		print("WACKER225 ROUTE CLEARANCE ", "grid" if grid else "original", " ", nearest)
+		check(
+			nearest > 10,
+			"Sampled carriageway clears retained foundation: " + ("grid" if grid else "original")
+		)
 	asset.queue_free()
 	await process_frame
 	print("WACKER225 RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))

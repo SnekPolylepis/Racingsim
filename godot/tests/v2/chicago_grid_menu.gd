@@ -39,7 +39,7 @@ func run() -> void:
 			app.track.get_meta("city").get("physical_windows", 0) > 1000,
 			"Loop Grid includes native frames and glazing on generic measured facades"
 		)
-		check(identity == "chicago_grid@v2", "Variant has independent record identity")
+		check(identity == "chicago_grid@v3", "Variant has independent record identity")
 		var lower = app.track.station(app.track.get_meta("corners")["Lower Wacker Portal"] + 250.0)
 		app.TrackLights.update_pool(app.lamp_pool, app.track, lower.pos, true)
 		var shadowed = true
@@ -355,7 +355,7 @@ func run() -> void:
 		)
 		app.v2_bot = null
 		check(
-			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v4",
+			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v5",
 			"Original Chicago remains available with its record identity"
 		)
 		check(app.track.has_node("Scenery/HyattPlace"), "Authored Hyatt Place loads in Original Chicago")
