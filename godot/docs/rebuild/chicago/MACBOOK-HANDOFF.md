@@ -60,3 +60,24 @@ remove temporary staging, preserve source assets and all user saves. No export
 was performed during these refinements. Audio listening on the owner's device,
 broader placement/lighting/performance and bridge work remain open; don't claim
 the overall goal complete. Commit/push coherent progress to this branch.
+
+
+## County outer entrance relief draft — 2026-10-08 Mac continuation
+
+Owner resumed on Mac. Godot4.6.2 and Blender4.5.3 are installed locally.
+County outer standing-figure/oval-seal silhouettes and plaques drafted;
+County233320tri/sevenmaterials/cache155, paired placement unchanged.
+Source157assertions plusparse and72driving/presentation checks pass on M4/Metal.
+Four actual day/night frontage/oblique images inspected; final capture has
+ObjectDB exit warning. Fine sculpture and low-contrast shaded rendering remain
+open. Inner County fields/City reliefs, courts and roofs still need work before
+remaining trackside buildings. Bridges remain queued; no export.
+Evidence: REBUILD-LOG2026-10-08 and screenshots/chicago-county-reliefs-mac/.
+
+Local Mac authoring command (repo root):
+```sh
+~/.local/share/racingsim-tools/Blender.app/Contents/MacOS/Blender --background --python godot/tools/blender/chicago_city_hall.py -- "$PWD/godot/assets/chicago/landmarks" --county
+```
+Local capture script is ignored godot/visual-review/civic.gd. Logs in
+ignored tests/logs/mac-civic/ and tests/logs/ci/. Original owner pause is
+historical; owner resumed on2026-10-08. Continue on this same working branch.

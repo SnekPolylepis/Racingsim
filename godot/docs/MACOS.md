@@ -102,3 +102,13 @@ Evidence is in `rebuild/screenshots/chicago-spa-polish/logs/`. The export contra
 ### 2026-09-30 Chicago/Spa close-up continuation
 
 `codex/chicago-spa-polish`: universal export and strict signature verification pass after the wheel/plaza/paving/transporter follow-up. Exported Apple M4 Metal Chicago and Spa presentation drives each pass 72 checks with no script errors. Spa reports an ObjectDB cleanup warning on exit. Logs: `docs/rebuild/screenshots/chicago-spa-polish/detail-pass/`. No Intel or Windows hardware run.
+
+### 2026-10-08 Chicago buildings source continuation
+
+On Apple M4, Godot4.6.2/Metal Forward+: City12/County15/menu107/coverage23
+and source parsing pass (157assertions plusparse). County outer relief draft
+frontage/oblique day/night captures inspected; low contrast and fine sculpture
+remain open. Capture exits0 with an ObjectDB cleanup warning, no script errors.
+Source Chicago Grid --v2-look driving/presentation passes72checks,zero failures,
+exit0,empty stderr. These concurrent runs are not a performance benchmark.
+No export/full gate matrix/Intel validation. Detailed evidence in REBUILD-LOG.

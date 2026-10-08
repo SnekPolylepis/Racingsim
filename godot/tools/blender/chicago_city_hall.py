@@ -3,7 +3,7 @@ import bpy, math, sys, json
 from pathlib import Path
 from mathutils import Vector, Matrix
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from architecture import material, box, mesh, arch, finish
+from architecture import material, box, mesh, arch, line, text, finish
 OUT=Path(sys.argv[sys.argv.index('--')+1]).resolve()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 stone=material('Woodbury grey granite',(.57,.57,.53),roughness=.9)
@@ -70,7 +70,7 @@ for name,aa,bb,cols in faces:
    for z in [low+2.2,low+3.4,low+4.6,low+5.8]:part('Physical shallow rustication joint',x,z,pitch-ww,.025,-.34,.025,dark)
  if name==('east' if county else 'west'):
   # LaSalle Ajay Suresh2021 / Clark Ian Abbott2014: three stone portals and bronze glazing.
-  # ponytail: portal sizes photo-fit; relief figures remain unmodeled pending sculpting.
+  # ponytail: portal sizes photo-fit; City and inner County relief fields await sculpting.
   for sign in [-1,1]:part('Solid outer entrance masonry',sign*1.84*pitch,3.15,.32*pitch,6.3,0,.65,stone)
   for x in [-pitch,0,pitch]:
    opening=pitch*.64
@@ -97,6 +97,46 @@ for name,aa,bb,cols in faces:
    part('Stone pier between LaSalle portals',x,3.15,width,6.3,0,.65,stone)
    for dx in [-width/2+.06,width/2-.06]:part('Relief panel outer border',x+dx,3.65,.12,3.9,-.36,.15,trim)
    for z in [1.70,5.60]:part('Relief panel horizontal border',x,z,width,.14,-.36,.15,trim)
+   if county and abs(x)>pitch:
+    # Municipal7347: paired standing figures, oval County seal and plaque.
+    # ponytail: sculpted silhouettes are photo-fit; fine anatomy/seal lettering need closer reference.
+    def relief(label,px,z,w,h,depth=.12,d=-.48):
+     bpy.ops.mesh.primitive_uv_sphere_add(segments=16,ring_count=8,location=(px,d,z))
+     obj=bpy.context.object;obj.name=label;obj.scale=(w/2,depth,h/2)
+     obj.data.materials.append(trim)
+     for polygon in obj.data.polygons:polygon.use_smooth=True
+     return placed(obj)
+    def stroke(label,points,r=.055):
+     return placed(line(label,[(x+px,-.65,z) for px,z in points],r,trim))
+    part('County relief recessed stone field',x,3.65,width-.22,3.65,-.35,.08,stone)
+    part('County sculpture shared plinth',x,1.97,width-.35,.18,-.54,.28,trim)
+    for sign in [-1,1]:
+     px=x+sign*width*.31
+     relief('County standing figure head',px,5.03,.32,.42,.16)
+     relief('County standing figure hair',px+sign*.035,5.14,.37,.35,.13,-.43)
+     relief('County standing figure torso',px,4.42,.50,.84,.19)
+     relief('County standing figure draped hip',px,3.80,.46,.65,.16)
+     relief('County standing figure long robe',px+sign*.12,3.00,.32,1.76,.11)
+     for leg in [-1,1]:
+      relief('County standing figure shin',px+leg*.105,2.72,.16,1.39,.16)
+      relief('County standing figure foot',px+leg*.105,2.08,.22,.15,.22)
+     stroke('County raised arm towards seal',[(sign*width*.31,4.66),(sign*.37,4.88),(sign*.25,4.95)],.10)
+     stroke('County outer supporting arm',[(sign*width*.34,4.60),(sign*width*.43,4.22),(sign*width*.40,4.10)],.09)
+     relief('County figure nose',px,5.02,.075,.10,.065,-.66)
+     stroke('County figure mouth',[(sign*width*.31-.06,4.92),(sign*width*.31+.06,4.92)],.018)
+     for fold in [-1,0,1]:stroke('County robe fold',[(sign*width*.31+fold*.07,3.8),(sign*width*.31+fold*.08,2.25)],.023)
+    relief('County oval seal stone tablet',x,3.82,.92,1.92,.12)
+    oval=arch('County oval seal raised rim',.43,.50,(0,0),-.67,.08,trim,0,2*math.pi,40)
+    for vertex in oval.data.vertices:vertex.co.x+=x;vertex.co.z=vertex.co.z*1.92+3.82
+    placed(oval)
+    part('County seal central shield',x,3.72,.46,.62,-.64,.09,trim)
+    for stripe in range(5):part('County seal shield vertical division',x+(stripe-2)*.075,3.70,.018,.39,-.71,.035,stone)
+    stroke('County seal eagle spread wings',[(-.30,4.08),(-.16,4.23),(0,4.13),(.16,4.23),(.30,4.08)],.065)
+    relief('County seal eagle head',x,4.28,.11,.13,.07,-.70)
+    stroke('County seal lower scroll',[(-.30,3.29),(0,3.18),(.30,3.29)],.055)
+    for sign in [-1,1]:stroke('County seal lower curled ornament',[(sign*.38,3.1),(sign*.51,2.82),(sign*.27,2.48),(0,2.55)],.085)
+    part('County Building plaque backing',x,1.43,width*.70,.38,-.41,.10,dark)
+    placed(text('County Building plaque lettering','COUNTY\nBUILDING',(x,-.49,1.43),.17,bronze,depth=.012))
  for z,w in [(20.9,.35),(21.336,.55),(22.5,.22)]:part('Base projecting continuous belt',0,z,length,w,-.14,.95,trim)
  for row in range(6):
   low=22.5+row*4.58

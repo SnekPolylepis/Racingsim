@@ -27,3 +27,17 @@ and seals are still pending, as are court glazing/roof equipment.
 Final20261007-233858 seven targeted gates PASS98s (157checks plusparse).
 Native PID107720 terminalCITYREVIEWPASS/empty stderr; Clark entrance
 day/night actually inspected. Geometry13 checks recessed doors/transoms.
+
+
+## County outer entrance relief draft — 2026-10-08 Mac continuation
+
+Municipal [entry sculpture7347](https://webapps1.chicago.gov/landmarksweb/web/photodetails.htm?phoId=7347)
+reopened and visually inspected: paired standing figures around an oval seal,
+lower curls and COUNTY BUILDING plaque. Original physical silhouette sculpture,
+oval rims, shield/eagle/scroll shapes and bronze plaque text added only to the
+two outer County fields. No photograph used as a texture. Fine anatomy, held
+objects, seal inscription and low-contrast native shading remain unresolved;
+inner County fields/City reliefs and court/roof fidelity remain open.
+County233320tri/sevenmaterials/cache155; coping/footprint unchanged.
+Mac source checks and day/night evidence recorded in REBUILD-LOG2026-10-08;
+this is a draft, not full sculptural fidelity. No export.

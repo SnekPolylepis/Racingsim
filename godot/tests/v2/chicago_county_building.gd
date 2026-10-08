@@ -71,6 +71,21 @@ func run():
 	var court = first_hit(exterior, Vector3(-12, 80, -22), Vector3(-12, 0, -22))
 	print("COUNTY COURT HIT ", court)
 	check(court == Vector3.INF, "Mapped western courtyard notch remains open")
+	# Cast at both outer seals using the mapped Clark face, independent of mesh names.
+	var middle = Vector3(24.05, 0, -1.25)
+	var along = Vector3(-1.4, 0, -112.1).normalized()
+	var outward = Vector3(-along.z, 0, along.x)
+	for sign in [-1, 1]:
+		var center = middle + along * sign * 112.10874 / 18.0 * 1.5
+		center.y = 3.82
+		var seal = first_hit(exterior, center + outward * 8, center - outward * 2)
+		var field_center = center + Vector3.UP * 1.58
+		var field = first_hit(exterior, field_center + outward * 8, field_center - outward * 2)
+		print("COUNTY RELIEF HITS ", seal, " ", field)
+		check(
+			seal != Vector3.INF and field != Vector3.INF and (seal - field).dot(outward) > .12,
+			"County outer oval seal projects physically beyond recessed relief field %s" % sign
+		)
 	for surface in exterior.get_surface_count():
 		check(exterior.surface_get_material(surface).albedo_texture == null, "No photographic facade")
 	print("COUNTY RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))

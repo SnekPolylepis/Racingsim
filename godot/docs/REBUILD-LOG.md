@@ -5662,3 +5662,37 @@ No export; all authoring/GLB/source/checks/docs committed on working branch.
 City/County relief figures/seals, court glazing, roof garden/equipment still
 pending, then remaining trackside exteriors. River bridges queued later.
 Handoff: rebuild/chicago/MACBOOK-HANDOFF.md. No pending Godot/Blender process.
+
+
+DRAFT CHI-3D County outer reliefs / Mac source setup 2026-10-08
+Municipal entry-sculpture photo7347 re-opened and visually inspected on Mac:
+https://webapps1.chicago.gov/landmarksweb/web/photodetails.htm?phoId=7347
+Two standing figures flank an oval County seal; drapery, raised inner arms,
+lower curled ornament and COUNTY BUILDING plaque distinguish it from City Hall.
+The two outer Clark fields now contain original physical silhouette sculpture,
+raised oval rims, shield/eagle/scroll shapes and bronze plaque lettering.
+No reference image is a game texture. This remains a simplified draft: anatomy,
+held objects, seal inscription and precise ornamental shapes need refinement.
+Inner County fields and all City reliefs remain unmodeled. Do not copy these
+seals to City Hall. Native shaded frontage renders show low relief contrast;
+geometry checks alone do not establish sculptural fidelity or lighting acceptance.
+County233320tri/sevenmaterials, coping/footprint/entrance recess unchanged;
+cache155. Original .blend regenerated with Blender4.5.3 LTS and compressed.
+Godot4.6.2 source import/parse and five targeted suites pass on Apple M4:
+County15/City12/menu107/coverage23 =157assertions plusparse,13.3s finalrun.
+The first added test sampled an arm instead of the backing; corrected sampling
+passes independently and in the final suite run. Actual Grid front/oblique
+closeup day/night images inspected in screenshots/chicago-county-reliefs-mac/.
+Final capture exits0 with an ObjectDB cleanup warning; no script errors.
+Source Grid --v2-look driving/presentation exits0:72checks,zero failures,
+empty stderr. Concurrent capture/drive timing is not a performance benchmark.
+No export. Full gates/clipping scans not rerun: new ornaments stay inside the
+existing entrance envelope. Court glazing, roof garden/equipment and remaining
+trackside buildings stay open; river bridges follow the building pass.
+
+Safely fetched/switched/pulled codex/chicago-3d-buildings at fa5863f.
+Local untracked Preview10 checksum file preserved in named Git stash and
+Desktop/Racingsim-preview10-local-backup/. Stale Godot link preserved there;
+installed official Godot4.6.2 editor/template locally. Blender4.5.3 downloaded
+from Berkeley Blender mirror and SHA256 verified against its release manifest;
+local application at ~/.local/share/racingsim-tools/Blender.app.
