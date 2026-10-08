@@ -5746,3 +5746,26 @@ exteriors remain open; river bridges follow buildings. Goal remains active.
 
 Final five suites PASS69.3s: County17/City16/menu107/coverage23 =163assertions
 plusparse. No script errors. Source and actual render evidence committed.
+
+
+DRAFT CHI-3D City Hall roof garden/equipment 2026-10-08
+Original Blender geometry from actually inspected USGS/City Pyszka aerial:
+west planted beds and curved pale paths, raised mechanical rooms with separate
+panes, louvered units, galvanized ducts, service rails and small tower. Mapped
+court notches retained; County remains unplanted. City436344tri/tenmaterials,
+County240024tri/sevenmaterials/cache159. Initial1m planting looked sparse and
+paths stepped in actual Grid views; refined to .5m boundaries and denser varied
+physical foliage. Separate-object authoring initially timed out180s; joined
+planting meshes build successfully. Photo-fit draft, equipment/layout/species
+not surveyed; fine garden contours, courtyard glazing, County roof and fine
+sculpture remain open.
+Mac Godot4.6.2/Metal/M4 import exit0/empty stderr. Final five targeted suites
+PASS71.3s: City21/County17/menu107/coverage23 =168assertions plusparse.
+Coping checked independently of raised equipment; new bed/equipment and
+existing open-court/portal/sculpture tests pass. Four final actual High-quality
+Grid roof/equipment day/night views inspected after refinement under
+screenshots/chicago-city-roof-mac/. Native review exit0/empty stderr. Night
+captures retain current source weather; no synthetic rooftop illumination.
+No export, full gates, clipping rerun or performance/full-lap acceptance.
+Previous driving/presentation evidence remains dated cache156. Remaining
+trackside building work stays active; river bridges follow buildings.

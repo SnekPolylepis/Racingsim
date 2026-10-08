@@ -127,3 +127,13 @@ Source County17/City16/menu107/coverage23 plusparse pass on Apple M4/Metal
 (163assertions). Four actual High-quality Grid day/night views inspected;
 capture/import exit0,empty stderr. Fine sculpture remains draft. No new
 export, driving/presentation repeat, full gate matrix or Intel validation.
+
+
+### 2026-10-08 City Hall roof continuation
+
+Mac M4/Metal Godot4.6.2 source review: City436344tri/tenmaterials/cache159,
+physical garden and equipment draft. Import and four final High Grid day/night
+roof/equipment captures exit0,empty stderr; images actually inspected after
+plant/path refinement. Five targeted suites pass71.3s,168assertions plusparse.
+No export/full-lap/performance validation; courtyard/County roof fidelity open.
+Evidence: REBUILD-LOG and rebuild/screenshots/chicago-city-roof-mac/.

@@ -43,10 +43,8 @@ func run():
 	var city_hall = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/city_hall.glb"
 	)
-	check(
-		absf(exterior.get_aabb().end.y - city_hall.get_aabb().end.y) < .01,
-		"Paired halves share coping height"
-	)
+	var city_coping = first_hit(city_hall, Vector3(-22.8, 80, .25), Vector3(-22.8, 0, .25))
+	check(absf(exterior.get_aabb().end.y - city_coping.y) < .01, "Paired halves share coping height")
 	var pane = first_hit(exterior, Vector3(.7, 30.6, 80), Vector3(.7, 30.6, 0))
 	var column = first_hit(exterior, Vector3(3.707, 30.6, 80), Vector3(3.707, 30.6, 0))
 	print("COUNTY SOUTH HITS ", pane, " ", column)

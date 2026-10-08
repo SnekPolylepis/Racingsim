@@ -106,3 +106,16 @@ and oblique views inspected,exit0,empty stderr. Fine sculpture and unresolved
 held attributes remain open. Next court glazing and roof garden/equipment from
 recorded primary references, then all remaining trackside buildings. No export.
 Ignored local capture: visual-review/civic-county-inner.gd; logs mac-civic/.
+
+
+## Current continuation checkpoint — City roof draft
+
+City436344tri/tenmaterials/cache159: physical garden, curving service paths,
+rooms, louvered equipment, ducts and rails from recorded USGS/City aerial.
+Actual final High Grid day/night roof/equipment renders inspected after
+refining sparse planting/stepped paths. Mac168assertions plusparse pass71.3s;
+import/render exit0/empty stderr. County remains240024tri/sevenmaterials.
+Next: court glazing, County roof, finer sculpture/garden fidelity, then
+remaining trackside buildings. Photo-fit equipment/layout remain provisional.
+No export/performance claim. Ignored capture visual-review/civic-roof.gd,
+logs mac-civic/; committed screenshots/chicago-city-roof-mac/.

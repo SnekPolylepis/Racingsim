@@ -38,8 +38,13 @@ func run():
 	var exterior = load("res://scripts/track/prop_mesh.gd").mesh(
 		"res://assets/chicago/landmarks/city_hall.glb"
 	)
-	check(exterior.get_surface_count() == 7, "Seven original physical materials including bronze entrance")
-	check(absf(exterior.get_aabb().end.y - 62.484) < .03, "HABS205ft coping height")
+	check(exterior.get_surface_count() == 10, "Ten physical materials including roof planting and metal")
+	var coping = first_hit(exterior, Vector3(-22.8, 80, .25), Vector3(-22.8, 0, .25))
+	check(absf(coping.y - 62.484) < .03, "HABS205ft coping height")
+	var equipment = first_hit(exterior, Vector3(-1, 80, 0), Vector3(-1, 0, 0))
+	check(equipment.y > 68, "Raised central rooftop equipment")
+	var planting = first_hit(exterior, Vector3(-18, 80, 40), Vector3(-18, 0, 40))
+	check(planting.y > 61.8 and planting.y < 62.5, "Low planted roof bed")
 	var pane = first_hit(exterior, Vector3(.5, 30.6, 80), Vector3(.5, 30.6, 0))
 	var column = first_hit(exterior, Vector3(3.143, 30.6, 80), Vector3(3.143, 30.6, 0))
 	print("CITY HALL SOUTH HITS ", pane, " ", column)

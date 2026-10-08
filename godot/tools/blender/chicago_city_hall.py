@@ -1,5 +1,5 @@
 """City Hall / County paired halves: original geometry from HABS dimensions and municipal photos."""
-import bpy, math, sys, json
+import bpy, math, sys, json, random
 from pathlib import Path
 from mathutils import Vector, Matrix
 sys.path.insert(0,str(Path(__file__).resolve().parent))
@@ -24,8 +24,8 @@ def prism(name,z,h,mat,scale=1):
  return mesh(name,[(x,y,z-h/2) for x,y in r]+[(x,y,z+h/2) for x,y in r],
   [tuple(range(n-1,-1,-1)),tuple(range(n,2*n))]+[(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)],mat)
 prism('Exact mapped foundation',-4,8,back)
-prism('Inset irregular opaque backing',H/2,H-.6,back,.90)
-prism('Mapped roof retaining eastern court notches',H-.25,.5,roof)
+prism('Inset irregular opaque backing',H/2 if county else (H-1)/2,H-.6 if county else H-1,back,.90)
+prism('Mapped roof retaining eastern court notches',H-.25,.5,roof) if county else prism('City roof deck below coping',H-1,.4,roof)
 # Three continuous public elevations; eastern reentrant walls retain mapped geometry.
 faces=([('south',foot[21],foot[0],7),('north',foot[1],foot[2],7),('east',foot[0],foot[1],18)]
  if county else [('south',foot[0],foot[2],7),('north',foot[19],foot[20],7),('west',foot[20],foot[0],18)])
@@ -268,4 +268,60 @@ for i in range(2,21 if county else 19):
  a,b=ring[i],ring[i+1];length=math.dist(a,b)
  obj=box('Unsurveyed mapped courtyard wall',(0,0,H/2),(length,.30,H),back)
  obj.rotation_euler.z=math.atan2(b[1]-a[1],b[0]-a[0]);obj.location=((a[0]+b[0])/2,(a[1]+b[1])/2,0)
+if not county:
+ # Pyszka/City aerial published by USGS2019; dimensions/configuration are photo-fit, not surveyed.
+ meadow=material('City roof sedum meadow',(.24,.34,.10),roughness=1)
+ herbs=material('City roof mixed herb foliage',(.36,.42,.13),roughness=1)
+ metal=material('City roof galvanized ducts and rails',(.48,.51,.51),metallic=.55,roughness=.72)
+ deck=H-.8
+ prism('City pale service walk surface',deck+.035,.07,trim)
+ def inside(px,py):
+  result=False
+  for a,b in zip(ring,ring[1:]+ring[:1]):
+   if (a[1]>py)!=(b[1]>py) and px<(b[0]-a[0])*(py-a[1])/(b[1]-a[1])+a[0]:result=not result
+  return result
+ rng=random.Random(1911)
+ bed_vertices=[];bed_faces=[];herb_vertices=[];herb_faces=[]
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=1)
+ template=bpy.context.object
+ herb_shape=[tuple(v.co) for v in template.data.vertices]
+ herb_polys=[tuple(p.vertices) for p in template.data.polygons]
+ bpy.data.objects.remove(template,do_unlink=True)
+ for ix in range(-40,40):
+  gx=ix*.5
+  for iy in range(-106,108):
+   gy=iy*.5
+   if not all(inside(gx+dx,gy+dy) for dx in [-.25,.25] for dy in [-.25,.25]):continue
+   bed=gx<-8 or abs(gy)>32
+   if not bed:continue
+   if abs(gy-30)<1.2 or abs(gy+30)<1.2:continue
+   if abs(gy)>32 and abs(math.hypot((gx-2)*1.2,abs(gy)-43)-7.5)<.75:continue
+   if gx<-8 and abs(gx-(-13+2*math.sin(gy*.11)))<.5:continue
+   base=len(bed_vertices)
+   bed_vertices.extend((gx+dx,gy+dy,deck+z) for z in [.06,.24] for dx,dy in [(-.249,-.249),(.249,-.249),(.249,.249),(-.249,.249)])
+   bed_faces.extend(tuple(base+i for i in face) for face in [(3,2,1,0),(4,5,6,7),(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)])
+   if rng.random()<.65:
+    hx=gx+rng.uniform(-.20,.20);hy=gy+rng.uniform(-.20,.20)
+    sx=rng.uniform(.22,.45);sy=rng.uniform(.22,.45);sz=rng.uniform(.12,.45)
+    base=len(herb_vertices)
+    herb_vertices.extend((hx+x*sx,hy+y*sy,deck+.32+z*sz) for x,y,z in herb_shape)
+    herb_faces.extend(tuple(base+i for i in face) for face in herb_polys)
+ mesh('City planted bed substrates',bed_vertices,bed_faces,meadow)
+ mesh('City roof low varied herb clumps',herb_vertices,herb_faces,herbs)
+ for px,py,w,d,h in [(-6,-17,5,13,3.6),(-1,0,18,11,4.8),(-6,17,5,13,3.6),(-8,16,3,3,7.0)]:
+  box('City raised rooftop mechanical room',(px,py,deck+h/2),(w,d,h),stone)
+  box('City mechanical room coping',(px,py,deck+h+.12),(w+.25,d+.25,.24),trim)
+  for side in [-1,1]:
+   box('City roof room separate window',(px+side*w*.26,py-d/2-.021,deck+2),(.95,.04,1.40),glass)
+   for dx in [-.5,.5]:box('City roof room sash stile',(px+side*w*.26+dx,py-d/2-.06,deck+2),(.075,.10,1.55),dark)
+   box('City roof room sash meeting rail',(px+side*w*.26,py-d/2-.06,deck+2),(1.05,.10,.075),dark)
+ for px,py in [(-6,-17),(-6,17),(-1,0)]:
+  top=deck+(4.8 if py==0 else 3.6)
+  box('City louvered mechanical unit',(px,py,top+1.35),(4,4,2.7),metal)
+  for z in range(12):box('City mechanical physical louver',(px,py-2.05,top+.2+z*.20),(3.8,.14,.065),dark)
+  box('City galvanized duct riser',(px-2.6,py,top+.75),(1.2,2,1.5),metal)
+  box('City duct horizontal elbow',(px-1.9,py,top+1.45),(2.4,2,.65),metal)
+  for dx in [-3,3]:
+   for dy in [-2.8,2.8]:line('City roof service railing upright',[(px+dx,py+dy,top),(px+dx,py+dy,top+1.1)],.035,metal)
+  line('City roof service perimeter rail',[(px-3,py-2.8,top+1.1),(px+3,py-2.8,top+1.1),(px+3,py+2.8,top+1.1),(px-3,py+2.8,top+1.1),(px-3,py-2.8,top+1.1)],.035,metal)
 finish('county_building' if county else 'city_hall',OUT)

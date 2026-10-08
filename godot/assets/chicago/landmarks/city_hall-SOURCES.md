@@ -38,3 +38,12 @@ attributes remain provisional; no photographic textures. City16/County15/
 menu107/coverage23 and parse pass on Mac; four actual High-quality Grid day/night
 front/oblique captures inspected. References/limits in CITY-HALL-REFERENCE.md;
 court glazing/roof garden/equipment remain pending. No export.
+
+
+2026-10-08 City roof garden/equipment draft: original Blender west-half roof
+with physical planted beds and curving pale trails, raised rooms, separate
+windows, louvered units, ducts and service rails from the recorded USGS/City
+aerial.436344tri/tenmaterials/cache159. County remains240024tri/sevenmaterials.
+Photo-fit equipment/layout, not a current survey; plant species and fine garden
+contours remain approximate. County roof and court glazing still open. No
+photographic texture or per-building export.

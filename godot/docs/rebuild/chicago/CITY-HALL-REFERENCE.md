@@ -149,3 +149,17 @@ Abbott2014 frontage reinspection. Posed legs/arms, mantle/drapery and projecting
 plinths; unresolved held attributes not invented. County240024tri/cache157;
 fine sculpture remains provisional, courts/roofs still pending. Four actual
 High-quality Grid day/night views inspected. Detailed checks in REBUILD-LOG.
+
+
+City roof authoring continuation2026-10-08: mapped west-half deck with
+physical low planted beds, curved pale service trails, raised mechanical rooms,
+separate room panes, louvered units, galvanized ducts and service rails.
+Photo-fit draft from the USGS/City aerial above; equipment dimensions and
+configuration are not surveyed. Court wall glazing and County rooftop details
+remain open. Historical no-roof statements above describe earlier checkpoints.
+
+Actual first Grid High day/night roof/equipment renders exposed coarse path
+edges and sparse planting. Refined authoring to half-metre bed boundaries and
+denser seeded varied physical vegetation; planting is joined into two meshes
+before export. The initial separate-object build exceeded180s; joined authoring
+completed. Paths/plant species and equipment remain approximate.
