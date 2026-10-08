@@ -72,6 +72,10 @@ func run():
 			check(not mat.emission_enabled, "Day extinguishes occupied panes")
 			Night.set_night(holder, true)
 			check(mat.emission_enabled, "Night enables occupied panes")
+	var office_pane = first_hit(
+		exterior, Vector3(30, 29.5, 40), Vector3(15, 29.5, 40), "Block37 recessed blue grey panes"
+	)
+	check(office_pane != Vector3.INF, "Seventeen-story office spacing leaves lower shaft pane open")
 	var door = first_hit(
 		exterior,
 		Vector3(60, 1.5, -5.654),

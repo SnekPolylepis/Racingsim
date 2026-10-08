@@ -6355,3 +6355,17 @@ Operator2022brochure level1/3 plans and Gensler atrium photo inspected to guide
 next roof/main-passage placement; not roof acceptance. Actual main mall entries,
 atrium/crown and other ground faces remain open. Roads/timing unchanged; no
 export/newlaps/performance claim. See BLOCK-37-REFERENCE.md for evidence/limits.
+
+### CORRECTED Block37 office story rhythm —2026-10-08
+
+ThorntonTomasetti primary description identifies17total office stories; draft
+incorrectly added17shaft rows above four base rows. Corrected to13shaft rows,
+retaining provisional80m roof/footprint.184104tri/eight materials/cache191.
+Building28/parse pass2.9s; controlled prior-GLB probe confirms old spacing fails
+new lower-shaft pane ray. Both full native clips pass104Grid/120original accepted
+hits/empty stderr. Two actual current-cache High Grid office day/night images
+inspected, source capture/import/Blender exit0/empty stderr. Original compound
+photo inspected: dark projecting office roof fascia/equipment still missing.
+Central roof raster peaks do not establish skylight alignment; atrium external
+plan remains open. No road/timing change/export/newlaps/full-suite/performance
+claim. Detailed evidence in BLOCK-37-REFERENCE.md.

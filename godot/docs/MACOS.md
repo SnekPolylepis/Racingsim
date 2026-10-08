@@ -609,3 +609,11 @@ stderr; Blender regeneration/editor import clean. Race fence and cabinet limit
 some storefront detail visibility. Actual mall portals/atrium/crown and exact
 bay placement remain open. Roads/timing unchanged; no export/newlaps/performance
 or Intel/manual-drive claim. Detailed evidence in BLOCK-37-REFERENCE.md.
+
+2026-10-08 Block37 office spacing correction/cache191:184104tri/eight materials.
+Dedicated28/parse pass2.9s; old-GLB physical probe fails where corrected pane
+passes. Both full native clips pass104Grid/120original accepted hits/empty stderr.
+Two current-cache High Grid office day/night source images actually inspected,
+capture/import/Blender exit0/empty stderr. Roof fascia/equipment/atrium still
+incomplete, height/base-floor calibration provisional. No full-suite/menu rerun,
+new laps, export or performance/Intel/manual-drive claim at this revision.

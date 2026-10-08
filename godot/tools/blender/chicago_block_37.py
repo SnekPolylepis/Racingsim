@@ -106,7 +106,8 @@ def facade(poly,bottom,top,rows,woven=False):
       obj=mesh('Bowed woven metal strip',points,[(2*k,2*k+2,2*k+3,2*k+1) for k in range(8)],panel)
       orient(obj,a,b)
 facade(plan,0,26,4,True)
-for poly,top,rows in [(tower,130,37),(office,80,17)]:
+# Seventeen total office stories leave thirteen shaft rows above the four modeled base rows.
+for poly,top,rows in [(tower,130,37),(office,80,13)]:
  mx=sum(x for x,y in poly)/len(poly);my=sum(y for x,y in poly)/len(poly)
  assert min(math.dist(a,b) for a,b in zip(poly,poly[1:]+poly[:1]))*.02>.25
  prism('Tower recessed interior',[(mx+(x-mx)*.96,my+(y-my)*.96) for x,y in poly],26,top-.25,roof)

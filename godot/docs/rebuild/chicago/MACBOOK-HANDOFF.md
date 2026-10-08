@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache190. See latest dated evidence below. Continue trackside building
+Grid@v5/cache191. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -490,3 +490,12 @@ other ground faces and exact tenant-door bays remain open. Primary Gensler
 atrium photo and operator2022level1/3 floor plans now inspected; use these
 relationships plus roof photos to author the atrium glazing, not a guessed
 rectangular hole. Source links/evidence in BLOCK-37-REFERENCE.md. No export.
+
+Block37 office story rhythm corrected/cache191: structural engineer records17
+total office stories, so draft now has13shaft/fourbase rows rather than21total.
+184104tri/eight materials.28/parse/old-GLB regression and both full native clips
+pass; two current-cache High Grid office day/night images reviewed. Next author
+the photographed dark projecting office roof fascia/services, then resolve
+atrium outside roof geometry; raster peaks alone are not glazing proof. Exact
+base-floor heights remain provisional. Source/photo/evidence links in
+BLOCK-37-REFERENCE.md; no export/newlaps/full-suite claim at191.

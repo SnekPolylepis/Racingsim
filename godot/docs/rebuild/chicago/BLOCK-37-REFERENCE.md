@@ -131,3 +131,40 @@ This is exterior/recess evidence, not a modeled retail-interior acceptance.
 Roads/timing remain original@v7/Grid@v5; no new laps/performance/export claim.
 Earlier all43suite result is cache189 evidence; final current menu115 checks
 pass249.7s, serialized. No current full43 rerun claimed.
+
+## Office count correction and roof evidence —2026-10-08
+
+Structural engineer’s primary project description explicitly records a17-story
+media office tower (one basement separately). Source actually read:
+https://www.thorntontomasetti.com/project/redevelopment-block-37
+The draft incorrectly had17shaft rows above four base rows. Corrected to13shaft
+rows above four modeled base rows, retaining provisional80m roof/footprint.
+This fixes the total row count; exact office base floor heights remain unmeasured.
+Generator now exports184104tri/eight materials, cache191. Dedicated28/parse
+pass2.9s, including a physical lower-shaft pane ray distinguishing the prior
+compressed spacing. No exterior-envelope or road/timing change.
+
+Engineer’s original compound photo actually inspected (Christopher Barrett):
+https://www.thorntontomasetti.com/sites/default/files/styles/paragraph_slideshow/public/block37_1.jpg?itok=DeFbNJBf
+Shows southwestern office’s blue curtain wall/dark broad projecting crown
+fascia and roof equipment. That fascia/services remain to author. The site’s
+newer hero photograph is Marquee residential tower, not the media office; do
+not use its floor rhythm as the office reference. Capture date unspecified.
+
+Committed roof raster has central raised cells up to34m amongst24–31m roof
+heights; these alone do not distinguish glass from mechanical/elevator volumes.
+Atrium interior photograph confirms glazing, operator floor plans confirm
+branching passages, but neither gives an outside roof plan. Obtain overhead
+photo/plan evidence before assigning those peaks to a guessed skylight.
+
+Final cache191 native full clipping scans pass104Grid/120original accepted hits,
+empty stderr. Two actual High Grid office day/night renders inspected, current
+cache loaded, exit0/empty stderr; files chicago_grid-office-{day,night}.png.
+Blender regeneration/editor import clean. Controlled regression loads the prior
+committed GLB and returns no pane at the new probe, confirming old compressed
+spacing fails where the corrected fixture passes. That scratch check exits0/
+empty stderr. Current building28/parse results above; last full43suite/menu115
+evidence remains at earlier revisions, no new full-suite claim. No export,
+new laps/performance/manual-drive/Intel validation. Office fascia/roof services
+and atrium geometry still open; next refine the directly photographed fascia
+while obtaining outside skylight plan evidence.
