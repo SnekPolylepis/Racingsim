@@ -64,6 +64,19 @@ func run():
 	var court = first_hit(exterior, Vector3(12, 80, -22), Vector3(12, 0, -22))
 	print("CITY HALL COURT HIT ", court)
 	check(court == Vector3.INF, "Mapped eastern courtyard notch remains open")
+	var middle = Vector3(-22.8, 0, .25)
+	var along = Vector3(1.6, 0, 112).normalized()
+	var outward = Vector3(-along.z, 0, along.x)
+	for panel in [-1.5, -.5, .5, 1.5]:
+		var center = middle + along * panel * 112.01143 / 18.0
+		center.y = 4.12
+		var torso = first_hit(exterior, center + outward * 8, center - outward * 2)
+		var field_center = center + Vector3.DOWN * 2.30
+		var field = first_hit(exterior, field_center + outward * 8, field_center - outward * 2)
+		check(
+			torso != Vector3.INF and field != Vector3.INF and (torso - field).dot(outward) > .15,
+			"City sculpted figure projects beyond stone field at panel %s" % panel
+		)
 	for surface in exterior.get_surface_count():
 		check(exterior.surface_get_material(surface).albedo_texture == null, "No photographic facade")
 	print("CITY HALL RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))

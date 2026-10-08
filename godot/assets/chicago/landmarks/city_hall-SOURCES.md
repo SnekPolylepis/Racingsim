@@ -28,3 +28,13 @@ References viewed only; no photographs copied as game textures.
 Final20261007-233512 seven targeted gates pass98s: City12/County11/menu107/
 coverage23/both clips and parse. Native PID110408 terminalCITYREVIEWPASS,
 empty stderr; final entrance day/night actually inspected. Source-only.
+
+
+2026-10-08 LaSalle sculpture draft: four distinct physical compositions from
+reinspected Suresh2021 frontage/Diesterheft2007 water detail, plus outer CITY HALL
+plaques.215924tri/sevenmaterials/cache156. Source chicago_city_hall.py reuses
+relief primitives for City/County without copying seals. Fine anatomy and
+attributes remain provisional; no photographic textures. City16/County15/
+menu107/coverage23 and parse pass on Mac; four actual High-quality Grid day/night
+front/oblique captures inspected. References/limits in CITY-HALL-REFERENCE.md;
+court glazing/roof garden/equipment remain pending. No export.

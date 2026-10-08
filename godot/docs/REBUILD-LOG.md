@@ -5696,3 +5696,31 @@ Desktop/Racingsim-preview10-local-backup/. Stale Godot link preserved there;
 installed official Godot4.6.2 editor/template locally. Blender4.5.3 downloaded
 from Berkeley Blender mirror and SHA256 verified against its release manifest;
 local application at ~/.local/share/racingsim-tools/Blender.app.
+
+
+DRAFT CHI-3D Four City Hall LaSalle reliefs 2026-10-08
+Reopened and visually inspected Suresh2021 full frontage and Diesterheft2007
+water detail. Authored four distinct physical compositions: adult with smaller
+figure, seated draped figure, seated water figure with handled/tipped vessel,
+and standing branch bearer. Physical facial contours, limbs, drapery and outer
+CITY HALL plaques; no County seals copied and no photographic facade textures.
+City215924tri/sevenmaterials/cache156. Photo-fit sculpture remains draft:
+fine anatomy, accurate attributes and relief surface details need further work.
+Moved existing relief primitives outside County-only branch for reuse; source
+.blend saving now uses native compression so regeneration keeps files compact.
+Import exits0/empty stderr. Five targeted suites pass68.8s: City16/County15/
+menu107/coverage23 =161assertions plusparse. All four new City depth checks pass;
+paired coping height, open court, bronze portal recess and both-route load checks
+retained. Actual High-quality Grid frontage/oblique day/night images inspected
+under screenshots/chicago-city-reliefs-mac/,exit0,empty stderr. High SSAO improves
+readability; this does not establish Medium lighting or complete sculpture.
+No export. Full gates/clipping scans not rerun; reliefs stay inside existing
+entrance envelope. Court/roof fidelity, remaining trackside exteriors, wider
+lighting/performance and bridges remain open. Goal continues.
+USGS2019 page/Patrick L. Pyszka City aerial actually inspected for next roof
+pass: planted west beds/walks and central equipment; date/configuration limits
+recorded in CITY-HALL-REFERENCE.md. No garden/equipment authored yet.
+
+Final source Chicago Grid --v2-look driving/presentation exits0:72checks,
+zero failures,empty stderr. Logs city-drive.out/.err in tests/logs/mac-civic/.
+No full lap/performance claim. All temporary Godot processes finished.

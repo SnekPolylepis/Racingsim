@@ -112,3 +112,11 @@ remain open. Capture exits0 with an ObjectDB cleanup warning, no script errors.
 Source Chicago Grid --v2-look driving/presentation passes72checks,zero failures,
 exit0,empty stderr. These concurrent runs are not a performance benchmark.
 No export/full gate matrix/Intel validation. Detailed evidence in REBUILD-LOG.
+
+### 2026-10-08 City LaSalle sculpture continuation
+
+Source City16/County15/menu107/coverage23 plusparse pass on Apple M4/Metal
+(161assertions). Four High-quality Grid day/night views inspected; source Grid
+--v2-look driving/presentation72/72PASS,exit0,empty stderr. Figures remain
+photo-fit drafts; courts/roofs and full trackside fidelity are unfinished.
+No export/full-lap benchmark/Intel hardware run. See REBUILD-LOG for scope.

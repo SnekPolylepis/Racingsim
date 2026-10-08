@@ -70,7 +70,7 @@ for name,aa,bb,cols in faces:
    for z in [low+2.2,low+3.4,low+4.6,low+5.8]:part('Physical shallow rustication joint',x,z,pitch-ww,.025,-.34,.025,dark)
  if name==('east' if county else 'west'):
   # LaSalle Ajay Suresh2021 / Clark Ian Abbott2014: three stone portals and bronze glazing.
-  # ponytail: portal sizes photo-fit; City and inner County relief fields await sculpting.
+  # ponytail: portal/sculpture proportions are photo-fit, not measured relief surfaces.
   for sign in [-1,1]:part('Solid outer entrance masonry',sign*1.84*pitch,3.15,.32*pitch,6.3,0,.65,stone)
   for x in [-pitch,0,pitch]:
    opening=pitch*.64
@@ -97,17 +97,17 @@ for name,aa,bb,cols in faces:
    part('Stone pier between LaSalle portals',x,3.15,width,6.3,0,.65,stone)
    for dx in [-width/2+.06,width/2-.06]:part('Relief panel outer border',x+dx,3.65,.12,3.9,-.36,.15,trim)
    for z in [1.70,5.60]:part('Relief panel horizontal border',x,z,width,.14,-.36,.15,trim)
+   def relief(label,px,z,w,h,depth=.12,d=-.48):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16,ring_count=8,location=(px,d,z))
+    obj=bpy.context.object;obj.name=label;obj.scale=(w/2,depth,h/2)
+    obj.data.materials.append(trim)
+    for polygon in obj.data.polygons:polygon.use_smooth=True
+    return placed(obj)
+   def stroke(label,points,r=.055):
+    return placed(line(label,[(x+px,-.65,z) for px,z in points],r,trim))
    if county and abs(x)>pitch:
     # Municipal7347: paired standing figures, oval County seal and plaque.
     # ponytail: sculpted silhouettes are photo-fit; fine anatomy/seal lettering need closer reference.
-    def relief(label,px,z,w,h,depth=.12,d=-.48):
-     bpy.ops.mesh.primitive_uv_sphere_add(segments=16,ring_count=8,location=(px,d,z))
-     obj=bpy.context.object;obj.name=label;obj.scale=(w/2,depth,h/2)
-     obj.data.materials.append(trim)
-     for polygon in obj.data.polygons:polygon.use_smooth=True
-     return placed(obj)
-    def stroke(label,points,r=.055):
-     return placed(line(label,[(x+px,-.65,z) for px,z in points],r,trim))
     part('County relief recessed stone field',x,3.65,width-.22,3.65,-.35,.08,stone)
     part('County sculpture shared plinth',x,1.97,width-.35,.18,-.54,.28,trim)
     for sign in [-1,1]:
@@ -137,6 +137,68 @@ for name,aa,bb,cols in faces:
     for sign in [-1,1]:stroke('County seal lower curled ornament',[(sign*.38,3.1),(sign*.51,2.82),(sign*.27,2.48),(0,2.55)],.085)
     part('County Building plaque backing',x,1.43,width*.70,.38,-.41,.10,dark)
     placed(text('County Building plaque lettering','COUNTY\nBUILDING',(x,-.49,1.43),.17,bronze,depth=.012))
+   if not county:
+    # Suresh2021 full frontage and Diesterheft2007 water figure: four distinct compositions.
+    # ponytail: photo-fit bas-relief anatomy; finer faces and occluded attributes remain provisional.
+    part('City relief recessed stone field',x,3.65,width-.22,3.65,-.35,.08,stone)
+    part('City relief projecting plinth',x,1.96,width-.32,.18,-.54,.34,trim)
+    seated=abs(x)<pitch
+    hx=x+(.13 if seated else .02);head_z=4.90 if seated else 5.06
+    relief('City relief head',hx,head_z,.36,.45,.19,-.58)
+    relief('City carved hair mass',hx-.035,head_z+.14,.39,.22,.15,-.54)
+    relief('City facial nose',hx-.07,head_z-.03,.10,.16,.085,-.79)
+    for dx in [-.095,.09]:relief('City facial brow',hx+dx,head_z+.025,.11,.055,.03,-.765)
+    relief('City relief neck',hx,head_z-.27,.18,.19,.15,-.54)
+    relief('City shoulder span',x,4.48,.75,.32,.21,-.55)
+    relief('City tapered torso',x,4.12,.57,.85,.20,-.54)
+    relief('City draped hips',x,3.58,.63,.54,.21,-.53)
+    if seated:
+     relief('City seated projecting bent thigh',x+.30,3.37,.78,.35,.25,-.64)
+     relief('City seated knee',x+.53,3.22,.31,.33,.24,-.66)
+     relief('City seated front shin',x+.49,2.68,.23,.92,.23,-.61)
+     relief('City seated rear shin',x-.10,2.62,.25,1.12,.17,-.51)
+     relief('City seat drapery',x-.24,2.91,.45,1.36,.18,-.52)
+     for dx in [-.25,-.10,.04]:stroke('City seat drapery fold',[(dx,3.45),(dx-.08,2.55),(dx-.03,2.15)],.024)
+    else:
+     relief('City standing left leg',x-.18,2.75,.30,1.55,.19,-.56)
+     relief('City standing right leg',x+.22,2.80,.29,1.55,.19,-.55)
+     for dx in [-.18,.22]:relief('City standing ankle',x+dx,2.14,.18,.24,.19,-.54)
+    for dx in ([-.1,.49] if seated else [-.18,.22]):relief('City relief foot',x+dx,2.05,.30,.14,.25,-.60)
+    if x< -pitch:
+     # Adult with smaller figure and long horizontal attribute in full frontage.
+     stroke('City adult outstretched arm',[(0,4.54),(.35,4.39),(.80,4.56)],.105)
+     stroke('City adult lowered arm',[(-.25,4.42),(-.49,4.02),(-.34,3.72)],.10)
+     relief('City smaller figure head',x-.53,4.18,.25,.30,.15,-.75)
+     relief('City smaller figure body',x-.52,3.69,.32,.59,.17,-.69)
+     stroke('City smaller figure bent leg',[(-.51,3.41),(-.74,3.09),(-.67,2.40)],.095)
+     stroke('City smaller figure straight leg',[(-.39,3.44),(-.34,2.97),(-.45,2.25)],.08)
+     stroke('City horizontal sculptural attribute',[(-.57,4.24),(.65,4.27),(.79,4.42)],.065)
+    elif x<0:
+     # Seated draped figure; preserve silhouette without inventing obscured handheld object.
+     relief('City seated dress',x,3.35,.73,1.20,.14,-.57)
+     stroke('City seated bent arm',[(-.28,4.47),(-.43,4.03),(-.13,3.87)],.09)
+     stroke('City seated lap arm',[(.28,4.44),(.48,3.95),(.08,3.65)],.09)
+     for dx in [-.22,0,.22]:stroke('City seated dress fold',[(dx,3.82),(dx+.05,3.10),(dx-.09,2.15)],.028)
+    elif x<pitch:
+     # Water-supply man: seated, raised right hand and a tipped handled vessel to the left.
+     for dx in [-.14,.14]:relief('City water figure chest',x+dx,4.31,.29,.29,.075,-.73)
+     for z in [4.05,3.89]:relief('City water figure abdomen',x,z,.27,.15,.04,-.72)
+     stroke('City water raised arm',[(.27,4.47),(.61,4.50),(.70,4.92),(.48,4.83)],.105)
+     stroke('City water vessel arm',[(-.25,4.45),(-.52,4.06),(-.76,3.91)],.105)
+     relief('City water amphora body',x-.62,3.39,.52,.57,.22,-.61)
+     stroke('City water amphora neck',[(-.67,3.62),(-.78,3.83),(-.88,3.86)],.075)
+     placed(arch('City water amphora handle',.14,.19,(x-.47,3.61),-.80,.07,trim,-math.pi*.4,math.pi*.8,20))
+     for i in range(3):stroke('City flowing water carving',[(-.85+i*.055,3.74),(-.96+i*.07,3.26),(-.82+i*.07,2.98)],.025)
+    else:
+     relief('City standing draped robe',x-.11,3.18,.65,1.85,.14,-.56)
+     stroke('City branch bearer raised arms',[(-.40,4.80),(0,4.99),(.56,4.91),(.77,5.22)],.09)
+     stroke('City held branch',[(-.83,5.31),(-.37,5.39),(.25,5.28),(.87,5.37)],.045)
+     for i in range(7):
+      relief('City branch carved leaf',x+(i-3)*.21,5.31+(i%2)*.10,.22,.105,.04,-.70)
+     for dx in [-.25,-.05,.15]:stroke('City standing robe fold',[(dx,3.87),(dx+.14,3.03),(dx-.04,2.12)],.027)
+    if abs(x)>pitch:
+     part('City Hall outer relief plaque',x,1.43,width*.68,.30,-.41,.10,dark)
+     placed(text('City Hall plaque lettering','CITY HALL',(x,-.49,1.43),.17,bronze,depth=.012))
  for z,w in [(20.9,.35),(21.336,.55),(22.5,.22)]:part('Base projecting continuous belt',0,z,length,w,-.14,.95,trim)
  for row in range(6):
   low=22.5+row*4.58

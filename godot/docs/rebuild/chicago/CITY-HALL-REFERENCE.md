@@ -107,3 +107,38 @@ inner County fields/City reliefs and court/roof fidelity remain open.
 County233320tri/sevenmaterials/cache155; coping/footprint unchanged.
 Mac source checks and day/night evidence recorded in REBUILD-LOG2026-10-08;
 this is a draft, not full sculptural fidelity. No export.
+
+
+## Four LaSalle compositions — 2026-10-08
+
+Reopened and visually inspected Ajay Suresh2021 full frontage and Richie
+Diesterheft2007 detail. From north to south: adult with smaller figure and
+horizontal attribute; seated draped figure; seated muscular water figure with
+handled/tipped vessel; standing draped figure with raised branch. All four now
+have original physical silhouette sculpture, facial contours, posed limbs,
+drapery and distinct attributes; outer CITY HALL plaques also modeled.
+Photo-fit proportions, not scanned sculptures. Fine anatomy, attributes and
+accurate relief surfaces remain provisional. No County seal copied to City.
+City215924tri/sevenmaterials/cache156. Actual High-quality Grid front/oblique
+day/night views inspected; ambient occlusion resolves form better than Medium,
+but these are still draft figures. Evidence in REBUILD-LOG2026-10-08.
+
+## Roof reference for next pass
+
+[USGS City Hall aerial](https://www.usgs.gov/media/images/chicago-city-hall-aerial-1),
+published2019-09-05; Patrick L. Pyszka, City of Chicago; page labels public domain.
+Actual full image inspected2026-10-08: west roof planted beds separated by pale
+perimeter/service walks and curving internal paths; central raised equipment
+rooms, silver ducts, louvered mechanical units, guardrails and a small tower.
+County half remains unplanted in the visible east strip. Model from mapped
+west-half roof ring, preserve paired court notches; do not lay one green sheet
+across the whole block. Image date not established from this page; do not claim
+current equipment configuration. No roof geometry added from this source yet.
+
+
+County inner-field reference reinspection2026-10-08: actual Ian Abbott2014
+frontage downloaded for study from its Flickr image link and inspected.
+Both inner fields contain single seated figures on plinths, separate from the
+paired seal compositions in the outer fields. Oblique/vehicle occlusion and
+image resolution limit small handheld attributes; seek detail before naming
+or inventing them. No additional County geometry added in this checkpoint.

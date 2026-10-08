@@ -81,3 +81,18 @@ Local Mac authoring command (repo root):
 Local capture script is ignored godot/visual-review/civic.gd. Logs in
 ignored tests/logs/mac-civic/ and tests/logs/ci/. Original owner pause is
 historical; owner resumed on2026-10-08. Continue on this same working branch.
+
+
+## Current continuation checkpoint — 2026-10-08 City reliefs
+
+City four distinct LaSalle physical figure drafts now integrated;215924tri,
+sevenmaterials/cache156. County remains233320tri. City16/County15/menu107/
+coverage23 plusparse pass on Mac; four actual High-quality day/night City views
+inspected with empty stderr. Fine sculpture remains provisional. Next: finish
+County inner fields, court glazing and roof details; City roof has a newly
+inspected USGS/City photographer aerial linked in CITY-HALL-REFERENCE.md.
+Then continue all remaining trackside exteriors. Goal stays active; no export.
+Local ignored City capture: godot/visual-review/civic-city.gd; logs mac-civic/.
+
+Final City checkpoint source Grid driving/presentation:72/72PASS,exit0,
+empty stderr (city-drive logs). No export or full-lap/performance acceptance.

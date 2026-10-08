@@ -107,9 +107,8 @@ def finish(stem, out):
     authored = Path(__file__).resolve().parent / "authored"
     authored.mkdir(exist_ok=True)
     (authored / ".gdignore").touch()
-    bpy.ops.wm.save_as_mainfile(filepath=str(authored/(stem+".blend")))
+    bpy.ops.wm.save_as_mainfile(filepath=str(authored/(stem+".blend")), compress=True)
     bpy.ops.export_scene.gltf(filepath=str(out/(stem+".glb")),export_format="GLB",use_selection=True)
     tris=sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in bpy.context.selected_objects)
     print(stem.upper(),"AUTHORED",len(bpy.context.selected_objects),"materials;",tris,"triangles")
-
 
