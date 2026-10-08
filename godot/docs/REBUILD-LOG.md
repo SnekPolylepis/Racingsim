@@ -5945,3 +5945,34 @@ for this exterior-only refinement; previous clearance/lap evidence is retained.
 Final bounded windowed full-course 5m/five-offset clip scans pass on both
 layouts, Grid107/original114 accepted overhead hits, zero failures; exit0,
 empty stderr. Building38 plus parse rerun passes after correcting pane probe.
+
+
+### 2026-10-08 — Franklin / Van Buren garage draft and connector audit
+
+Built mapped w74268219 exterior in Blender:35484tri/seven materials,
+open parking bays/slabs, concrete piers, recessed retail panes, rounded slotted
+corner core, roof guardrails/stall markings. Historical PTI/Desman brochure
+reference differs from neighboring Wells Traders structure; use
+assets/chicago/landmarks/FRANKLIN-GARAGE-SOURCES.md for provenance/limits.
+Fourteen levels/finite vertices/height authoring assertions and native17
+geometry/night checks plusparse pass. Six staged High native day/night views
+inspected; these expose existing route/foundation conflict, not production fit.
+Both current routes excludegarage andcrossBrooks. Twelve pre-model native
+captures completed; eight reviewed/retained in chicago-franklin-placement-mac.
+
+Candidate connector follows mapped VanBuren/Franklin corridor: both South
+controls z887.1, secondx-896.5, rampx-898.0, heights/othercontrols retained.
+Bounded2m native local audit of38 footprints: no candidatecentreline crossings;
+garage/Brooks each about14.6m clear. Initial broad scratch audit timedout120s;
+optimized local audit completed0.4s. Original/Grid length reduces76.18/82.32m.
+Local audit does not establish full-course rendered/driving acceptance.
+
+Production integration and route change remain next work: commit draft assets,
+then correct connector with new record identities, integrategarage, both full
+clip scans and all-car/mode driving checks. Inspect restoredBrooks frontage
+next. Cache172/original@v5/Grid@v3 remain unchanged at this checkpoint.
+No app export, full-game/performance, Intel or manual wheel validation.
+
+Final roof stripe/wheel-stop mesh reimport exits0,17 geometry/night checks
+plusparse pass0.7s. Six final staged day/night views rerendered and inspected,
+exit0/empty stderr. No production placement acceptance at this checkpoint.

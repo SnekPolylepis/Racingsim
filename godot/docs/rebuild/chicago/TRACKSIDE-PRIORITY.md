@@ -41,3 +41,12 @@ reviewed after the correction. Building height/proportions remain photo-fit.
 The changed layouts use separate new record identities; old saved laps and
 ghosts are retained under their previous keys. Candidate distances still do
 not prove individual rendering, complete visibility, or authored coverage.
+
+
+2026-10-08: Franklin/VanBuren garage now has a retained mapped Blender draft,
+not production placement. Current connector runs inside garage and Brooks
+footprints; native views confirm exclusion. Candidate along mapped VanBuren/
+Franklin streets clears both by about14.6m in a local2m sample audit. Full
+rendered/driving validation and record identity change precede integration.
+See assets/chicago/landmarks/FRANKLIN-GARAGE-SOURCES.md for exact controls,
+geometry limits and staged screenshots. Neither garage nor Brooks is complete.
