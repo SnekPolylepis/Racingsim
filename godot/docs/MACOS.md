@@ -617,3 +617,15 @@ Two current-cache High Grid office day/night source images actually inspected,
 capture/import/Blender exit0/empty stderr. Roof fascia/equipment/atrium still
 incomplete, height/base-floor calibration provisional. No full-suite/menu rerun,
 new laps, export or performance/Intel/manual-drive claim at this revision.
+
+
+2026-10-08 Block37 office fascia/cache192: broad dark projecting band/silver
+coping authored from the previously inspected structural engineer photo.
+184200tri/eight materials; dimensions/unseen faces remain photo-fit, roof
+services/atrium/main entrances/crown remain open. Building29/parse pass2.9s,
+including physical fascia projection ray. Both full native clipping scans pass
+104Grid/120original accepted hits/empty stderr. Two actual High Grid elevated
+fascia day/night source images inspected, current cache loaded, capture/Blender/
+editor import exit0/empty stderr. Roads/timing remain original@v7/Grid@v5.
+No current full-suite/menu/laps/performance/export/Intel validation claim.
+See BLOCK-37-REFERENCE.md and chicago-block37-mac/chicago_grid-fascia-{day,night}.png.

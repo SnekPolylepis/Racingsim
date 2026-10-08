@@ -6369,3 +6369,17 @@ photo inspected: dark projecting office roof fascia/equipment still missing.
 Central roof raster peaks do not establish skylight alignment; atrium external
 plan remains open. No road/timing change/export/newlaps/full-suite/performance
 claim. Detailed evidence in BLOCK-37-REFERENCE.md.
+
+### REFINED Block37 office roof fascia —2026-10-08
+
+
+2026-10-08 Block37 office fascia/cache192: broad dark projecting band/silver
+coping authored from the previously inspected structural engineer photo.
+184200tri/eight materials; dimensions/unseen faces remain photo-fit, roof
+services/atrium/main entrances/crown remain open. Building29/parse pass2.9s,
+including physical fascia projection ray. Both full native clipping scans pass
+104Grid/120original accepted hits/empty stderr. Two actual High Grid elevated
+fascia day/night source images inspected, current cache loaded, capture/Blender/
+editor import exit0/empty stderr. Roads/timing remain original@v7/Grid@v5.
+No current full-suite/menu/laps/performance/export/Intel validation claim.
+See BLOCK-37-REFERENCE.md and chicago-block37-mac/chicago_grid-fascia-{day,night}.png.

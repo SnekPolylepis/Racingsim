@@ -113,6 +113,11 @@ for poly,top,rows in [(tower,130,37),(office,80,13)]:
  prism('Tower recessed interior',[(mx+(x-mx)*.96,my+(y-my)*.96) for x,y in poly],26,top-.25,roof)
  facade(poly,26,top,rows)
  prism('Tower service roof',poly,top-.25,top,roof)
+# shortcut: fascia depth/height follow the engineer's photo; replace with measured coping sections when available.
+for a,b in zip(office,office[1:]+office[:1]):
+ width=math.dist(a,b)
+ part('Office broad dark projecting roof fascia',(width/2,.18,78.55),(width,.70,2.90),roof,a,b)
+ part('Office silver coping edge',(width/2,.18,79.95),(width,.74,.10),metal,a,b)
 # SCB photograph shows warm elongated inset panels across the long northern tower face.
 a,b=tower[2],tower[3]
 width=math.dist(a,b)

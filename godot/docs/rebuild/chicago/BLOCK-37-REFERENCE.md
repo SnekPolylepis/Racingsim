@@ -168,3 +168,21 @@ evidence remains at earlier revisions, no new full-suite claim. No export,
 new laps/performance/manual-drive/Intel validation. Office fascia/roof services
 and atrium geometry still open; next refine the directly photographed fascia
 while obtaining outside skylight plan evidence.
+
+## Office fascia refinement —cache192
+
+The previously inspected structural engineer’s Christopher Barrett compound
+photo guides a broad dark projecting office roof fascia with silver coping.
+Original physical geometry uses existing roof/metal materials;184200tri/eight
+materials. Fascia covers77.1–80m of the provisional office envelope, projects
+.53m beyond its wall plane. Height/depth and unseen face treatment remain
+photo-fit; roof services and exact coping sections remain open.
+
+Building29/parse pass2.9s, including a physical ray confirming dark fascia
+projects beyond office panes. Blender regeneration/editor import exit0/empty
+stderr. Road/timing identities unchanged, cache192. Both full native clipping
+scans pass104Grid/120original accepted hits, empty stderr. Two actual High Grid
+elevated fascia day/night views inspected: projecting dark band and silver coping
+remain visible in both lighting states; these are roof-detail views, not driving
+acceptance. Current cache loaded, capture exit0/empty stderr, files
+chicago_grid-fascia-{day,night}.png. No full-suite/menu/lap/performance/export claim.

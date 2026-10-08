@@ -72,6 +72,10 @@ func run():
 			check(not mat.emission_enabled, "Day extinguishes occupied panes")
 			Night.set_night(holder, true)
 			check(mat.emission_enabled, "Night enables occupied panes")
+	var fascia = first_hit(
+		exterior, Vector3(30, 78.5, 40), Vector3(15, 78.5, 40), "Block37 dark backing and roof"
+	)
+	check(fascia != Vector3.INF and fascia.x > 21.6, "Physical dark office fascia projects beyond panes")
 	var office_pane = first_hit(
 		exterior, Vector3(30, 29.5, 40), Vector3(15, 29.5, 40), "Block37 recessed blue grey panes"
 	)
