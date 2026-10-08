@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 174
+const CACHE_REVISION = 175
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -920,6 +920,15 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		wacker125.surface_set_material(surface, mat)
 	var wacker125_node = mesh_node(asset, parent, "Wacker125", wacker125, ChicagoCity.WACKER_125_POSITION)
 	wacker125_node.rotation.y = ChicagoCity.WACKER_125_YAW
+	var brooks = PropMesh.mesh("res://assets/chicago/landmarks/brooks_building.glb").duplicate()
+	for surface in brooks.get_surface_count():
+		var mat = brooks.surface_get_material(surface).duplicate()
+		mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Night"):
+			mat.set_meta("chicago_night", true)
+			mat.emission_energy_multiplier = .25
+		brooks.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "BrooksBuilding", brooks, ChicagoCity.BROOKS_POSITION)
 	var garage = PropMesh.mesh("res://assets/chicago/landmarks/franklin_garage.glb").duplicate()
 	for surface in garage.get_surface_count():
 		var mat = garage.surface_get_material(surface).duplicate()

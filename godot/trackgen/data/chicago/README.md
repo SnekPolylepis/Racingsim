@@ -154,3 +154,7 @@ and w73766157 Brooks footprints. Heights/widths/easing are race authoring,
 not real-world driving directions. Original recordidentity@v6/Grid@v4 separates
 changed routes from previously saved laps/ghosts; cache174 rebuilds scenery.
 See latest REBUILD-LOG and FRANKLIN-GARAGE-SOURCES.md for validation and limits.
+
+2026-10-08: cache175 adds authored Brooks exterior at retained w73766157
+foundation; route versions and candidate distances unchanged. See BROOKS-SOURCES
+and the MacBook handoff for provisional height/details and actual validation.

@@ -203,6 +203,16 @@ func run() -> void:
 			if entry.osm_id == "w147399567" and entry.reason == "authored London Guarantee exterior":
 				london_excluded += 1
 		check(london_excluded == 1, "Mapped London Guarantee replaced once without generic cupola")
+		var brooks = app.track.get_node_or_null("Scenery/BrooksBuilding")
+		check(
+			brooks is MeshInstance3D and brooks.mesh.get_surface_count() == 10,
+			"Authored Brooks exterior loads"
+		)
+		var excluded_brooks = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w73766157" and entry.reason == "authored Brooks exterior":
+				excluded_brooks += 1
+		check(excluded_brooks == 1, "Mapped Brooks replaced exactly once")
 		var garage = app.track.get_node_or_null("Scenery/FranklinGarage")
 		check(
 			garage is MeshInstance3D and garage.mesh.get_surface_count() == 7,

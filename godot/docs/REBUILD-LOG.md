@@ -6019,3 +6019,41 @@ sculpture and remaining trackside exteriors remain open. River bridges queued.
 No app export, manual wheel driving, full-game/performance or Intel validation.
 
 Final finite-clearance guard rerun: garage25 andparse pass1.6s.
+
+
+### 2026-10-08 — Brooks physical trackside exterior
+
+Brooks replaces generic w73766157 once at (-861.3,8,769.8), retaining the
+five-vertex mapped foundation. Blender source and GLB:93044tri/ten materials.
+Owner and City landmark photos inform five Franklin/eight Jackson bays,
+three recessed panes per bay, ribbed piers, tiled spandrels, pale two-storey
+retail base, green frieze/caps, projecting cornice and red Jackson awnings.
+Twelve storeys follow the owner description; mapped57m height remains provisional.
+Small cap/frieze reliefs are photo-fit silhouettes, not exact sculpted replicas.
+Entrance bay, rear treatment and roof configuration remain unverified.
+Cache175; original@v6/Grid@v4 and route geometry unchanged.
+
+Mac Godot4.6.2 M4 Forward+ source checks: Brooks31, menu113, authoredcoverage23,
+Franklin25 andparse pass (192assertions plusparse). First Brooks check caught
+an incorrect17m test envelope around the north awnings (actual17.312m); the
+explicit17.5m awning bound and unchanged other bounds pass on rerun1.8s.
+No geometry reduced to satisfy the test. Preceding menu113 ran73.2s.
+
+Remaining trackside exteriors, finer civic reliefs/seals and broader performance
+review remain open; river bridges queued. No export or new driving-lap run:
+route unchanged, preceding20 clean car/mode cases retained as dated evidence.
+
+Both full native5m/five-offset clip scans pass: Grid107/original110 accepted
+overhead hits, zero failures, exit0/empty stderr. Initial eight High source views
+completed exit0/empty stderr; seven inspected views show the Brooks exterior.
+The first Jackson camera was inside a neighbouring building; its image is not
+appearance evidence. Corrected Jackson day view inspected; a full rerender
+hit180s after three daylight images. Single corrected Jackson night review
+follows separately. Frozen renders do not establish frame-time acceptance.
+
+Corrected Jackson night single-view source capture completed exit0/empty stderr
+and was inspected. Final eight High day/night corner/Franklin/Jackson/route
+images reviewed in rebuild/screenshots/chicago-brooks-mac/. Original successful
+set plus corrected Jackson captures supplies appearance evidence; timed-out
+multi-view rerun remains recorded above. Next close candidate:300SouthWacker,
+with primary architect/owner references in chicago/WACKER-300-REFERENCE.md.
