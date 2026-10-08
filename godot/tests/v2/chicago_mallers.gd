@@ -45,6 +45,12 @@ func run():
 		"North pane physically behind masonry pier"
 	)
 	check(exterior.get_aabb().position.x < -27, "Physical west sign projects outside mapped wall")
+	var side_pane = first_hit(exterior, Vector3(40, 23.5, -2.65), Vector3(0, 23.5, -2.65))
+	var side_wall = first_hit(exterior, Vector3(40, 23.5, -4.4), Vector3(0, 23.5, -4.4))
+	check(
+		side_pane != Vector3.INF and side_wall != Vector3.INF and side_wall.x - side_pane.x > .15,
+		"Plain east sash panes recessed into real wall openings"
+	)
 	for surface in exterior.get_surface_count():
 		check(exterior.surface_get_material(surface).albedo_texture == null, "No photographic facade")
 	print("MALLERS RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))

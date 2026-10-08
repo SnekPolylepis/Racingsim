@@ -5522,3 +5522,10 @@ in photo remain pending. Blender47320tri/ninemats; fresh nativegeometry13PASS
 and standaloneDRAFTREVIEWPASS/empty stderr. Updatedcorner actually inspected.
 Currentdoors/plainrearwindow refinement and refreshed trackreview pending.
 No EXE export.
+
+REFINE CHI-3D Mallers east side 2026-10-07
+Added separate recessed sash panes/stiles/meetingrails and real wall apertures
+to plain east elevation visible in modernreferences. Counts/spacing estimated.
+Blender56644tri/ninemats; freshimport/nativegeometry14PASS/empty stderr.
+StandaloneDRAFTREVIEWPASS/empty stderr; actualnortheast image inspected.
+Current mainentry and refreshednative trackreview remain pending. No EXE.

@@ -35,7 +35,21 @@ for edge in range(len(ring)):
  def part(name,x,z,w,h,d,t,mat):return placed(box(name,(x,d,z),(w,t,h),mat))
  public=origin[0]<-24 or origin[1]>12
  if not public:
-  part('Unsurveyed rear wall',0,43,length,86,0,.35,back)
+  if origin[0]>24:
+   # Plain east elevation appears in the modern oblique photographs.
+   cols=max(1,round(length/3.4));pitch=length/cols;ww=1.25
+   for row in range(21):
+    low=row*4.05
+    part('Plain side solid horizontal masonry',0,low+.8,length,1.6,0,.4,stone)
+    for c in range(cols):
+     x=(c-(cols-1)/2)*pitch
+     part('Plain side inset sash pane',x,low+2.8,ww,2.35,.43,.04,glass)
+     for dx in [-ww/2,ww/2]:part('Plain side sash stile',x+dx,low+2.8,.06,2.35,.30,.12,sash)
+     part('Plain side sash meeting rail',x,low+2.8,ww,.07,.30,.12,sash)
+    for c in range(cols+1):
+     part('Plain side wall between real apertures',-length/2+c*pitch,low+2.825,pitch-ww,2.45,0,.4,stone)
+   part('Plain side parapet',0,85.75,length,2.5,0,.4,stone)
+  else:part('Unsurveyed south party wall',0,43,length,86,0,.35,back)
   continue
  # ponytail: bay dimensions fit mapped footprint; refine if measured facade drawings become available.
  cols=max(2,2*round(length/5.3));pitch=length/cols
