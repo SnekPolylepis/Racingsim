@@ -205,7 +205,7 @@ func run() -> void:
 		check(london_excluded == 1, "Mapped London Guarantee replaced once without generic cupola")
 		var wacker225 = app.track.get_node_or_null("Scenery/Wacker225")
 		check(
-			wacker225 is MeshInstance3D and wacker225.mesh.get_surface_count() == 8,
+			wacker225 is MeshInstance3D and wacker225.mesh.get_surface_count() == 9,
 			"Authored 225 Wacker loads"
 		)
 		var excluded_wacker225 = 0

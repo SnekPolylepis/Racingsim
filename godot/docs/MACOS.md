@@ -202,3 +202,31 @@ Original road-car references only updated;2% tolerance unchanged.
 These are sampled/native automated results and frozen captures. No manual
 wheel driving, performance/Intel validation, complete game gates or app export.
 Bend is authored from mapped road geometry; building fidelity remains open.
+
+
+### 2026-10-08 — 225 West Wacker crown refinement, native Mac source
+
+Refined the four pale painted stepped turret shoulders, four-sided fins and
+circular caps against Michael Davis's 2009 aerial exterior reference
+(https://www.flickr.com/photos/perspectivephotography/3935592473).
+Added enclosed recessed side glazing beneath the barrel vault, end ties and
+crossed braces, raised service terraces with guardrails and photo-fit cabinets.
+These are authored estimates, not surveyed roof dimensions or equipment IDs.
+Retained mapped foundation, provisional height and cleared route geometry;
+records remain original@v5/Grid@v3. Cache172; Blender168016 triangles/nine
+materials. Restrained silver specular response follows the existing material path.
+
+Bounded Godot4.6.2/M4 source import exits0. Building38 assertions and parse pass;
+menu109 passes. Initial side-pane ray hit a mullion gap; moved the sample
+inside a pane and reran the complete building test,38/38 pass.
+Six actual High day/night street/tower/crown captures inspected in
+`docs/rebuild/screenshots/chicago-wacker225-crown-mac/`, exit0/empty stderr.
+Frozen captures establish appearance only, not driving or frame-time acceptance.
+Fine facade/crown proportions, published height discrepancy, civic sculpture
+and remaining trackside buildings remain open. River bridges stay queued.
+No app export, repeat lap timing, full-game/performance, Intel or wheel checks
+for this exterior-only refinement; previous clearance/lap evidence is retained.
+
+Final bounded windowed full-course 5m/five-offset clip scans pass on both
+layouts, Grid107/original114 accepted overhead hits, zero failures; exit0,
+empty stderr. Building38 plus parse rerun passes after correcting pane probe.

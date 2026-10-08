@@ -61,3 +61,17 @@ Grid approach/corner/exit and original Upper Wacker forward/building views.
 The deck screens the upper building from Lower Wacker as expected; upper view
 shows its actual frontage behind the race fence. Sampled checks are recorded
 evidence, not proof of surveyed road dimensions or every possible vehicle path.
+
+
+## Crown refinement — 2026-10-08 Mac
+
+Michael Davis aerial reference above guides pale silver painted stepped square
+shoulders, four-sided fins/circular turret caps, enclosed side glazing under
+the barrel vault, open end ties/braces and raised side service terraces.
+Cabinet layout and roof dimensions are photo-fit estimates; no equipment
+identification or survey claim. Existing foundation/height discrepancy remains.
+Blender168016tri/nine materials; cache172. Native Godot4.6.2/M4 building38,
+menu109 and parse pass; both 5m/five-offset full clip scans pass with zero
+failures (Grid107/original114 accepted overhead hits). Six High day/night
+street/tower/crown views inspected: docs/rebuild/screenshots/chicago-wacker225-crown-mac/.
+No app export or performance acceptance. Remaining trackside work stays active.

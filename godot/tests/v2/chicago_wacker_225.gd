@@ -50,7 +50,7 @@ func run():
 	var exterior = building.mesh
 	var bounds = exterior.get_aabb()
 	print("WACKER225 BOUNDS ", bounds)
-	check(exterior.get_surface_count() == 8, "Eight authored materials")
+	check(exterior.get_surface_count() == 9, "Nine authored materials")
 	check(bounds.position.x > -18 and bounds.end.x < 18, "Mapped east west envelope")
 	check(bounds.position.z > -50 and bounds.end.z < 50, "Mapped north south envelope")
 	check(absf(bounds.position.y + 8) < .01, "Foundation below raised street")
@@ -92,6 +92,13 @@ func run():
 		channel != Vector3.INF and absf(channel.x + 16.16) < .08,
 		"Recessed channel glass stays ahead of opaque backing"
 	)
+	var crown_side = first_hit(exterior, Vector3(-15, 105, 1), Vector3(0, 105, 1))
+	check(
+		crown_side != Vector3.INF and absf(crown_side.x + 5.57) < .08,
+		"Vault base has recessed glass side enclosure"
+	)
+	var terrace = first_hit(exterior, Vector3(9, 115, 0), Vector3(9, 100, 0))
+	check(terrace != Vector3.INF and absf(terrace.y - 110) < .01, "Physical raised crown terrace deck")
 	var entrance = first_hit(exterior, Vector3(1, 4, -60), Vector3(1, 4, 0))
 	check(entrance != Vector3.INF and entrance.z > -48, "North entrance has real recessed interior")
 	for name in ["Wacker225", "Wacker125", "Wacker191"]:

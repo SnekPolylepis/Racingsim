@@ -9,6 +9,7 @@ stone=material('Pale granite piers and coursed spandrels',(.53,.54,.51),roughnes
 glass=material('Blue grey recessed vision glass',(.12,.20,.25),roughness=.48)
 occupied=material('Night occupied vision glass',(.12,.20,.25),roughness=.48,glow=.2)
 metal=material('Grey window frames and crown metal',(.31,.35,.36),metallic=.25,roughness=.65)
+silver=material('Silver painted crown caps and braces',(.67,.70,.69),metallic=.15,roughness=.68)
 dark=material('Roof and mechanical recesses',(.07,.09,.10),roughness=.85)
 clear=material('Clear renovated lobby glazing',(.36,.43,.44),roughness=.42)
 wood=material('Night warm lobby wood screens',(.39,.26,.14),roughness=.8,glow=.12)
@@ -84,14 +85,37 @@ for x in (-10.5,10.5):
     py=y+(col-2.5)*2.5
     box('Crown side vision pane',(x+side*5.05,py,108),(.055,2.12,15.1),glass)
     box('Crown side granite jamb',(x+side*5.18,py-1.17,108),(.36,.26,16),stone)
-  box('Stepped turret square base',(x,y,118),(10,15,4),stone)
-  for dx in (-4.7,4.7):
-   box('Projecting turret buttress',(x+dx,y,120),(.7,6,5),metal)
-   for yy in (-3,3):line('Raised turret metal ribs',[(x+dx,y+yy,117),(x+dx,y+yy,122)],.07,metal)
+  box('Granite turret coping ledge',(x,y,116.2),(10.3,16.3,.4),stone)
+  for width,z,height in ((8.8,117.2,1.6),(7.6,118.5,1.0),(6.9,119.7,1.4)):
+   box('Stepped square painted turret shoulder',(x,y,z),(width,width,height),silver)
+  for side in (-1,1):
+   box('Turret east west fin',(x+side*4.2,y,118.7),(.65,4.5,5),silver)
+   box('Turret north south fin',(x,y+side*4.2,118.7),(4.5,.65,5),silver)
+   for yy in (-2.2,2.2):line('Turret raised vertical metal joint',[(x+side*4.58,y+yy,116.3),(x+side*4.58,y+yy,121.15)],.04,metal)
+  for z in (103.5,107.,110.5,114.):
+   for side in (-1,1):
+    box('Crown face horizontal glazing tie',(x,y+side*8.13,z),(9.6,.16,.10),metal)
+    box('Crown side horizontal glazing tie',(x+side*5.13,y,z),(.16,15.6,.10),metal)
   for radius,z,depth in ((3.7,121,2),(2.7,122.7,1.4),(1.9,123.65,.5),(.42,125.,3)):
    bpy.ops.mesh.primitive_cylinder_add(vertices=32,radius=radius,depth=depth,location=(x,y,z))
    bpy.context.object.name='Stepped circular turret cap' if radius>1 else 'Turret finial'
-   bpy.context.object.data.materials.append(metal)
+   bpy.context.object.data.materials.append(silver)
+# Enclosed glass base beneath the vault, with physical service terraces on its flanks.
+box('Recessed central crown backing',(0,0,105),(10.9,80,10),dark)
+for side in (-1,1):
+ for i in range(32):
+  y=-40+(i+.5)*2.5
+  box('Central crown side glass',(side*5.57,y,105),(.055,2.35,9.8),glass)
+  box('Central crown side mullion',(side*5.65,y-1.25,105),(.16,.12,10),metal)
+ for z in (103.5,107,110):box('Central crown side transom',(side*5.65,0,z),(.16,80,.10),metal)
+ box('Crown terrace service deck',(side*10.55,0,109.85),(9.1,63,.3),stone)
+ for y in range(-30,31,6):
+  box('Terrace parapet post',(side*15.05,y,110.55),(.13,.13,1.1),silver)
+ for z in (110.5,111.1):box('Terrace horizontal guardrail',(side*15.05,0,z),(.10,63,.10),silver)
+ for y in (-24,-12,0,12,24):
+  box('Photo fit terrace service cabinet',(side*12.4,y,110.65),(1.8,2.4,1.3),silver)
+  box('Cabinet recessed dark grille',(side*13.32,y,110.65),(.045,2.1,.92),dark)
+  for h in range(7):box('Cabinet grille louver',(side*13.36,y,110.22+h*.13),(.10,2.1,.035),metal)
 # Barrel roof between corner crowns; real curved surface, seams and end arch ribs.
 verts=[]
 for y in (-40,40):
@@ -107,6 +131,15 @@ for y in (-48.,48.):
   box('Central crown end mullion',(x-.5,y+.12,(100+top)/2),(.1,.2,top-100),metal)
  line('Crown end arched truss',[(5.5*math.cos(i*math.pi/32),y,110+6*math.sin(i*math.pi/32)) for i in range(33)],.14,stone)
  for z in range(102,111,2):box('Crown end transom',(0,y+.12,z),(11,.2,.10),metal)
+# Open trusses connect the end arch to the setback barrel roof seen in the aerial reference.
+for side in (-1,1):
+ for x in (-5.5,0,5.5):
+  top=110+6*math.sqrt(max(0,1-(x/5.5)**2))
+  line('Roof end longitudinal tie',[(x,side*40,top),(x,side*48,top)],.10,silver)
+ line('Roof end crossed brace',[(-5.5,side*40,110),(5.5,side*48,110)],.09,silver)
+ line('Roof end crossed brace',[(5.5,side*40,110),(-5.5,side*48,110)],.09,silver)
+ for x in (-10.5,10.5):
+  for z in (116.65,117.05):box('Raised turret base seam',(x,side*48.22,z),(10,.08,.065),metal)
 # North Wacker half-rotunda glazing retained within the mapped foundation.
 for i in range(24):
  a=i*math.pi/24;b=(i+1)*math.pi/24
