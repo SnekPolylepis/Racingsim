@@ -24,3 +24,13 @@ Confirmed native city metadata:Brooks and McKinlock,Franklin-Van Buren
 Parking Garage,and225 West Wacker are excluded for authored route clearance.
 Do not place a full mapped Brooks footprint over the current driving corridor.
 Retain this candidate for a later fit/route-placement pass.
+
+
+## Connector correction — 2026-10-08
+
+Earlier exclusion evidence above is retained. Current cache174/original@v6/
+Grid@v4 connector follows VanBuren/Franklin, leaving Brooks mapped footprint
+14.682m from both1m-sampled centrelines. Generic frontage now visible beside
+FranklinGarage in production source day/night driving views. Both full clip
+scans and20car/mode laps pass. Author Brooks from primaryowner/city references
+next; prior excluded-camera snapshots do not describe current visibility.

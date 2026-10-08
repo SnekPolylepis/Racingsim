@@ -13,7 +13,7 @@ west and south, bending through the riverfront return; use the south connector t
 Wacker; return north through several staggered bends along its east end before turning south onto
 Michigan Avenue. The riverfront control points are simplified from retained OSM geometry and eased
 for racing. Both Wacker decks occupy the same geographic
-corridor at separate heights (0 m and 8 m in the local frame).
+corridor at separate heights (3.4288 m and 8 m in the local frame).
 
 The harbor connector near the Wacker/Lake Shore junction and the south loop near Franklin/Jackson
 are explicitly **game-only** ramp connections. They simplify the real junctions and close the lap.
@@ -141,3 +141,16 @@ Downtown intersection setbacks are limited to 18 m to keep the weave on the stre
 grid. Measured Wacker lane bay, current city assets, elevated L, river, lake
 and day/night presentation use the shared implementation. Draft polyline
 lengths differ from baked racing-line lengths.
+
+
+### South connector placement — 2026-10-08
+
+Current generator world(row) maps the two South connector controlsz887.1,
+secondcontrolx-896.5 and South connector rampx-898.0. Row indices, elevation
+profile and geographic source scaffolds remain stable; corner station aliases
+and roadside generators share adjusted coordinates. This follows the mapped
+VanBuren/Franklin corridor instead of cutting through mapped w74268219 garage
+and w73766157 Brooks footprints. Heights/widths/easing are race authoring,
+not real-world driving directions. Original recordidentity@v6/Grid@v4 separates
+changed routes from previously saved laps/ghosts; cache174 rebuilds scenery.
+See latest REBUILD-LOG and FRANKLIN-GARAGE-SOURCES.md for validation and limits.

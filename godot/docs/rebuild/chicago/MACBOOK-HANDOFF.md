@@ -270,3 +270,46 @@ No app export, full-game/performance, Intel or manual wheel validation.
 Final roof stripe/wheel-stop mesh reimport exits0,17 geometry/night checks
 plusparse pass0.7s. Six final staged day/night views rerendered and inspected,
 exit0/empty stderr. No production placement acceptance at this checkpoint.
+
+
+### 2026-10-08 — Franklin garage integrated; both connectors clear retained buildings
+
+Integrated FranklinGarage at(-859.5,8,844.05), mapped foundation unchanged,
+35484tri/seven materials; generic w74268219 excluded exactly once. Night
+fixtures use the existing Chicago material toggle, restrained specular response.
+Shared world(row) places both South connector controls on z887.1, secondx-896.5,
+rampx-898.0; corner aliases and roadside generators share the correction.
+Mapped VanBuren/Franklin reference, authored widths/grades/easing; no road-survey
+claim. Cache174; original@v6/Grid@v4 preserve older saved record/ghost identities.
+
+Native1m samples clear garage14.558m andBrooks14.682m on both layouts.
+Brooks generic frontage is now visible; replace it next from retained primary
+references. Production foundation geometry is not shortened or lifted to fit.
+Refreshed native5m candidate CSV:237 within50m (prior241 snapshot retained as
+dated evidence). Garage14.6/Grid6135; Brooks14.7/Grid6160;22514.4/original6765.
+Candidate distances remain neither a visibility guarantee nor completion tally.
+
+36 headless Chicago/parse suites passed185.8s during integration. After shared
+coordinate/caching refinement, final scoped six suites pass119.3s: garage25,
+menu111, Gridroute49, authoredcoverage23,225Wacker38, plusparse (246assertions).
+Both full windowed5m/five-offset clip scans pass: Grid107/original110 accepted
+overhead hits, zero failures, exit0/empty stderr. Grid rerun after shared
+coordinate change also passes107. Original scan already used final placement.
+
+Allfivecars/both handling modes on both layouts completed20 clean lap cases,
+zerooff-road/wall/prop ticks; lap harness has0props. Ten bounded per-car runs,
+max2 concurrent, exit0/empty stderr. All16 stored timing references stay inside
+unchanged2% tolerance; original formula modes have no timing baseline. No
+baseline fixture rewritten for this shorter connector. Logs mac-civic/franklin-*.
+
+Original eight High source day/night approach/corner/exit/building captures
+completed and inspected. Combined review hit180s; split Grid30-frame-wait
+review also hit180s after two views. Completed Grid capture uses five awaited
+frames plus RenderingServer.frame_post_draw for each image; results recorded
+only after exit0/empty stderr. Allsixteen final views inspected. Final captures live in
+rebuild/screenshots/chicago-franklin-production-mac/. Frozen captures establish
+appearance, not frame-time acceptance. Broader building fidelity, finer civic
+sculpture and remaining trackside exteriors remain open. River bridges queued.
+No app export, manual wheel driving, full-game/performance or Intel validation.
+
+Final finite-clearance guard rerun: garage25 andparse pass1.6s.

@@ -1,7 +1,7 @@
 extends SceneTree
-## Draft geometry only: production placement still requires connector clearance.
+## Physical exterior and retained foundation clearance on both driving layouts.
+const Chicago = preload("res://trackgen/chicago.gd")
 const Night = preload("res://scripts/track/chicago_night.gd")
-const PropMesh = preload("res://scripts/track/prop_mesh.gd")
 var checks = 0
 var failures = []
 
@@ -38,16 +38,17 @@ func first_hit(exterior: Mesh, start: Vector3, end: Vector3) -> Vector3:
 
 
 func run():
-	var exterior = PropMesh.mesh("res://assets/chicago/landmarks/franklin_garage.glb")
 	var holder = Node3D.new()
+	root.add_child(holder)
 	var scenery = Node3D.new()
 	scenery.name = "Scenery"
 	holder.add_child(scenery)
-	var fixture = MeshInstance3D.new()
-	fixture.mesh = exterior
-	scenery.add_child(fixture)
+	Chicago.add_loop_landmarks(holder, scenery)
+	var fixture = scenery.get_node("FranklinGarage")
+	var exterior = fixture.mesh
+	check(fixture.position.distance_to(Vector3(-859.5, 8, 844.05)) < .01, "Mapped garage origin")
 	var bounds = exterior.get_aabb()
-	print("FRANKLIN DRAFT BOUNDS ", bounds)
+	print("FRANKLIN GARAGE BOUNDS ", bounds)
 	check(exterior.get_surface_count() == 7, "Seven authored draft materials")
 	check(bounds.position.x > -24 and bounds.end.x < 24, "Mapped east west envelope")
 	check(bounds.position.z > -33 and bounds.end.z < 33, "Mapped north south envelope")
@@ -59,7 +60,7 @@ func run():
 	for surface in exterior.get_surface_count():
 		var mat = exterior.surface_get_material(surface)
 		if mat.resource_name.begins_with("Night"):
-			mat.set_meta("chicago_night", true)
+			check(mat.has_meta("chicago_night"), "Integrated fixture carries night flag")
 			Night.set_night(holder, false)
 			check(not mat.emission_enabled, "Day extinguishes garage fixtures")
 			Night.set_night(holder, true)
@@ -70,6 +71,35 @@ func run():
 	check(floor != Vector3.INF and absf(floor.y - 9.4) < .01, "Open bay has physical parking slab")
 	var guard = first_hit(exterior, Vector3(-5, 9.9, -40), Vector3(-5, 9.9, -20))
 	check(guard != Vector3.INF and guard.z < -30, "Concrete guardwall below open bay")
-	print("FRANKLIN DRAFT RESULTS ", {"checks": checks, "failures": failures})
+	var city = JSON.parse_string(FileAccess.get_file_as_string("res://trackgen/data/chicago/city.json"))
+	for id in ["w74268219", "w73766157"]:
+		var ring = PackedVector2Array()
+		for entry in city.buildings:
+			if entry.get("o", "") == id:
+				for p in entry.f:
+					ring.append(Vector2(p[0], p[1]))
+		check(ring.size() >= 4, "Mapped footprint available: " + id)
+		for grid in [false, true]:
+			var curve: Curve3D = Chicago.route_curve(grid)
+			var nearest = INF
+			for station in range(0, ceili(curve.get_baked_length())):
+				var p = curve.sample_baked(station, true)
+				if p.x < -1100 or p.x > -700 or p.z < 700 or p.z > 950:
+					continue
+				var pos = Vector2(p.x, p.z)
+				if Geometry2D.is_point_in_polygon(pos, ring):
+					nearest = 0
+				for i in ring.size():
+					nearest = minf(
+						nearest,
+						pos.distance_to(
+							Geometry2D.get_closest_point_to_segment(pos, ring[i], ring[(i + 1) % ring.size()])
+						)
+					)
+			print("FRANKLIN CLEARANCE ", id, " grid=", grid, " distance=", nearest)
+			check(
+				is_finite(nearest) and nearest > 10, "Both routes clear foundation: " + id + " " + str(grid)
+			)
+	print("FRANKLIN GARAGE RESULTS ", {"checks": checks, "failures": failures})
 	holder.free()
 	quit(0 if failures.is_empty() else 1)

@@ -55,7 +55,7 @@ const WACKER_RIB_BOTTOM_Y = 7.3396
 # Lateral column axes digitized from the CDOT 140 ft cross-section, relative to its SB through lane.
 # Positive is east in that drawing; the southbound driver's right is west.
 const WACKER_NS_COLUMNS = [-14.386, -4.63, 4.63, 8.915, 18.175, 25.525]
-const CACHE_REVISION = 172
+const CACHE_REVISION = 174
 const TEXTURE_ROOT = "res://assets/textures/chicago/"
 const WATER_SHADER = preload("res://shaders/chicago_water.gdshader")
 
@@ -66,7 +66,16 @@ static func data(grid: bool = false) -> Dictionary:
 
 static func world(row: Array) -> Vector3:
 	# Local tangent plane, +X east / +Z south, in metres. No float32 world-state accumulation.
-	return Vector3((row[1] + 87.6244) * 82860.0, row[2], (41.8848 - row[0]) * 111320.0)
+	var p = Vector3((row[1] + 87.6244) * 82860.0, row[2], (41.8848 - row[0]) * 111320.0)
+	# Share connector placement with route controls, corner markers and roadside details.
+	if row.size() > 3:
+		if row[3] == "South connector":
+			p.z = 887.1
+			if p.x > -1000:
+				p.x = -896.5
+		elif row[3] == "South connector ramp":
+			p.x = -898.0
+	return p
 
 
 static func points(grid: bool = false) -> Array[Vector3]:
@@ -193,7 +202,7 @@ static func build_asset(grid: bool = false) -> Node3D:
 	asset.name = "Chicago"
 	asset.id = "chicago_grid" if grid else "chicago"
 	asset.display_name = "Chicago — Loop Grid" if grid else "Chicago — River & Lake"
-	asset.version = 3 if grid else 5
+	asset.version = 4 if grid else 6
 	asset.set_meta("wacker_floor_y", ChicagoCity.LOW_ROAD_Y)
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
@@ -911,6 +920,15 @@ static func add_loop_landmarks(asset: Node3D, parent: Node) -> void:
 		wacker125.surface_set_material(surface, mat)
 	var wacker125_node = mesh_node(asset, parent, "Wacker125", wacker125, ChicagoCity.WACKER_125_POSITION)
 	wacker125_node.rotation.y = ChicagoCity.WACKER_125_YAW
+	var garage = PropMesh.mesh("res://assets/chicago/landmarks/franklin_garage.glb").duplicate()
+	for surface in garage.get_surface_count():
+		var mat = garage.surface_get_material(surface).duplicate()
+		mat.metallic_specular = .12
+		if mat.resource_name.begins_with("Night"):
+			mat.set_meta("chicago_night", true)
+			mat.emission_energy_multiplier = .25
+		garage.surface_set_material(surface, mat)
+	mesh_node(asset, parent, "FranklinGarage", garage, ChicagoCity.FRANKLIN_GARAGE_POSITION)
 	var wacker225 = PropMesh.mesh("res://assets/chicago/landmarks/wacker_225.glb").duplicate()
 	for surface in wacker225.get_surface_count():
 		var mat = wacker225.surface_get_material(surface)

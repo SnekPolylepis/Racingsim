@@ -39,7 +39,7 @@ func run() -> void:
 			app.track.get_meta("city").get("physical_windows", 0) > 1000,
 			"Loop Grid includes native frames and glazing on generic measured facades"
 		)
-		check(identity == "chicago_grid@v3", "Variant has independent record identity")
+		check(identity == "chicago_grid@v4", "Variant has independent record identity")
 		var lower = app.track.station(app.track.get_meta("corners")["Lower Wacker Portal"] + 250.0)
 		app.TrackLights.update_pool(app.lamp_pool, app.track, lower.pos, true)
 		var shadowed = true
@@ -203,6 +203,16 @@ func run() -> void:
 			if entry.osm_id == "w147399567" and entry.reason == "authored London Guarantee exterior":
 				london_excluded += 1
 		check(london_excluded == 1, "Mapped London Guarantee replaced once without generic cupola")
+		var garage = app.track.get_node_or_null("Scenery/FranklinGarage")
+		check(
+			garage is MeshInstance3D and garage.mesh.get_surface_count() == 7,
+			"Authored Franklin garage loads"
+		)
+		var excluded_garage = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w74268219" and entry.reason == "authored Franklin Van Buren garage exterior":
+				excluded_garage += 1
+		check(excluded_garage == 1, "Mapped Franklin garage replaced exactly once")
 		var wacker225 = app.track.get_node_or_null("Scenery/Wacker225")
 		check(
 			wacker225 is MeshInstance3D and wacker225.mesh.get_surface_count() == 9,
@@ -355,7 +365,7 @@ func run() -> void:
 		)
 		app.v2_bot = null
 		check(
-			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v5",
+			app.load_v2_track("chicago") and app.track.record_key() == "chicago@v6",
 			"Original Chicago remains available with its record identity"
 		)
 		check(app.track.has_node("Scenery/HyattPlace"), "Authored Hyatt Place loads in Original Chicago")

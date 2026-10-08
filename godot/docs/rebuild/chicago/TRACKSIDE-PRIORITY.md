@@ -4,9 +4,10 @@ Owner direction 2026-10-04: prioritize all buildings and scenery beside the
 driving route before distant buildings. Existing individual exteriors stay in
 place; the next work targets generic frontage, entrances, roofs and nearby props.
 
-TRACKSIDE-PRIORITY.csv now lists 241 mapped building footprints whose boundary
+TRACKSIDE-PRIORITY.csv now lists 237 mapped building footprints whose boundary
 is within 50 m of either current route, refreshed 2026-10-08 from chicago.gd
-route_curve at 5 m intervals (original @v5 / Grid @v3, cache171). The previous
+route_curve at 5 m intervals (original @v6 / Grid @v4, cache174). The preceding
+2026-10-08 @v5/@v3 snapshot had241; the previous
 2026-10-04 @v4/@v2 snapshot had 242 candidates. Distance is horizontal centreline-to-footprint-edge,
 not car-to-facade distance, surveyed clearance, proof of visibility or proof that
 a building is rendered. Names/address fields reuse route-inventory.csv metadata;
@@ -50,3 +51,12 @@ Franklin streets clears both by about14.6m in a local2m sample audit. Full
 rendered/driving validation and record identity change precede integration.
 See assets/chicago/landmarks/FRANKLIN-GARAGE-SOURCES.md for exact controls,
 geometry limits and staged screenshots. Neither garage nor Brooks is complete.
+
+
+2026-10-08 integration: FranklinGarage now loads on both corrected routes.
+Garage/Brooks retained foundations clear both native1m sampled centrelines
+by14.558/14.682m. Both full clip scans pass,20car/mode laps clean; original@v6/
+Grid@v4 retain old record identities. Actual production day/night views inspect
+new garage frontage and restoredgenericBrooks. Refreshed237-candidate CSV;
+Brooks is the next exterior to author, not yet a finished individual model.
+Exact garage bay/core/retail fidelity still needs modern primary-photo refinement.
