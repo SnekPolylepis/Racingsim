@@ -66,3 +66,10 @@ Grid@v4 retain old record identities. Actual production day/night views inspect
 new garage frontage and restoredgenericBrooks. Refreshed237-candidate CSV;
 Brooks is the next exterior to author, not yet a finished individual model.
 Exact garage bay/core/retail fidelity still needs modern primary-photo refinement.
+
+2026-10-08 Block37 now has an integrated working compound exterior, separated
+into low retail podium/northern residential tower/southern office. Retained base
+clears Grid9.261011m/original278.572113m; both full native clips and all43selected
+Chicago/parse suites pass. Four production Grid day/night frontage views reviewed.
+Entrance/atrium/crown and measured facade fidelity remain open; this is not full
+completion. Routes unchanged, cache189; detailed evidence in BLOCK-37-REFERENCE.md.

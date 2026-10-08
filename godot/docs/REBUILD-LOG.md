@@ -6328,3 +6328,16 @@ renders actually inspected after backing inset fix; native capture/import and
 Blender exit0/empty stderr. Production not installed: mapped compound currently
 excluded for route clearance. Full placement/clip checks, entries/atrium/crown
 refinement remain; no route/cache bump, export or lap claim. See BLOCK-37-REFERENCE.md.
+
+### INTEGRATED Block 37 working exterior —2026-10-08
+
+Retained mapped compound foundation clears both1m route samples:278.572113m
+original/9.261011m Grid. Installed podium/separate towers,189984tri/seven materials;
+generic compound explicitly replaced, both cache validators updated/cache189.
+Dedicated23 geometry/night assertions plusparse pass; all43selectedCI suites
+(42Chicago/parse) pass265.0s. Both full native clipping scans pass104Grid/120original
+accepted hits/empty stderr, no Block37 exemption or road changes. Four actual
+High Grid production frontage day/night views inspected; both capture jobs
+load current cache and exit0/empty stderr, editor import clean. Entries/atrium/
+crown/module coverage and measured proportions remain open in BLOCK-37-REFERENCE.md.
+Original@v7/Grid@v5 unchanged; no export or new lap/performance claim.

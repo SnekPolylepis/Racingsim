@@ -5,8 +5,8 @@ TRACKSIDE-PRIORITY.csv gives 9.3 m horizontal boundary distance on Grid.
 The mapped polygon spans approximately 102 by 119 m; city.json assigns
 138.5 m height to the compound. Do not extrude the whole retail block to that
 height: retail podium and later tower must be distinguished before authoring.
-An editable Blender draft and staged native review now exist; production
-integration and route clearance are not yet validated.
+Editable Blender source is installed as a working production exterior;
+foundation and full native clipping checks pass. Detailed fidelity remains open.
 
 Primary project pages read:
 - https://www.weoneil.com/project/block-37/
@@ -24,8 +24,8 @@ heights, bay counts or the exact tower footprint. W.E. O’Neil gallery exterior
 visually inspected in this pass. Retain mapped footprint and validate route
 clearance and native visibility before installing a replacement.
 
-Next: validate retained footprint against both routes, refine podium
-entrance/glazing/strip coverage and tower crown, then integrate and run full checks.
+Next: refine podium entrance/glazing/strip coverage, atrium roof and tower
+crown against closer primary photos; review each refinement from source.
 No export, route change, rendering or lap-validation claim at this checkpoint.
 
 ## Editable draft and native evidence
@@ -44,7 +44,8 @@ Native Mac Godot4.6.2 Forward+ High Grid baseline and staged draft captures
 completed exit0/empty stderr. Both draft day/night images actually inspected,
 retained in screenshots/chicago-block37-draft-mac. The baseline confirms the
 compound is excluded (city3794/authored route clearance). Draft is injected
-only by ignored visual-review/block37-draft.gd; production game is unchanged.
+only by ignored visual-review/block37-draft.gd at that checkpoint; production
+was unchanged until the integration recorded below.
 First capture exposed opaque upper backing over recessed panes; inset backing
 fixed it, final day/night panes/night switching inspected. Blender regeneration
 and native editor import exit0/empty stderr; Python syntax and diff checks pass.
@@ -55,3 +56,29 @@ Open: retained-foundation clearance, actual entrance portals/canopies/signage,
 central atrium roof opening, podium module placement, asymmetric tower inset
 shapes/crown, office roof services and wider measured proportions. This draft
 is not a finished exterior. Route versions/cache remain v7/v5/cache188.
+
+Additional operator page read2026-10-08:
+https://www.blockthirtyseven.com/leasing . It calls the shopping center five
+levels and Marquee38stories/690units; SCB calls the completed tower41stories/
+691apartments and describes building above a four-story mall. Preserve these
+source descriptions separately; do not settle counting conventions by guessing.
+The draft’s floor spacing and130m roof are provisional and need calibration.
+
+## Working integration — cache189
+
+Scenery/Block37 installs seven-material exterior on both layouts. Both cache
+validators require the fixture; mapped w124865494 is explicitly replaced once.
+Dedicated23geometry/night assertions and parse pass. Retained foundation clears
+full1m-sampled route centrelines278.572113m original/9.261011m Grid. Native full
+clipping scans pass Grid104/original120 accepted overhead hits, empty stderr;
+Block37 has no overhead exemption. Roads/timing remain original@v7/Grid@v5.
+Entrance/crown/atrium and measured facade fidelity remain incomplete.
+
+Full43selected CI suites (42Chicago plusparse) pass265.0s, serialized on Mac;
+Grid menu115 assertions pass68.5s. This validates the current working integration,
+not complete architectural fidelity. Four actual High native Grid production day/night frontage views (southeast
+and northeast) inspected in screenshots/chicago-block37-mac. Both bounded
+capture jobs load cache189 and finish exit0/empty stderr; native editor import
+also clean. Northeast framing crops upper crown and daylight has direct sun
+glare; these views establish frontage/night operation, not crown fidelity.
+No new laps, manual drive, performance, Intel validation or app export claimed.

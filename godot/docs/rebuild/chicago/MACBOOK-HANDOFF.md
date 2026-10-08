@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache188. See latest dated evidence below. Continue trackside building
+Grid@v5/cache189. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -472,3 +472,12 @@ dimensions remain provisional. Morton30/parse and both full native clip scans
 pass; two actual High Grid entrance day/night views reviewed (known audio
 ObjectDB exit warning persists). See WASHINGTON-208-212-REFERENCE.md. Remaining
 measured/detail refinement and other trackside models continue; no app export.
+
+Latest Block37 working integration2026-10-08/cache189: retained compound base
+clears both routes, installed podium/separate towers,189984tri/seven materials.
+All43selectedChicago/parse suites and both full native clips pass; four actual
+High Grid production frontage day/night views reviewed/current cache loaded.
+Detailed evidence in BLOCK-37-REFERENCE.md. Next refine actual entrance portals/
+canopies/signage, atrium glazing/roof, asymmetric warm tower inset shapes/crown
+and podium strip coverage against primary photos. Keep remaining City/County
+reliefs and other trackside fidelity work open. No route change/export/newlaps.

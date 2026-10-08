@@ -590,3 +590,13 @@ Still open: exact entrance placement and storefront proportions/signage, finer
 central panel/window rhythm, measured court/balcony profiles, stone carving/
 wreath/cornice and roof services. Full trackside objective remains active. No
 app export/new laps/Intel/performance claim; previous runs remain dated evidence.
+
+2026-10-08 Block37 working integration: Mac Godot4.6.2 AppleM4 Metal Forward+
+High, cache189/original@v7/Grid@v5. All43selectedChicago/parse suites pass265.0s;
+Block37 dedicated23 assertions, menu115 pass. Both native full clip scans pass
+104Grid/120original accepted hits, empty stderr. Four current-cache production
+Grid frontage day/night images actually inspected; two bounded capture jobs and
+editor import exit0/empty stderr. Architectural entries/atrium/crown remain
+incomplete; northeast image crops crown and day glare limits upper detail review.
+No new laps, performance/Intel/manual-drive claim or app export. Evidence:
+rebuild/chicago/BLOCK-37-REFERENCE.md and screenshots/chicago-block37-mac.
