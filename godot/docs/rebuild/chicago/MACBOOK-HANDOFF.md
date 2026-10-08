@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache187. See latest dated evidence below. Continue trackside building
+Grid@v5/cache188. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -463,3 +463,12 @@ fence timeout under concurrent validation; capture exits retain audio ObjectDB
 warnings, documented in WASHINGTON-208-212-REFERENCE.md. Entrance/storefront,
 central bay rhythm, measured court/balconies and carving remain next. Full goal
 active; roads unchanged; no export.
+
+## Morton entrance refinement2026-10-08
+
+Recessed entrance/green cornice/doors-transom/lamps/planters now modeled from
+labeled property photo;167226tri/eightmaterials/cache188. Exact bay placement/
+dimensions remain provisional. Morton30/parse and both full native clip scans
+pass; two actual High Grid entrance day/night views reviewed (known audio
+ObjectDB exit warning persists). See WASHINGTON-208-212-REFERENCE.md. Remaining
+measured/detail refinement and other trackside models continue; no app export.

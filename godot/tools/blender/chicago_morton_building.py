@@ -44,7 +44,7 @@ prism('Retained seven point foundation',plan,-8,0,stone)
 # shortcut: court opening and depth are photo-fit, replace with surveyed roof plan before full fidelity acceptance.
 upper=[(-15,-28),(16,-28),(16,-12),(-1,-12),(-1,10),(15,10),(15,28),(-15,28)]
 assert sum(x*v-y*u for (x,y),(u,v) in zip(upper,upper[1:]+upper[:1]))>0
-prism('Four storey recessed base interior',[(x*.96,y*.96) for x,y in plan],0,17.4,roof)
+prism('Four storey recessed base interior',[(x*.96,y*.96) for x,y in plan],4.35,17.4,roof)
 prism('Upper U shaped interior backing',[(x*.98,y*.98) for x,y in upper],17.4,91.3,roof)
 prism('Open court floor',upper,17.1,17.4,roof)
 prism('U wing service roof',upper,91.2,91.5,roof)
@@ -54,11 +54,18 @@ for ring,start,end in [(plan,0,4),(upper,4,21)]:
   width=math.dist(a,b);bays=max(1,round(width/3.8));bay=width/bays
   front=a[1]<-26 and b[1]<-26
   east=a[0]>14 and b[0]>14
+  if start==0:
+   spans=[(width/2,width)] if not front else [((width-5)/4,(width-5)/2),(width-(width-5)/4,(width-5)/2)]
+   for x0,span in spans:part('Ground interior backing outside entry',(x0,-.70,2.175),(span,.08,4.35),stone if front else roof,a,b)
   for row in range(start,end):
    z=row*PITCH
-   part('Brick or stone floor spandrel',(width/2,0,z+.55),(width,.32,1.1),stone if row<4 else brick,a,b)
+   if front and row==0:
+    span=(width-5)/2
+    for x0 in (span/2,width-span/2):part('Entry flanking base spandrel',(x0,0,.55),(span,.32,1.1),stone,a,b)
+   else:part('Brick or stone floor spandrel',(width/2,0,z+.55),(width,.32,1.1),stone if row<4 else brick,a,b)
    for j in range(bays):
     x=(j+.5)*bay
+    if front and row==0 and abs(x-width/2)<3:continue
     panel=(front or east) and (j in [0,bays-1] or abs(j-(bays-1)/2)<1.6)
     if row>=4 and panel:
      part('Green terra cotta spandrel',(x,.20,z+.55),(bay-.6,.12,.85),green,a,b)
@@ -78,6 +85,26 @@ for ring,start,end in [(plan,0,4),(upper,4,21)]:
      line('Curved physical balcony top rail',railing,.035,iron)
      for u,v in outline:part('Curved balcony upright',(u,v,z+1.78),(.035,.035,1.05),iron,a,b)
    part('Facade end pier',(width,.02,z+2.175),(.58,.38,4.35),stone if row<4 else brick,a,b)
+  if start==0 and front:
+   # shortcut: entrance shape follows labeled photo; bay position/dimensions need a wider surveyed street view.
+   x=width/2
+   part('Dark entrance interior',(x,-1.35,1.8),(3.9,.08,3.6),roof,a,b)
+   for dx in (-2.15,2.15):part('Stone entrance jamb',(x+dx,-.45,2.05),(.70,1.25,4.1),stone,a,b)
+   part('Recessed entrance soffit',(x,-.50,3.65),(3.6,1.15,.16),stone,a,b)
+   for dx in (-1.4,-.58,.58,1.4):part('Glazed entrance leaf or sidelight',(x+dx,-1.0,1.35),(.45 if abs(dx)>1 else 1.03,.055,2.55),glass,a,b)
+   part('Entrance glazed transom',(x,-1.0,3.03),(3.6,.055,.62),glass,a,b)
+   for dx in (-1.8,-1.05,0,1.05,1.8):part('Entrance bronze mullion',(x+dx,-.92,1.75),(.075,.16,3.5),metal,a,b)
+   for zz in (.08,2.65,3.4):part('Entrance bronze horizontal rail',(x,-.92,zz),(3.7,.16,.07),metal,a,b)
+   for dx in (-.15,.15):part('Physical door pull',(x+dx,-.80,1.25),(.035,.11,.65),metal,a,b)
+   for zz,w,depth,h in [(3.85,4.7,.38,.22),(4.02,4.9,.48,.16),(4.20,4.8,.28,.15)]:part('Green metal entrance cornice',(x,depth,zz),(w,.32,h),green,a,b)
+   for dx in (-2.55,2.55):
+    part('Wall light mounting plate',(x+dx,.15,2.25),(.22,.22,1.05),metal,a,b)
+    part('Warm entrance wall light',(x+dx,.30,2.25),(.12,.12,.80),night,a,b)
+   for dx in (-1.6,1.6):
+    part('Dark entrance planter',(x+dx,1.05,.36),(.60,.60,.72),roof,a,b)
+    for k in range(15):
+     t=k*2*math.pi/15;u=x+dx+.27*math.cos(t);v=1.05+.27*math.sin(t)
+     orient(mesh('Original planter leaf',[(x+dx,1.05,.65),(u-.045,v,1.30),(u,v,1.70),(u+.045,v,1.30)],[(0,1,2),(0,2,3)],green),a,b)
   if start==0:
    for zz in (4.4,17.1):part('Wrapping base stone cornice',(width/2,.38,zz),(width,.60,.36),stone,a,b)
    for j in range(bays+1):

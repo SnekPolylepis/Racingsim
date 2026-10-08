@@ -6304,3 +6304,16 @@ errors but retain audio ObjectDB exit warnings. Native import clean. Full
 evidence/limits in WASHINGTON-208-212-REFERENCE.md. Actual ground entrance,
 measured court/bay rhythm and fine carving remain. Road/timing versions unchanged,
 no export or new lap/performance claim; full trackside objective active.
+
+### REFINED Morton recessed entrance —2026-10-08
+
+Labeled Concord City Centre Lofts entrance photo establishes rectangular stone
+recess/green cornice/glazed doors-transom/wall lamps/two planters; authored
+physical geometry,167226tri/eight materials/cache188. Exact placement/dimensions
+remain photo-fit. Ground backing leaves portal open; original leaf geometry and
+night lamp switching added. Final Morton30/parse pass, both full native clipping
+scans pass Grid104/original120 accepted hits/empty stderr. Two actual High Grid
+entrance day/night views reviewed; source capture exit0 with known ObjectDB exit
+warning, no Metal error. Blender regeneration/editor import clean. Roads/timing
+unchanged, no export/newlaps. Detailed evidence/limits in WASHINGTON-208-212-REFERENCE.md.
+Continue remaining trackside exteriors and measured/detail refinement.

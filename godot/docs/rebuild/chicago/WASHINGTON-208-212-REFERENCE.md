@@ -195,3 +195,37 @@ central panel/window rhythm, measured upper court/balcony proportions, carved
 base/crown/wreath profiles and roof services. These checks establish source
 integration/clearance, not full architectural fidelity. No new lap/manual-wheel/
 Intel/performance validation claimed; source-only full trackside goal continues.
+
+## Morton entrance modeled — Mac2026-10-08
+
+Inspected the property gallery image explicitly labeled Entrance for
+Concord City Centre Lofts,208W Washington (photograph date/author unspecified):
+https://www.apartmentfinder.com/Illinois/Chicago-Apartments/Concord-City-Centre-Lofts-Apartments
+It shows a rectangular stone recess, projecting green metal cornice, glazed
+doors/sidelights/transom, bronze framing, slim wall lights and two planters.
+Image used only as visual reference; not downloaded, embedded or redistributed.
+This is a visual shape reference, not architectural/date/dimension authority.
+
+Authored those physical features in the editable Morton Blender generator/GLB;
+167,226tri/eightmaterials retained. Ground backing now starts above floor1;
+separate ground backing spans leave a true portal recess and retain masonry
+behind surrounding window gaps. Door pulls/soffit/jambs, layered green cornice,
+wall lamps and original planter leaves are physical geometry. Exact entrance
+bay placement/size remains photo-fit pending a wider street reference, stated
+in generator shortcut comment. No new whole-building fidelity claim.
+
+Cache188, original@v7/Grid@v5; roads/timing unchanged. Final parse and Morton30
+checks pass (2.8s combined), including stone-only portal opening and recessed
+glass ray probes. Blender4.5.3 regeneration and Godot4.6.2 editor import exit0
+with empty stderr. Two actual High native Grid entrance/day/night views inspected
+in chicago-morton-mac/chicago_grid-entry-*.png: wall lights switch warm at night.
+Bounded capture ran serially, exit0 with ObjectDB exit warning, no Metal error.
+Existing audio-exit caveat remains; not performance/manual-driving validation.
+Both final native full clipping scans pass Grid104/original120 accepted overhead
+hits, zero failures/empty stderr; low entrance geometry/planters remain subject
+to normal wall clipping rules. No new original-layout entrance-camera claim.
+
+Still open: exact entrance placement and storefront proportions/signage, finer
+central panel/window rhythm, measured court/balcony profiles, stone carving/
+wreath/cornice and roof services. Full trackside objective remains active. No
+app export/new laps/Intel/performance claim; previous runs remain dated evidence.

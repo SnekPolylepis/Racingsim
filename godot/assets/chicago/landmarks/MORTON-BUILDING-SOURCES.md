@@ -8,7 +8,7 @@ https://npgallery.nps.gov/GetAsset/d489a6ed-fbcc-41b5-8804-7351b2bbb6a4
 Original Visviva2020-01-06 southeast photograph, CC0, inspected as reference only:
 https://commons.wikimedia.org/wiki/File:208_West_Washington_southeast.jpg
 
-166938tri/eight materials, working integration. Court proportions, storefront/entrance and
+167226tri/eight materials, working integration. Court proportions, storefront/entrance and
 fine relief need further authoring; no full fidelity acceptance. Wall/balcony surfaces split during integration; see dated source validation evidence.
 See docs/rebuild/chicago/WASHINGTON-208-212-REFERENCE.md for dated evidence.
 
@@ -16,3 +16,9 @@ Closer original Visviva2020-01-10 street photo, CC0, inspected:
 https://commons.wikimedia.org/wiki/File:208_West_Washington_south_jpg.jpg
 Curved balcony outlines and original stylized stone panels/capital fans
 are authored geometry; no photo texture included. Fine carving remains provisional.
+
+Entrance visual reference, photograph date/author unspecified, labeled gallery:
+https://www.apartmentfinder.com/Illinois/Chicago-Apartments/Concord-City-Centre-Lofts-Apartments
+Original stone recess/green cornice/doors/lamps/planter geometry added. No
+listing photo incorporated or redistributed; bay location/dimensions remain
+photo-fit pending wider survey. Architectural authority remains the NPS source.

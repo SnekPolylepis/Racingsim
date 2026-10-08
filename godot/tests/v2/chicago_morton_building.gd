@@ -79,6 +79,14 @@ func run():
 		roof_hit != Vector3.INF and absf(roof_hit.y - 91.5) < .02,
 		"North U wing retains main roof below raised southern attic"
 	)
+	var portal_stone = first_hit(
+		exterior, Vector3(1.1, 1.5, 35), Vector3(1.1, 1.5, 25), "Morton pale stone base and attic"
+	)
+	check(portal_stone == Vector3.INF, "Stone base leaves modeled entrance opening")
+	var portal_glass = first_hit(
+		exterior, Vector3(1.1, 1.5, 35), Vector3(1.1, 1.5, 25), "Morton recessed blue grey panes"
+	)
+	check(portal_glass != Vector3.INF and portal_glass.z < 27.5, "Door glass recessed behind stone jambs")
 	var court = first_hit(exterior, Vector3(8, 100, 0), Vector3(8, 16, 0))
 	check(
 		court != Vector3.INF and absf(court.y - 17.4) < .02,
