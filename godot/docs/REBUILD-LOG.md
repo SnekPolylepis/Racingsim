@@ -6118,3 +6118,14 @@ references remain within unchanged2% tolerance; four original Formula cases
 still have no timing baseline. No baseline rewritten. Logs mac-civic/wacker300-*.
 These runs validate the corrected route, not visual-only screenshots or manual
 wheel driving. The full trackside-model objective remains active.
+
+### DRAFT Chicago 311 South Wacker — 2026-10-08
+
+Blender source/.blend/GLB checkpoint: 568,996 triangles/13 materials, mapped
+22-point foundation, stepped tower, five crown cylinders and glazed winter
+garden. Batched facade boxes resolve actual 180s generation timeout while
+preserving pane/frame geometry. Generation assertions and Godot import pass;
+actual standalone M4 Metal Forward+ draft image inspected, capture exit0.
+Not integrated or accepted as production day/night evidence. Crown/base fitting,
+sculpture, integration and both-layout checks remain; see WACKER-311-REFERENCE.md.
+Full trackside-building goal continues. No app export or user-save changes.

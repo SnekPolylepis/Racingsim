@@ -14,3 +14,22 @@ Published dimensions, mapped292.5m height and photo-fit crown/base proportions
 require reconciliation; do not invent measured glazing/cylinder layout.
 Retain mapped foundation and winter-garden wing rather than modeling a generic
 tower on the broad union footprint. Actual source day/night checks required.
+
+## Blender draft checkpoint — 2026-10-08
+
+Original editable model now exists in `tools/blender/authored/wacker_311.blend`,
+with generator `tools/blender/chicago_wacker_311.py` and exported
+`assets/chicago/landmarks/wacker_311.glb`: 568,996 triangles, 13 materials.
+Retains the 22-point mapped foundation, separate lower blades, octagonal tower,
+five curved crown cylinders and western glazed barrel-roof winter garden with
+physical frames, palms and fountain basin. Facade panes, jambs and rails remain
+physical geometry; batching their boxes by material resolved an actual 180s
+Blender timeout without reducing geometry. Generation assertions and import pass.
+
+Standalone actual Godot 4.6.2/M4 Metal Forward+ draft render inspected; capture
+exit0. This is a shape review with neutral lighting, not production day/night
+acceptance. Crown framing, illuminated materials, base connections and the
+Gem of the Lakes sculpture need further reference fitting. No track replacement,
+cache revision or driving-surface change is included in this checkpoint. Next:
+refine crown/base, integrate at mapped origin, then both-layout source day/night
+review and footprint/clipping checks. No executable export.
