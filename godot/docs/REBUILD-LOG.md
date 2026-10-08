@@ -6317,3 +6317,14 @@ entrance day/night views reviewed; source capture exit0 with known ObjectDB exit
 warning, no Metal error. Blender regeneration/editor import clean. Roads/timing
 unchanged, no export/newlaps. Detailed evidence/limits in WASHINGTON-208-212-REFERENCE.md.
 Continue remaining trackside exteriors and measured/detail refinement.
+
+### DRAFT Block 37 compound exterior —2026-10-08
+
+Separated northern residential tower/southern office/low retail podium from
+measured roof raster and inspected primary builder/architect photographs.
+Retained foundation, physical curtain panes/framing and bowed woven cladding;
+189984tri/seven materials, editable Blender source. Staged High Grid day/night
+renders actually inspected after backing inset fix; native capture/import and
+Blender exit0/empty stderr. Production not installed: mapped compound currently
+excluded for route clearance. Full placement/clip checks, entries/atrium/crown
+refinement remain; no route/cache bump, export or lap claim. See BLOCK-37-REFERENCE.md.
