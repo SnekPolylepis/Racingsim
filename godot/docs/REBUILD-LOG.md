@@ -5831,3 +5831,37 @@ Next trackside priority225WestWacker (inventory grid boundary distance0.2m,
 not visibility proof). Official owner and KPF/Valerio Dewalt Train pages found;
 need inspect full exterior photos and real route clearance before authoring.
 All remaining trackside buildings remain active; river bridges still queued.
+
+## 2026-10-08  PROGRESS  CHI-3D-BUILDINGS — 225 West Wacker exterior (Codex)
+
+Authored original Blender exterior for w64391366 at (-886,8,-164.75), replacing
+its generic prism exactly once. Separate vision panes, pale granite piers and
+coursed spandrels, paired recessed channels, tier cornices, four stepped
+corner turrets/finials, curved barrel roof with seams/end trusses, clear north
+half-rotunda, and physical lobby columns/wood screens/ceiling lights.
+Model remains a photo-fit draft. Owner 31-story/375ft figure conflicts with
+mapped126.5m and photographer433ft; preserve mapped total provisionally rather
+than claiming surveyed height. Source notes list inspected primary photographs
+and renovation architects; no source photograph or third-party logo embedded.
+
+Actual render iterations widened piers, separated channels, inset the opaque
+backing behind recessed panes, corrected mirrored façade/roof normals, and
+corrected north glazing across the two mapped frontage segments. Ray checks
+cover exposed glass, roof curvature, finial and real recessed entrance; roof
+normal check prevents an inverted vault returning. Cache169; final163756tri/eightmaterials. Official Godot4.6.2 Mac M4/Metal:
+final import exit0/empty stderr; building28 assertions plusparse pass1.5s.
+Preceding cache168 pass: menu109/coverage23/building28 plusparse,160
+assertions,68.5s; the final small north clear-glazing/address correction
+reran affected geometry/parse and ten actual High Grid day/night views.
+All ten final captures inspected; render exit0/empty stderr. Evidence:
+screenshots/chicago-wacker225-mac. No app export, full gates, full-lap
+clearance, driving clips, performance, Intel or physical-wheel validation.
+
+Frozen actual Grid BotLine station4785 camera(-901.8246,4.8288,-213.0615)
+is Lower Wacker, very close to the mapped foundation. Direct toward-building
+view is wall-occluded and forward view partly wall-occluded. Keep this evidence:
+0.2m inventory distance does not establish complete building visibility or
+safe driving clearance. No route/foundation shift justified by this alone.
+Next inspect neighboring stations/physical Lower Wacker clearance, refine
+225 frontage/crown proportions, then remaining trackside candidates including
+Franklin–Van Buren garage. Bridges remain queued; overall goal remains open.

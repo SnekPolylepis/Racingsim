@@ -158,3 +158,19 @@ Five targeted suites pass69.1s,175assertions plusparse. Coping, raised fans,
 unplanted deck and existing court/entry checks pass. No export/full-lap or
 performance acceptance; roof dimensions/configuration remain photo-fit draft.
 Evidence REBUILD-LOG/screenshots/chicago-county-roof-mac/.
+
+## 225 West Wacker exterior source review — 2026-10-08
+
+Official Godot4.6.2, Apple M4/Metal/Forward+, High Grid, cache169.
+Original Blender4.5.3LTS model163756tri/eightmaterials, mapped footprint retained.
+Final import exit0/empty stderr; final building28 assertions andparse pass1.5s.
+Preceding full targeted pass (cache168) menu109/coverage23/building28,
+160assertions plusparse,68.5s. Final north clear-glazing/address correction
+reran affected geometry/parse and rendered ten actual day/night captures:
+street, tower, crown, exact BotLine4785 toward-building and forward views.
+All inspected, render exit0/empty stderr; screenshots/chicago-wacker225-mac.
+Lower camera(-901.8246,4.8288,-213.0615) is foundation-occluded; forward view
+partly occluded. This records an open route/clearance issue, not proven
+visibility or vehicle clearance. Model dimensions/current frontage remain
+photo-fit; owner375ft/mapped126.5m/photographer433ft unresolved.
+No exported app, full gates, full lap, clips, performance, Intel or wheel run.

@@ -203,6 +203,16 @@ func run() -> void:
 			if entry.osm_id == "w147399567" and entry.reason == "authored London Guarantee exterior":
 				london_excluded += 1
 		check(london_excluded == 1, "Mapped London Guarantee replaced once without generic cupola")
+		var wacker225 = app.track.get_node_or_null("Scenery/Wacker225")
+		check(
+			wacker225 is MeshInstance3D and wacker225.mesh.get_surface_count() == 8,
+			"Authored 225 Wacker loads"
+		)
+		var excluded_wacker225 = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w64391366" and entry.reason == "authored 225 West Wacker exterior":
+				excluded_wacker225 += 1
+		check(excluded_wacker225 == 1, "Mapped 225 Wacker replaced exactly once")
 		var wacker125 = app.track.get_node_or_null("Scenery/Wacker125")
 		check(
 			wacker125 is MeshInstance3D and wacker125.mesh.get_surface_count() == 10,

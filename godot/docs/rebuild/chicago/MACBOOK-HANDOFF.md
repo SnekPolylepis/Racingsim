@@ -156,3 +156,29 @@ KPF renovation and Valerio Dewalt Train225W Wacker pages found this pass.
 Continue remaining trackside buildings; bridges later. No export/performance
 claim. Ignored capture visual-review/civic-county-roof.gd, logs mac-civic/.
 Committed evidence screenshots/chicago-county-roof-mac/.
+
+### Latest checkpoint — 225 West Wacker draft, 2026-10-08
+
+w64391366 replaced exactly once at(-886,8,-164.75). Editable Blender/script
+and GLB included;163756tri/eightmaterials/cache169. Physical individual panes,
+granite piers/spandrels, paired recessed channels, four stepped turrets,
+barrel vault/end ribs, north half-rotunda clear frontage and lobby details.
+Primary photos/architect references and height discrepancy documented in
+assets/chicago/landmarks/WACKER-225-SOURCES.md. All dimensions photo-fit;
+mapped126.5m retained provisionally, no surveyed-height/final-fidelity claim.
+
+Final Mac import exit0/empty stderr; building28 assertions plusparse pass1.5s.
+Preceding menu109/coverage23/building28 plusparse pass68.5s; final small north
+clear-glazing/address correction reran geometry/parse. Ten final actual High
+Grid day/night captures inspected; render exit0/empty stderr. Ignored review
+visual-review/wacker225.gd; logs tests/logs/mac-civic/wacker225-*.
+Committed screenshots/chicago-wacker225-mac. No export/performance claim.
+
+Next inspect Lower Wacker placement/clearance around BotLine4785: camera
+(-901.8246,4.8288,-213.0615) is near the mapped foundation, direct view
+wall-occluded and forward view partly occluded. Do not infer visibility or
+safe vehicle clearance from inventory0.2m, or hide/shift the building to
+make the problem disappear. Preserve geometry and inspect neighboring
+stations/road envelope. Refine225 frontage/crown proportions, then continue
+remaining trackside buildings (Franklin–Van Buren garage is next close
+candidate). Fine civic detail remains open. Bridges stay queued.
