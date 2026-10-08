@@ -6230,3 +6230,13 @@ and equipment remain fidelity work. The roof-facing photo resolves topology;
 physical dimensions and published152.3m versus mapped155.5m discrepancy remain.
 No app export or new lap/manual-wheel/Intel/performance claim. Prior laps remain
 dated evidence; no baseline rewrite. Full trackside-building goal continues.
+
+### REFERENCE Bell/Morton trackside pair — 2026-10-08
+
+Read official NPS nomination PDF pages28–29:212Bell rusticated stone/brick/
+stone tripartite facade and recessed double portal differ from208Morton red
+brick/green terra-cotta/Egyptian detail and upper light court. Native2m roof
+raster shows Bell main roof near82m below91.5maximum; tall southern L wing must
+not become the adjacent garage. Recorded mapped envelopes and floor/ornament
+requirements in chicago/WASHINGTON-208-212-REFERENCE.md. Models/integration
+and actual day/night review remain next; no route/cache/export changes.
