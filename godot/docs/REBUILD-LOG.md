@@ -6664,3 +6664,7 @@ Original Blender exterior71,844tri/seven materials with exact mapped foundation,
 ## 2026-10-09 — 309 West Washington working exterior installed
 
 Refinedupperpairedtwofloorbays/recessedspandrels/widecurvedsurrounds;63,828tri/sevenmaterials. SharedWashington309fixture(-934.55,8,201.05), mappedgenericw147013356excludedonce/cache205/routesunchanged. Sixgates111850allPASS103s: geometry15/menu127/coverage23/clips1+1=167checksplusparse; wholecitybaseline120Original/104Gridunchanged. Native53712exit0/empty stderr/terminalPASS; fouractualfinalGridstreet/crownday/nightimagesinspected. Frozen14.29msnotdrivingperformance. Sources/reference/screenshotsrecordlimits:56mparapet/56.17tipphoto-fit/unmeasured, fineproportions/carving/entrance/roofequipment/returnsopen. NoEXE.
+
+## 2026-10-09 — Six North Michigan reference/baseline
+
+Confirmed w126982631 remains generic/no authored fixture or Blender model. CVU86m/22floors/1899 versus contractor21renovatedfloors/1898 recorded separately. Actual contractor exterior shows pale stone base/cornices, brick piers/grouped narrow windows, cropped central raisedcrown. Developer6NMimage is interior; distant2017photographerimage weak silhouette only. Native20252exit0/empty stderr/terminalPASS, cache205 saved; actualGridstreetday/night baselineinspected/frozen16.34msnotdrivingevidence. SIX-MICHIGAN-REFERENCE.md and two baselinecaptures saved; exact crown/base/bays need closerreferencebeforeauthoring. NoEXE/productionchange.
