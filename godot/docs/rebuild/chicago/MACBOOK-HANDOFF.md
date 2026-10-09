@@ -623,3 +623,5 @@ views reviewed, terminal native PASS and empty stderr. Architectural roof
 roof layout still open; prior full-course checks are cache 199 evidence.
 
 2026-10-08 Windows checkpoint: 250 South Wacker working draft now saved (63,312 triangles/seven materials), not integrated. Read WACKER-250-REFERENCE.md before continuing. Next refine real entrance/white side strips/terrace and diagnose bright dashed floor-band/panel-joint marks (persist with shadows off). Cache remains 200. Do not export per building. Current stage captures and primary-source limitations recorded in REBUILD-LOG.
+
+250 South Wacker follow-up: broad white flanks and provisional atrium/doors added, 47,736tri/seven materials. Thin-detail aliasing supported by AA diagnostic (MSAA4x/TAA removes marks; no source/game graphics override). Read WACKER-250-REFERENCE.md. Roof terrace/finer proportions, production graphics-mode review and integration remain next. Cache200 unchanged.
