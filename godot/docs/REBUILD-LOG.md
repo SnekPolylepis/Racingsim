@@ -6456,3 +6456,31 @@ images inspected, clean capture exit0/empty stderr, leaves open to threshold.
 Earlier clip/menu/crown evidence is cache195, not a current196 repeat. Roads/timing original@v7/Grid@v5 unchanged; no export/newlaps/
 full-suite/performance/Intel claim. Roof/skylight/fine ornament and measured
 height remain open. See SHARP-REFERENCE.md.
+
+RESUME CHI-3D Windows from GitHub2026-10-08
+Fetched and fast-forwarded working branch fa5863f to Mac checkpoint9c6a950.
+Sharp source chooses published CVU61.3m architectural height instead of the
+unverified mapped71.5m; retained base/entrance and adjusted upper floor spacing.
+CVU12 versus owner13stories remains unresolved;13 modeled rows provisional.
+Original Blender135648tri/sixmaterials/cache197. Geometry20 passes corrected
+height/parapet rays and retained footprint/door checks. Four height frontage/
+crown day/night views inspected, elevated railway obscures base.
+Initial gates20261008-185633 failed original clip/menu stderr despite logical
+checks passing: Godot non-normalized axis during TimingLine curve bake.
+Serial rerun193016 reproduced same error on cached scenes; not discarded as
+flaky. Traced all TimingLine consumers: positions/timing only, no rotation
+frames. TrackAsset.prepare now disables unused Curve3D up-vector baking
+before requesting points, handling both generated and cached assets.
+Godot property documentation: https://docs.godotengine.org/en/4.6/classes/class_curve3d.html#class-curve3d-property-up-vector-enabled
+TrackAsset regression checks exact baked position equality; existing figure8
+driving test completes all15gates with zero off-tarmac wheel ticks. Road
+geometry, timing positions and identities original@v7/Grid@v5 unchanged.
+Final gates20261008-193145 all sevenPASS118s: Sharp20/menu115/coverage23/
+TrackAsset33/bothclipsoneeach/parse (193checks plusparse); accepted original
+120/Grid104baseline hits unchanged, all stderr empty. Final nativePID66772
+terminalSHARP CITY REVIEW PASS/empty stderr; final crown-night image inspected
+after shared timing fix, same visual geometry. Earlier PID55956 four height
+views inspected. Frozen frame timings are not driving benchmarks.
+Source screenshots under rebuild/screenshots/chicago-sharp-windows/. No
+export. Sharp roof/skylight, fine ornament and measured facade/floor pattern
+remain pending, alongside broader trackside building fidelity work.

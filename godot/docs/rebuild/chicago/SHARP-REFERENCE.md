@@ -122,3 +122,28 @@ are cache195 evidence; no repeat claimed for196. Two actual current-cache196 clo
 renders inspected: leaves exposed to threshold, recess/pulls/transom visible,
 source capture exit0/empty stderr. Camera(-134.5,10.5,414.4), FOV110, inside
 race fence; static architectural review, not a drivable camera claim. Production route/timing identities unchanged.
+
+## Windows continuation: published height correction2026-10-08
+
+Fetched/fast-forwarded Mac work through9c6a950. CVU primary record reread:
+https://www.skyscrapercenter.com/building/sharp-building/35029
+It explicitly defines61.3m as architectural height above the significant
+entrance; no primary evidence supports the mapped71.5m previously retained.
+Original Blender now chooses61.3m, keeping fixed base/entrance dimensions
+and redistributing upper story spacing.135648tri/sixmaterials/cache197.
+CVU12floors versus owner13stories remains unresolved;13 modeled rows remain
+a provisional interpretation, not a proven count. Dates remain unresolved.
+Roof/skylight/fine ornament and facade proportions remain open.
+Geometry20 passes at revised coping/parapet, entrance exposure and retained
+foundation clearances. Native Windows PID55956 terminalSHARP CITY REVIEW PASS/
+empty stderr; four actual frontage/crown day/night images inspected. Elevated
+rail screens base; these are not new entrance acceptance. Frozen20.97ms is
+not driving performance. Files screenshots/chicago-sharp-windows/.
+
+Final source gates20261008-193145 sevenPASS118s (193checks plusparse), both
+full clips accepted original120/Grid104 unchanged. Initial original/menu
+stderr failure reproduced serially and resolved in shared TimingLine position
+preparation by disabling unused up-vector frame baking. TrackAsset33 checks
+include exact baked position preservation and figure-eight drive. Final
+native PID66772 terminalSHARP CITY REVIEW PASS/empty stderr; crown-night
+inspected after fix. No export or complete Sharp fidelity claim.

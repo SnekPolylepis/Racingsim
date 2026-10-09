@@ -49,7 +49,7 @@ func run():
 	var bounds = exterior.get_aabb()
 	check(exterior.get_surface_count() == 6, "Sharp six original physical materials")
 	check(absf(bounds.position.y + 8) < .01, "Sharp buried foundation")
-	check(absf(bounds.end.y - 71.5) < .02, "Sharp retained provisional mapped height")
+	check(absf(bounds.end.y - 61.3) < .02, "Sharp CVU architectural height")
 	check(bounds.position.x > -27 and bounds.end.x < 28, "Sharp retained east west bounds")
 	check(bounds.position.z > -13 and bounds.end.z < 13, "Sharp retained north south bounds")
 	for surface in exterior.get_surface_count():
@@ -59,15 +59,15 @@ func run():
 	check(pane != Vector3.INF, "Sharp west facade physical recessed pane")
 	var arch_top = first_hit(
 		exterior,
-		Vector3(-35, 70.9, -.1203125),
-		Vector3(-20, 70.9, -.1203125),
+		Vector3(-35, 60.7, -.1203125),
+		Vector3(-20, 60.7, -.1203125),
 		"Sharp pale terracotta surrounds"
 	)
 	check(arch_top != Vector3.INF, "Sharp upper parapet arch has physical terracotta ring")
 	var opening = first_hit(
 		exterior,
-		Vector3(-35, 70.7, -.1203125),
-		Vector3(-20, 70.7, -.1203125),
+		Vector3(-35, 60.5, -.1203125),
+		Vector3(-20, 60.5, -.1203125),
 		"Sharp dark recessed interior and roof"
 	)
 	check(opening != Vector3.INF and opening.x > -26.0, "Sharp upper parapet opening physically recessed")

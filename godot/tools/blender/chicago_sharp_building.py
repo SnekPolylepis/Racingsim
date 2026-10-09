@@ -40,8 +40,8 @@ def part(name,pos,size,mat,a,b):
 
 
 
-# shortcut: use the retained mapped height until conflicting published heights are resolved.
-H=71.5
+# CVU architectural height61.3m supersedes unverified mapped71.5m; floor-count conflict remains documented.
+H=61.3
 prism('Sharp mapped buried foundation',plan,-8,0,trim)
 prism('Sharp recessed opaque interior',[(x*.94,y*.90) for x,y in plan],0,H-1.5,roof)
 prism('Sharp roof slab',plan,H-1.5,H-1.2,roof)

@@ -58,6 +58,8 @@ func prepare():
 	var path = get_node_or_null("TimingLine")
 	if not (path is Path3D) or path.curve == null:
 		return
+	# Timing uses positions only; cached inclined curves can fail Godot's orientation-frame bake.
+	path.curve.up_vector_enabled = false
 	var pts = path.curve.get_baked_points()
 	var xf = path.transform
 	for p in pts:

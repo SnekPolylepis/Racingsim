@@ -100,7 +100,9 @@ func build_fixture():
 	grid.name = "Grid"
 	root_node.add_child(grid)
 	own(root_node, root_node)
+	var expected_line = curve.get_baked_points()
 	root_node.prepare()
+	check(root_node.line == expected_line, "Timing preparation preserves every authored baked position")
 	var lap = root_node.length
 	# Start on the lower deck at the crossing; the first sector boundary is the upper-deck crossing.
 	path.set_meta("start_offset_m", 0.0)

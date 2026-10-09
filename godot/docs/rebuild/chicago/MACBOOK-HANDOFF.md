@@ -17,7 +17,7 @@ building fidelity. Bridges over the river are queued after the building pass.
 
 Current Mac checkpoint2026-10-08: Brooks and300SouthWacker physical exteriors
 integrated; mapped South Wacker approach clears300foundation. Original@v7,
-Grid@v5/cache196. See latest dated evidence below. Continue trackside building
+Grid@v5/cache197. See latest dated evidence below. Continue trackside building
 work from236-candidate CSV;311SouthWacker tower/winter-garden and200SouthWacker paired tower/entrance drafts are integrated. Refine their remaining photo-fit details and continue close candidates; see both reference documents.
 Finer City/County reliefs/seals remain open; court glazing and roof work have
 later Mac evidence below. The original Windows handoff follows for history.
@@ -580,3 +580,11 @@ images inspected, clean capture exit0/empty stderr, leaves open to threshold.
 Earlier clip/menu/crown evidence is cache195, not a current196 repeat. Roads/timing original@v7/Grid@v5 unchanged; no export/newlaps/
 full-suite/performance/Intel claim. Roof/skylight/fine ornament and measured
 height remain open. See SHARP-REFERENCE.md.
+
+Windows resume2026-10-08: fetched Mac checkpoint9c6a950, corrected Sharp to
+CVU61.3m architectural height/cache197.13story interpretation remains
+provisional versus CVU12; roof/skylight/fine ornament still pending. Shared
+TrackAsset.prepare disables unused TimingLine orientation baking, fixing
+repeatable non-normalized-axis errors. Exact timing positions preserved.
+Final193145 seven gates pass193checks plusparse; original120/Grid104 clips
+unchanged, native runtime clean. See latest log and SHARP-REFERENCE.md.
