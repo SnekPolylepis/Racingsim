@@ -27,3 +27,15 @@ Actual streetday/night and crownday captures inspected and saved in `../screensh
 Additional actual property hero frame shows four narrow short-end window strips, pale fluted spandrels, chamfered end corners, round dome near the end and terrace directly behind it. The adjacent Prudential tower places this end on the south side; orientation is inferred from surroundings, not a surveyed roof plan. Exact roof/deck levels remain open.
 
 Next: finish actual native baseline, verify current base and roof orientation, then author physical recessed glazing, distinct office/residential piers, roof terrace and ribbed pool dome using existing Blender helpers. Published envelope is121.9m; facade intervals and all unmeasured roof/base details must be labelled photo-fit. No complete-building claim.
+
+## Authored draft — 2026-10-09
+
+Original editable Blender exterior with exact six-point foundation,121.9m tip, grouped residential piers, separate physical glazing/sash and fluted spandrels, denser ribbed office base/ground arcade, roof terrace with real balusters and conical glass pool dome/radial ribs. Current190,340tri/eight flat materials. Base30m/ground5m/31upperrows, roof118.8m, dome radius7.4m, terrace and north service enclosure are photo-fit, not surveyed. Current base renovation/entrance, precise office rib spacing, roof furniture/equipment and hidden elevations remain open.
+
+First188,420tri build passed but took approximately213s with thousands of separate panel objects. Direct material-mesh batching preserved the188,420tri count and completed in1.67s; facade grouping/sash refinement then produced190,340tri in1.77s. These are authoring timings, not game performance. Shared architecture helper unchanged. Blender finite-vertex/envelope assertions passed, refined import71468exit0/empty stderr.
+
+First geometry test failed its dome-glass ray because that ray landed on an intentional solid radial rib. Moved the sample between ribs; actual dome was already visible. Final direct64320exit0/empty stderr,17checks PASS, followed by registered gate20261009-115155 allPASS17checks plusparse. Checks include opaque arcade rays, residential glass ahead of core and dome glass above roof;1m foundation clearance12.5670204mOriginal/11.0333424mGrid.
+
+Native refined stage69180exit0/empty stderr/terminalMILLENNIUM STAGED REVIEW PASS. All four actual front/crown day/night images inspected and saved in ../screenshots/chicago-millennium-draft; sparse occupied glazing switches at night. Façade camera(-110,70,140) aim(0,60,0), roof camera(-32,144,75) aim(0,119,25). Dense office ribs produce visible shadow detail needing closer base review; no artifact-free claim. This is an isolated asset review, not installed game/driving evidence.
+
+Draft is not installed; production remains cache206 and both route geometries unchanged. Next current base/entrance verification and close base review, then shared fixture integration, exact generic exclusion and production route/gate/native review. No EXE generated.
