@@ -1,0 +1,3 @@
+# 311 West Monroe source provenance
+
+Original Blender geometry authored in tools/blender/chicago_monroe_311.py; editable tools/blender/authored/monroe_311.blend. Working GLB63,552tri/seven materials, not installed. Primary original architect Epstein historical photos/account, renovation architect Perkins&Will top-floor photograph/project description and CVU62.5m/15floor record informed the model. No third-party model or photograph texture embedded. Exact mapped eight-vertex footprint retained. Narrow granite piers, separate recessed sash glass/rails, broader top-floor glazing and granite roof band modeled physically. Roof equipment, exact base/entrance, facade variations and bay/floor proportions remain provisional. See docs/rebuild/chicago/MONROE-311-REFERENCE.md.

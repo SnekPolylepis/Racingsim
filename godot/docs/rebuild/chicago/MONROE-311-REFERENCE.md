@@ -16,3 +16,13 @@ Author an original Blender exterior using existing architecture helpers: continu
 Current production remains cache203/Original@v7/Grid@v5; no model integrated for311WestMonroe yet. No executable export. Next complete before-view review, then original authoring/native stage review before fixture replacement/geometry/menu/coverage/fullclips/production review.
 
 Before review: initial camera landed inside a neighboring generic block, so its captures were rejected. Corrected camera(-941,12,460), target(-938.85,90,499.1); final actual day/night views inspected show visible generic block without authored granite piers/top-floor treatment. NativePID162068exit0/empty stderr/terminalMONROE311 CITY REVIEW PASS; cache203 loaded, candidate not excluded. Frozen6.47ms is not driving performance. Evidence chicago-monroe311-before.
+
+## 2026-10-08 original exterior draft
+
+Original editable Blender model and GLB63,552tri/seven materials saved. Retained eight-vertex mapped footprint/origin(-938.85,8,499.1). Physical continuous granite piers, narrower recessed sash glazing/meeting rails, broader ground piers, broad grouped top-floor glazing/metal frames, blank ribbed granite upper band and light roof membrane. Architectural tip62.5m.
+
+Working intervals: ground6m, thirteen regular floors to51.6m, top floor51.6-56.9m, roof band56.9-62.5m. These are a photo-fit interpretation, not measured floors; occupied-height definition alone does not prove the slab location. Bay spacing approximately2.4m, top groups approximately8m. Main facade treatment provisionally carried around all returns; north core arrangement remains unverified. North canopy/location/door stiles provisional; exact entrance and ground arcade depth need current reference refinement. Roof equipment not authored yet.
+
+Blender exited0/finite-vertex authoring assert passed; a one-object material group produced a harmless 'No mesh data to join' warning before successful seven-material GLB export. Godot editor import exited0/empty stderr. Native stagePID163748 and basePID164140 exited0/empty stderr/terminalMONROE311 STAGED REVIEW PASS. Four actual front/crown day/night stage views and two base day/night views inspected; saved chicago-monroe311-draft. Isolated low ambient stage views do not verify production night switching or graphics modes.
+
+Not integrated. Next refine ground arcade/entrance and roof references, then fixture replacement/geometry/menu/coverage/fullclips and production review. Cache203/routes unchanged/no EXE.
