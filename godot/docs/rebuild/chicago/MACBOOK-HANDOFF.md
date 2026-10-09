@@ -609,3 +609,9 @@ grid/grouped panes/roof louvers, CVU74.4m. Four staged source day/night
 views clean. Not integrated. Next entry/base/proportions evidence, then
 fixture replacement and geometry/fullclips/menu/coverage/production review.
 See WACKER-100-REFERENCE.md. No executable export.
+
+100SouthWacker working exterior integrated/cache199. Six gates159checks
+plusparse allPASS102s, original120/Grid104 clips unchanged. Four actual
+production source day/night views inspected; native exit0/empty stderr.
+Entrance/base/coffer proportions/roof still need refinement. See latest
+WACKER-100-REFERENCE.md. No EXE export.

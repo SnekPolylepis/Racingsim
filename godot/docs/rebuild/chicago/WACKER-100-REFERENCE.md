@@ -51,3 +51,28 @@ where evidence supports it. Add production fixture/exclude mapped generic,
 then meaningful geometry checks, both full clipping scans, menu/coverage,
 parse and actual production day/night review. No integration/current-cache
 revision/EXE/full-fidelity/new-driving-test claim in this draft checkpoint.
+
+
+## 100 South Wacker production integration2026-10-08/cache199
+
+Owner Explore page read in browser; owner PDF brochure downloaded and four
+pages rendered with bundled PDFium. Actual pages1/2 inspected; coffer grid
+confirmed, captions obscure street entrance. No entrance placement inferred.
+https://www.100150swacker.com/wp-content/uploads/2026/09/LINCJA-100-150SWacker-Flyer-4Page-R1-C.pdf
+Exterior working draft installed at(-1084.45,8,500); mapped generic excluded
+once. Existing authored night/specular handling reused. Geometry unchanged
+92580tri/sixmaterials; roads/timing original@v7/Grid@v5 unchanged.
+Dedicated17checks: height/footprint, untextured physical materials, recessed
+exposed glass and foundation clearance bothroutes. Initial ray crossed the
+central pier; moved to pane opening; geometry17+parse pass195142.
+Grid sampled foundation clearance10.46139m is not full envelope acceptance.
+Final six gates195157 allPASS102s: geometry17/menu117/coverage23/bothclips1
+each/parse (159checks plusparse); original120/Grid104 accepted baseline hits
+unchanged, every stderr empty. Native PID80212 exit0/empty stderr/terminal
+WACKER100 CITY REVIEW PASS; four actual production street/crown day/night
+views inspected. Recorded replacement reason and physicalwindow count
+1055787. Frozen8.996ms/17.1M primitives are not controlled driving performance.
+Screenshots chicago-wacker100-production. Final editor/import PID82452
+exit0/empty stderr. Entrance remains unauthored;6m base/floor interpretation,
+finer coffer proportions and roof details provisional. No executable export
+or full-fidelity/new-driving-test claim.
