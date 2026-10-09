@@ -11,3 +11,7 @@ Detailed references, limitations and recorded evidence:
 Working exterior draft installed at the retained mapped footprint.
 Entrance/base/fine proportions remain unfinished; recorded source checks
 and production review are in the reference document.
+
+Roof continuation: three physical cabinet silhouettes/grille faces added
+from owner aerial; dimensions and placement remain photo-fit. Architectural
+roof74.4m, functional equipment tip76.4m; no floor-height change.

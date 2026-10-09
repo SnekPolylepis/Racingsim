@@ -76,3 +76,29 @@ Screenshots chicago-wacker100-production. Final editor/import PID82452
 exit0/empty stderr. Entrance remains unauthored;6m base/floor interpretation,
 finer coffer proportions and roof details provisional. No executable export
 or full-fidelity/new-driving-test claim.
+
+
+## 100 South Wacker roof cabinets — 2026-10-08
+
+Re-inspected the owner's aerial photograph. Added three pale cabinet
+silhouettes on physical plinths, separate caps, dark grille backing and
+individual louver blades. Sizes and placement are photo-fit; equipment
+specifications and exact roof layout remain unverified. Original Blender
+now exports 93,768 triangles with the same six materials. Cache 200.
+The architectural roof stays at 74.4 m; functional cabinet caps reach
+76.4 m. No floor spacing, footprint, fixture or road/timing change.
+
+Python compile and Blender exit 0. Godot import PID 87792 exited 0 with
+empty stderr. Dedicated geometry gate now has 19 passing checks, including
+independent roof and cabinet height rays; parse also passed (195657, 4 s).
+Native production roof review PID 88176 reached WACKER100 CITY REVIEW PASS,
+with empty stderr and two actual crown day/night images inspected. The
+initial 30 s observation expired while the process was live; it was not
+restarted. Terminal log and absence of the PID confirmed completion;
+Godot's exit code was not retained by that wrapper. Cabinets read on the
+roof in both views. Frozen 9.54 ms is not driving performance evidence.
+
+Screenshots: chicago-wacker100-roof. Earlier full clips/menu/coverage are
+cache 199 evidence; no repeat claimed for this roof-only refinement.
+Entrance, base/floor interpretation, finer facade proportions and measured
+roof layout remain open. No executable export or complete fidelity claim.

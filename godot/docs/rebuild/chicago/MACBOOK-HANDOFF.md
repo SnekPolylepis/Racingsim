@@ -615,3 +615,9 @@ plusparse allPASS102s, original120/Grid104 clips unchanged. Four actual
 production source day/night views inspected; native exit0/empty stderr.
 Entrance/base/coffer proportions/roof still need refinement. See latest
 WACKER-100-REFERENCE.md. No EXE export.
+
+100 South Wacker roof cabinet cluster added, cache 200: 93,768 triangles,
+six materials. Geometry 19 plus parse pass; two production crown day/night
+views reviewed, terminal native PASS and empty stderr. Architectural roof
+74.4 m; functional cabinet tip 76.4 m. Entrance/base/proportions and exact
+roof layout still open; prior full-course checks are cache 199 evidence.

@@ -51,7 +51,7 @@ func run():
 	var bounds = exterior.get_aabb()
 	check(exterior.get_surface_count() == 6, "Wacker100 six original physical materials")
 	check(absf(bounds.position.y + 8) < .01, "Wacker100 buried foundation")
-	check(absf(bounds.end.y - 74.4) < .02, "Wacker100 CVU architectural height")
+	check(absf(bounds.end.y - 76.4) < .02, "Wacker100 functional rooftop equipment tip")
 	check(bounds.position.x > -31 and bounds.end.x < 31, "Wacker100 retained east west bounds")
 	check(bounds.position.z > -25 and bounds.end.z < 25, "Wacker100 retained north south bounds")
 	for surface in exterior.get_surface_count():
@@ -65,6 +65,19 @@ func run():
 	check(
 		pane != Vector3.INF and visible.distance_to(pane) < .01,
 		"Wacker100 recessed glass exposed through coffer opening"
+	)
+	var roof_top = first_hit(
+		exterior, Vector3(0, 90, 0), Vector3(0, 70, 0), "Wacker100 opaque interior and roof"
+	)
+	check(
+		roof_top != Vector3.INF and absf(roof_top.y - 74.4) < .02,
+		"Wacker100 architectural roof retains CVU height"
+	)
+	var cabinet = first_hit(
+		exterior, Vector3(4, 90, 3), Vector3(4, 74.4, 3), "Wacker100 pale sculpted facade grid"
+	)
+	check(
+		cabinet != Vector3.INF and absf(cabinet.y - 76.4) < .02, "Wacker100 separate physical rooftop cabinet"
 	)
 	var city = JSON.parse_string(FileAccess.get_file_as_string("res://trackgen/data/chicago/city.json"))
 	for id in ["w124865451"]:

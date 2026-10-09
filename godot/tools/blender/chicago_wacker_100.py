@@ -55,6 +55,14 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
  for j in range(bays):
   for i in range(18):facade('Separate roof mechanical louver blade',((j+.5)*bay,-.45,office_top+.18+i*.17),(bay-1.1,.25,.065),louver,a,b)
  facade('Thin flat roof coping',(width/2,-.18,H-.15),(width,1.1,.30),frame,a,b)
+# ponytail: three roof cabinets follow the owner aerial; sizes/positions are photo-fit, not equipment specifications.
+for x,width in [(4,2.8),(8,3.5),(12.5,3.6)]:
+ box('Physical roof cabinet support plinth',(x,-3,H+.10),(width+.3,3.2,.20),roof)
+ box('Pale rooftop mechanical cabinet',(x,-3,H+1.05),(width,2.8,1.70),frame)
+ box('Separate rooftop cabinet cap',(x,-3,H+1.95),(width+.12,2.95,.10),frame)
+ for side in (-1,1):
+  box('Roof cabinet dark grille backing',(x,-3+side*1.415,H+1.05),(width-.30,.035,1.40),roof)
+  for i in range(14):box('Physical cabinet horizontal grille blade',(x,-3+side*1.45,H+.40+i*.10),(width-.30,.085,.04),louver)
 for o in bpy.context.scene.objects:
  if o.type=='MESH':assert all(math.isfinite(v) for vertex in o.data.vertices for v in vertex.co),o.name
 finish('wacker_100',OUT)
