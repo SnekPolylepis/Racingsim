@@ -47,6 +47,11 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
    for z in (lo+.075,hi-.96):facade('Continuous paired glazing sill',(u,-.14,z),(pitch-.24,.24,.08),sill,a,b)
  for j in range(count+1):
   facade('Full height projecting structural mullion',(j*pitch,-.08,H/2),(.24,.34,H),metal,a,b)
+ # Owner river-side photograph shows larger dark piers at the glazed ground interval.
+ # Their width/alternating bay rhythm and transom height are photo-fit, not a base survey.
+ for j in range(0,count+1,2):
+  facade('Broad ground floor dark structural pier',(j*pitch,-.04,base/2),(.95,.65,base),metal,a,b)
+ facade('Ground glazing transom',(width/2,-.12,2.8),(width,.25,.12),frame,a,b)
  facade('Flat parapet coping',(width/2,-.02,H-.075),(width,.44,.15),sill,a,b)
 for o in bpy.context.scene.objects:
  if o.type=='MESH':assert all(math.isfinite(v) for vertex in o.data.vertices for v in vertex.co),o.name

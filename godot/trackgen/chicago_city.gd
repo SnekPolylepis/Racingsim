@@ -88,6 +88,7 @@ const BLOCK37_POSITION = Vector3(-357.2, STREET_Y, 104.25)
 const MORTON_POSITION = Vector3(-813.5, STREET_Y, 136.65)
 const BELL_POSITION = Vector3(-850.25, STREET_Y, 136.7)
 const WACKER_100_POSITION = Vector3(-1084.45, STREET_Y, 500)
+const WACKER_150_POSITION = Vector3(-1083.35, STREET_Y, 572.65)
 const WACKER_250_POSITION = Vector3(-1070.15, STREET_Y, 712.55)
 const WACKER_200_POSITION = Vector3(-1076.05, STREET_Y, 641.75)
 const WACKER_311_POSITION = Vector3(-928, STREET_Y, 817)
@@ -221,6 +222,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "authored Morton Building exterior"
 		elif b.get("o", "") == "w147095658":
 			exclusion = "authored Bell Building exterior"
+		elif b.get("o", "") == "w147350199":
+			exclusion = "authored 150 South Wacker exterior"
 		elif b.get("o", "") == "w124865451":
 			exclusion = "authored 100 South Wacker exterior"
 		elif b.get("o", "") == "w147350207":

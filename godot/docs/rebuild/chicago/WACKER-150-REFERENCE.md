@@ -13,3 +13,15 @@ Original authored mesh98,196tri/six materials. Exact mapped plan/foundation, rec
 Blender, headless editor import and native four-view staged review exited0; Godot stderr empty, WACKER150 STAGED REVIEW PASS. All four front/crown day/night images inspected. Isolated lighting does not prove production night handling, route placement or driving performance. Thin sill/frame detail aliases in default stage; separate MSAA4x/TAA diagnostic also exited0/empty stderr and actual front-day image inspected, reducing dashed marks. No game graphics setting changed and native/retro production modes remain unverified.
 
 Next: fuller entrance/door and river-side base treatment from clearer real references, proportions/glazing/roof detail review, then production integration/unique generic exclusion and actual both-route geometry/clip/menu/night review. No executable export or completed-building claim.
+
+## 2026-10-08 — ground piers and production integration / cache202
+
+Additional primary [owner river-side base photograph](https://www.100150swacker.com/wp-content/uploads/2026/09/100-150-south-wacker-neighborhood-hero-2-1800x800-1.jpg) actually inspected:100's white coffers on left, shared restaurant/terrace in center and150's substantial dark glazed-base piers at right. Model now includes broader ground piers and lower glazing transom. Pier width .95m, alternating bay rhythm, 7.5m base and2.8mtransom height are provisional photo-fit interpretations; exact door/entrance and shared terrace geometry not established by this view. Applied base rhythm on all faces remains subject to elevation review. Original mesh now98,604tri/sixmaterials.
+
+Working exterior installed at mapped origin through the existing shared landmark loader; generic w147350199 excluded once. Existing Chicago night-glazing behavior reused; cache202, Original@v7/Grid@v5 unchanged. No full architectural-fidelity claim.
+
+Final six gates221126 allPASS in124s: geometry19/menu121/coverage23/clips1+1=165checks plus cleanparse. All six stderr files empty. Geometry rays establish exposed recessed glass, projecting ground pier and flat roof. Foundation route clearances25.57023m Original/19.19863m Grid. Full clipping totals remain120/104. Both routes retain shared replacement loading; menu specifically asserts unique Grid exclusion. No driving-performance conclusion from these checks.
+
+Blender/import/base stage exited0, Godot stderr empty; two actual base day/night images inspected. Native productionPID147648 exited0, empty stderr, WACKER150 CITY REVIEW PASS; actual four street/crown day/night captures inspected. Dark grid/paired glazing read in surrounding scenery, sparse occupied panes illuminate at night, roof/corners retained. Native street/crown views are appearance evidence, not measured architectural verification. Frozen9.78ms is not driving performance evidence. Screenshots chicago-wacker150-installed. Retro resolution/interlacing modes not separately reviewed.
+
+Exact entrance, shared river-side campus/platform/terrace, measured base/floor/grid proportions, finer roof/functional details and retro-mode review remain open. No executable exported.
