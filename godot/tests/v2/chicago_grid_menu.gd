@@ -226,6 +226,16 @@ func run() -> void:
 			if entry.osm_id == "w124865451" and entry.reason == "authored 100 South Wacker exterior":
 				excluded_wacker100 += 1
 		check(excluded_wacker100 == 1, "Mapped 100 South Wacker replaced once")
+		var monroe311 = app.track.get_node_or_null("Scenery/Monroe311")
+		check(
+			monroe311 is MeshInstance3D and monroe311.mesh.get_surface_count() == 7,
+			"Authored 311 West Monroe loads"
+		)
+		var excluded_monroe311 = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w147350188" and entry.reason == "authored 311 West Monroe exterior":
+				excluded_monroe311 += 1
+		check(excluded_monroe311 == 1, "Mapped 311 West Monroe replaced once")
 		var lasalle100 = app.track.get_node_or_null("Scenery/LaSalle100")
 		check(
 			lasalle100 is MeshInstance3D and lasalle100.mesh.get_surface_count() == 8,
