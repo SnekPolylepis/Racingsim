@@ -34,6 +34,7 @@ prism('Monroe311 flat high albedo roof membrane',plan,H-.4,H,roof)
 for a,b in zip(plan,plan[1:]+plan[:1]):
  width=math.dist(a,b);count=max(1,round(width/1.65));pitch=width/count
  north=a[1]>25 and b[1]>25
+ facade('Opaque ground interior behind recessed glass',(width/2,-1.30,base/2),(width,.20,base),inset,a,b)
  for row in range(14):
   lo=0 if row==0 else base+(row-1)*(top_floor-base)/13
   hi=base if row==0 else base+row*(top_floor-base)/13
