@@ -32,7 +32,7 @@ prism('Monroe311 buried exact eight vertex foundation',plan,-8,0,granite)
 prism('Monroe311 recessed opaque core',[(x*.94,y*.94) for x,y in plan],0,H-.4,inset)
 prism('Monroe311 flat high albedo roof membrane',plan,H-.4,H,roof)
 for a,b in zip(plan,plan[1:]+plan[:1]):
- width=math.dist(a,b);count=max(1,round(width/2.4));pitch=width/count
+ width=math.dist(a,b);count=max(1,round(width/1.65));pitch=width/count
  north=a[1]>25 and b[1]>25
  for row in range(14):
   lo=0 if row==0 else base+(row-1)*(top_floor-base)/13
@@ -46,9 +46,9 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
    for dx in (-pane_w/2,pane_w/2):facade('Physical sash upright',(u+dx,recess+.11,mid),(.06,.16,pane_h),frame,a,b)
    facade('Lower window meeting rail',(u,recess+.12,lo+.1+pane_h*.25),(pane_w,.18,.07),frame,a,b)
  for j in range(count+1):
-  u=j*pitch;bottom=base if j%4 and j!=count else 0
+  u=j*pitch;bottom=base if j%5 and j!=count else 0
   facade('Continuous projecting narrow granite pier',(u,.01,(bottom+top_floor)/2),(.45,.90,top_floor-bottom),granite,a,b)
-  if j%4==0 or j==count:facade('Broad ground arcade pier',(u,-.40,base/2),(.85,1.80,base),granite,a,b)
+  if j%5==0 or j==count:facade('Broad ground arcade pier',(u,-.40,base/2),(.85,1.80,base),granite,a,b)
  facade('Ground arcade lintel',(width/2,.01,base),(width,.95,.50),granite,a,b)
  groups=max(1,round(width/8));group_pitch=width/groups
  for j in range(groups):
@@ -62,6 +62,8 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
  for j in range(count+1):facade('Upper granite band panel joint',(j*pitch,.38,(top_band+H)/2),(.08,.12,H-top_band),inset,a,b)
  if north:
   facade('Provisional north entrance canopy',(width/2,.55,4.8),(9,2.2,.22),silver,a,b)
+  for dx in (-3.6,-2.4,-1.2,0,1.2,2.4,3.6):facade('Photo fit canopy underside rib',(width/2+dx,.55,4.56),(.12,2.2,.32),silver,a,b)
+  facade('Canopy outer metal fascia',(width/2,1.60,4.68),(9,.12,.35),silver,a,b)
   for dx in (-1.7,0,1.7):facade('Recessed north entrance door stile',(width/2+dx,-.98,1.5),(.075,.20,3),frame,a,b)
 for obj in bpy.context.scene.objects:
  if obj.type=='MESH':assert all(math.isfinite(v) for vertex in obj.data.vertices for v in vertex.co),obj.name

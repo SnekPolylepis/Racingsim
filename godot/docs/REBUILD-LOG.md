@@ -6640,3 +6640,7 @@ Authored mapped eight-vertex original Blender exterior63,552tri/seven materials:
 ## 2026-10-08 — 311 West Monroe ground arcade depth
 
 Recessed ground glazing/frames/stiles1.10m. Close review caught vertical corner gaps behind shallow piers; deeper1.80m broad ground piers and missing end piers close those gaps in two final actual base day/night views. Current63,624tri/seven materials; Blender finite-vertexassert/exit0, editorimportexit0/empty stderr, native stage164456/base169928exit0/empty stderr/terminalPASS. Evidence chicago-monroe311-base-refined; small isolated ground-plane white fleck unresolved, no blanket artifact claim. Exact entrance/canopy/roof equipment/finer proportions/returns remain open. Not installed/cache203 unchanged/no EXE.
+
+## 2026-10-08 — 311 West Monroe owner-plan bay spacing
+
+Read owner20NOV2020 brochure, actual pages6/7 renders inspected. Published11ft6in slab spacing supports draft upper interval;25-30ft column range informs ground piers every fifth narrow bay (~8.25m). Approximate owner plan perimeter bay count corrects draft target2.4m to1.65m; canopy underside ribs/front fascia photo-fit from lobby photo. Core orientation conflict recorded; exact canopy/roof/returns remain unverified. Current90,216tri/seven materials, Blender finiteassert/exit0; importexit0/empty stderr; native stage165324/base135032exit0/empty stderr/terminalPASS. Four final actual front/base day/night views inspected, screenshots chicago-monroe311-bays. Fine bright edge marks unresolved; source draft not installed/cache203 unchanged/no EXE.
