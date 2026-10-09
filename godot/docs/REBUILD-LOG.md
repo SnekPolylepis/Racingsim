@@ -6622,3 +6622,9 @@ Not integrated. Crown carving/connected caps, base reliefs, measured entrance/st
 ## 2026-10-08 — 100 North LaSalle crown/base refinement
 
 Re-inspected primary NPS base photos82/96 and named Lawyers Building CTBUH exterior. Added connected crown panels/fluting, joined pier caps, framed shallow base reliefs, and restored third-floor windows above the two-story portal. Final68,972tri/eight materials; finite-geometry authoring assert/Blender exit0; editor import exit0/empty stderr; final native stage157276/entry157440 exit0/empty stderr/terminalPASS. Six actual final day/night views inspected, evidence chicago-lasalle100-refined. Still a working photo-fit draft, not installed; cache202/routes unchanged/no EXE. Production replacement/checks next, exact carving/base/entrance/roof proportions remain open.
+
+## 2026-10-08 — 100 North LaSalle working exterior installation
+
+Shared mapped LaSalle100 fixture installed68,972tri/eight materials, generic w147095666 excluded once, cache203/routes Original@v7/Grid@v5 unchanged. First geometry assertion incorrectly expected eight footprint vertices; corrected to actual six. Final six gates223203 allPASS111s: geometry19/menu123/coverage23/fullclips1+1=167checks plusparse, stderr0. Foundation distances327.05014Original/9.54773Grid; baseline clips120/104 unchanged. Geometry verifies unobstructed portal/solid87.5m main roof/90m architectural tip/physical untextured materials.
+
+NativePID151028exit0/empty stderr/terminalPASS; four actual production Grid street/crown day/night views inspected, occupied-window switching visible. Frozen15.38ms is not driving evidence. Screenshots chicago-lasalle100-installed. Exact carving/measured entrance/base/roof/returns/proportions and retro mode review open; no EXE or complete-building claim.

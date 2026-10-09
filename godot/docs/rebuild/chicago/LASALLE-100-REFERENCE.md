@@ -30,3 +30,11 @@ This is a saved working draft, not installed or complete. Production cache202, O
 Re-inspected full NPS photos82/96 and explicit Lawyers Building CTBUH photo. Added connected solid crown panels and short fluting between raised piers, extended pier tops to contact caps, and framed shallow diamond reliefs at the lower public spandrels. These relief motifs/proportions are photo-fit interpretations, not exact carving reproductions. Corrected the portal's missing third-floor windows: only the documented two-story opening now suppresses regular bays/piers. Final GLB68,972tri/eight materials.
 
 Blender exited0, headless import exited0/empty stderr, final native stagePID157276 and entryPID157440 exited0/empty stderr/terminalPASS. Six actual final front/crown/entry day/night images inspected, saved in chicago-lasalle100-refined. No production integration/cache/routes change or EXE. Next production replacement/geometry-clearance and route review; precise base/entrance/roof/return proportions and fine carving remain open.
+
+## 2026-10-08 working exterior installed
+
+Mapped w147095666 now replaced once by shared LaSalle100 fixture at (-695,8,148.95), eight physical materials/68,972tri. Night glass uses existing shared switching; generic exclusion logged exactly once. Cache203, Original@v7/Grid@v5 retained.
+
+First geometry run failed an incorrect eight-vertex test expectation copied from the material count; corrected to the actual six-vertex footprint. Final six gates223203 allPASS111s: geometry19/menu123/coverage23/fullclip1+1 =167checks plusparse. Actual mapped foundation distance327.05014m Original/9.54773m Grid; whole-city clips120/104 unchanged. Geometry test verifies portal pane is unobstructed, solid87.5m roof, architectural tip90m, physical/no-photo materials and both foundation clearances.
+
+Native productionPID151028 exited0/empty stderr/terminal LASALLE100 CITY REVIEW PASS. Four actual Grid street/crown day/night views inspected; lower crown and occupied-window switching visible. Frozen15.38ms is not driving performance evidence. Evidence chicago-lasalle100-installed. This is an installed working exterior; exact carving, measured base/entrance/proportions/roof/returns and retro graphics modes remain open. No EXE export.
