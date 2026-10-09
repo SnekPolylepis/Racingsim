@@ -6660,3 +6660,7 @@ Next remaining trackside w147013356 reference prepared. Broker13stories versus m
 ## 2026-10-09 — 309 West Washington first authored draft
 
 Original Blender exterior71,844tri/seven materials with exact mapped foundation, recessed physical windows/frames, masonry piers/sills, curved heads, storefront lintels/parapet. Draft56m parapet/56.17tip remains photo-fit, unmeasured. Blender finiteassert/exit0; native7020exit0/empty stderr/terminalPASS, actual front day/night and crown day inspected. Upper two-floor grouping still needs refinement relative to photo; roof/entrance/unseen returns/finer proportions open. Geometry43172exit0/empty stderr14checksPASS including opaque ground rays and foundation86.150024Original/10.559245Grid. Not installed/cache204 unchanged/no EXE. Source+blend+GLB+provenance and three review captures saved.
+
+## 2026-10-09 — 309 West Washington working exterior installed
+
+Refinedupperpairedtwofloorbays/recessedspandrels/widecurvedsurrounds;63,828tri/sevenmaterials. SharedWashington309fixture(-934.55,8,201.05), mappedgenericw147013356excludedonce/cache205/routesunchanged. Sixgates111850allPASS103s: geometry15/menu127/coverage23/clips1+1=167checksplusparse; wholecitybaseline120Original/104Gridunchanged. Native53712exit0/empty stderr/terminalPASS; fouractualfinalGridstreet/crownday/nightimagesinspected. Frozen14.29msnotdrivingperformance. Sources/reference/screenshotsrecordlimits:56mparapet/56.17tipphoto-fit/unmeasured, fineproportions/carving/entrance/roofequipment/returnsopen. NoEXE.

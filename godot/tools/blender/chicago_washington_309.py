@@ -61,11 +61,12 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
     pitch=width/count; pane_w=pitch-.65
     facade('Continuous backing behind ground glass',(width/2,-1.15,base/2),(width,.2,base),inset,a,b)
     for j in range(count+1):
-        facade('Continuous narrow masonry pier',(j*pitch,-.05,body_top/2),(.38,.70,body_top),stone,a,b)
+        pier_top=base+10*pitch_z if j%2 else body_top
+        facade('Continuous narrow masonry pier',(j*pitch,-.05,pier_top/2),(.38,.70,pier_top),stone,a,b)
         if j%2==0:
             facade('Paired bay projecting pilaster',(j*pitch,.07,(base+body_top)/2),(.40,.82,body_top-base),trim,a,b)
             facade('Ground storefront pier',(j*pitch,-.12,base/2),(.60,1.0,base),stone,a,b)
-    for row in range(12):
+    for row in range(10):
         lo=base+row*pitch_z; ph=2.75; mid=lo+.35+ph/2
         facade('Recessed full floor spandrel',(width/2,-.24,lo+pitch_z-.45),(width,.42,.90),inset,a,b)
         for j in range(count):
@@ -76,11 +77,25 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
             for z in (lo+.35,mid-.35,lo+.35+ph):
                 facade('Physical sash rail',(u,-.45,z),(pane_w,.18,.055),frame,a,b)
             facade('Projecting pale stone sill',(u,-.04,lo+.25),(pane_w+.15,.65,.16),trim,a,b)
-            if row in (9,11):
+            if row==9:
                 segmental_head('Shallow curved upper window surround',u,lo+.35+ph,pane_w,.35,.10,trim,a,b)
             if row in (0,9,10):
                 facade('Relief spandrel panel',(u,.015,lo+pitch_z-.50),(pane_w*.68,.12,.38),stone,a,b)
                 facade('Relief panel centre boss',(u,.10,lo+pitch_z-.50),(.20,.13,.23),trim,a,b)
+    top_lo=base+10*pitch_z
+    for j in range(count//2):
+        u=(j+.5)*2*pitch; w=2*pitch-.65
+        for row in range(2):
+            lo=top_lo+row*pitch_z; ph=3.35
+            facade('Grouped upper two floor glazing',(u,-.58,lo+.2+ph/2),(w,.08,ph),glass,a,b)
+            for dx in (-w/2,0,w/2):
+                facade('Upper paired sash mullion',(u+dx,-.45,lo+.2+ph/2),(.07,.20,ph),frame,a,b)
+            for z in (lo+.2,lo+1.2,lo+.2+ph):
+                facade('Upper paired sash horizontal rail',(u,-.45,z),(w,.20,.07),frame,a,b)
+        facade('Recessed upper bay middle spandrel',(u,-.29,top_lo+pitch_z-.2),(w,.40,.60),inset,a,b)
+        segmental_head('Wide grouped upper segmental surround',u,body_top-.55,w,.38,.10,trim,a,b)
+        for dx in (-w/2,w/2):
+            facade('Upper grouped surround upright',(u+dx,.08,(top_lo+body_top)/2),(.16,.24,body_top-top_lo-.4),trim,a,b)
     for j in range(count//2):
         u=(j+.5)*2*pitch; w=2*pitch-.72
         facade('Recessed storefront glass',(u,-.90,1.85),(w,.08,3.7),glass,a,b)

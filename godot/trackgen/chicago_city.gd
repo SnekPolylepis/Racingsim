@@ -107,6 +107,7 @@ const WACKER_155_YAW = .0047
 const WACKER_191_POSITION = Vector3(-1001.2, STREET_Y, -63.55)
 const WACKER_191_YAW = .0202
 const LASALLE_100_POSITION = Vector3(-695, STREET_Y, 148.95)
+const WASHINGTON_309_POSITION = Vector3(-934.55, STREET_Y, 201.05)
 const MONROE_311_POSITION = Vector3(-938.85, STREET_Y, 499.1)
 const OWN_LANDMARKS = {
 	"Willis Tower": 55.0, "Wrigley Building": 35.0, "Tribune Tower": 35.0, "Chicago Board of Trade": 35.0
@@ -224,6 +225,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "authored Morton Building exterior"
 		elif b.get("o", "") == "w147095658":
 			exclusion = "authored Bell Building exterior"
+		elif b.get("o", "") == "w147013356":
+			exclusion = "authored 309 West Washington exterior"
 		elif b.get("o", "") == "w147350188":
 			exclusion = "authored 311 West Monroe exterior"
 		elif b.get("o", "") == "w147095666":
