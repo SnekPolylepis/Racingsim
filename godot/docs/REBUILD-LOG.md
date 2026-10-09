@@ -6636,3 +6636,7 @@ Verified unmodeled w147350188 via source searches and actual corrected native da
 ## 2026-10-08 — 311 West Monroe original exterior draft
 
 Authored mapped eight-vertex original Blender exterior63,552tri/seven materials: granite piers/recessed sash panes/physical rails, broader ground piers, distinct renovated top-floor glazing/frames, blank ribbed roof band/light membrane, architectural62.5m. Photo-fit intervals and provisional returns/north canopy explicitly recorded in MONROE-311-REFERENCE.md. Blender exit0/finite geometry assert, editor import exit0/empty stderr; native stage163748/base164140exit0/empty stderr/terminalPASS. Six actual source day/night views inspected, evidence chicago-monroe311-draft. Exact ground arcade/entrance/roof equipment/bay proportions/returns need refinement before integration. Cache203/routes unchanged/no EXE.
+
+## 2026-10-08 — 311 West Monroe ground arcade depth
+
+Recessed ground glazing/frames/stiles1.10m. Close review caught vertical corner gaps behind shallow piers; deeper1.80m broad ground piers and missing end piers close those gaps in two final actual base day/night views. Current63,624tri/seven materials; Blender finite-vertexassert/exit0, editorimportexit0/empty stderr, native stage164456/base169928exit0/empty stderr/terminalPASS. Evidence chicago-monroe311-base-refined; small isolated ground-plane white fleck unresolved, no blanket artifact claim. Exact entrance/canopy/roof equipment/finer proportions/returns remain open. Not installed/cache203 unchanged/no EXE.

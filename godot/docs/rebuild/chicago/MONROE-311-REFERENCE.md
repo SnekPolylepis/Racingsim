@@ -26,3 +26,9 @@ Working intervals: ground6m, thirteen regular floors to51.6m, top floor51.6-56.9
 Blender exited0/finite-vertex authoring assert passed; a one-object material group produced a harmless 'No mesh data to join' warning before successful seven-material GLB export. Godot editor import exited0/empty stderr. Native stagePID163748 and basePID164140 exited0/empty stderr/terminalMONROE311 STAGED REVIEW PASS. Four actual front/crown day/night stage views and two base day/night views inspected; saved chicago-monroe311-draft. Isolated low ambient stage views do not verify production night switching or graphics modes.
 
 Not integrated. Next refine ground arcade/entrance and roof references, then fixture replacement/geometry/menu/coverage/fullclips and production review. Cache203/routes unchanged/no EXE.
+
+## 2026-10-08 ground arcade refinement
+
+Ground panes recessed from0.62m to1.10m, frames/door stiles moved with them. First close review exposed daylight side gaps behind shallow columns. Extended broad ground piers to1.80m depth and added previously missing end piers; final close day/night images inspected show those open vertical corner gaps closed. A small isolated ground-plane white fleck remains in this baseline stage image; not investigated or claimed fixed.
+
+Current mesh63,624tri/seven materials. Finite-vertex authoring assert/Blender export exit0, final editor importexit0/empty stderr, native stage164456/base169928exit0/empty stderr/terminalPASS. Two final close base views saved chicago-monroe311-base-refined. Previous broad day/night evidence remains the initial draft, not a new all-view acceptance claim. Exact canopy/entrance location, roof equipment/proportions/returns still open. Working draft not integrated; production cache203 unchanged/no EXE.
