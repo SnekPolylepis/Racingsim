@@ -6522,3 +6522,18 @@ No course/production/performance acceptance or export. See new reference
 document and source provenance. Existing production route-clearance exclusion remains (9.3m sampled
 clearance versus9.5m generic threshold). Retain draft for later placement
 review; next production candidate must have viable clearance.
+
+
+## 100 South Wacker exterior draft2026-10-08 (Codex)
+
+Verified w124865451 generic facade visible in current Grid, terminal native
+PID64604 PASS/empty stderr and two actual day/night images. Owner aerial
+shows grouped recessed panes in broad white coffer grid. Original Blender
+92580tri/sixmaterials with deep beveled frames, four-pane groups, rooftop
+physical louvers, exact mapped foundation; uses CVU74.4m architectural
+height rather than mapped79.0m. Owner cached21stories vsCVU20 remains
+provisional19office+ground+mechanical interpretation. Python/Blender/import
+clean; staged PID77636 exit0/empty stderr/terminalPASS and four actual
+front/crown day/night views inspected. Not integrated; entry/base/finer
+proportions, production geometry/clip/menu/source review next. No export
+or performance acceptance. See WACKER-100-REFERENCE.md.

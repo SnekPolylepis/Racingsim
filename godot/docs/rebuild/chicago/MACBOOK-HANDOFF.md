@@ -602,3 +602,10 @@ Retain for later placement; next production replacement must be viable.
 Verify full elevation/floor count/height and entry placement, refine
 roof/interior/light details, then geometry/clip/menu/source checks. See
 WASHINGTON-FRANKLIN-REFERENCE.md. No executable export.
+
+100SouthWacker w124865451 draft started2026-10-08: verified generic
+production exterior is visible; original92580tri/sixmaterial deep coffer
+grid/grouped panes/roof louvers, CVU74.4m. Four staged source day/night
+views clean. Not integrated. Next entry/base/proportions evidence, then
+fixture replacement and geometry/fullclips/menu/coverage/production review.
+See WACKER-100-REFERENCE.md. No executable export.
