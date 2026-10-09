@@ -147,3 +147,24 @@ preparation by disabling unused up-vector frame baking. TrackAsset33 checks
 include exact baked position preservation and figure-eight drive. Final
 native PID66772 terminalSHARP CITY REVIEW PASS/empty stderr; crown-night
 inspected after fix. No export or complete Sharp fidelity claim.
+
+
+## Sharp window proportions: Windows source review2026-10-08
+
+Compared directly with the restoration architect's facade photo:
+https://www.brusharchitects.com/wp-content/uploads/2018/11/champlain-960x630.jpg
+Widened brick bay piers from0.62m to1.05m; narrowed upper window openings
+and replaced equal thirds with a broad centre pane and narrow side panes
+(22/56/22 photo-fit proportions). Adjusted physical frames, sills and heads
+to match. Ground entrance/storefront geometry retained; end piers widen too.
+These are reference-based working proportions, not measured elevations.
+Original Blender still135648tri/sixmaterials, cache198. Roof/skylight,
+fine carving, floor-count conflict and long/rear elevation calibration remain.
+Blender/import exit0, Python compile and diff check pass. Six source gates
+20261008-193719 allPASS107s: Sharp20/menu115/coverage23/bothclips1each/parse
+(160checks plusparse); original120/Grid104 accepted hits unchanged, stderr
+empty. Native PID68516 terminalSHARP CITY REVIEW PASS/exit0/empty stderr;
+four actual street/crown day/night images inspected. Broad centre panes and
+heavier piers read clearly; elevated railway still screens the entrance.
+Crown views are architectural inspection, not a driving camera or entrance
+acceptance. Frozen11.65ms is not driving performance. No executable export.

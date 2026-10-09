@@ -588,3 +588,9 @@ TrackAsset.prepare disables unused TimingLine orientation baking, fixing
 repeatable non-normalized-axis errors. Exact timing positions preserved.
 Final193145 seven gates pass193checks plusparse; original120/Grid104 clips
 unchanged, native runtime clean. See latest log and SHARP-REFERENCE.md.
+
+Windows Sharp refinement2026-10-08/cache198: wider masonry piers and broad
+centre/narrow side window proportions from Brush facade photograph. Six
+gates160checks plusparse pass, original120/Grid104 clips unchanged; four
+source day/night views inspected, clean runtime. No export. Roof/skylight,
+fine carving, floor-count conflict and long/rear elevations remain open.
