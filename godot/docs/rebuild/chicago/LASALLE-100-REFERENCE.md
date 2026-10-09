@@ -24,3 +24,9 @@ Before native review exited 0/empty stderr, terminal LASALLE100 CITY REVIEW PASS
 Refine the connected Gothic crown and carved rectangular lower-floor spandrels using the inspected references. Entrance location, tile joints, storefronts, window/bay proportions, roof equipment and return facades remain provisional. Then integrate through the shared loader, replace the generic footprint once, run geometry/menu/coverage/full clipping checks and inspect production views on both routes.
 
 This is a saved working draft, not installed or complete. Production cache202, Original@v7/Grid@v5 and baseline clips120/104 unchanged. No executable export.
+
+## 2026-10-08 crown/base refinement
+
+Re-inspected full NPS photos82/96 and explicit Lawyers Building CTBUH photo. Added connected solid crown panels and short fluting between raised piers, extended pier tops to contact caps, and framed shallow diamond reliefs at the lower public spandrels. These relief motifs/proportions are photo-fit interpretations, not exact carving reproductions. Corrected the portal's missing third-floor windows: only the documented two-story opening now suppresses regular bays/piers. Final GLB68,972tri/eight materials.
+
+Blender exited0, headless import exited0/empty stderr, final native stagePID157276 and entryPID157440 exited0/empty stderr/terminalPASS. Six actual final front/crown/entry day/night images inspected, saved in chicago-lasalle100-refined. No production integration/cache/routes change or EXE. Next production replacement/geometry-clearance and route review; precise base/entrance/roof/return proportions and fine carving remain open.

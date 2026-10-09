@@ -47,18 +47,29 @@ for a,b in zip(plan,plan[1:]+plan[:1]):
   else:facade('Masonry horizontal window spandrel',(width/2,-.12,hi-.40),(width,.64,.80),tile if row<3 else brick,a,b)
   for j in range(count):
    u=(j+.5)*pitch
-   if east and abs(u-width/2)<3.1 and row<3:continue
+   if east and abs(u-width/2)<3.1 and row<2:continue
    facade('Separate recessed sash pane',(u,-.58,mid),(pitch-1.05,.07,window_h),night if (row*13+j*17)%61==5 else glass,a,b)
    for x in (u-(pitch-1.05)/2,u+(pitch-1.05)/2):facade('Physical sash upright',(x,-.46,mid),(.065,.20,window_h),frame,a,b)
    facade('Physical sash meeting rail',(u,-.44,mid-.05),(pitch-1.05,.20,.075),frame,a,b)
    facade('Raised window sill',(u,-.22,lo+.10),(pitch-.90,.64,.15),terra,a,b)
+   if public and row==1:
+    # Photo-fit framed Gothic spandrels; small relief remains an interpretation.
+    panel_w=pitch-1.08;panel_z=hi-.40
+    for dx in (-panel_w/2,panel_w/2):facade('Base relief panel side',(u+dx,.25,panel_z),(.075,.16,.72),terra,a,b)
+    for dz in (-.34,.34):facade('Base relief panel border',(u,.25,panel_z+dz),(panel_w,.16,.07),terra,a,b)
+    for dx in (-panel_w*.27,0,panel_w*.27):
+     points=[(u+dx-.14,.34,panel_z),(u+dx,.34,panel_z+.24),(u+dx+.14,.34,panel_z),(u+dx,.34,panel_z-.24),(u+dx,.44,panel_z)]
+     place(mesh('Raised diamond Gothic spandrel relief',points,[(0,1,4),(1,2,4),(2,3,4),(3,0,4)],terra),a,b)
+   if public and row==24:
+    facade('Solid crown parapet between raised piers',(u,.01,88.05),(pitch-.55,.66,1.40),terra,a,b)
+    for dx in (-.32,0,.32):facade('Crown recessed panel fluting',(u+dx,.38,88.08),(.055,.10,1.22),terra,a,b)
  for j in range(count+1):
   u=j*pitch
-  bottom=base if east and abs(u-width/2)<3.1 else 0
+  bottom=base*2/3 if east and abs(u-width/2)<3.1 else 0
   facade('Continuous narrow vertical masonry pier',(u,-.10,(bottom+body)/2),(.68,.62,body-bottom),tile if not public else terra,a,b)
   if public:
    # Stepped physical cap and fluted vertical ribs echo the photographed Gothic crown.
-   facade('Raised crown pier',(u,.02,body-.8),(.78,.70,5.4),terra,a,b)
+   facade('Raised crown pier',(u,.02,body-.8),(.78,.70,6.0),terra,a,b)
    for dx in (-.22,0,.22):facade('Crown projecting vertical rib',(u+dx,.40,body-.65),(.055,.12,4.8),terra,a,b)
    facade('Stepped crown pier head',(u,.02,H-.15),(.62,.70,.30),terra,a,b)
  facade('Third floor base projecting band',(width/2,.02,base),(width,.90,.35),terra,a,b)
