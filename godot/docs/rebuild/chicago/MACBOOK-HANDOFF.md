@@ -594,3 +594,11 @@ centre/narrow side window proportions from Brush facade photograph. Six
 gates160checks plusparse pass, original120/Grid104 clips unchanged; four
 source day/night views inspected, clean runtime. No export. Roof/skylight,
 fine carving, floor-count conflict and long/rear elevations remain open.
+
+Washington–Franklin Self Park w147095680 original draft started2026-10-08,
+22728tri/sevenmaterials; four clean staged source views. Not integrated.
+Existing generic route-clearance exclusion still applies (9.3m vs9.5m).
+Retain for later placement; next production replacement must be viable.
+Verify full elevation/floor count/height and entry placement, refine
+roof/interior/light details, then geometry/clip/menu/source checks. See
+WASHINGTON-FRANKLIN-REFERENCE.md. No executable export.

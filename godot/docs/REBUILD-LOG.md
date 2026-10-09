@@ -6505,3 +6505,20 @@ four actual street/crown day/night images inspected. Broad centre panes and
 heavier piers read clearly; elevated railway still screens the entrance.
 Crown views are architectural inspection, not a driving camera or entrance
 acceptance. Frozen11.65ms is not driving performance. No executable export.
+
+
+## Washington–Franklin Self Park draft2026-10-08 (Codex)
+
+Next close unconverted candidate w147095680/230W Washington. Inspected
+operator's Wells/Washington/Franklin photographs. Original seven-material
+22728tri Blender draft includes mapped seven-vertex foundation, physical
+floor plates, open parking bays/pale spandrels, masonry piers and reliefs,
+retail panes, interior beams and deep vehicle corridor. Python/Blender/import
+clean. Final staged native PID75128 exit0/empty stderr/terminalPASS; four
+actual corrected front/entry day/night views inspected, isolated lighting.
+Mapped49m/ten upper intervals and west entry placement provisional; full
+elevation/roof/ramp/night lighting need work before production integration.
+No course/production/performance acceptance or export. See new reference
+document and source provenance. Existing production route-clearance exclusion remains (9.3m sampled
+clearance versus9.5m generic threshold). Retain draft for later placement
+review; next production candidate must have viable clearance.
