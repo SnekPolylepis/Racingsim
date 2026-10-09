@@ -6656,3 +6656,7 @@ Installed shared mapped Monroe31190,312tri/seven materials at(-938.85,8,499.1), 
 ## 2026-10-09 — 309 West Washington reference and baseline
 
 Next remaining trackside w147013356 reference prepared. Broker13stories versus mapped84.5m: height remains unverified. Actual full exterior photo inspected (buff masonry, recessed paired windows, shaped upper heads/crown/storefronts). Native16700exit0/empty stderr/terminalPASS/cache204; actual Grid street day/night baseline inspected, frozen9.57ms not driving evidence. WASHINGTON-309-REFERENCE.md records exact footprint, references and open dimensions; two baseline screenshots saved. Broker PDF inaccessible, no contents claimed. No authored model installed, no EXE; next Blender exterior after dimension/bay verification.
+
+## 2026-10-09 — 309 West Washington first authored draft
+
+Original Blender exterior71,844tri/seven materials with exact mapped foundation, recessed physical windows/frames, masonry piers/sills, curved heads, storefront lintels/parapet. Draft56m parapet/56.17tip remains photo-fit, unmeasured. Blender finiteassert/exit0; native7020exit0/empty stderr/terminalPASS, actual front day/night and crown day inspected. Upper two-floor grouping still needs refinement relative to photo; roof/entrance/unseen returns/finer proportions open. Geometry43172exit0/empty stderr14checksPASS including opaque ground rays and foundation86.150024Original/10.559245Grid. Not installed/cache204 unchanged/no EXE. Source+blend+GLB+provenance and three review captures saved.
