@@ -226,6 +226,16 @@ func run() -> void:
 			if entry.osm_id == "w124865451" and entry.reason == "authored 100 South Wacker exterior":
 				excluded_wacker100 += 1
 		check(excluded_wacker100 == 1, "Mapped 100 South Wacker replaced once")
+		var wacker250 = app.track.get_node_or_null("Scenery/Wacker250")
+		check(
+			wacker250 is MeshInstance3D and wacker250.mesh.get_surface_count() == 7,
+			"Authored 250 South Wacker loads"
+		)
+		var excluded_wacker250 = 0
+		for entry in app.track.get_meta("city").excluded:
+			if entry.osm_id == "w147350207" and entry.reason == "authored 250 South Wacker exterior":
+				excluded_wacker250 += 1
+		check(excluded_wacker250 == 1, "Mapped 250 South Wacker replaced once")
 		var brooks = app.track.get_node_or_null("Scenery/BrooksBuilding")
 		check(
 			brooks is MeshInstance3D and brooks.mesh.get_surface_count() == 10,
