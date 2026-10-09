@@ -1,0 +1,7 @@
+# Six North Michigan authored exterior study
+
+Original Blender-authored geometry, tools/blender/chicago_six_michigan.py and existing architecture.py helpers; editable tools/blender/authored/six_michigan.blend. Eight original flat materials; no facade photograph or downloaded mesh embedded.
+
+Published architectural envelope86m: https://www.skyscrapercenter.com/chicago/6-north-michigan/11145/ . Contractor facade photo actually inspected: https://leopardo.com/wp-content/uploads/2010/06/6-N-Michigan_1-scaled.jpg . Complete modern facade/crown photo by Steve Minor, taken2010-03-25/uploaded2012-05-18, actually inspected: https://flickr.com/photos/sminor/7221832754 ; observedimage https://live.staticflickr.com/7082/7221832754_8f4c2e7013.jpg . Reference photos remain external, not game textures.
+
+Exact mapped four-point foundation. Pale stone base, brick/stone piers, separate recessed glazing/sashes, relief spandrels and projecting/dentilled cornices; raised three-bay arched crown and rectangular cap/circular reliefs interpreted from current facade photo. Base12m/body68m/16rows and crown68–86m, tower footprint and hidden return details are photo-fit, not surveyed. Published22floors versus contractor21renovatedfloors recorded separately. Fine proportions/carving, entrance, roof equipment and hidden elevations remain open. Not yet installed in production routes.
