@@ -1,0 +1,11 @@
+# 250 South Wacker working draft — 2026-10-08
+
+Primary references inspected: [Main Architecture project](https://www.main-architecture.com/Architecture-Projects.aspx?property=250+S.+Wacker&type=Commercial), [David A Seglin renovation portfolio](https://archinect.com/people/project/24033126/250-s-wacker-drive-usa/28750143), and [CVU building record](https://www.skyscrapercenter.com/sydney/awa-tower/14260) (the page identifies 250 South Wacker despite its unrelated URL slug).
+
+Main Architecture's published exterior is a design rendering. Seglin's portfolio includes design views, a small as-built exterior photograph, lobby photographs, plans and low-resolution elevations. These support the tall white corner feature, horizontal glazing wings and white flank treatment; they are not a measured exterior survey. Portfolio text describes renovated metal/opaque white glass cladding, a reglazed entry atrium and a sixteenth-floor terrace. CVU reports 61.3 m / 15 floors; the architect describes sixteen stories. That discrepancy remains unresolved.
+
+Draft uses mapped seven-vertex footprint w147350207, origin (-1070.15,8,712.55), no yaw. Published 61.3 m replaces the unverified mapped 65.5 m for this working model. Main body 57.5 m, ground interval 6.6 m, fourteen upper rows and the corner feature dimensions are provisional photo-fit interpretations. Separate panes, frames, metal spandrels and opaque panel joints are physical geometry. No reference photograph is embedded as a facade texture.
+
+63,312 triangles / seven materials, Blender source and GLB saved. Not installed in Chicago; production cache remains 200. Corrected before views show the generic building from outside Willis Tower. Four staged day/night views rendered successfully. These isolated views do not establish production lighting, placement acceptance or driving performance.
+
+Open: entrance atrium/doors, prominent white side strips, roof terrace, measured floor/base proportions, remaining bright dashed marks along floor bands and corner panel joints. Marks persist with directional shadows disabled; moving intersecting joint/head planes did not resolve them. No root cause or final fix claimed. Current diagnostic image predates the last small plane separation; current four draft views follow it. No executable export.

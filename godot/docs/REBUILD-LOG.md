@@ -6588,3 +6588,7 @@ Screenshots: chicago-wacker100-roof. Earlier full clips/menu/coverage are
 cache 199 evidence; no repeat claimed for this roof-only refinement.
 Entrance, base/floor interpretation, finer facade proportions and measured
 roof layout remain open. No executable export or complete fidelity claim.
+
+## 2026-10-08 — 250 South Wacker initial authored draft
+
+Inspected primary renovation architect images/text/elevation sheets and CVU record; created exact mapped-plan white corner/glazed-wing draft, 63,312 triangles/seven materials. Corrected street before camera outside Willis Tower and reviewed actual day/night generic building. Current Blender generation, headless import and native staged review exited 0 with empty Godot stderr and WACKER250 STAGED REVIEW PASS. Actual current front day image inspected; four staged captures saved. Controlled shadow-off review also exited 0 and its actual image was inspected: bright band/joint marks persist, so directional shadows alone do not explain them. Subsequent physical joint-plane separation also did not resolve the marks. Entry atrium, white flank strips, terrace and finer proportions remain open. No production integration, cache change, route change, executable or broad completion claim. Reference/provenance and before/draft/diagnostic images recorded in WACKER-250-REFERENCE.md and screenshots/chicago-wacker250-draft.

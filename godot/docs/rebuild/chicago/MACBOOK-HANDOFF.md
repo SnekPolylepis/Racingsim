@@ -621,3 +621,5 @@ six materials. Geometry 19 plus parse pass; two production crown day/night
 views reviewed, terminal native PASS and empty stderr. Architectural roof
 74.4 m; functional cabinet tip 76.4 m. Entrance/base/proportions and exact
 roof layout still open; prior full-course checks are cache 199 evidence.
+
+2026-10-08 Windows checkpoint: 250 South Wacker working draft now saved (63,312 triangles/seven materials), not integrated. Read WACKER-250-REFERENCE.md before continuing. Next refine real entrance/white side strips/terrace and diagnose bright dashed floor-band/panel-joint marks (persist with shadows off). Cache remains 200. Do not export per building. Current stage captures and primary-source limitations recorded in REBUILD-LOG.
