@@ -39,3 +39,26 @@ First geometry test failed its dome-glass ray because that ray landed on an inte
 Native refined stage69180exit0/empty stderr/terminalMILLENNIUM STAGED REVIEW PASS. All four actual front/crown day/night images inspected and saved in ../screenshots/chicago-millennium-draft; sparse occupied glazing switches at night. Façade camera(-110,70,140) aim(0,60,0), roof camera(-32,144,75) aim(0,119,25). Dense office ribs produce visible shadow detail needing closer base review; no artifact-free claim. This is an isolated asset review, not installed game/driving evidence.
 
 Draft is not installed; production remains cache206 and both route geometries unchanged. Next current base/entrance verification and close base review, then shared fixture integration, exact generic exclusion and production route/gate/native review. No EXE generated.
+
+## Southern retail addition and shared integration — 2026-10-09
+
+Owner offices page actually opened: header-mpp-offices.jpg is an interior office, not base geometry evidence. Beitler retail page describes the underground Shops at Millennium Station, a separate project despite the shared151NorthMichigan address; do not attribute that SOM interior to this building's exterior. Broker PDF could not be read; no PDF contents claimed.
+
+Actually inspected two exterior photos on [broker listing27304787](https://www.loopnet.com/Listing/155-N-Michigan-Ave-Chicago-IL/27304787/), dated on market2025-09-23. Photo capture dates are not established. Observed images:
+
+- https://images1.loopnet.com/i2/Gn5FLUq9Vsv85fOTakNogSyzj1gMuaPOupAuP2OQnLQ/110/155-N-Michigan-Ave-Chicago-IL-Building-Photo-1-Large.jpg
+- https://images1.loopnet.com/i2/giYEm_xciA-PQYPZAqpZn_-KaX6RDdGF_IbXwqlS7GQ/110/155-N-Michigan-Ave-Chicago-IL-Building-Photo-2-Large.jpg
+
+These show a low stepped glass retail addition immediately south of the tower, pale/gray metal-clad projecting frames, broad glazed frontages, lower west terrace/rails, recessed upper level, flat light roofs and service screens. Main tower's short office end retains narrow glass bays/brown spandrels. Current entrance door arrangement, exact metal/glass dimensions and precise long office ribs still unverified; no external photos embedded.
+
+Separate adjacent mapped w228971614 ring `[[11.2,-5.7],[11.9,19.9],[32.9,19.8],[32.2,-5.4],[30.2,-3.9],[13.1,-3.5]]` has erroneous118m height, creating a false tower beside the actual tower. Added an original low stepped addition in the same authored asset, exact foundation; lower roof10m/upper14.3m/service screen16.1m and6m west setback are photo-fit, unmeasured. Tower's121.9m tip unchanged. Updated192,212tri/eight materials; Blender113020exit0/finite geometry/envelope checks. Import46980exit0/empty stderr. Isolated native stage1056exit0/empty stderr/terminalPASS; actual close base day view inspected. Geometry22checks plusparse PASS165023; tower clearance12.56702Original/11.03334Grid, retail addition11.35162Original/11.26387Grid.
+
+Shared MillenniumPlaza fixture at(21.1,8,-49.4) and both mapped generic exclusions staged/cache207. Production gates and native city review pending; route geometry unchanged. Fine roof/entrance/base/returns remain provisional. No EXE.
+
+## Working exterior installed — cache207
+
+Shared fixture now replaces both w127107026 and w228971614 exactly once on both routes. Final six targeted gates20261009-165126 allPASS167s: geometry23/menu132/coverage23/fullclips1+1=180checks plusparse. City clipping baseline remains120Original/104Grid; no clipping-free city claim. Automated menu gate includes actual selected-variant driving and gameplay engine audio; human listening remains separate.
+
+Native production18632exit0/empty stderr/terminalMILLENNIUM CITY REVIEW PASS, Gridcache207 loaded. Six actual street/base/crown day/night views inspected and saved in ../screenshots/chicago-millennium-installed. Recessed residential glazing/piers, ribbed office base, stepped low glass retail addition and roof terrace/radial glass dome visible; incorrect118m south block absent. Street and roof cameras match baseline; separate base camera(-16,14,38), aim(21.1,18,0). Frozen43.888575ms from the final base-night view is not driving performance and cannot be compared directly with the prior roof-view timing. Surrounding generic skyline remains unaudited.
+
+All tower/retail roof and floor splits remain photo-fit within the published tower envelope. Exact entrances, long office-rib depth/spacing, retail frame proportions, roof furniture/equipment and hidden returns remain open. This is a working exterior, not complete architectural fidelity. No EXE generated.

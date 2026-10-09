@@ -1,5 +1,5 @@
 extends SceneTree
-## Millennium draft: physical glass/core visibility, opaque arcade and route clearance.
+## Millennium shared fixture: physical glass/core visibility, opaque arcade and route clearance.
 const Chicago = preload("res://trackgen/chicago.gd")
 var checks = 0
 var failures = []
@@ -37,9 +37,14 @@ func first_hit(exterior: Mesh, start: Vector3, end: Vector3, material_name: Stri
 
 
 func run():
-	var exterior = preload("res://scripts/track/prop_mesh.gd").mesh(
-		"res://assets/chicago/landmarks/millennium_plaza.glb"
-	)
+	var holder = Node3D.new()
+	root.add_child(holder)
+	var scenery = Node3D.new()
+	holder.add_child(scenery)
+	Chicago.add_loop_landmarks(holder, scenery)
+	var fixture = scenery.get_node("MillenniumPlaza")
+	var exterior = fixture.mesh
+	check(fixture.position.distance_to(Vector3(21.1, 8, -49.4)) < .01, "Mapped Millennium Plaza fixture")
 	check(exterior.get_surface_count() == 8, "Millennium eight physical materials")
 	check(absf(exterior.get_aabb().end.y - 121.9) < .02, "Millennium published tip envelope")
 	var closed = true
@@ -74,7 +79,20 @@ func run():
 		"Pool dome has physical glass above the opaque roof"
 	)
 	var city = JSON.parse_string(FileAccess.get_file_as_string("res://trackgen/data/chicago/city.json"))
-	for id in ["w127107026"]:
+	var annex_roof = first_hit(exterior, Vector3(4, 140, 60), Vector3(4, 0, 60))
+	check(
+		annex_roof != Vector3.INF and annex_roof.y < 20,
+		"Southern retail addition is low, not the mapped118m false tower"
+	)
+	var annex_visible = first_hit(exterior, Vector3(4, 12, 90), Vector3(4, 12, 50))
+	var annex_glass = first_hit(
+		exterior, Vector3(4, 12, 90), Vector3(4, 12, 50), "Millennium recessed residential glass"
+	)
+	check(
+		annex_glass != Vector3.INF and annex_glass.distance_to(annex_visible) < .01,
+		"Upper retail glazing is ahead of opaque backing"
+	)
+	for id in ["w127107026", "w228971614"]:
 		var ring = PackedVector2Array()
 		for entry in city.buildings:
 			if entry.get("o", "") == id:
@@ -100,5 +118,6 @@ func run():
 			check(
 				is_finite(nearest) and nearest > 9.5, "Both routes clear foundation: " + id + " " + str(grid)
 			)
-	print("MILLENNIUM DRAFT RESULTS ", {"checks": checks, "failures": failures})
+	holder.free()
+	print("MILLENNIUM RESULTS ", {"checks": checks, "failures": failures})
 	quit(0 if failures.is_empty() else 1)

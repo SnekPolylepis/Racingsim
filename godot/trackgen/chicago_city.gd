@@ -108,6 +108,7 @@ const WACKER_191_POSITION = Vector3(-1001.2, STREET_Y, -63.55)
 const WACKER_191_YAW = .0202
 const LASALLE_100_POSITION = Vector3(-695, STREET_Y, 148.95)
 const SIX_MICHIGAN_POSITION = Vector3(-48.5, STREET_Y, 274.4)
+const MILLENNIUM_PLAZA_POSITION = Vector3(21.1, STREET_Y, -49.4)
 const WASHINGTON_309_POSITION = Vector3(-934.55, STREET_Y, 201.05)
 const MONROE_311_POSITION = Vector3(-938.85, STREET_Y, 499.1)
 const OWN_LANDMARKS = {
@@ -228,6 +229,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 			exclusion = "authored Bell Building exterior"
 		elif b.get("o", "") == "w126982631":
 			exclusion = "authored Six North Michigan exterior"
+		elif b.get("o", "") in ["w127107026", "w228971614"]:
+			exclusion = "authored Millennium Park Plaza exterior"
 		elif b.get("o", "") == "w147013356":
 			exclusion = "authored 309 West Washington exterior"
 		elif b.get("o", "") == "w147350188":

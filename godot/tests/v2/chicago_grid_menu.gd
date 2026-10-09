@@ -256,6 +256,17 @@ func run() -> void:
 			if entry.osm_id == "w126982631" and entry.reason == "authored Six North Michigan exterior":
 				excluded_six_michigan += 1
 		check(excluded_six_michigan == 1, "Mapped Six North Michigan replaced once")
+		var millennium = app.track.get_node_or_null("Scenery/MillenniumPlaza")
+		check(
+			millennium is MeshInstance3D and millennium.mesh.get_surface_count() == 8,
+			"Authored Millennium Park Plaza tower and retail addition load"
+		)
+		for id in ["w127107026", "w228971614"]:
+			var excluded_millennium = 0
+			for entry in app.track.get_meta("city").excluded:
+				if entry.osm_id == id and entry.reason == "authored Millennium Park Plaza exterior":
+					excluded_millennium += 1
+			check(excluded_millennium == 1, "Mapped Millennium Plaza component replaced once: " + id)
 		var lasalle100 = app.track.get_node_or_null("Scenery/LaSalle100")
 		check(
 			lasalle100 is MeshInstance3D and lasalle100.mesh.get_surface_count() == 8,

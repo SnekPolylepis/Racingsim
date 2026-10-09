@@ -110,6 +110,36 @@ for a,b in [((-7.5,-24.5),(7.5,-24.5)),((7.5,-24.5),(7.5,-7.5)),((7.5,-7.5),(-7.
   t=j/round(math.dist(a,b)/.35)
   box('Physical deck baluster',(a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1]),119.45),(.045,.045,1.2),frame)
 box('Provisional small north roof service enclosure',(0,26,120.1),(9,12,2.2),stone)
+
+# Current broker photos show a low stepped glass addition, not the mapped118m southern block.
+annex_building=next(b for b in json.loads((Path(__file__).resolve().parents[2]/'trackgen/data/chicago/city.json').read_text())['buildings'] if b.get('o')=='w228971614')
+annex=[(x-cx,-(z-cz)) for x,z in annex_building['f']]
+if sum(x*v-y*u for (x,y),(u,v) in zip(annex,annex[1:]+annex[:1]))<0: annex.reverse()
+prism('Exact mapped retail addition foundation',annex,-8,0,roof)
+annex_cy=sum(y for x,y in annex)/len(annex)
+prism('Retail opaque inset core',[(x*.84,annex_cy+(y-annex_cy)*.90) for x,y in annex],0,9.8,office)
+prism('Lower retail terrace roof',annex,9.8,10,roof)
+upper=[(-3,-69.1),(11.1,-69.1),(11.1,-44.2),(-3,-44.2)]
+prism('Setback upper retail opaque core',[(x+(1 if x<0 else -1),y+(1 if y<-56 else -1)) for x,y in upper],10,14.1,office)
+prism('Upper retail pale flat roof',upper,14.1,14.3,roof)
+for perimeter,bottom,top in [(annex,0,9.8),(upper,10,14.1)]:
+ for a,b in zip(perimeter,perimeter[1:]+perimeter[:1]):
+  width=math.dist(a,b)
+  if width<3: continue
+  count=max(1,round(width/2.5));pitch=width/count
+  facade('Opaque retail backing behind glazing',(width/2,-.95,(bottom+top)/2),(width,.2,top-bottom),office,a,b)
+  facade('Retail glazed curtain wall',(width/2,-.55,(bottom+top)/2),(width-.6,.08,top-bottom-.35),glass,a,b)
+  for j in range(count+1):
+   facade('Retail curtain wall vertical frame',(j*pitch,-.30,(bottom+top)/2),(.09,.40,top-bottom),roof,a,b)
+  for height in ([bottom+.15,bottom+4.5,top-.15] if bottom==0 else [bottom+.15,top-.15]):
+   facade('Retail physical horizontal glazing rail',(width/2,-.30,height),(width,.40,.12),roof,a,b)
+  for u in (.25,width-.25):
+   facade('Broad metal clad retail corner pier',(u,.0,(bottom+top)/2),(.5,.9,top-bottom),roof,a,b)
+  facade('Retail projecting pale roof fascia',(width/2,.1,top),(width,1.05,.55),roof,a,b)
+box('Retail roof service screen',(3,-48,15.2),(7,7,1.8),roof)
+for y in (-68,-66,-64,-62,-60,-58,-56,-54,-52,-50,-48,-46):
+ box('Lower terrace physical railing baluster',(-8.8,y,10.6),(.05,.05,1.2),frame)
+line('Lower terrace dark top rail',[(-8.8,-68,11.2),(-8.8,-46,11.2)],.04,frame)
 for mat,(vertices,faces) in panels.items(): make_mesh(mat.name,vertices,faces,mat)
 for obj in bpy.context.scene.objects:
  if obj.type=='MESH': assert all(math.isfinite(v) for vertex in obj.data.vertices for v in vertex.co),obj.name
