@@ -31,6 +31,8 @@ powershell -ExecutionPolicy Bypass -File tools/run_gates.ps1 -All -Features
 
 `run_gates.ps1` runs every headless suite in `tools/gates.json` in parallel. `-Features` adds the windowed check (`tools/Godot.exe --path . -- --features`, the same as `-- --v2-present`), which needs a real window — do not add `--headless`. Before a release also export and run `RacingSim.exe --headless -- --v2-export-check`. See `godot/docs/TESTING.md` for the full matrix and `godot/docs/MACOS.md` for Mac specifics.
 
+Models and meshes may be built or converted with headless Blender (4.x): `blender -b --factory-startup --python <script.py>` (`blender.exe` on Windows). Keep the scripts in `godot/tools/blender/` so they stay reproducible and out of the export (`tools/*` is excluded). Export GLB for Godot with Draco compression off, because Godot can't import Draco glTF. Blender is Z-up, and the glTF exporter converts to Godot's +Y up. Model in metres, with the car body's +X forward. Commit only the exported result, keep it within the task's size budget, and record any CC0/CC-BY source in both THIRD-PARTY.md files. On Debian/Ubuntu, install `blender` and `python3-numpy`; the glTF exporter needs numpy.
+
 Data folders (`tracks/`, `setups/`, `ghosts/`) at the repo root are user files from the pre-rebuild game; don't delete or reformat them. The game saves under `user://v2`.
 
 A browser implementation (`racing-sim.html`) was removed on 2026-09-22. It is in git history only. Don't revive it or treat it as a physics reference.
