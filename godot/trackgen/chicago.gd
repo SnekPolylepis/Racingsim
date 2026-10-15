@@ -11,6 +11,7 @@ const NightGlow = preload("res://scripts/track/night_glow.gd")
 const Gantry = preload("res://scripts/track/gantry.gd")
 const RoadBuilder = preload("res://scripts/track/road_builder.gd")
 const ChicagoCity = preload("res://trackgen/chicago_city.gd")
+const ChicagoFree = preload("res://trackgen/chicago_free.gd")
 const ChicagoFurniture = preload("res://trackgen/chicago_furniture.gd")
 const ChicagoKit = preload("res://trackgen/chicago_kit.gd")
 const PropMesh = preload("res://scripts/track/prop_mesh.gd")
@@ -183,12 +184,14 @@ static func solid_box(asset: Node3D, title: String, xform: Transform3D, size: Ve
 	attach(asset, body, col, "Shape")
 
 
-static func build_asset(grid: bool = false) -> Node3D:
+static func build_asset(grid: bool = false, free: bool = false) -> Node3D:
 	var asset = TrackAsset.new()
 	asset.name = "Chicago"
-	asset.id = "chicago_grid" if grid else "chicago"
-	asset.display_name = "Chicago — Loop Grid" if grid else "Chicago — River & Lake"
-	asset.version = 2 if grid else 4
+	asset.id = "chicago_free" if free else ("chicago_grid" if grid else "chicago")
+	asset.display_name = (
+		"Chicago — Free Roam" if free else ("Chicago — Loop Grid" if grid else "Chicago — River & Lake")
+	)
+	asset.version = 1 if free else (2 if grid else 4)
 	asset.set_meta("wacker_floor_y", ChicagoCity.LOW_ROAD_Y)
 	asset.default_time_of_day = "day"
 	var road = RoadPath.new()
@@ -286,9 +289,19 @@ static func build_asset(grid: bool = false) -> Node3D:
 	var bot = Path3D.new()
 	bot.curve = road.working_curve()
 	attach(asset, asset, bot, "BotLine")
+	var lower_from = INF
+	var lower_to = 0.0
+	for station in road.last_bake.stations:
+		if covered_wacker(station.pos):
+			lower_from = minf(lower_from, station.s)
+			lower_to = maxf(lower_to, station.s)
 	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
 		var wall = WallPath.new()
 		wall.follow_road = NodePath("../Main")
+		if free:
+			# Free Roam keeps barriers only through the Lower Wacker trench; elsewhere the car may leave the route.
+			wall.from_m = lower_from
+			wall.to_m = lower_to
 		wall.side = side
 		wall.kind = 2
 		wall.height = .65
@@ -305,12 +318,6 @@ static func build_asset(grid: bool = false) -> Node3D:
 	# Along Upper Wacker's riverfront the river is on the left: no debris fence there, so the river shows.
 	var river = river_span(road)
 	# Commons Randolph exit driver photo: concrete divider with an open service bay, no catch fence.
-	var lower_from = INF
-	var lower_to = 0.0
-	for station in road.last_bake.stations:
-		if covered_wacker(station.pos):
-			lower_from = minf(lower_from, station.s)
-			lower_to = maxf(lower_to, station.s)
 	var fence_pieces = []
 	for piece in [
 		["LeftBarrier", 0.0, river.x],
@@ -322,7 +329,7 @@ static func build_asset(grid: bool = false) -> Node3D:
 			var end = minf(piece[2], open_span[1])
 			if end > begin:
 				fence_pieces.append([piece[0], begin, end])
-	for piece in fence_pieces:
+	for piece in [] if free else fence_pieces:
 		var barrier = piece[0]
 		var fence = CatchFence.new()
 		# CatchFence's wall-following path ignores from/to; use the existing road-range path.
@@ -340,6 +347,9 @@ static func build_asset(grid: bool = false) -> Node3D:
 	# CHI-02: the real downtown from OpenStreetMap (buildings, every street, water, parks) replaces the
 	# procedural skyline. add_city() stays for reference but is no longer called.
 	var city = ChicagoCity.build(asset, scenery, road, data().landmarks, world)
+	if free:
+		ChicagoFree.add_collision(asset, city)
+	city.erase("ground_faces")
 	asset.set_meta("city", city)
 	add_landmarks(asset, scenery)
 	add_river_bridges(asset, scenery)

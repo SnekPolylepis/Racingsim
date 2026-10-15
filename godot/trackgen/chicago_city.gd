@@ -148,7 +148,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 	# visibility range; towers stay in `chunks` so the skyline reaches the fog.
 	var low_chunks = {}
 	var flat_chunks = {}
-	var stats = {"buildings": 0, "roads": 0, "ground_tiles": 0, "water": 0, "parks": 0, "excluded": []}
+	var stats = {
+		"buildings": 0,
+		"roads": 0,
+		"ground_tiles": 0,
+		"water": 0,
+		"parks": 0,
+		"excluded": [],
+		"ground_faces": PackedVector3Array()
+	}
 	var holder = Node3D.new()
 	holder.name = "City"
 	parent.add_child(holder)
@@ -348,6 +356,8 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 						pieces = remaining
 				for piece in pieces:
 					_flat(_st(flat_chunks, c, "ground"), piece, STREET_Y - 0.04)
+					for idx in Geometry2D.triangulate_polygon(piece):
+						stats.ground_faces.append(Vector3(piece[idx].x, STREET_Y - 0.04, piece[idx].y))
 					# A thin overlay follows the actual park polygon, not a tile-centre classification.
 					for park in crossed_parks:
 						for lawn in Geometry2D.intersect_polygons(piece, park):
@@ -363,6 +373,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var at = Vector2(cell.x * tile, cell.y * tile)
 		var mid = at + Vector2(tile, tile) * 0.5
 		_quad_flat(_st(flat_chunks, mid, "ground"), at, tile, LOW_FLOOR_Y)
+		for corner in [
+			at,
+			at + Vector2(tile, 0),
+			at + Vector2(tile, tile),
+			at,
+			at + Vector2(tile, tile),
+			at + Vector2(0, tile)
+		]:
+			stats.ground_faces.append(Vector3(corner.x, LOW_FLOOR_Y, corner.y))
 		var sides = [
 			[Vector2i(1, 0), Vector2(tile, 0), Vector2(tile, tile)],
 			[Vector2i(-1, 0), Vector2(0, tile), Vector2(0, 0)],

@@ -104,44 +104,12 @@ func _draw():
 		return
 	var car = app.car
 	var race = app.race
-	box(Rect2(16, 112, 238, 206))
-	text(Vector2(32, 139), "TIME ATTACK", 12, MUTED)
-	text(Vector2(32, 170), app.RaceModel.time_text(race.lap_time), 29)
-	text(Vector2(32, 197), "BEST  " + app.RaceModel.time_text(race.best), 16, GOLD)
-	text(
-		Vector2(32, 223),
-		(
-			"LAST  "
-			+ app.RaceModel.time_text(race.last)
-			+ (" × " + race.last_reason if race.last > 0 and not race.last_valid else "")
-		),
-		16,
-		MUTED
-	)
-	text(
-		Vector2(32, 246),
-		"VALID" if race.valid else "INVALID · " + race.invalid_reason,
-		12,
-		Color("75d9b0") if race.valid else Color("f58278")
-	)
-	draw_sectors(race)
-	box(Rect2(16, 328, 238, 157))
-	if map_points.size() > 1:
-		draw_polyline(map_points, Color("9bb4bd"), 2, true)
-	var gx = race.ghost_xform()
-	if app.settings.ghost and gx != null:
-		draw_circle(map_offset + Vector2(gx.origin.x, gx.origin.z) * map_scale, 3.5, Color("70cbed"))
-	draw_circle(map_offset + Vector2(car.x, car.y) * map_scale, 4.5, GOLD)
-	text(
-		Vector2(32, 473),
-		"%.3f KM  ·  CP %d/%d" % ([app.track.length / 1000] + checkpoint_progress(race)),
-		12,
-		MUTED
-	)
-	if race.delta != null:
-		var color = Color("75d9b0") if race.delta <= 0 else Color("f58278")
-		box(Rect2(size.x / 2 - 86, 112, 172, 54))
-		text(Vector2(size.x / 2 - 65, 148), "%+.3f" % race.delta, 28, color)
+	if app.v2_track_id == "chicago_free":
+		box(Rect2(16, 112, 238, 70))
+		text(Vector2(32, 139), "FREE ROAM", 12, MUTED)
+		text(Vector2(32, 170), "DRIVE ANYWHERE", 20)
+	else:
+		draw_timing(car, race)
 	var origin = Vector2(size.x - 186, size.y - 132)
 	draw_circle(origin, 132, Color(.025, .045, .065, .82))
 	var fraction = clampf(car.rpm / car.p.redline, 0, 1)
@@ -197,52 +165,57 @@ func _draw():
 		draw_audio_debug()
 
 
+func draw_timing(car, race):
+	box(Rect2(16, 112, 238, 206))
+	text(Vector2(32, 139), "TIME ATTACK", 12, MUTED)
+	text(Vector2(32, 170), app.RaceModel.time_text(race.lap_time), 29)
+	text(Vector2(32, 197), "BEST  " + app.RaceModel.time_text(race.best), 16, GOLD)
+	text(
+		Vector2(32, 223),
+		(
+			"LAST  "
+			+ app.RaceModel.time_text(race.last)
+			+ (" × " + race.last_reason if race.last > 0 and not race.last_valid else "")
+		),
+		16,
+		MUTED
+	)
+	text(
+		Vector2(32, 246),
+		"VALID" if race.valid else "INVALID · " + race.invalid_reason,
+		12,
+		Color("75d9b0") if race.valid else Color("f58278")
+	)
+	draw_sectors(race)
+	box(Rect2(16, 328, 238, 157))
+	if map_points.size() > 1:
+		draw_polyline(map_points, Color("9bb4bd"), 2, true)
+	var gx = race.ghost_xform()
+	if app.settings.ghost and gx != null:
+		draw_circle(map_offset + Vector2(gx.origin.x, gx.origin.z) * map_scale, 3.5, Color("70cbed"))
+	draw_circle(map_offset + Vector2(car.x, car.y) * map_scale, 4.5, GOLD)
+	text(
+		Vector2(32, 473),
+		"%.3f KM  ·  CP %d/%d" % ([app.track.length / 1000] + checkpoint_progress(race)),
+		12,
+		MUTED
+	)
+	if race.delta != null:
+		var color = Color("75d9b0") if race.delta <= 0 else Color("f58278")
+		box(Rect2(size.x / 2 - 86, 112, 172, 54))
+		text(Vector2(size.x / 2 - 65, 148), "%+.3f" % race.delta, 28, color)
+
+
 func draw_console():
 	draw_set_transform(Vector2.ZERO, 0, size / Vector2(640, 448))
 	var car = app.car
 	var race = app.race
-	draw_rect(Rect2(18, 15, 202, 109), Color(.02, .03, .05, .70))
-	text(
-		Vector2(27, 37),
-		(
-			"LAP %02d  /  %s"
-			% [race.completed + 1, "TIME TRIAL" if app.frontend.race_mode == "Time Trial" else "FREE RUN"]
-		),
-		16
-	)
-	text(Vector2(27, 67), app.RaceModel.time_text(race.lap_time), 30)
-	text(Vector2(27, 92), "BEST  " + app.RaceModel.time_text(race.best), 18, GOLD)
-	text(
-		Vector2(27, 116),
-		"VALID" if race.valid else "INVALID  " + race.invalid_reason,
-		16,
-		Color("d4e3ce") if race.valid else Color("ff7f69")
-	)
-	for i in 3:
-		var x = 230 + i * 82
-		var t = race.sectors[i] if race.sectors[i] > 0 else race.last_sectors[i]
-		draw_rect(Rect2(x, 17, 77, 45), Color(.02, .03, .05, .70))
-		text(Vector2(x + 6, 35), "S%d" % (i + 1), 16, GOLD)
-		text(Vector2(x + 6, 56), "%.2f" % t if t > 0 else "--.--", 16)
-	if race.delta != null:
-		text(
-			Vector2(266, 89), "%+.3f" % race.delta, 26, Color("aee3be") if race.delta < 0 else Color("f2ba8c")
-		)
-	var low = Vector2(INF, INF)
-	var high = Vector2(-INF, -INF)
-	# Bounds use the cached map: no track projections or physics changes here.
-	for point in map_points:
-		low = low.min(point)
-		high = high.max(point)
-	if map_points.size() > 1:
-		var factor = minf(135 / maxf(1, high.x - low.x), 98 / maxf(1, high.y - low.y))
-		var offset = Vector2(89, 348) - (low + high) * .5 * factor
-		var points = PackedVector2Array()
-		for point in map_points:
-			points.append(point * factor + offset)
-		draw_polyline(points, Color(.02, .04, .05, .8), 6)
-		draw_polyline(points, Color("d8dfd9"), 2)
-		draw_circle((map_offset + Vector2(car.x, car.y) * map_scale) * factor + offset, 3.5, GOLD)
+	if app.v2_track_id == "chicago_free":
+		draw_rect(Rect2(18, 15, 202, 52), Color(.02, .03, .05, .70))
+		text(Vector2(27, 37), "FREE ROAM", 16)
+		text(Vector2(27, 58), "DRIVE ANYWHERE", 14, GOLD)
+	else:
+		draw_console_timing(car, race)
 	var origin = Vector2(548, 352)
 	draw_circle(origin, 64, Color(.025, .035, .05, .76))
 	var fraction = clampf(car.rpm / car.p.redline, 0, 1)
@@ -291,6 +264,51 @@ func draw_console():
 			draw_telemetry()
 		if app.settings.get("audio_debug", false):
 			draw_audio_debug()
+
+
+func draw_console_timing(car, race):
+	draw_rect(Rect2(18, 15, 202, 109), Color(.02, .03, .05, .70))
+	text(
+		Vector2(27, 37),
+		(
+			"LAP %02d  /  %s"
+			% [race.completed + 1, "TIME TRIAL" if app.frontend.race_mode == "Time Trial" else "FREE RUN"]
+		),
+		16
+	)
+	text(Vector2(27, 67), app.RaceModel.time_text(race.lap_time), 30)
+	text(Vector2(27, 92), "BEST  " + app.RaceModel.time_text(race.best), 18, GOLD)
+	text(
+		Vector2(27, 116),
+		"VALID" if race.valid else "INVALID  " + race.invalid_reason,
+		16,
+		Color("d4e3ce") if race.valid else Color("ff7f69")
+	)
+	for i in 3:
+		var x = 230 + i * 82
+		var t = race.sectors[i] if race.sectors[i] > 0 else race.last_sectors[i]
+		draw_rect(Rect2(x, 17, 77, 45), Color(.02, .03, .05, .70))
+		text(Vector2(x + 6, 35), "S%d" % (i + 1), 16, GOLD)
+		text(Vector2(x + 6, 56), "%.2f" % t if t > 0 else "--.--", 16)
+	if race.delta != null:
+		text(
+			Vector2(266, 89), "%+.3f" % race.delta, 26, Color("aee3be") if race.delta < 0 else Color("f2ba8c")
+		)
+	var low = Vector2(INF, INF)
+	var high = Vector2(-INF, -INF)
+	# Bounds use the cached map: no track projections or physics changes here.
+	for point in map_points:
+		low = low.min(point)
+		high = high.max(point)
+	if map_points.size() > 1:
+		var factor = minf(135 / maxf(1, high.x - low.x), 98 / maxf(1, high.y - low.y))
+		var offset = Vector2(89, 348) - (low + high) * .5 * factor
+		var points = PackedVector2Array()
+		for point in map_points:
+			points.append(point * factor + offset)
+		draw_polyline(points, Color(.02, .04, .05, .8), 6)
+		draw_polyline(points, Color("d8dfd9"), 2)
+		draw_circle((map_offset + Vector2(car.x, car.y) * map_scale) * factor + offset, 3.5, GOLD)
 
 
 const SECTOR_COLORS = {

@@ -12,6 +12,7 @@ const PRESET_KEYS = ["roadster", "gt", "f296gt3", "f2004", "rb19"]
 const GENERATORS = {
 	"chicago": "res://trackgen/chicago.gd",
 	"chicago_grid": "res://trackgen/chicago_grid.gd",
+	"chicago_free": "res://trackgen/chicago_free.gd",
 	"monaco": "res://trackgen/monaco.gd",
 	"spa": "res://trackgen/spa.gd",
 	"proving_ground": "res://trackgen/proving_ground.gd",
@@ -133,9 +134,9 @@ static func _cache_revision(id: String, generator_path: String) -> String:
 	var directories: Array[String] = [
 		"res://scripts/track",
 		"res://shaders",
-		"res://trackgen/data/" + ("chicago" if id == "chicago_grid" else id)
+		"res://trackgen/data/" + ("chicago" if id in ["chicago_grid", "chicago_free"] else id)
 	]
-	if id in ["chicago", "chicago_grid"]:
+	if id in ["chicago", "chicago_grid", "chicago_free"]:
 		directories.append("res://assets/chicago/buildings")
 		directories.append("res://assets/chicago/downtown-kit")
 		directories.append("res://assets/chicago/landmarks")
