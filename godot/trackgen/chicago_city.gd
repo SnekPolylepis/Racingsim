@@ -373,6 +373,15 @@ static func build(asset: Node3D, parent: Node, road, landmarks: Dictionary, worl
 		var at = Vector2(cell.x * tile, cell.y * tile)
 		var mid = at + Vector2(tile, tile) * 0.5
 		_quad_flat(_st(flat_chunks, mid, "ground"), at, tile, LOW_FLOOR_Y)
+		for corner in [
+			at,
+			at + Vector2(tile, 0),
+			at + Vector2(tile, tile),
+			at,
+			at + Vector2(tile, tile),
+			at + Vector2(0, tile)
+		]:
+			stats.ground_faces.append(Vector3(corner.x, LOW_FLOOR_Y, corner.y))
 		var sides = [
 			[Vector2i(1, 0), Vector2(tile, 0), Vector2(tile, tile)],
 			[Vector2i(-1, 0), Vector2(0, tile), Vector2(0, 0)],

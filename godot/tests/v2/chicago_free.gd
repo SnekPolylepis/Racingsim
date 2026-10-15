@@ -74,6 +74,9 @@ func _physics_process(_delta):
 		if not walls.contacts(Transform3D(Basis.IDENTITY, p)).is_empty():
 			blocked += 1
 	check(blocked == 0, "No building wall on the race route (%d samples blocked)" % blocked)
+	var left = asset.get_node("LeftBarrier")
+	var reach = left.to_m - left.from_m
+	check(reach > 0.0 and reach < asset.length * 0.3, "Route barrier only through the trench: %.0f m" % reach)
 	print("RESULTS ", JSON.stringify({"checks": checks, "failures": failures}))
 	quit(0 if failures.is_empty() else 1)
 	return true

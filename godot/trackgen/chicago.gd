@@ -289,9 +289,19 @@ static func build_asset(grid: bool = false, free: bool = false) -> Node3D:
 	var bot = Path3D.new()
 	bot.curve = road.working_curve()
 	attach(asset, asset, bot, "BotLine")
+	var lower_from = INF
+	var lower_to = 0.0
+	for station in road.last_bake.stations:
+		if covered_wacker(station.pos):
+			lower_from = minf(lower_from, station.s)
+			lower_to = maxf(lower_to, station.s)
 	for side in [WallPath.Side.LEFT, WallPath.Side.RIGHT]:
 		var wall = WallPath.new()
 		wall.follow_road = NodePath("../Main")
+		if free:
+			# Free Roam keeps barriers only through the Lower Wacker trench; elsewhere the car may leave the route.
+			wall.from_m = lower_from
+			wall.to_m = lower_to
 		wall.side = side
 		wall.kind = 2
 		wall.height = .65
@@ -308,12 +318,6 @@ static func build_asset(grid: bool = false, free: bool = false) -> Node3D:
 	# Along Upper Wacker's riverfront the river is on the left: no debris fence there, so the river shows.
 	var river = river_span(road)
 	# Commons Randolph exit driver photo: concrete divider with an open service bay, no catch fence.
-	var lower_from = INF
-	var lower_to = 0.0
-	for station in road.last_bake.stations:
-		if covered_wacker(station.pos):
-			lower_from = minf(lower_from, station.s)
-			lower_to = maxf(lower_to, station.s)
 	var fence_pieces = []
 	for piece in [
 		["LeftBarrier", 0.0, river.x],
@@ -325,7 +329,7 @@ static func build_asset(grid: bool = false, free: bool = false) -> Node3D:
 			var end = minf(piece[2], open_span[1])
 			if end > begin:
 				fence_pieces.append([piece[0], begin, end])
-	for piece in fence_pieces:
+	for piece in [] if free else fence_pieces:
 		var barrier = piece[0]
 		var fence = CatchFence.new()
 		# CatchFence's wall-following path ignores from/to; use the existing road-range path.
