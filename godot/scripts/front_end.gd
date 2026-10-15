@@ -28,12 +28,15 @@ const V2_TRACKS = {
 	"nordschleife": "Nürburgring Nordschleife",
 	"chicago": "Chicago — River & Lake",
 	"chicago_grid": "Chicago — Loop Grid",
+	"chicago_free": "Chicago — Free Roam",
 	"monaco": "Circuit de Monaco"
 }
 ## Picker detail lines: [country, length, one-line description].
 const TRACK_INFO = {
 	"chicago_grid":
 	["USA", "8.8 km", "Loop street weave, State Street theatre, lakefront and both Wacker decks."],
+	"chicago_free":
+	["USA", "Open", "Drive anywhere in the Loop: every street, the lakefront and Lower Wacker."],
 	"proving_ground": ["Test site", "2.6 km", "Flat handling loop with a chicane. Quick to learn."],
 	"spa": ["Belgium", "7.0 km", "Eau Rouge, Raidillon and the Kemmel straight through the Ardennes."],
 	"nordschleife": ["Germany", "20.8 km", "The Green Hell: 73 corners, crests and the banked Karussell."],

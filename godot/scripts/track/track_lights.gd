@@ -510,6 +510,6 @@ static func update_pool(pool: Array, asset: Node, eye: Vector3, night: bool, ene
 		var fade = clampf((cutoff - d) / 15.0, 0.0, 1.0) * (1.0 - smoothstep(90.0, 140.0, d))
 		light.visible = fade > 0.0
 		# Stacked Chicago roads need the deck to occlude light from the other level.
-		light.shadow_enabled = asset.get("id") in ["chicago", "chicago_grid"]
+		light.shadow_enabled = asset.get("id") in ["chicago", "chicago_grid", "chicago_free"]
 		light.global_position = heads[near[k][1]]
 		light.light_energy = energy * fade

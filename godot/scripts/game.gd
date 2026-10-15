@@ -129,6 +129,7 @@ var applied_horizon = ""
 const HORIZON_STYLES = {
 	"chicago": "flat",
 	"chicago_grid": "flat",
+	"chicago_free": "flat",
 	"monaco": "flat",
 	"proving_ground": "generic",
 	"spa": "ardennes",
@@ -760,7 +761,7 @@ func load_v2_track(id: String) -> bool:
 	add_child(track)
 	v2_track_id = id
 	# Chicago is an NFS night city by default; the player can still switch in Settings.
-	if id in ["chicago", "chicago_grid"]:
+	if id in ["chicago", "chicago_grid", "chicago_free"]:
 		settings.time_of_day = 1
 	apply_track_night()
 	if environment != null:
@@ -1283,7 +1284,7 @@ func update_camera(dt, snap = false):
 	if rain:
 		var covered = pos.y <= 3.0
 		if (
-			v2_track_id in ["chicago", "chicago_grid"]
+			v2_track_id in ["chicago", "chicago_grid", "chicago_free"]
 			and race.asset_hint >= 0
 			and race.asset_hint < track.line.size()
 		):
@@ -1455,7 +1456,7 @@ func apply_time_of_day():
 		var paint = PanoramaSkyMaterial.new()
 		paint.panorama = preload("res://scripts/retro_assets.gd").hills_panorama(night, horizon)
 		# Chicago & Spa: sky-only HDRIs (Poly Haven, CC0) so the lake/mountain horizon stays open.
-		if v2_track_id in ["chicago", "chicago_grid"]:
+		if v2_track_id in ["chicago", "chicago_grid", "chicago_free"]:
 			paint.panorama = load(
 				(
 					"res://assets/chicago/sky/%s.hdr"
@@ -1502,7 +1503,7 @@ func apply_time_of_day():
 		# ASSET-02: the moon must not mirror off the damp road; the lamps provide the night reflections.
 		sun.light_specular = .08 if night else 1.0
 		camera.far = 650 if night else 1250
-		if v2_track_id in ["chicago", "chicago_grid"]:
+		if v2_track_id in ["chicago", "chicago_grid", "chicago_free"]:
 			# Preserve the lake horizon and Navy Pier/Willis sightlines in this flat city.
 			environment.fog_depth_begin = 180 if night else 350
 			environment.fog_depth_end = 1900 if night else 2800
@@ -1519,7 +1520,7 @@ func apply_time_of_day():
 			environment.fog_depth_end = 650 if night else 1450
 			camera.far = 1600
 		# NFSU night haze: lamps and neon scatter in a thin volumetric fog; filmic keeps the highlights.
-		var nfs_night = night and v2_track_id in ["chicago", "chicago_grid"]
+		var nfs_night = night and v2_track_id in ["chicago", "chicago_grid", "chicago_free"]
 		environment.volumetric_fog_enabled = nfs_night
 		environment.volumetric_fog_density = 0.004
 		environment.volumetric_fog_albedo = Color("b8a894")
