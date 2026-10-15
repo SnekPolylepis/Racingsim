@@ -407,8 +407,9 @@ func set_quality(value):
 	environment.ssao_radius = 1.4
 	environment.ssao_intensity = 1.6
 	# Owner 2026-09-28: NFS-era wet-city look. SSR mirrors neon in the wet road, HDR glow blooms lamps/signs.
-	environment.ssr_enabled = true
-	environment.ssr_max_steps = 96
+	# Low drops SSR and volumetric fog: the adaptive governor can then actually buy back frame time.
+	environment.ssr_enabled = quality >= 1
+	environment.ssr_max_steps = 96 if quality == 2 else 40
 	environment.ssr_fade_in = 0.1
 	environment.ssr_fade_out = 1.5
 	environment.ssr_depth_tolerance = 0.4
@@ -420,6 +421,8 @@ func set_quality(value):
 	for i in 7:
 		environment.set_glow_level(i, 1.0 if i in [1, 2, 3, 4, 5] else 0.0)
 	environment.sdfgi_enabled = false
+	if track is Node3D and track.get_parent() == self:
+		apply_time_of_day()
 
 
 ## P4-06 entry: initialize the separate v2 save area and front end before the first drive.
@@ -1081,7 +1084,8 @@ func physics_v2(dt):
 			settings,
 			pad_id
 		)
-	if race.update_asset(car, track, dt):
+	# Free Roam has no timing line to cross: nothing to time, validate or record.
+	if v2_track_id != "chicago_free" and race.update_asset(car, track, dt):
 		save_record()
 		message("New best lap Â· " + RaceModel.time_text(race.best))
 	if race.sectors_dirty:
@@ -1520,7 +1524,7 @@ func apply_time_of_day():
 			environment.fog_depth_end = 650 if night else 1450
 			camera.far = 1600
 		# NFSU night haze: lamps and neon scatter in a thin volumetric fog; filmic keeps the highlights.
-		var nfs_night = night and v2_track_id in ["chicago", "chicago_grid", "chicago_free"]
+		var nfs_night = night and quality >= 1 and v2_track_id in ["chicago", "chicago_grid", "chicago_free"]
 		environment.volumetric_fog_enabled = nfs_night
 		environment.volumetric_fog_density = 0.004
 		environment.volumetric_fog_albedo = Color("b8a894")
