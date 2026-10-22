@@ -2,6 +2,7 @@ extends SceneTree
 ## Free Roam acceptance: the street layer answers suspension rays off the race route, mapped buildings answer
 ## hull queries, and nothing blocks the route itself.
 const Generator = preload("res://trackgen/chicago_free.gd")
+const ChicagoCity = preload("res://trackgen/chicago_city.gd")
 const WallQuery = preload("res://scripts/surface/wall_query.gd")
 var asset
 var frames = 0
@@ -52,6 +53,17 @@ func _physics_process(_delta):
 			print("miss ", p, " ", hit.get("point"))
 		if street_tried >= 60:
 			break
+	var lower = Generator._lower()
+	var low_hits = 0
+	for ramp in lower.ramps:
+		var mid = ramp[0].lerp(ramp[1], 0.5)
+		var hit = surf.contact(Vector3(mid.x, 12.0, mid.y), Vector3.DOWN, 12.0)
+		var y = ChicagoCity.LOW_ROAD_Y + (ChicagoCity.STREET_Y - ChicagoCity.LOW_ROAD_Y) * 0.5
+		low_hits += int(not hit.is_empty() and absf(hit.point.y - y) < 0.6)
+	check(
+		not lower.ramps.is_empty() and low_hits == lower.ramps.size(),
+		"Ramp midpoints are open: %d of %d" % [low_hits, lower.ramps.size()]
+	)
 	check(street_hits > street_tried * 0.8, "Street ray hits ground: %d of %d" % [street_hits, street_tried])
 	for b in doc.buildings:
 		if b.h < 30.0 or absf(b.f[0][0]) > 600 or absf(b.f[0][1]) > 600:
